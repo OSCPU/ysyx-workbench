@@ -70,6 +70,14 @@ case $1 in
     echo "After that, please run 'source ~/.bashrc' to let these variables take effect."
     echo "If you use shell other than bash, please add these environment variables manually."
     ;;
+  ysyx)
+    sed -i -e "/^export YSYX_HOME=.*/d" ~/.bashrc
+    echo "export YSYX_HOME=`readlink -e .`" >> ~/.bashrc
+
+    echo "By default this script will add environment variables into ~/.bashrc."
+    echo "After that, please run 'source ~/.bashrc' to let these variables take effect."
+    echo "If you use shell other than bash, please add these environment variables manually."
+    ;;
   *)
     echo "Invalid input..."
     exit
