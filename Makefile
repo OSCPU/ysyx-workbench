@@ -3,10 +3,11 @@ STUNAME = 张三
 
 # DO NOT modify the following code!!!
 
-GITFLAGS = -q --author='tracer-ysyx2204 <tracer@ysyx.org>' --no-verify --allow-empty
+TRACER = tracer-ysyx2204
+GITFLAGS = -q --author='$(TRACER) <tracer@ysyx.org>' --no-verify --allow-empty
 
-WORK_BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
-TRACER_BRANCH = ysyx-tracer
+YSYX_HOME = $(NEMU_HOME)/..
+TRACER_BRANCH = $(TRACER)
 
 # prototype: git_commit(msg)
 define git_commit

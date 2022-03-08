@@ -1,5 +1,14 @@
 #!/bin/bash
 
+# usage: addenv env_name path
+function addenv() {
+  sed -i -e "/^export $1=.*/d" ~/.bashrc
+  echo "export $1=`readlink -e $2`" >> ~/.bashrc
+  echo "By default this script will add environment variables into ~/.bashrc."
+  echo "After that, please run 'source ~/.bashrc' to let these variables take effect."
+  echo "If you use shell other than bash, please add these environment variables manually."
+}
+
 # usage: init repo branch directory trace [env]
 # trace = true|false
 function init() {
@@ -25,12 +34,7 @@ function init() {
   fi
 
   if [ $5 ] ; then
-    sed -i -e "/^export $5=.*/d" ~/.bashrc
-    echo "export $5=`readlink -e $3`" >> ~/.bashrc
-
-    echo "By default this script will add environment variables into ~/.bashrc."
-    echo "After that, please run 'source ~/.bashrc' to let these variables take effect."
-    echo "If you use shell other than bash, please add these environment variables manually."
+    addenv $5 $3
   fi
 }
 
@@ -63,20 +67,7 @@ case $1 in
     fi
     ;;
   npc)
-    sed -i -e "/^export NPC_HOME=.*/d" ~/.bashrc
-    echo "export NPC_HOME=`readlink -e npc`" >> ~/.bashrc
-
-    echo "By default this script will add environment variables into ~/.bashrc."
-    echo "After that, please run 'source ~/.bashrc' to let these variables take effect."
-    echo "If you use shell other than bash, please add these environment variables manually."
-    ;;
-  ysyx)
-    sed -i -e "/^export YSYX_HOME=.*/d" ~/.bashrc
-    echo "export YSYX_HOME=`readlink -e .`" >> ~/.bashrc
-
-    echo "By default this script will add environment variables into ~/.bashrc."
-    echo "After that, please run 'source ~/.bashrc' to let these variables take effect."
-    echo "If you use shell other than bash, please add these environment variables manually."
+    addenv NPC_HOME npc
     ;;
   *)
     echo "Invalid input..."
