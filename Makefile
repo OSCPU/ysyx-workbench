@@ -20,20 +20,20 @@ endef
 
 # prototype: git_commit(msg)
 define git_commit
-	-@flock $(LOCK_DIR) $(MAKE) .git_commit MSG='$(1)'
+	-@flock $(LOCK_DIR) $(MAKE) -C $(YSYX_HOME) .git_commit MSG='$(1)'
 	-@sync
 endef
 
 .git_commit:
-	-@cd $(YSYX_HOME) && while (test -e .git/index.lock); do sleep 0.1; done;               `# wait for other git instances`
-	-@cd $(YSYX_HOME) && git branch $(TRACER_BRANCH) -q 2>/dev/null || true                 `# create tracer branch if not existent`
-	-@cd $(YSYX_HOME) && cp -a .git/index $(WORK_INDEX)                                     `# backup git index`
-	-@cd $(YSYX_HOME) && $(call git_soft_checkout, $(TRACER_BRANCH))                        `# switch to tracer branch`
-	-@cd $(YSYX_HOME) && git add . -A --ignore-errors                                       `# add files to commit`
-	-@cd $(YSYX_HOME) && (echo "> $(MSG)" && echo $(STUID) $(STUNAME) && uname -a && uptime `# generate commit msg`) \
-	                | git commit -F - $(GITFLAGS)                                           `# commit changes in tracer branch`
-	-@cd $(YSYX_HOME) && $(call git_soft_checkout, $(WORK_BRANCH))                          `# switch to work branch`
-	-@cd $(YSYX_HOME) && mv $(WORK_INDEX) .git/index                                        `# restore git index`
+	-@while (test -e .git/index.lock); do sleep 0.1; done;               `# wait for other git instances`
+	-@git branch $(TRACER_BRANCH) -q 2>/dev/null || true                 `# create tracer branch if not existent`
+	-@cp -a .git/index $(WORK_INDEX)                                     `# backup git index`
+	-@$(call git_soft_checkout, $(TRACER_BRANCH))                        `# switch to tracer branch`
+	-@git add . -A --ignore-errors                                       `# add files to commit`
+	-@(echo "> $(MSG)" && echo $(STUID) $(STUNAME) && uname -a && uptime `# generate commit msg`) \
+	                | git commit -F - $(GITFLAGS)                        `# commit changes in tracer branch`
+	-@$(call git_soft_checkout, $(WORK_BRANCH))                          `# switch to work branch`
+	-@mv $(WORK_INDEX) .git/index                                        `# restore git index`
 
 .clean_index:
 	rm -f $(WORK_INDEX)
