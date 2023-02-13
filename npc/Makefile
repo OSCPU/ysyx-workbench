@@ -7,6 +7,7 @@ SRC_ALL = $(wildcard ./csrc/*.cpp ./csrc/*.c)
 MAIN_SRC = $(wildcard ./csrc/main.cpp)
 SRC = $(filter-out $(MAIN_SRC), $(SRC_ALL))
 TRASH = $(wildcard *.o main)
+LIB_SRC = $(wildcard libsteins.a)
 EMPTY=
 
 .PHONY:sim
@@ -43,7 +44,11 @@ lint: ./vsrc/$(MODULE).sv
 
 .PHONY:main	
 main : $(MAIN_SRC)
+ifeq ($(LIB_SRC), $(EMPTY))
+	g++ $(MAIN_SRC) -Wall -Og -g -o main
+else
 	g++ $(MAIN_SRC) -Wall -Og -g -L. -lsteins -Iinc -o main
+endif
 
 .PHONY:lib
 lib: $(SRC) $(INC) 
@@ -59,7 +64,7 @@ indent: $(SRC_ALL) $(INC)
 	-astyle --style=kr $(INC)
 
 .clean_trash:
-ifeq ($(TRASH),$(EMPTY))
+ifeq ($(TRASH), $(EMPTY))
 
 else
 	@rm $(TRASH)
