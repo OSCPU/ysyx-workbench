@@ -3,7 +3,7 @@
 
 #include <common.h>
 
-#define RESET_VECTOR (CONFIG_MBASE + CONFIG_PC_RESET_OFFSET)
+#define RESET_VECTOR (CONFIG_MBASE + CONFIG_PC_RESET_OFFSET) // 恢复初始状态，相当于重启键。
 
 /* convert the guest physical address in the guest program to host virtual address in NEMU */
 uint8_t* guest_to_host(paddr_t paddr);

@@ -91,7 +91,7 @@ void sdb_mainloop() {
     char *str_end = str + strlen(str);
 
     /* extract the first token as the command */
-    char *cmd = strtok(str, " ");
+    char *cmd = strtok(str, " "); // strtok在nemu中不存在。猜测应该在am里。
     if (cmd == NULL) { continue; }
 
     /* treat the remaining string as the arguments,

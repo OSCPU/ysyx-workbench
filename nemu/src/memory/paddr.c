@@ -6,10 +6,11 @@
 #if   defined(CONFIG_PMEM_MALLOC)
 static uint8_t *pmem = NULL;
 #else // CONFIG_PMEM_GARRAY
-static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
+static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {}; // 1.储存期分配 128MB 的空间。
 #endif
 
-uint8_t* guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
+uint8_t* guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }  // pmem + (CONFIG_MBASE + CONFIG_PC_RESET_OFFSET)
+                                                                               // - CONFIG_MBASE = pmem + CONFIG_PC_RESET_OFFSET
 paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
 
 static word_t pmem_read(paddr_t addr, int len) {
@@ -32,7 +33,7 @@ void init_mem() {
   assert(pmem);
 #endif
 #ifdef CONFIG_MEM_RANDOM
-  uint32_t *p = (uint32_t *)pmem;
+  uint32_t *p = (uint32_t *)pmem; // 2.将128MB的空间转为32位一分隔的数据，为什么？
   int i;
   for (i = 0; i < (int) (CONFIG_MSIZE / sizeof(p[0])); i ++) {
     p[i] = rand();
