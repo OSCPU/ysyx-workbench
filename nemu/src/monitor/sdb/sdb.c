@@ -18,7 +18,7 @@ static char* rl_gets() {
     line_read = NULL;
   }
 
-  line_read = readline("(nemu) ");
+  line_read = readline("(demu) ");
 
   if (line_read && *line_read) { // 判断line_read指针是否为空，判断line_read的第一个字符是否为空。
     add_history(line_read);

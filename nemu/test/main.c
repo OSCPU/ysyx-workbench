@@ -13,8 +13,8 @@ int main(void) {
 		line_read = NULL;
 	}
 
-	line_read = readline("(nume) ");
-	
+	/* line_read = readline("(nume) "); */
+	line_read = readline(""); // this is no prompt.
 	
 	printf("termianl is over!\n");
 }

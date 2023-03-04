@@ -9,7 +9,7 @@ $(BINARY): compile_git
 
 # Some convenient rules
 
-override ARGS ?= --log=$(BUILD_DIR)/nemu-log.txt
+override ARGS ?= --log=$(BUILD_DIR)/nemu-log.txt # 在这里确定了log 的输出目录。
 override ARGS += $(ARGS_DIFF)
 
 # Command to execute NEMU
