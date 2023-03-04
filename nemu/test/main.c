@@ -1,5 +1,20 @@
 #include <stdio.h>
+#include <termios.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 
 int main(void) {
-	printf("file: %s, line: %d, func: %s\n", __FILE__, __LINE__, __func__);
+	static char *line_read = NULL;
+
+	if (line_read) {
+		free(line_read);
+		line_read = NULL;
+	}
+
+	line_read = readline("(nume) ");
+	
+	
+	printf("termianl is over!\n");
 }

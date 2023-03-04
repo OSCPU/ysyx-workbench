@@ -20,7 +20,7 @@ static char* rl_gets() {
 
   line_read = readline("(nemu) ");
 
-  if (line_read && *line_read) {
+  if (line_read && *line_read) { // 判断line_read指针是否为空，判断line_read的第一个字符是否为空。
     add_history(line_read);
   }
 
@@ -91,7 +91,7 @@ void sdb_mainloop() {
     char *str_end = str + strlen(str);
 
     /* extract the first token as the command */
-    char *cmd = strtok(str, " "); // strtok在nemu中不存在。猜测应该在am里。
+    char *cmd = strtok(str, " "); // strtok 将str以空格为分隔符号，提取token。
     if (cmd == NULL) { continue; }
 
     /* treat the remaining string as the arguments,
@@ -108,7 +108,7 @@ void sdb_mainloop() {
 #endif
 
     int i;
-    for (i = 0; i < NR_CMD; i ++) {
+    for (i = 0; i < NR_CMD; i++) {
       if (strcmp(cmd, cmd_table[i].name) == 0) {
         if (cmd_table[i].handler(args) < 0) { return; }
         break;
