@@ -1,5 +1,5 @@
-STUID = ysyx_22040000
-STUNAME = 张三
+STUID   = 22050019  # your student ID
+STUNAME = 张宇鑫     # your Chinese name
 
 # DO NOT modify the following code!!!
 
