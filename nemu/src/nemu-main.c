@@ -12,7 +12,7 @@
 *
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
-
+//test
 #include <common.h>
 
 void init_monitor(int, char *[]);

@@ -1,18 +1,3 @@
-/***************************************************************************************
-* Copyright (c) 2014-2022 Zihao Yu, Nanjing University
-*
-* NEMU is licensed under Mulan PSL v2.
-* You can use this software according to the terms and conditions of the Mulan PSL v2.
-* You may obtain a copy of Mulan PSL v2 at:
-*          http://license.coscl.org.cn/MulanPSL2
-*
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
-* EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
-* MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
-*
-* See the Mulan PSL v2 for more details.
-***************************************************************************************/
-
 #include <common.h>
 #include <device/map.h>
 
@@ -41,7 +26,7 @@ static uint32_t *vgactl_port_base = NULL;
 static SDL_Renderer *renderer = NULL;
 static SDL_Texture *texture = NULL;
 
-static void init_screen() {
+static void init_screen() {                                                  
   SDL_Window *window = NULL;
   char title[128];
   sprintf(title, "%s-NEMU", str(__GUEST_ISA__));
@@ -73,10 +58,15 @@ static inline void update_screen() {
 void vga_update_screen() {
   // TODO: call `update_screen()` when the sync register is non-zero,
   // then zero out the sync register
+  if(*(vgactl_port_base+1)!=0)
+  {
+    update_screen();
+    (*(vgactl_port_base+1))=0;
+  }
 }
 
 void init_vga() {
-  vgactl_port_base = (uint32_t *)new_space(8);
+  vgactl_port_base = (uint32_t *)new_space(8);                         //vga_base
   vgactl_port_base[0] = (screen_width() << 16) | screen_height();
 #ifdef CONFIG_HAS_PORT_IO
   add_pio_map ("vgactl", CONFIG_VGA_CTL_PORT, vgactl_port_base, 8, NULL);
