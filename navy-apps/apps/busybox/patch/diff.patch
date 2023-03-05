@@ -1,0 +1,99 @@
+diff --git a/Makefile b/Makefile
+index bd94f49..607d132 100644
+--- a/Makefile
++++ b/Makefile
+@@ -610,7 +610,7 @@ quiet_cmd_busybox__ ?= LINK    $@
+       "$(CFLAGS) $(CFLAGS_busybox)" \
+       "$(LDFLAGS) $(EXTRA_LDFLAGS)" \
+       "$(core-y)" \
+-      "$(libs-y)" \
++      "$(libs-y) $(LINKAGE)" \
+       "$(LDLIBS)" \
+       && $(srctree)/scripts/generate_BUFSIZ.sh --post include/common_bufsiz.h
+ 
+diff --git a/include/libbb.h b/include/libbb.h
+index 021100d..a3dd664 100644
+--- a/include/libbb.h
++++ b/include/libbb.h
+@@ -10,6 +10,8 @@
+ #ifndef LIBBB_H
+ #define LIBBB_H 1
+ 
++#include "lib-navy.h"
++
+ #include "platform.h"
+ 
+ #include <ctype.h>
+@@ -592,6 +594,7 @@ struct fd_pair { int rd; int wr; };
+ /* Useful for having small structure members/global variables */
+ typedef int8_t socktype_t;
+ typedef int8_t family_t;
++#if 0
+ struct BUG_too_small {
+ 	char BUG_socktype_t_too_small[(0
+ 			| SOCK_STREAM
+@@ -615,6 +618,7 @@ struct BUG_too_small {
+ 			/* | AF_IPX */
+ 			) <= 127 ? 1 : -1];
+ };
++#endif
+ 
+ 
+ void parse_datestr(const char *date_str, struct tm *ptm) FAST_FUNC;
+@@ -988,6 +992,9 @@ char *safe_gethostname(void) FAST_FUNC;
+ /* Convert each alpha char in str to lower-case */
+ char* str_tolower(char *str) FAST_FUNC;
+ 
++#define utoa bb_utoa
++#define itoa bb_itoa
++
+ char *utoa(unsigned n) FAST_FUNC;
+ char *itoa(int n) FAST_FUNC;
+ /* Returns a pointer past the formatted number, does NOT null-terminate */
+diff --git a/libbb/inet_common.c b/libbb/inet_common.c
+index e9fbde7..0a110d3 100644
+--- a/libbb/inet_common.c
++++ b/libbb/inet_common.c
+@@ -1,3 +1,4 @@
++#if 0
+ /* vi: set sw=4 ts=4: */
+ /*
+  * stolen from net-tools-1.59 and stripped down for busybox by
+@@ -194,3 +195,4 @@ char* FAST_FUNC INET6_rresolve(struct sockaddr_in6 *sin6, int numeric)
+ }
+ 
+ #endif  /* CONFIG_FEATURE_IPV6 */
++#endif
+diff --git a/libbb/xconnect.c b/libbb/xconnect.c
+index eb2871c..7b19475 100644
+--- a/libbb/xconnect.c
++++ b/libbb/xconnect.c
+@@ -6,6 +6,7 @@
+  *
+  * Licensed under GPLv2, see file LICENSE in this source tree.
+  */
++#if 0
+ #include <sys/types.h>
+ #include <sys/socket.h> /* netinet/in.h needs it */
+ #include <netinet/in.h>
+@@ -543,3 +544,4 @@ char* FAST_FUNC xmalloc_sockaddr2dotted_noport(const struct sockaddr *sa)
+ {
+ 	return sockaddr2str(sa, NI_NUMERICHOST | NI_NUMERICSCOPE | IGNORE_PORT);
+ }
++#endif
+diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
+index 3e54ea7..f9374ba 100644
+--- a/scripts/Makefile.lib
++++ b/scripts/Makefile.lib
+@@ -119,9 +119,9 @@ cpp_flags      = -Wp,-MD,$(depfile) $(NOSTDINC_FLAGS) $(__cpp_flags)
+ 
+ # Seems to be a wrong thing to do. LDFLAGS contains gcc's flags,
+ # yet ld_flags is fed to ld.
+-#ld_flags       = $(LDFLAGS) $(EXTRA_LDFLAGS)
++ld_flags       = $(LDFLAGS) $(EXTRA_LDFLAGS)
+ # Remove the -Wl, prefix from linker options normally passed through gcc
+-ld_flags       = $(filter-out -Wl$(comma)%,$(LDFLAGS) $(EXTRA_LDFLAGS))
++#ld_flags       = $(filter-out -Wl$(comma)%,$(LDFLAGS) $(EXTRA_LDFLAGS))
+ 
+ 
+ # Finds the multi-part object the current object will be linked into
