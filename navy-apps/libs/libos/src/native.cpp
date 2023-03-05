@@ -15,6 +15,7 @@
 #include <sys/mman.h>
 #include <sys/ioctl.h>
 
+
 //#define MODE_800x600
 
 #define FPS 60
@@ -45,7 +46,14 @@ static uint32_t *fb = NULL;
 static char fsimg_path[512] = "";
 
 static inline void get_fsimg_path(char *newpath, const char *path) {
-  sprintf(newpath, "%s%s", fsimg_path, path);
+  //printf("length of newpath: %d fsimg_path: %d path: %d\n", (int)strlen(newpath), (int)strlen(fsimg_path),(int)strlen(path));
+
+int written = sprintf(newpath, "%s%s", fsimg_path, path);
+//printf("Characters written: %d\n", written);
+//printf("Length of path: %ld\n", strlen(path));
+//printf("newpath: %s ", newpath);
+//printf("fsimg_path: %s ", fsimg_path);
+//printf("path: %s\n", path);
 }
 
 #define _KEYS(_) \
@@ -156,11 +164,7 @@ extern "C" ssize_t write(int fd, const void *buf, size_t count);
 extern "C" int execve(const char *filename, char *const argv[], char *const envp[]);
 
 FILE *fopen(const char *path, const char *mode) {
-  char newpath[512];
-  if (glibc_fopen == NULL) {
-    glibc_fopen = (FILE*(*)(const char*, const char*))dlsym(RTLD_NEXT, "fopen");
-    assert(glibc_fopen != NULL);
-  }
+  char newpath[1024];
   return glibc_fopen(redirect_path(newpath, path), mode);
 }
 
@@ -176,7 +180,7 @@ int open(const char *path, int flags, ...) {
   } else if (strcmp(path, "/dev/sbctl") == 0) {
     return sbctl_fd;
   } else {
-    char newpath[512];
+    char newpath[1024];
     return glibc_open(redirect_path(newpath, path), flags);
   }
 }
@@ -202,7 +206,7 @@ ssize_t read(int fd, void *buf, size_t count) {
 
       const char *name = NULL;
       _KEYS(COND);
-      if (name) return snprintf((char *)buf, count, "k%c %s\n", keydown ? 'd' : 'u', name);
+      if (name) return snprintf((char *)buf, count, "k%c %s", keydown ? 'd' : 'u', name);
     }
     return 0;
   } else if (fd == sbctl_fd) {
@@ -235,7 +239,7 @@ ssize_t write(int fd, const void *buf, size_t count) {
 }
 
 int execve(const char *filename, char *const argv[], char *const envp[]) {
-  char newpath[512];
+  char newpath[1024];
   glibc_execve(redirect_path(newpath, filename), argv, envp);
   return -1;
 }
@@ -261,7 +265,7 @@ struct Init {
     assert(navyhome);
     sprintf(fsimg_path, "%s/fsimg", navyhome);
 
-    char newpath[512];
+    char newpath[1024];
     get_fsimg_path(newpath, "/bin");
     setenv("PATH", newpath, 1); // overwrite the current PATH
 
