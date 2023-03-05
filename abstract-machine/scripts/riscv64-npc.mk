@@ -6,6 +6,9 @@ AM_SRCS := riscv/npc/start.S \
            riscv/npc/timer.c \
            riscv/npc/input.c \
            riscv/npc/cte.c \
+           riscv/npc/gpu.c \
+           riscv/npc/audio.c \
+           riscv/npc/disk.c \
            riscv/npc/trap.S \
            platform/dummy/vme.c \
            platform/dummy/mpe.c
@@ -20,3 +23,8 @@ image: $(IMAGE).elf
 	@$(OBJDUMP) -d $(IMAGE).elf > $(IMAGE).txt
 	@echo + OBJCOPY "->" $(IMAGE_REL).bin
 	@$(OBJCOPY) -S --set-section-flags .bss=alloc,contents -O binary $(IMAGE).elf $(IMAGE).bin
+#NPC_HOME = /home/xin/.ssh/ysyx-workbench/npc
+
+run: image
+	cp $(IMAGE).bin $(NPC_HOME)/1.bin
+	$(MAKE) -j 16 -C $(NPC_HOME) sim

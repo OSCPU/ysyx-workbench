@@ -1,5 +1,5 @@
 #include <am.h>
-#include <nemu.h>
+#include "npc.h"
 
 #define AUDIO_FREQ_ADDR      (AUDIO_ADDR + 0x00)
 #define AUDIO_CHANNELS_ADDR  (AUDIO_ADDR + 0x04)

@@ -1,6 +1,5 @@
 #include <am.h>
-#include <nemu.h>
-
+#include "npc.h"
 void __am_disk_config(AM_DISK_CONFIG_T *cfg) {
   cfg->present = false;
 }

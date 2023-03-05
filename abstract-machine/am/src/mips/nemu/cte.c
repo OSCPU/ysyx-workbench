@@ -4,11 +4,13 @@
 
 static Context* (*user_handler)(Event, Context*) = NULL;
 
+static inline bool get_CU0(Context *c) { return (c->status >> 28) & 0x1; }
+
 Context* __am_irq_handle(Context *c) {
   if (user_handler) {
     Event ev = {0};
-    uint32_t ex_code = 0;
-    switch (ex_code) {
+    switch (c->mcause) {
+      case(11): ev.event = EVENT_SYSCALL; break; //ecall
       default: ev.event = EVENT_ERROR; break;
     }
 
