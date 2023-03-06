@@ -3,7 +3,7 @@
 // debug 工具
 #define CONFIG_GTKWAVE 1
 //#define CONFIG_ITRACE 1
-//#define CONFIG_DIFFTEST 1
+#define CONFIG_DIFFTEST 1
 //#define CONFIG_MTRACE 1
 
 // device 设备
