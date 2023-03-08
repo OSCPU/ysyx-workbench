@@ -10,7 +10,6 @@ module ysyx_22050019_core(
 );
 
 //取出指令的逻辑分离出来
-
 wire [31:0]        inst_i ;
 fetch fetch_data(
     .clk (clk),
