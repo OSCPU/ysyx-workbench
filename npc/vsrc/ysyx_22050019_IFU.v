@@ -11,7 +11,7 @@ module ysyx_22050019_IFU#(
     input                 inst_j            ,
     input   [63:0]        snpc              ,  
     
-    output  [31:0]        inst_i            ,
+    //output  [31:0]        inst_i            ,
     output  [63:0]        inst_addr_reg_o   , //送出去看指令的地址
 
     // 送出指令和对于pc的接口（打了一拍）
@@ -33,6 +33,7 @@ end
 
 assign inst_addr = inst_j?snpc:q;
 //=========================
+wire [31:0]        inst_i ;
 /* verilator lint_off UNUSED */reg [63:0] fetchmem_rdata;
 always @(*) begin
   if (~rst_n) pmem_read(inst_addr, fetchmem_rdata);
