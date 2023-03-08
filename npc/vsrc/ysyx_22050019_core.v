@@ -24,6 +24,13 @@ ysyx_22050019_IFU IFU
     .inst_o            (inst_if_id     )
 );
 
+//取出指令的逻辑分离出来
+/* verilator lint_off UNUSED */reg [63:0] fetchmem_rdata;
+always @(*) begin
+  if (~rst_n) pmem_read(inst_addr, fetchmem_rdata);
+  else fetchmem_rdata = 64'b0;
+end
+assign inst_i = rst_n ? 32'b0 : fetchmem_rdata[31:0];
 
 //decode模块端口
 //wire [63:0] inst_addr_id_ex;//decode流水
