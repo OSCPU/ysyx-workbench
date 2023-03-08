@@ -9,6 +9,15 @@ module ysyx_22050019_core(
   output[31:0]inst_if_id      
 );
 
+//取出指令的逻辑分离出来
+wire [31:0]        inst_i ;
+/* verilator lint_off UNUSED */reg [63:0] fetchmem_rdata;
+always @(*) begin
+  if (~rst_n) pmem_read(inst_addr_if_id, fetchmem_rdata);
+  else fetchmem_rdata = 64'b0;
+end
+assign inst_i = rst_n ? 32'b0 : fetchmem_rdata[31:0];
+
 //fetch模块端口
 ysyx_22050019_IFU IFU
 (
@@ -18,13 +27,13 @@ ysyx_22050019_IFU IFU
     .inst_j            (inst_j),
     .snpc              (snpc|snpc_csr_id),
 
-    //.inst_i            (inst_i         ),
+    .inst_i            (inst_i         ),
     .inst_addr_o       (inst_addr_if_id), // 看指令执行进度的
     .inst_addr_reg_o   (inst_addr),       //第二级流水指令
     .inst_o            (inst_if_id     )
 );
 
-//取出指令的逻辑分离出来
+
 
 //decode模块端口
 //wire [63:0] inst_addr_id_ex;//decode流水
