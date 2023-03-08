@@ -44,6 +44,6 @@ assign inst_i = rst_n ? 32'b0 : fetchmem_rdata[31:0];
 ysyx_22050019_Reg #(32,32'b0) i0 (clk,rst_n,inst_i,inst_o,1'b1);
 ysyx_22050019_Reg #(64,64'b0) i1 (clk,rst_n,inst_addr,inst_addr_o,1'b1);
 
-assign inst_addr_reg_o = inst_addr;
+assign inst_addr_reg_o = 'b0;
 
 endmodule
