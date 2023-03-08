@@ -25,16 +25,16 @@ module ysyx_22050019_IFU#(
 );
 //=========================
 // pc 计数器
-wire [63:0]               inst_addr;
+reg [63:0]               inst_addr;
 reg [63:0]  q;
 always @(posedge clk) begin
     if (rst_n )
-        q <= RESET_VAL ;
+        inst_addr <= RESET_VAL ;
     else
-        q <= inst_addr+64'd4    ;   
+        inst_addr <= inst_j ? snpc : inst_addr+64'd4    ;   
 end
 
-assign inst_addr = inst_j?snpc:q;
+//assign inst_addr = inst_j?snpc:q;
 //=========================
 
 //IFU第一级取指令流水操作
