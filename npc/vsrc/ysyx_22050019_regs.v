@@ -13,22 +13,17 @@ module ysyx_22050019_regs #(ADDR_WIDTH = 5, DATA_WIDTH = 64) (
   output    [DATA_WIDTH-1:0] rdata1 ,
   output    [DATA_WIDTH-1:0] rdata2
 );
-//=========================
   reg [DATA_WIDTH-1:0] regs [31:0];
   assign regs[0] = 64'b0 ;
 //写寄存器
- always @(posedge clk) begin
-    if (wen && waddr!= 5'b0) begin 
-         regs[waddr] <= wdata; 
-    end
- end
-  
+  always @(posedge clk) begin
+    if (wen && waddr!= 5'b0) begin regs[waddr] <= wdata; end
+  end
   assign    rdata1 = regs[raddr1] ;
   assign    rdata2 = regs[raddr2] ;
-
-//=========================
+ 
   wire [DATA_WIDTH-1:0] regs1 [36:0];
-
+ 
   assign regs1[36:33] = csr_regs_diff [3:0];
   assign regs1[32]    = now_pc;
   assign regs1[31:0]  = regs [31:0];
