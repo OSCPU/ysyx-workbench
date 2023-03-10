@@ -28,7 +28,7 @@ ysyx_22050019_IFU IFU
     .snpc              (snpc|snpc_csr_id),
 
     .inst_i            (inst_i         ),
-    .inst_addr_reg_o   (inst_addr),       //第二级流水指令
+    .inst_addr   (inst_addr),       //第二级流水指令
 
     .inst_addr_o       (inst_addr_if_id), // 看指令执行进度的
     .inst_o            (inst_if_id     )
