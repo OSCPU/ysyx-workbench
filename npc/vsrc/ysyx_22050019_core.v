@@ -132,7 +132,7 @@ wire [63:0] ram_waddr_ex_mem ;//mem索引
 wire [63:0] ram_wdata_ex_mem ;
 
 wire        ram_re_ex_mem   ;//存储器读使能
-wire [63:0] ram_rdata_mem_ex ;
+/* verilator lint_off UNOPTFLAT */wire [63:0] ram_rdata_mem_ex ;
 wire [63:0] ram_raddr_ex_mem ;//mem读索引
 wire [7:0]  wmask           ;
 ysyx_22050019_EXU EXU(
