@@ -34,7 +34,7 @@ module ysyx_22050019_regs #(ADDR_WIDTH = 5, DATA_WIDTH = 64) (
                                                 regs[raddr2] ;
 */
 //=========================
-  assign    rdata1 = regs[raddr1] ;
+  assign    rdata1 = (raddr1 == 5'b0) ? 64'b0 : regs[raddr1] ;
   assign    rdata2 = (raddr2 == 5'b0) ? 64'b0 : regs[raddr2] ;
  
   wire [DATA_WIDTH-1:0] regs1 [36:0];
