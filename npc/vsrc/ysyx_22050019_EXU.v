@@ -25,7 +25,7 @@ module ysyx_22050019_EXU(
   output  [63:0]      ram_raddr   ,
   output  [7:0]       wmask
 );
-/* verilator lint_off UNOPTFLAT */wire [63:0] result;
+wire [63:0] result;
 ysyx_22050019_alu alu(
   .op_1(op1),
   .op_2(op2),
