@@ -181,6 +181,7 @@ wire [4:0]waddr_reg =waddr_ex_reg;
 //寄存器组端口
 ysyx_22050019_regs REGS(
  .clk        (clk),
+ //.rst_n      (rst_n),
  .now_pc     (inst_addr_if_id),         
  .wdata      (wdata_reg|wdate_csr_reg),
  .waddr      (waddr_reg),
