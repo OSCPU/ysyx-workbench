@@ -38,7 +38,7 @@ static void decode_operand(Decode *s, word_t *dest, word_t *src1, word_t *src2, 
 
 static int decode_exec(Decode *s) {
   word_t dest = 0, src1 = 0, src2 = 0;
-  s->dnpc = s->snpc;
+  s->dnpc = s->snpc; // store pc in dnpc.
 
 #define INSTPAT_INST(s) ((s)->isa.inst.val)
 #define INSTPAT_MATCH(s, name, type, ... /* body */ ) { \
@@ -46,7 +46,7 @@ static int decode_exec(Decode *s) {
   __VA_ARGS__ ; \
 }
 
-  INSTPAT_START();
+  INSTPAT_START(); // define '__instpat_end'
   INSTPAT("??????? ????? ????? ??? ????? 00101 11", auipc  , U, R(dest) = src1 + s->pc);
   INSTPAT("??????? ????? ????? 011 ????? 00000 11", ld     , I, R(dest) = Mr(src1 + src2, 8));
   INSTPAT("??????? ????? ????? 011 ????? 01000 11", sd     , S, Mw(src1 + dest, 8, src2));
@@ -61,6 +61,6 @@ static int decode_exec(Decode *s) {
 }
 
 int isa_exec_once(Decode *s) {
-  s->isa.inst.val = inst_fetch(&s->snpc, 4);
-  return decode_exec(s); // Entry
+	s->isa.inst.val = inst_fetch(&s->snpc, 4);      // fetch pc's data, store it in 's->isa.inst.val', and update pc address.
+	return decode_exec(s); // Entry
 }

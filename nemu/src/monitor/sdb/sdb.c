@@ -28,8 +28,8 @@ static char* rl_gets() {
 }
 
 static int cmd_c(char *args) {
-  cpu_exec(-1);
-  return 0;
+	cpu_exec(-1); // -1 意味着传入的是无符号最大的数,这种技巧最好不用,容易导致理解困难.
+	return 0;
 }
 
 
