@@ -25,7 +25,6 @@ module ysyx_22050019_IFU#(
 );
 //=========================
 // pc 计数器
-reg [63:0]  q;
 always @(posedge clk) begin
     if (rst_n )
         inst_addr <= RESET_VAL ;
