@@ -201,17 +201,14 @@ ysyx_22050019_mem MEM (
   .wdata(ram_wdata_ex_mem),
   .mask(wmask)
 );
-wire [63:0]wdata_reg = wdata_ex_reg;
-wire wen_reg   = reg_we_ex_reg;
-wire [4:0]waddr_reg =waddr_ex_reg;
 
 //寄存器组端口
 ysyx_22050019_regs REGS(
  .clk        (clk),
  .now_pc     (inst_addr_if_id),         
- .wdata      (wdata_reg|wdate_csr_reg),
- .waddr      (waddr_reg),
- .wen        (wen_reg),
+ .wdata      (wdata_ex_reg|wdate_csr_reg),
+ .waddr      (waddr_ex_reg),
+ .wen        (reg_we_ex_reg),
 
  .csr_regs_diff(csr_regs_diff),
  
