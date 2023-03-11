@@ -25,11 +25,20 @@ module ysyx_22050019_IFU#(
 );
 //=========================
 // pc 计数器
-always @(posedge clk) begin
-    if (rst_n )
-        inst_addr <= RESET_VAL ;
-    else
-        inst_addr <= inst_j ? snpc : inst_addr + 64'd4    ;   
+always @ (posedge clk) begin
+    // 复位
+    if (rst_n) begin
+        inst_addr <= RESET_VAL;
+    // 跳转
+    end else if (inst_j) begin
+        inst_addr <= snpc;
+    // 暂停
+    end else if (0) begin
+        inst_addr <= inst_addr;
+    // 地址加4
+    end else begin
+        inst_addr <= inst_addr + 64'h4;
+    end
 end
 
 //=========================
