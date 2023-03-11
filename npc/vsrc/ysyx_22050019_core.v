@@ -73,8 +73,8 @@ wire [63:0] op1_id_ex      ;//操作数1
 wire [63:0] op2_id_ex      ;//操作数2
 wire        reg_we_id_ex   ;//reg写使能
 wire [4:0]  reg_waddr_id_ex;//写寄存器的索引
-wire [`LEN:0] alu_sel        ;//alu控制信号
-wire [63:0] snpc;
+wire [`LEN:0] alu_sel      ;//alu控制信号
+wire [63:0] snpc           ;
 wire        inst_j         ;
 
 wire        ram_we_id_ex   ;//存储器写使能
