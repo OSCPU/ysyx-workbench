@@ -11,11 +11,33 @@ module ysyx_22050019_core(
 
 //取出指令的逻辑分离出来
 wire [31:0]        inst_i ;
+/*
 fetch fetch_data(
     .clk (clk),
     .rst (rst_n),
     .addr(inst_addr),
     .data(inst_i)
+);
+*/
+
+// 虚拟sram_axi握手模拟
+wire axi_if_sram_rready;
+wire axi_if_sram_rvalid;
+
+wire axi_if_sram_arready;
+wire axi_if_sram_arvalid;
+
+axi_lite_sram sram(
+   .clk               (clk),
+   .rst_n             (rst_n),
+   
+   .s_axi_arvalid     (axi_if_sram_arvalid),
+   .s_axi_araddr      (inst_addr),
+   .s_axi_arready     (axi_if_sram_arready),
+   
+   .s_axi_rready      (axi_if_sram_rready),
+   .s_axi_rvalid      (axi_if_sram_rvalid),
+   .s_axi_rdata       (inst_i)
 );
 
 //fetch模块端口
@@ -28,7 +50,12 @@ ysyx_22050019_IFU IFU
     .snpc              (snpc|snpc_csr_id),
 
     .inst_i            (inst_i         ),
-    .inst_addr   (inst_addr),       //第二级流水指令
+    .m_axi_rready      (axi_if_sram_rready),
+    .m_axi_rvalid      (axi_if_sram_rvalid),
+
+    .inst_addr         (inst_addr),       //第二级流水指令
+    .m_axi_arready     (axi_if_sram_arready),
+    .m_axi_arvalid     (axi_if_sram_arvalid),
 
     .inst_addr_o       (inst_addr_if_id), // 看指令执行进度的
     .inst_o            (inst_if_id     )

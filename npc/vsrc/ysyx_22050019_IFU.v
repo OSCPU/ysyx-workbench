@@ -12,17 +12,62 @@ module ysyx_22050019_IFU#(
     input   [63:0]        snpc              ,  
     
     input  [31:0]         inst_i            ,
-    //input                 m_axi_arready     ,
-    //output                m_axi_arvalid     ,
+    output reg            m_axi_rready      ,
+    input                 m_axi_rvalid      ,
 
-    output reg [63:0]       inst_addr   , //送出去看指令的地址
-    //input                 m_axi_arready     ,
-    //output                m_axi_arvalid     ,
+    output reg [63:0]     inst_addr         , //送出去看指令的地址
+    input                 m_axi_arready     ,
+    output reg            m_axi_arvalid     ,
     
     // 送出指令和对于pc的接口（打了一拍）
     output  [63:0]        inst_addr_o       , //到指令寄存器中取指令的地址
     output  [31:0]        inst_o
 );
+//=========================
+  wire pc_wen = m_axi_rready && m_axi_rvalid ;// 暂停指示信号，目前用这个代替，后面需要参考优秀设计
+
+  // 状态准备
+  localparam IDLE = 1'd0;
+  localparam WAIT_READY = 1'd1;
+
+  reg  state_reg;
+  reg  next_state;
+
+  // 状态转移
+  always @(posedge clk) begin
+    if (rst_n) begin
+      state_reg <= IDLE;
+    end else begin
+      state_reg <= next_state;
+    end
+  end
+  
+  // 读的状态机
+  always @(*) begin
+    case (state_reg)
+      IDLE: begin
+        m_axi_arvalid   <= 1'b1;
+        m_axi_rready    <= 1'b0;
+        if (m_axi_arready) begin
+          next_state    <= WAIT_READY;
+        end else begin
+          next_state  <= IDLE;
+        end
+      end
+      WAIT_READY: begin
+        m_axi_arvalid   <= 1'b0;
+        m_axi_rready    <= 1'b1;
+        if (m_axi_rvalid) begin
+          next_state    <= IDLE;
+        end else begin
+          next_state  <= WAIT_READY;
+        end
+      end
+      default: begin
+        next_state <= IDLE;
+      end
+    endcase
+  end
 //=========================
 // pc 计数器
 always @ (posedge clk) begin
@@ -30,17 +75,16 @@ always @ (posedge clk) begin
     if (rst_n) begin
         inst_addr <= RESET_VAL;
     // 跳转
-    end else if (inst_j) begin
+    end else if (inst_j && pc_wen) begin
         inst_addr <= snpc;
     // 暂停
-    end else if (0) begin
+    end else if (~pc_wen) begin
         inst_addr <= inst_addr;
     // 地址加4
     end else begin
         inst_addr <= inst_addr + 64'h4;
     end
 end
-
 //=========================
 
 //IFU第一级取指令流水操作
