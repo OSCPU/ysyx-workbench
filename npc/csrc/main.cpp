@@ -20,7 +20,7 @@ extern "C" void get_regs(const svOpenArrayHandle r)
 void debug_exit(int status);
 void ebreak()
 {
-  printf("%lx,%lx\n",cpu_gpr[10],dut->inst_addr_o) ;
+  printf("%lx,%lx\n",cpu_gpr[10],dut->now_addr) ;
   debug_exit(cpu_gpr[10]);
 }
 // =========================== Debug ===========================
@@ -113,7 +113,7 @@ void checkregs(uint64_t *ref_regs)
 //仅在二周期时是完全适用的，依赖于取指令先于目前执行的指令取出上一级的指令
       printf("=============== error inst ========================\n");
       printf("注:错误在跳转指令后时,无法获得正确的错误pc,需要以itrace为参考\n");
-      itrace_record(dut->inst_addr_o);
+      itrace_record(dut->now_addr - 4);
       printf("%s\n", ringbuf[0]);
 #endif
 

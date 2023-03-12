@@ -3,7 +3,7 @@ module ysyx_22050019_core(
   input       rst_n,
   
   //output [31:0]inst_i,         //1_inst
-  output[63:0]inst_addr,
+  //output[63:0]inst_addr,
   
   output[63:0]inst_addr_if_id, //2_inst
   output[31:0]inst_if_id      
@@ -32,7 +32,7 @@ axi_lite_sram sram(
    .rst_n             (rst_n),
    
    .s_axi_arvalid     (axi_if_sram_arvalid),
-   .s_axi_araddr      (inst_addr),
+   .s_axi_araddr      (inst_addr_if_id),
    .s_axi_arready     (axi_if_sram_arready),
    
    .s_axi_rready      (axi_if_sram_rready),
@@ -53,11 +53,11 @@ ysyx_22050019_IFU IFU
     .m_axi_rready      (axi_if_sram_rready),
     .m_axi_rvalid      (axi_if_sram_rvalid),
 
-    .inst_addr         (inst_addr),       //第二级流水指令
+    //.inst_addr         (inst_addr),       // 取出的指令地址
     .m_axi_arready     (axi_if_sram_arready),
     .m_axi_arvalid     (axi_if_sram_arvalid),
 
-    .inst_addr_o       (inst_addr_if_id), // 看指令执行进度的
+    .inst_addr_o       (inst_addr_if_id), // 传入下级模块的地址
     .inst_o            (inst_if_id     )
 );
 
