@@ -73,7 +73,7 @@ wire [63:0] op1_id_ex      ;//操作数1
 wire [63:0] op2_id_ex      ;//操作数2
 wire        reg_we_id_ex   ;//reg写使能
 wire [4:0]  reg_waddr_id_ex;//写寄存器的索引
-wire [`LEN:0] alu_sel      ;//alu控制信号
+wire [`LEN:0]alu_sel       ;//alu控制信号
 wire [63:0] snpc           ;
 wire        inst_j         ;
 
@@ -154,7 +154,6 @@ wire [63:0]  wdata_ex_reg  ;
 wire         reg_we_ex_reg ;
 wire [4:0]   waddr_ex_reg  ;
 
-
 ysyx_22050019_EXU EXU(
  .alu_sel(alu_sel),
 
@@ -174,14 +173,13 @@ wire [63:0] wdata_lsu_wb;
 wire        ram_we_lsu_mem   ;//存储器写使能
 wire [63:0] ram_waddr_lsu_mem ;//mem索引
 wire [63:0] ram_wdata_lsu_mem ;
-
 wire        ram_re_lsu_mem   ;//存储器读使能
 wire [63:0] ram_rdata_mem_lsu ;
 wire [63:0] ram_raddr_lsu_mem ;//mem读索引
 wire [7:0]  wmask           ;
-
 wire [63:0] result_exu_lsu;
-ysyx_22050019_LSU L(
+
+ysyx_22050019_LSU LSU(
  .result      (result_exu_lsu),
  .ram_we_i    (ram_we_id_lsu),
  .ram_wdata_i (ram_wdata_id_lsu),
@@ -215,7 +213,6 @@ ysyx_22050019_mem MEM (
 );
 
 //wb回写模块端口
-//wire [63:0] wdata_wb_reg = reg_we_id_ex ? ram_re_id_lsu ? wdata_lsu_wb : wdata_ex_reg : 64'b0 ;
 wire [63:0] wdata_wb_reg ;
 ysyx_22050019_WBU WBU(
  // 写入寄存器控制信号
