@@ -6,7 +6,7 @@ module ysyx_22050019_EXU(
   input [63:0]   op1,
   input [63:0]   op2,
 
-  input [63:0]   ram_waddr_i,
+  input [63:0]   ram_wdata_i,
   input          ram_we_i,
   input [63:0]   ram_rdata_i,
   input          ram_re_i,
@@ -72,7 +72,7 @@ assign waddr  = reg_waddr_i ;
 //ram_control
 assign ram_we    = ram_we_i ;
 assign ram_waddr = ram_we_i?result : 64'b0;
-assign ram_wdata = ram_waddr_i;
+assign ram_wdata = ram_wdata_i;
 assign ram_re    = ram_re_i ;
 assign ram_raddr = ram_re_i?result : 64'b0;
 assign wmask     = mem_w_mask ;

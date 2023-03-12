@@ -9,7 +9,7 @@ module ysyx_22050019_IDU(
   output         inst_j,
 
   output         ram_we,
-  output[63:0]   ram_waddr,
+  output[63:0]   ram_wdata,
   output         ram_re,
 
   output[4:0]    raddr1,
@@ -277,7 +277,7 @@ assign raddr2      =  (op_b||op_s||op_r||(inst_w))?rs2:5'b0;
 
 //mem_control
 assign ram_we      = op_s;
-assign ram_waddr   = op_s?rdata2:64'b0;//write
+assign ram_wdata   = op_s ? rdata2 : 64'b0;//write
 assign ram_re      = inst_l;
 //mem_r_wdth
 assign mem_r_wdth = {lw,lh,lb,lwu,lhu,lbu};               //of32,16,8  || 32,16,8   

@@ -78,7 +78,7 @@ wire [63:0] snpc           ;
 wire        inst_j         ;
 
 wire        ram_we_id_ex   ;//存储器写使能
-wire [63:0] ram_waddr_id_ex ;//mem写索引
+wire [63:0] ram_wdata_id_ex;//mem写索引
 wire        ram_re_id_ex   ;
 wire [5:0]  mem_r_wdth     ;
 wire [3:0]  mem_w_wdth     ;
@@ -90,7 +90,7 @@ ysyx_22050019_IDU IDU(
  .snpc       (snpc),
  .inst_j     (inst_j),
  .ram_we     (ram_we_id_ex),
- .ram_waddr  (ram_waddr_id_ex),
+ .ram_wdata  (ram_wdata_id_ex),
  .ram_re     (ram_re_id_ex),
 
  .raddr1     (raddr1_id_regs),
@@ -165,7 +165,7 @@ wire [7:0]  wmask           ;
 ysyx_22050019_EXU EXU(
  .alu_sel(alu_sel),
  .ram_we_i    (ram_we_id_ex),
- .ram_waddr_i (ram_waddr_id_ex),
+ .ram_wdata_i (ram_wdata_id_ex),
  .ram_re_i    (ram_re_id_ex),
  .ram_rdata_i (ram_rdata_mem_ex),
 
@@ -188,6 +188,7 @@ ysyx_22050019_EXU EXU(
  .reg_we      (reg_we_ex_reg),
  .waddr       (waddr_ex_reg)
 );
+
 
 //MEM读取端口
 ysyx_22050019_mem MEM (
