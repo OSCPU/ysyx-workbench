@@ -20,8 +20,8 @@ module ysyx_22050019_IFU#(
     output reg            m_axi_arvalid     ,
     
     // 送出指令和对于pc的接口（打了一拍）
-    output  [63:0]        inst_addr_o       , //到指令寄存器中取指令的地址
-    output  [31:0]        inst_o
+    output   reg [63:0]        inst_addr_o       , //到指令寄存器中取指令的地址
+    output  reg [31:0]        inst_o
 );
 //=========================
   wire pc_wen = m_axi_rready && m_axi_rvalid ;// 暂停指示信号，目前用这个代替，后面需要参考优秀设计
