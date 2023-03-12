@@ -215,12 +215,25 @@ ysyx_22050019_mem MEM (
 );
 
 //wb回写模块端口
-wire [63:0] wdata_wb_reg = reg_we_id_ex ? ram_re_id_lsu ? wdata_lsu_wb : wdata_ex_reg : 64'b0 ;
+//wire [63:0] wdata_wb_reg = reg_we_id_ex ? ram_re_id_lsu ? wdata_lsu_wb : wdata_ex_reg : 64'b0 ;
+wire [63:0] wdata_wb_reg ;
+ysyx_22050019_WBU WBU(
+ // 写入寄存器控制信号
+ .reg_wen      (reg_we_ex_reg),
+ .reg_lsu_wen  (ram_re_id_lsu),
+
+ .wdata_exu_wbu(wdata_ex_reg),
+ .wdata_lsu_wbu(wdata_lsu_wb),
+ .wdata_csr_wbu(wdate_csr_reg),
+
+ .wdata_o      (wdata_wb_reg)
+);
+
 //寄存器组端口
 ysyx_22050019_regs REGS(
  .clk        (clk),
  .now_pc     (inst_addr_if_id),         
- .wdata      (wdata_wb_reg|wdate_csr_reg),
+ .wdata      (wdata_wb_reg),
  .waddr      (waddr_ex_reg),
  .wen        (reg_we_ex_reg),
 
