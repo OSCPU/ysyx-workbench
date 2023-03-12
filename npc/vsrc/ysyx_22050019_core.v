@@ -162,17 +162,30 @@ wire        ram_re_ex_mem   ;//存储器读使能
 wire [63:0] ram_rdata_mem_ex ;
 wire [63:0] ram_raddr_ex_mem ;//mem读索引
 wire [7:0]  wmask           ;
+
+wire [63:0] result_exu_lsu;
 ysyx_22050019_EXU EXU(
  .alu_sel(alu_sel),
- .ram_we_i    (ram_we_id_ex),
- .ram_wdata_i (ram_wdata_id_ex),
- .ram_re_i    (ram_re_id_ex),
- .ram_rdata_i (ram_rdata_mem_ex),
 
  .op1         (op1_id_ex),
  .op2         (op2_id_ex),
  .reg_we_i    (reg_we_id_ex),
  .reg_waddr_i (reg_waddr_id_ex),
+
+ .result      (result_exu_lsu),
+ .wdata       (wdata_ex_reg),
+ .reg_we      (reg_we_ex_reg),
+ .waddr       (waddr_ex_reg)
+);
+
+// lsu模块端口
+wire [63:0] wdata_lsu_wb;
+ysyx_22050019_LSU L(
+ .result      (result_exu_lsu),
+ .ram_we_i    (ram_we_id_ex),
+ .ram_wdata_i (ram_wdata_id_ex),
+ .ram_re_i    (ram_re_id_ex),
+ .ram_rdata_i (ram_rdata_mem_ex),
 
  .mem_r_wdth  (mem_r_wdth),
  .mem_w_wdth  (mem_w_wdth),
@@ -184,11 +197,8 @@ ysyx_22050019_EXU EXU(
  .ram_raddr   (ram_raddr_ex_mem),
  .wmask       (wmask),
 
- .wdata       (wdata_ex_reg),
- .reg_we      (reg_we_ex_reg),
- .waddr       (waddr_ex_reg)
+ .wdata       (wdata_lsu_wb)
 );
-
 
 //MEM读取端口
 ysyx_22050019_mem MEM (
@@ -203,11 +213,13 @@ ysyx_22050019_mem MEM (
   .mask(wmask)
 );
 
+//wb回写模块端口
+wire [63:0] wdata_wb_reg = reg_we_id_ex ? ram_re_id_ex ? wdata_lsu_wb : wdata_ex_reg : 64'b0 ;
 //寄存器组端口
 ysyx_22050019_regs REGS(
  .clk        (clk),
  .now_pc     (inst_addr_if_id),         
- .wdata      (wdata_ex_reg|wdate_csr_reg),
+ .wdata      (wdata_wb_reg|wdate_csr_reg),
  .waddr      (waddr_ex_reg),
  .wen        (reg_we_ex_reg),
 
