@@ -5,7 +5,7 @@ module ysyx_22050019_core(
   //output [31:0]inst_i,         //1_inst
   //output[63:0]inst_addr,
   
-  output[63:0]inst_addr_if_id, //2_inst
+  output[63:0]inst_addr_if_id, //2_inst(目前查看执行状态的指令)
   output[31:0]inst_if_id      
 );
 

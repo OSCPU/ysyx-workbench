@@ -8,18 +8,36 @@ module ysyx_22050019_LSU(
   // 读写数据
   input [63:0]        ram_wdata_i ,
   input               ram_we_i    ,
-  input [63:0]        ram_rdata_i ,
+
   input               ram_re_i    ,
-  
-  // 寄存器控制
+
+  // 向reg的写数据
   output [63:0]       wdata       ,
 
+  // 分为读写两个通道描述信号
+  // 写通道
   output              ram_we      ,
+
   output  [63:0]      ram_waddr   ,
+  //input               m_axi_aw_ready,
+  //output reg          m_axi_aw_valid,
+
   output  [63:0]      ram_wdata   ,
+  output  [7:0]       wmask       ,
+  //input               m_axi_w_ready,
+  //output reg          m_axi_w_valid,
+
+  // 读通道
   output              ram_re      ,
-  output  [63:0]      ram_raddr   ,
-  output  [7:0]       wmask
+
+  input [63:0]        ram_rdata_i ,
+  //output reg          m_axi_r_ready,
+  //input               m_axi_r_valid,
+
+  //input               m_axi_ar_ready,
+  //output reg          m_axi_ar_valid,
+  output  [63:0]      ram_raddr   
+
 );
 
 //mem_r_data_mux
