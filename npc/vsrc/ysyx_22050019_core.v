@@ -178,7 +178,7 @@ wire [63:0] ram_rdata_mem_lsu ;
 wire [63:0] ram_raddr_lsu_mem ;//mem读索引
 wire [7:0]  wmask           ;
 wire [63:0] result_exu_lsu;
-
+wire        wen_lsu_reg;
 ysyx_22050019_LSU LSU(
  .result      (result_exu_lsu),
  .ram_we_i    (ram_we_id_lsu),
@@ -196,7 +196,8 @@ ysyx_22050019_LSU LSU(
  .ram_raddr   (ram_raddr_lsu_mem),
  .wmask       (wmask),
 
- .wdata       (wdata_lsu_wb)
+ .wen_reg_o   (wen_lsu_reg),
+ .wdata_reg_o (wdata_lsu_wb)
 );
 
 //MEM读取端口
@@ -232,7 +233,7 @@ ysyx_22050019_regs REGS(
  .now_pc     (inst_addr_if_id),         
  .wdata      (wdata_wb_reg),
  .waddr      (waddr_ex_reg),
- .wen        (reg_we_ex_reg||ram_re_id_lsu),
+ .wen        (reg_we_ex_reg||wen_lsu_reg),
 
  .csr_regs_diff(csr_regs_diff),
  
