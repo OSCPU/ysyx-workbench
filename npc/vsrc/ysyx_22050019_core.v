@@ -232,7 +232,7 @@ ysyx_22050019_regs REGS(
  .now_pc     (inst_addr_if_id),         
  .wdata      (wdata_wb_reg),
  .waddr      (waddr_ex_reg),
- .wen        (reg_we_ex_reg),
+ .wen        (reg_we_ex_reg||ram_re_id_lsu),
 
  .csr_regs_diff(csr_regs_diff),
  
