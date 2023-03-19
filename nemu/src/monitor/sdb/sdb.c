@@ -1,28 +1,15 @@
-/***************************************************************************************
-* Copyright (c) 2014-2022 Zihao Yu, Nanjing University
-*
-* NEMU is licensed under Mulan PSL v2.
-* You can use this software according to the terms and conditions of the Mulan PSL v2.
-* You may obtain a copy of Mulan PSL v2 at:
-*          http://license.coscl.org.cn/MulanPSL2
-*
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
-* EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
-* MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
-*
-* See the Mulan PSL v2 for more details.
-***************************************************************************************/
-
 #include <isa.h>
 #include <cpu/cpu.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "sdb.h"
-
+#include <memory/vaddr.h>
 static int is_batch_mode = false;
 
 void init_regex();
 void init_wp_pool();
+word_t expr(char *e, bool *success);
+
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
@@ -49,22 +36,84 @@ static int cmd_c(char *args) {
 
 
 static int cmd_q(char *args) {
+  nemu_state.state = NEMU_QUIT;
   return -1;
 }
 
 static int cmd_help(char *args);
 
+static int cmd_si(char *args) {
+  int s;
+	if(args==NULL) s=1;
+  else {
+    sscanf(args, "%d", &s);
+  } 
+  cpu_exec(s);
+	return 1;
+}
+
+static int cmd_info(char *args) {
+  char c;
+  //char *reg=strtok(args, " ");
+  sscanf(args,"%c",&c);
+  if(c=='r')
+    isa_reg_display();
+  else if(c=='w') 
+    dispaly_allwatchpoint();
+  return 1;
+}
+
+static int cmd_p(char *args) {
+  bool  success=true;
+  if(args)
+    printf("The ans is %lu\n",expr(args,&success));
+  return 1;
+}
+
+static int cmd_x(char *args) {
+  if (args==NULL)
+  {
+    printf("The form of command x dont match.");
+    return 1;
+  }
+  int num,address;
+  sscanf(args,"%d 0x%x",&num,&address);
+  for(int i=0;i<num;i++){
+    printf("0x%x 0x%lx\n",address+4*i,vaddr_read(address+4*i,4));
+  }
+  return 1;
+}
+
+static int cmd_w(char *args) {
+  bool success = true;
+  new_wp(args,&success);
+  return 1;
+}
+static int cmd_d(char *args){
+  if(args==NULL)
+    free_wp();
+  else {
+    int i;
+    sscanf(args,"%d",&i);
+    free_wpn(i);
+  }
+  return 1;
+}
 static struct {
   const char *name;
   const char *description;
   int (*handler) (char *);
 } cmd_table [] = {
-  { "help", "Display information about all supported commands", cmd_help },
+  { "help", "Display informations about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
-
+  { "si", "The program execute N instructions in a single step and then pause execution,default 1",cmd_si },
+  { "info", "Display the information of the program \n info r register \n info w monitoring point",cmd_info },
+  { "p", "p EXPR \nFind the value of the expression EXPR",cmd_p},
+  { "x", "x N EXPR \n scan memory make EXPR as the starting memory address to display consecutive 4-bytes in hex form",cmd_x },
+  { "w", "w EXPR \n when the value of EXPR change,hint program",cmd_w},
   /* TODO: Add more commands */
-
+  { "d","delete a watchpint",cmd_d}
 };
 
 #define NR_CMD ARRLEN(cmd_table)
@@ -125,7 +174,7 @@ void sdb_mainloop() {
     int i;
     for (i = 0; i < NR_CMD; i ++) {
       if (strcmp(cmd, cmd_table[i].name) == 0) {
-        if (cmd_table[i].handler(args) < 0) { return; }
+        if (cmd_table[i].handler(args) < 0) { return ; }
         break;
       }
     }

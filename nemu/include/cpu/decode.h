@@ -1,36 +1,58 @@
-/***************************************************************************************
-* Copyright (c) 2014-2022 Zihao Yu, Nanjing University
-*
-* NEMU is licensed under Mulan PSL v2.
-* You can use this software according to the terms and conditions of the Mulan PSL v2.
-* You may obtain a copy of Mulan PSL v2 at:
-*          http://license.coscl.org.cn/MulanPSL2
-*
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
-* EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
-* MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
-*
-* See the Mulan PSL v2 for more details.
-***************************************************************************************/
-
 #ifndef __CPU_DECODE_H__
 #define __CPU_DECODE_H__
 
 #include <isa.h>
 
+typedef struct {
+  union {
+    IFDEF(CONFIG_ISA_x86, uint64_t *pfreg);
+    IFDEF(CONFIG_ISA_x86, uint64_t fval);
+    rtlreg_t *preg;
+    word_t imm;
+    sword_t simm;
+  };
+  IFDEF(CONFIG_ISA_x86, rtlreg_t val);
+  IFDEF(CONFIG_ISA_x86, uint8_t type);
+  IFDEF(CONFIG_ISA_x86, uint8_t reg);
+} Operand;
+
 typedef struct Decode {
   vaddr_t pc;
   vaddr_t snpc; // static next pc
   vaddr_t dnpc; // dynamic next pc
+  void (*EHelper)(struct Decode *);
+  Operand dest, src1, src2;
   ISADecodeInfo isa;
   IFDEF(CONFIG_ITRACE, char logbuf[128]);
 } Decode;
 
+#define id_src1 (&s->src1)
+#define id_src2 (&s->src2)
+#define id_dest (&s->dest)
+
+
+// `INSTR_LIST` is defined at src/isa/$ISA/include/isa-all-instr.h
+#define def_EXEC_ID(name) concat(EXEC_ID_, name),
+#define def_all_EXEC_ID() enum { MAP(INSTR_LIST, def_EXEC_ID) TOTAL_INSTR }
+
+
+// --- prototype of table helpers ---
+#define def_THelper(name) static inline int concat(table_, name) (Decode *s)
+#define def_THelper_body(name) def_THelper(name) { return concat(EXEC_ID_, name); }
+#define def_all_THelper() MAP(INSTR_LIST, def_THelper_body)
+
+
+// --- prototype of decode helpers ---
+#define def_DHelper(name) void concat(decode_, name) (Decode *s, int width)
+// empty decode helper
+static inline def_DHelper(empty) {}
+
+
 // --- pattern matching mechanism ---
 __attribute__((always_inline))
 static inline void pattern_decode(const char *str, int len,
-    uint64_t *key, uint64_t *mask, uint64_t *shift) {
-  uint64_t __key = 0, __mask = 0, __shift = 0;
+    uint32_t *key, uint32_t *mask, uint32_t *shift) {
+  uint32_t __key = 0, __mask = 0, __shift = 0;
 #define macro(i) \
   if ((i) >= len) goto finish; \
   else { \
@@ -61,8 +83,8 @@ finish:
 
 __attribute__((always_inline))
 static inline void pattern_decode_hex(const char *str, int len,
-    uint64_t *key, uint64_t *mask, uint64_t *shift) {
-  uint64_t __key = 0, __mask = 0, __shift = 0;
+    uint32_t *key, uint32_t *mask, uint32_t *shift) {
+  uint32_t __key = 0, __mask = 0, __shift = 0;
 #define macro(i) \
   if ((i) >= len) goto finish; \
   else { \
@@ -87,16 +109,24 @@ finish:
 
 
 // --- pattern matching wrappers for decode ---
-#define INSTPAT(pattern, ...) do { \
-  uint64_t key, mask, shift; \
-  pattern_decode(pattern, STRLEN(pattern), &key, &mask, &shift); \
-  if (((INSTPAT_INST(s) >> shift) & mask) == key) { \
-    INSTPAT_MATCH(s, ##__VA_ARGS__); \
-    goto *(__instpat_end); \
-  } \
+#define def_INSTR_raw(decode_fun, pattern, body) do { \
+  uint32_t key, mask, shift; \
+  decode_fun(pattern, STRLEN(pattern), &key, &mask, &shift); \
+  if (((get_instr(s) >> shift) & mask) == key) { body; } \
 } while (0)
 
-#define INSTPAT_START(name) { const void ** __instpat_end = &&concat(__instpat_end_, name);
-#define INSTPAT_END(name)   concat(__instpat_end_, name): ; }
+#define def_INSTR_IDTABW(pattern, id, tab, width) \
+  def_INSTR_raw(pattern_decode, pattern, \
+      { concat(decode_, id)(s, width); return concat(table_, tab)(s); })
+#define def_INSTR_IDTAB(pattern, id, tab)   def_INSTR_IDTABW(pattern, id, tab, 0)
+#define def_INSTR_TABW(pattern, tab, width) def_INSTR_IDTABW(pattern, empty, tab, width)
+#define def_INSTR_TAB(pattern, tab)         def_INSTR_IDTABW(pattern, empty, tab, 0)
+
+#define def_hex_INSTR_IDTABW(pattern, id, tab, width) \
+  def_INSTR_raw(pattern_decode_hex, pattern, \
+      { concat(decode_, id)(s, width); return concat(table_, tab)(s); })
+#define def_hex_INSTR_IDTAB(pattern, id, tab)   def_hex_INSTR_IDTABW(pattern, id, tab, 0)
+#define def_hex_INSTR_TABW(pattern, tab, width) def_hex_INSTR_IDTABW(pattern, empty, tab, width)
+#define def_hex_INSTR_TAB(pattern, tab)         def_hex_INSTR_IDTABW(pattern, empty, tab, 0)
 
 #endif

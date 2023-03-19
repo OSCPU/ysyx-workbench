@@ -57,10 +57,8 @@ choice
   default TARGET_NATIVE_ELF
 config TARGET_NATIVE_ELF
   bool "Executable on Linux Native"
-config TARGET_SHARE
-  bool "Shared object (used as REF for differential testing)"
 config TARGET_AM
-  bool "Application on Abstract-Machine (DON'T CHOOSE)"
+  bool "Application on Abstract-Machine"
 endchoice
 
 menu "Build Options"
@@ -145,7 +143,10 @@ config ITRACE_COND
   depends on ITRACE
   string "Only trace instructions when the condition is true"
   default "true"
-
+config WATCHPOINT
+  depends on TRACE
+  string " Watcingpoint Only trace instructions when the condition is true"
+  default y
 
 config DIFFTEST
   depends on TARGET_NATIVE_ELF
