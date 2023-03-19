@@ -1,6 +1,4 @@
 module ysyx_22050019_LSU(
-  // alu 结果
-  input [63:0]        result,
   // 读写位宽
   input [5:0]         mem_r_wdth ,
   input [3:0]         mem_w_wdth ,
@@ -10,7 +8,9 @@ module ysyx_22050019_LSU(
   input               ram_we_i    ,
 
   input               ram_re_i    ,
-
+  
+  // alu 结果
+  input [63:0]        result,
   input  [4:0]        waddr_reg_i ,
   // 向reg的写数据
   output              wen_reg_o   ,
