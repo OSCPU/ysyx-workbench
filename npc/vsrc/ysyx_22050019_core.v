@@ -178,9 +178,11 @@ wire [63:0] ram_rdata_mem_lsu ;
 wire [63:0] ram_raddr_lsu_mem ;//mem读索引
 wire [7:0]  wmask           ;
 wire [63:0] result_exu_lsu;
-
+wire        wen_lsu_reg; //lsu的写使能
+wire [4:0]  waddr_lsu_reg;
 ysyx_22050019_LSU LSU(
  .result      (result_exu_lsu),
+ .waddr_i     (waddr_ex_reg),
  .ram_we_i    (ram_we_id_lsu),
  .ram_wdata_i (ram_wdata_id_lsu),
  .ram_re_i    (ram_re_id_lsu),
@@ -196,7 +198,9 @@ ysyx_22050019_LSU LSU(
  .ram_raddr   (ram_raddr_lsu_mem),
  .wmask       (wmask),
 
- .wdata       (wdata_lsu_wb)
+ .wen_o       (wen_lsu_reg),
+ .waddr_o     (waddr_lsu_reg),
+ .wdata_o     (wdata_lsu_wb)
 );
 
 //MEM读取端口
@@ -215,14 +219,12 @@ ysyx_22050019_mem MEM (
 //wb回写模块端口
 wire [63:0] wdata_wb_reg ;
 ysyx_22050019_WBU WBU(
- // 写入寄存器控制信号
- .reg_wen      (reg_we_ex_reg),
- .reg_lsu_wen  (ram_re_id_lsu),
-
+ // 写入寄存器使能信号
+ .reg_wen      (reg_we_ex_reg),//我的分析对于wbu来说，他应该控制写回到reg的全部信号
+ .reg_lsu_wen  (wen_lsu_reg),
  .wdata_exu_wbu(wdata_ex_reg),
  .wdata_lsu_wbu(wdata_lsu_wb),
  .wdata_csr_wbu(wdate_csr_reg),
-
  .wdata_o      (wdata_wb_reg)
 );
 
@@ -231,8 +233,8 @@ ysyx_22050019_regs REGS(
  .clk        (clk),
  .now_pc     (inst_addr_if_id),         
  .wdata      (wdata_wb_reg),
- .waddr      (waddr_ex_reg),
- .wen        (reg_we_ex_reg),
+ .waddr      (waddr_ex_reg|waddr_lsu_reg),
+ .wen        (reg_we_ex_reg|wen_lsu_reg),
 
  .csr_regs_diff(csr_regs_diff),
  
