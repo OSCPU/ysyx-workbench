@@ -11,11 +11,9 @@ module ysyx_22050019_LSU(
 
   input               ram_re_i    ,
 
-  input [4:0]         waddr_i     ,
   // 向reg的写数据
-  output [63:0]       wdata_o     ,
-  output              wen_o       ,
-  output[4:0]         waddr_o     ,
+  output [63:0]       wdata       ,
+
   // 分为读写两个通道描述信号
   // 写通道
   output              ram_we      ,
@@ -44,7 +42,7 @@ module ysyx_22050019_LSU(
 
 //mem_r_data_mux
 wire [63:0] mem_r_data;
-ysyx_22050019_mux #( .NR_KEY(6), .KEY_LEN(6), .DATA_LEN(64)) mem_r_data_mux             //of32,16,8  || 32,16,8
+ysyx_22050019_mux #( .NR_KEY(6), .KEY_LEN(6), .DATA_LEN(64)) mem_r_data_mux          //of32,16,8  || 32,16,8
 (
   .key         (mem_r_wdth),
   .default_out (ram_rdata_i),
@@ -73,9 +71,7 @@ ysyx_22050019_mux #( .NR_KEY(4), .KEY_LEN(4), .DATA_LEN(8)) mem_w_wdth_mux      
 );
 
 //reg_control
-assign wen_o       = ram_re_i ;
-assign waddr_o     = waddr_i  ;
-assign wdata_o     = ram_re_i ? mem_r_data : 64'b0;
+assign wdata  = ram_re_i ? mem_r_data : 64'b0;
 
 //ram_control
 assign ram_we    = ram_we_i ;
