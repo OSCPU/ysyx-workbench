@@ -11,7 +11,7 @@ module ysyx_22050019_WBU(
  output  [63:0] wdata_o
 );
  // 通过使能信号判断是谁传出来写的
- assign wdata_o = reg_wen ?  reg_lsu_wen ? wdata_lsu_wbu : 
-                                           wdata_exu_wbu | wdata_csr_wbu : 64'b0 ;
+ assign wdata_o = reg_wen ? wdata_exu_wbu | wdata_csr_wbu : 
+                            reg_lsu_wen ? wdata_lsu_wbu : 64'b0 ;
 endmodule
 
