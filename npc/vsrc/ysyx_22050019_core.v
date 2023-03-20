@@ -78,7 +78,7 @@ wire [63:0] snpc           ;
 wire        inst_j         ;
 
 wire        ram_we_id_lsu   ;//存储器写使能
-wire [63:0] ram_wdata_id_lsu;//mem写索引
+wire [63:0] ram_wdata_id_lsu;//mem写数据
 wire        ram_re_id_lsu   ;
 wire [5:0]  mem_r_wdth     ;
 wire [3:0]  mem_w_wdth     ;
@@ -170,39 +170,68 @@ ysyx_22050019_EXU EXU(
 
 // lsu模块端口
 wire [63:0] wdata_lsu_wb;
-wire        ram_we_lsu_mem   ;//存储器写使能
+//wire        ram_we_lsu_mem   ;//存储器写使能
 wire [63:0] ram_waddr_lsu_mem ;//mem索引
+wire        axi_lsu_sram_aw_ready;
+wire        axi_lsu_sram_aw_valid;
 wire [63:0] ram_wdata_lsu_mem ;
-wire        ram_re_lsu_mem   ;//存储器读使能
+wire [7:0]  wmask             ;
+wire        axi_lsu_sram_w_ready;
+wire        axi_lsu_sram_w_valid;
+wire [1:0]  axi_lsu_sram_b_wresp;
+wire        axi_lsu_sram_b_ready;
+wire        axi_lsu_sram_b_valid;
+//wire        ram_re_lsu_mem   ;//存储器读使能
 wire [63:0] ram_rdata_mem_lsu ;
 wire [63:0] ram_raddr_lsu_mem ;//mem读索引
-wire [7:0]  wmask           ;
+wire        axi_lsu_sram_ar_ready;
+wire        axi_lsu_sram_ar_valid;
+wire [1:0]  axi_lsu_sram_r_resp ;
+wire        axi_lsu_sram_r_ready;
+wire        axi_lsu_sram_r_valid;
+
 wire [63:0] result_exu_lsu;
 wire        wen_lsu_reg;
 wire [4:0]  waddr_lsu_reg;
 ysyx_22050019_LSU LSU(
- .result      (result_exu_lsu),
- .ram_we_i    (ram_we_id_lsu),
- .ram_wdata_i (ram_wdata_id_lsu),
- .ram_re_i    (ram_re_id_lsu),
- .ram_rdata_i (ram_rdata_mem_lsu),
+ .clk            (clk),
+ .rst            (rst_n),
+ .result         (result_exu_lsu),
+ .ram_we_i       (ram_we_id_lsu),
+ .ram_wdata_i    (ram_wdata_id_lsu),
+ .ram_re_i       (ram_re_id_lsu),
+ 
+ .mem_r_wdth     (mem_r_wdth),
+ .mem_w_wdth     (mem_w_wdth),
+   
+ //.ram_we       (ram_we_lsu_mem),
+ .ram_waddr      (ram_waddr_lsu_mem),
+ .m_axi_aw_ready (axi_lsu_sram_aw_ready),
+ .m_axi_aw_valid (axi_lsu_sram_aw_valid),
+ .ram_wdata      (ram_wdata_lsu_mem),
+ .wmask          (wmask),
+ .m_axi_w_ready  (axi_lsu_sram_w_ready),
+ .m_axi_w_valid  (axi_lsu_sram_w_valid),
+ .ram_wresp_i    (axi_lsu_sram_b_wresp),
+ .m_axi_b_ready  (axi_lsu_sram_b_ready),
+ .m_axi_b_valid  (axi_lsu_sram_b_valid),
+ //.ram_re         (ram_re_lsu_mem),
+ .ram_raddr      (ram_raddr_lsu_mem),
+ .m_axi_ar_ready (axi_lsu_sram_ar_ready),
+ .m_axi_ar_valid (axi_lsu_sram_ar_valid),
+ .ram_rdata_i    (ram_rdata_mem_lsu),
+ .m_axi_r_resp   (axi_lsu_sram_r_resp),
+ .m_axi_r_ready  (axi_lsu_sram_r_ready),
+ .m_axi_r_valid  (axi_lsu_sram_r_valid),
 
- .mem_r_wdth  (mem_r_wdth),
- .mem_w_wdth  (mem_w_wdth),
 
- .ram_we      (ram_we_lsu_mem),
- .ram_waddr   (ram_waddr_lsu_mem),
- .ram_wdata   (ram_wdata_lsu_mem),
- .ram_re      (ram_re_lsu_mem),
- .ram_raddr   (ram_raddr_lsu_mem),
- .wmask       (wmask),
-
- .waddr_reg_i (waddr_ex_reg),
- .wen_reg_o   (wen_lsu_reg),
- .waddr_reg_o (waddr_lsu_reg),
- .wdata_reg_o (wdata_lsu_wb)
+ .waddr_reg_i    (waddr_ex_reg),
+ .wen_reg_o      (wen_lsu_reg),
+ .waddr_reg_o    (waddr_lsu_reg),
+ .wdata_reg_o    (wdata_lsu_wb)
 );
 
+/*
 //MEM读取端口
 ysyx_22050019_mem MEM (
   .ren(ram_re_lsu_mem),
@@ -215,13 +244,36 @@ ysyx_22050019_mem MEM (
   .wdata(ram_wdata_lsu_mem),
   .mask(wmask)
 );
+*/
 
+// 读写取指令接口
+ysyx_22050019_AXI_LSU_SRAM lsu_sram(
+ .clk            (clk),
+ .rst            (rst_n),
+ .axi_aw_ready_o (axi_lsu_sram_aw_ready),       
+ .axi_aw_valid_i (axi_lsu_sram_aw_valid),
+ .axi_aw_addr_i  (ram_waddr_lsu_mem),
+ .axi_w_ready_o  (axi_lsu_sram_w_ready),        
+ .axi_w_valid_i  (axi_lsu_sram_w_valid),
+ .axi_w_data_i   (ram_wdata_lsu_mem),
+ .axi_w_strb_i   (wmask),
+ .axi_b_ready_i  (axi_lsu_sram_b_ready),      
+ .axi_b_valid_o  (axi_lsu_sram_b_valid),
+ .axi_b_resp_o   (axi_lsu_sram_b_wresp),          
+ .axi_ar_ready_o (axi_lsu_sram_ar_ready),       
+ .axi_ar_valid_i (axi_lsu_sram_ar_valid),
+ .axi_ar_addr_i  (ram_raddr_lsu_mem),
+ .axi_r_ready_i  (axi_lsu_sram_r_ready),            
+ .axi_r_valid_o  (axi_lsu_sram_r_valid),        
+ .axi_r_resp_o   (axi_lsu_sram_r_resp),
+ .axi_r_data_o   (ram_rdata_mem_lsu)
+);
 //wb回写模块端口
 wire [63:0] wdata_wb_reg ;
 ysyx_22050019_WBU WBU(
  // 写入寄存器控制信号
  .reg_wen      (reg_we_ex_reg),
- .reg_lsu_wen  (ram_re_id_lsu),
+ .reg_lsu_wen  (wen_lsu_reg),
 
  .wdata_exu_wbu(wdata_ex_reg),
  .wdata_lsu_wbu(wdata_lsu_wb),

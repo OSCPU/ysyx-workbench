@@ -1,4 +1,11 @@
-module ysyx_22050019_LSU(
+module ysyx_22050019_LSU# (
+    parameter AXI_DATA_WIDTH    = 64,
+    parameter AXI_ADDR_WIDTH    = 64
+    //parameter AXI_ID_WIDTH      = 4,
+    //parameter AXI_USER_WIDTH    = 1
+)(
+  input               clk,
+  input               rst,
   // 读写位宽
   input [5:0]         mem_r_wdth ,
   input [3:0]         mem_w_wdth ,
@@ -14,35 +21,40 @@ module ysyx_22050019_LSU(
   input  [4:0]        waddr_reg_i ,
   // 向reg的写数据
   output              wen_reg_o   ,
-  output [4:0]        waddr_reg_o ,
-  output [63:0]       wdata_reg_o ,
+  output     [4:0]    waddr_reg_o ,
+  output     [63:0]   wdata_reg_o ,
 
   // 分为读写两个通道描述信号
   // 写通道
-  output              ram_we      ,
+  //output              ram_we      ,
 
-  output  [63:0]      ram_waddr   ,
-  //input               m_axi_aw_ready,
-  //output reg          m_axi_aw_valid,
+  output     [63:0]   ram_waddr   ,
+  input               m_axi_aw_ready,
+  output              m_axi_aw_valid,
 
-  output  [63:0]      ram_wdata   ,
-  output  [7:0]       wmask       ,
-  //input               m_axi_w_ready,
-  //output reg          m_axi_w_valid,
+  output reg [63:0]   ram_wdata   ,
+  output reg [7:0]    wmask       ,
+  input               m_axi_w_ready,
+  output reg          m_axi_w_valid,
+
+  input [1:0]         ram_wresp_i  ,
+  output reg          m_axi_b_ready,
+  input               m_axi_b_valid,
 
   // 读通道
-  output              ram_re      ,
+  //output              ram_re      ,
 
   input [63:0]        ram_rdata_i ,
-  //output reg          m_axi_r_ready,
-  //input               m_axi_r_valid,
+  input [1:0]         m_axi_r_resp ,
+  output reg          m_axi_r_ready,
+  input               m_axi_r_valid,
 
-  //input               m_axi_ar_ready,
-  //output reg          m_axi_ar_valid,
+  input               m_axi_ar_ready,
+  output              m_axi_ar_valid,
   output  [63:0]      ram_raddr   
 
 );
-
+//==========================信号初始化==============================
 //mem_r_data_mux
 wire [63:0] mem_r_data;
 ysyx_22050019_mux #( .NR_KEY(6), .KEY_LEN(6), .DATA_LEN(64)) mem_r_data_mux          //of32,16,8  || 32,16,8
@@ -72,18 +84,152 @@ ysyx_22050019_mux #( .NR_KEY(4), .KEY_LEN(4), .DATA_LEN(8)) mem_w_wdth_mux      
                     }),        
   .out         (mem_w_mask)  
 );
+//=============================================================
+//==========================写通道==============================
+localparam WS_IDLE = 2'd1;
+localparam WS_WHS  = 2'd2;
+localparam WS_BHS  = 2'd3;
+
+reg[1:0] wstate;
+reg[1:0] next_wstate;
+
+reg [1:0] wresp;
+    //// ------------------State Machine------------------////
+    
+    // 写通道状态切换
+    
+always@(posedge clk)begin
+  if(rst) wstate <= WS_IDLE;
+  else    wstate <= next_wstate;
+end
+
+always@(*) begin
+  if(rst) next_wstate = WS_IDLE;
+  else case(wstate)
+    WS_IDLE :if(m_axi_aw_ready&&m_axi_aw_valid) next_wstate = WS_WHS;
+      else next_wstate = WS_IDLE;
+
+    WS_WHS : if(m_axi_w_ready)   next_wstate = WS_BHS;
+      else next_wstate = WS_WHS;
+
+    WS_BHS : if(m_axi_w_valid)   next_wstate = WS_IDLE;
+      else next_wstate = WS_BHS;
+
+    default : next_wstate = RS_IDLE;
+  endcase
+end
+
+always@(posedge clk)begin
+  if(rst)begin
+    ram_wdata      <= 64'b0;
+    wmask          <= 8'b0;
+    m_axi_w_valid  <= 1'b0;
+    m_axi_b_ready  <= 1'b0;
+    wresp          <= 2'b0;
+    
+  end
+  else begin
+    case(wstate)
+      WS_IDLE:
+      if(next_wstate==WS_WHS)begin
+        ram_wdata      <= ram_wdata_i;
+        wmask          <= mem_w_mask;
+        m_axi_w_valid  <= 1'b1;
+      end
+
+      WS_WHS:if(next_wstate==WS_BHS)begin
+        ram_wdata      <= 64'b0;
+        wmask          <= 8'b0;
+        m_axi_w_valid  <= 1'b0;
+        m_axi_b_ready  <= 1'b1;
+      end
+      
+      WS_BHS:if(next_wstate==WS_IDLE)begin
+        m_axi_b_ready  <= 1'b0;
+      end
+      default:begin
+      end
+    endcase
+  end
+end
+
+assign ram_waddr      = ram_we_i ? result : 64'b0;
+assign m_axi_aw_valid = ram_we_i;
+
+//=============================================================
+//==========================读通道==============================
+localparam RS_IDLE = 2'd1;
+localparam RS_RHS  = 2'd2;
+
+reg[1:0] rstate;
+reg[1:0] next_rstate;
+
+reg [1:0] rresp;
+reg [4:0] waddr_reg;
+    //// ------------------State Machine------------------////
+    // 读通道状态切换
+
+always@(posedge clk)begin
+  if(rst) rstate <= RS_IDLE;
+  else rstate <= next_rstate;
+end
+
+always@(*) begin
+  if(rst) next_rstate = RS_IDLE;
+  else case(rstate)
+    RS_IDLE :if(m_axi_ar_ready&&m_axi_ar_valid) next_rstate = RS_RHS;
+      else next_rstate = RS_IDLE;
+
+    RS_RHS : if(m_axi_r_valid)next_rstate = RS_IDLE;
+    else next_rstate = RS_RHS;
+
+    default : next_rstate = RS_IDLE;
+  endcase
+end
+
+always@(posedge clk)begin
+  if(rst)begin
+    rresp         <= 2'b0;
+    waddr_reg     <= 5'b0;
+    m_axi_r_ready <= 1'b0;
+  end
+  else begin
+    case(rstate)
+      RS_IDLE:
+      if(next_rstate==RS_RHS) begin
+        waddr_reg     <= waddr_reg_i;
+        m_axi_r_ready <= 1'b1;
+      end
+      else begin
+        rresp         <= 2'b0;
+        waddr_reg     <= 5'b0;
+        m_axi_r_ready <= 1'b0;
+      end
+
+      RS_RHS:if(next_rstate==RS_IDLE)begin
+        waddr_reg     <= 5'b0;
+        m_axi_r_ready <= 1'b0;
+        rresp         <= m_axi_r_resp;
+      end
+      else begin
+        waddr_reg     <= waddr_reg;
+        m_axi_r_ready <= 1'b1;
+      end
+      default:begin
+      end
+    endcase
+  end
+end
 
 //reg_control
-assign wen_reg_o    = ram_re_i;
-assign waddr_reg_o  = waddr_reg_i;
-assign wdata_reg_o  = ram_re_i ? mem_r_data : 64'b0;
+assign wen_reg_o    = m_axi_r_valid;
+assign waddr_reg_o  = m_axi_r_valid ? waddr_reg : 5'b0;
+assign wdata_reg_o  = m_axi_r_valid ? mem_r_data : 64'b0;
 
-//ram_control
-assign ram_we    = ram_we_i ;
-assign ram_waddr = ram_we_i ? result : 64'b0;
-assign ram_wdata = ram_wdata_i;
-assign ram_re    = ram_re_i ;
-assign ram_raddr = ram_re_i ? result : 64'b0;
-assign wmask     = mem_w_mask ;
+
+assign ram_raddr      = ram_re_i ? result : 64'b0;
+assign m_axi_ar_valid = ram_re_i;
+
+//=============================================================
 endmodule
 

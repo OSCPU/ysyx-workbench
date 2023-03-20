@@ -93,7 +93,7 @@ always@(posedge clk)begin
       if(next_wstate==WS_WHS)begin
         axi_aw_ready_o <= 1'b0;
         aw_addr        <= axi_aw_addr_i;
-        axi_w_ready_o  <= 2'b1;
+        axi_w_ready_o  <= 1'b1;
       end
       else begin
         axi_aw_ready_o <= 1'b1;
