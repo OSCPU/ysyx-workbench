@@ -230,9 +230,7 @@ void cpu_reset()
 //cpu运行一次
 void exec_once()
 {
-#ifdef CONFIG_ITRACE
-  itrace_record(dut->now_addr);
-#endif
+
   dut->clk = 0;
   dut -> eval();
 #ifdef CONFIG_DIFFTEST
@@ -280,6 +278,9 @@ int main(int argc, char** argv, char** env) {
 #endif
     while (1) {
       IFDEF(CONFIG_DEVICE, device_update());
+#ifdef CONFIG_ITRACE
+  itrace_record(dut->now_addr);
+#endif
       exec_once();
       exec_once();
       exec_once();
