@@ -59,7 +59,7 @@ module ysyx_22050019_LSU# (
 wire [63:0] mem_r_data;
 ysyx_22050019_mux #( .NR_KEY(6), .KEY_LEN(6), .DATA_LEN(64)) mem_r_data_mux          //of32,16,8  || 32,16,8
 (
-  .key         (mem_r_wdth),
+  .key         (axi_m_mem_r_wdth),
   .default_out (ram_rdata_i),
   .lut         ({		 6'b100000,{{32{ram_rdata_i[31]}},ram_rdata_i[31:0]},
                  		 6'b010000,{{48{ram_rdata_i[15]}},ram_rdata_i[15:0]},
@@ -166,6 +166,7 @@ reg[1:0] next_rstate;
 
 reg [1:0] rresp;
 reg [4:0] waddr_reg;
+reg [5:0] axi_m_mem_r_wdth;
     //// ------------------State Machine------------------////
     // 读通道状态切换
 
@@ -189,27 +190,31 @@ end
 
 always@(posedge clk)begin
   if(rst)begin
-    rresp         <= 2'b0;
-    waddr_reg     <= 5'b0;
-    m_axi_r_ready <= 1'b0;
+    rresp           <= 2'b0;
+    waddr_reg       <= 5'b0;
+    m_axi_r_ready   <= 1'b0;
+    axi_m_mem_r_wdth<= 6'b0;
   end
   else begin
     case(rstate)
       RS_IDLE:
       if(next_rstate==RS_RHS) begin
-        waddr_reg     <= waddr_reg_i;
-        m_axi_r_ready <= 1'b1;
+        waddr_reg        <= waddr_reg_i;
+        m_axi_r_ready    <= 1'b1;
+        axi_m_mem_r_wdth <= mem_r_wdth;
       end
       else begin
-        rresp         <= 2'b0;
-        waddr_reg     <= 5'b0;
-        m_axi_r_ready <= 1'b0;
+        rresp            <= 2'b0;
+        waddr_reg        <= 5'b0;
+        m_axi_r_ready    <= 1'b0;
+        axi_m_mem_r_wdth <= 6'b0;
       end
 
       RS_RHS:if(next_rstate==RS_IDLE)begin
-        waddr_reg     <= 5'b0;
-        m_axi_r_ready <= 1'b0;
-        rresp         <= m_axi_r_resp;
+        waddr_reg        <= 5'b0;
+        m_axi_r_ready    <= 1'b0;
+        axi_m_mem_r_wdth <= 6'b0;
+        rresp            <= m_axi_r_resp;
       end
       else begin
         waddr_reg     <= waddr_reg;
