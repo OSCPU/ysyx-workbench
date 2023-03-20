@@ -150,6 +150,8 @@ void difftest_exec_once()
     exec_once();
     exec_once();
     exec_once();
+    exec_once();
+    exec_once();
     
     ref_difftest_regcpy(cpu_gpr, DIFFTEST_TO_REF);
     //printf("time-last-is_skip_ref= %d\n",is_skip_ref);
@@ -230,7 +232,6 @@ void cpu_reset()
 //cpu运行一次
 void exec_once()
 {
-
   dut->clk = 0;
   dut -> eval();
 #ifdef CONFIG_DIFFTEST
@@ -281,6 +282,8 @@ int main(int argc, char** argv, char** env) {
 #ifdef CONFIG_ITRACE
   itrace_record(dut->now_addr);
 #endif
+      exec_once();
+      exec_once();
       exec_once();
       exec_once();
       exec_once();
