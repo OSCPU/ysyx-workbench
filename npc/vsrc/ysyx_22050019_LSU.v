@@ -112,7 +112,7 @@ always@(*) begin
     WS_WHS : if(m_axi_w_ready)   next_wstate = WS_BHS;
       else next_wstate = WS_WHS;
 
-    WS_BHS : if(m_axi_w_valid)   next_wstate = WS_IDLE;
+    WS_BHS : if(m_axi_b_valid)   next_wstate = WS_IDLE;
       else next_wstate = WS_BHS;
 
     default : next_wstate = RS_IDLE;
