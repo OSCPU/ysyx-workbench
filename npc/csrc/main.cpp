@@ -276,8 +276,8 @@ int main(int argc, char** argv, char** env) {
     init_disasm("riscv64-pc-linux-gnu");
 //2流水线择在这里将cpu先跑一次，不可放在‘init_disasm（）’初始前
     //exec_once();
-    //exec_once();
-    //exec_once();
+    exec_once();
+    exec_once();
 #ifdef CONFIG_DIFFTEST
   init_difftest();
 #endif
@@ -290,7 +290,6 @@ int main(int argc, char** argv, char** env) {
 #ifdef CONFIG_DIFFTEST
   if(diff_commit == 1){
       diff_commit = 0;
-      exec_once();
       difftest_exec_once();
 
   }
