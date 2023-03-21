@@ -290,6 +290,7 @@ int main(int argc, char** argv, char** env) {
 #ifdef CONFIG_DIFFTEST
   if(diff_commit == 1){
       diff_commit = 0;
+      exec_once();
       difftest_exec_once();
 
   }
