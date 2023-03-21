@@ -287,6 +287,7 @@ int main(int argc, char** argv, char** env) {
   itrace_record(dut->now_addr);
 #endif
       exec_once();
+      exec_once();
 #ifdef CONFIG_DIFFTEST
   if(diff_commit == 1){
       difftest_exec_once();
