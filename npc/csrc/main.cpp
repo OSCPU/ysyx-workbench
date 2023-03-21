@@ -183,6 +183,10 @@ void debug_exit(int status)
 
 }
 
+int diff_commit =0;
+void commit_diff(){
+  diff_commit = 1;
+}
 // ========================= Functions =========================
 //将指令读入到mem中(附带打印内存功能)
 void load_image()
@@ -282,11 +286,11 @@ int main(int argc, char** argv, char** env) {
 #ifdef CONFIG_ITRACE
   itrace_record(dut->now_addr);
 #endif
-      exec_once();
-      exec_once();
-      exec_once();
 #ifdef CONFIG_DIFFTEST
+  if(diff_commit == 1){
       difftest_exec_once();
+      diff_commit = 0;
+  }
 #endif
     }
 }

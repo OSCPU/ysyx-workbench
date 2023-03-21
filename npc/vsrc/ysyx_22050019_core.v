@@ -298,4 +298,9 @@ ysyx_22050019_regs REGS(
  .rdata2     (rdata2_id_regs)
 );
 
+//==================diff嵌入到更新寄存器状态后diff一次================
+import "DPI-C" function void commit_diff();
+always@(*)begin
+  if(reg_we_ex_reg||wen_lsu_reg||csr_wen_id_ex) commit_diff();
+end
 endmodule
