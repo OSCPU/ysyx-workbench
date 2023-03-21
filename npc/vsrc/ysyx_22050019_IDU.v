@@ -111,7 +111,7 @@ wire sub  = op_r&&rv32_funct3_000&&rv32_funct7_010_0000;
 wire subw = inst_w&&rv32_funct3_000&&rv32_funct7_010_0000;
 
 // 比较指令
-wire slt  = op_r&&rv32_funct3_010&&rv32_funct7_000_0000;
+wire slt  = op_r;
 wire slti = op_i&&rv32_funct3_010;
 wire sltiu= op_i&&rv32_funct3_011;
 wire sltu = op_r&&rv32_funct3_011;
