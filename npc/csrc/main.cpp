@@ -147,7 +147,9 @@ void difftest_exec_once()
     //防止递归失败的false设置，放在后面会被覆盖
     is_skip_ref = false;
     //exec_once();
-
+    exec_once();
+    exec_once();
+    exec_once();
     
     ref_difftest_regcpy(cpu_gpr, DIFFTEST_TO_REF);
     //printf("time-last-is_skip_ref= %d\n",is_skip_ref);
