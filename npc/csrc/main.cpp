@@ -184,6 +184,7 @@ void debug_exit(int status)
 }
 
 void commit_diff(){
+  exec_once();
   difftest_exec_once();
 }
 // ========================= Functions =========================
