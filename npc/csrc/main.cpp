@@ -147,9 +147,9 @@ void difftest_exec_once()
     //防止递归失败的false设置，放在后面会被覆盖
     is_skip_ref = false;
     //exec_once();
-    //exec_once();
-    //exec_once();
-    //exec_once();
+    exec_once();
+    exec_once();
+    exec_once();
     
     ref_difftest_regcpy(cpu_gpr, DIFFTEST_TO_REF);
     //printf("time-last-is_skip_ref= %d\n",is_skip_ref);
@@ -183,11 +183,6 @@ void debug_exit(int status)
 
 }
 
-int diff_commit =0;
-void commit_diff(){
-  if(diff_commit)
-      difftest_exec_once();
-}
 // ========================= Functions =========================
 //将指令读入到mem中(附带打印内存功能)
 void load_image()
@@ -283,14 +278,15 @@ int main(int argc, char** argv, char** env) {
   init_difftest();
 #endif
     while (1) {
-      diff_commit = 1;
       IFDEF(CONFIG_DEVICE, device_update());
 #ifdef CONFIG_ITRACE
   itrace_record(dut->now_addr);
 #endif
       exec_once();
+      exec_once();
+      exec_once();
 #ifdef CONFIG_DIFFTEST
-
+      difftest_exec_once();
 #endif
     }
 }
