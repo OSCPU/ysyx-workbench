@@ -183,9 +183,8 @@ void debug_exit(int status)
 
 }
 
-int diff_commit =0;
 void commit_diff(){
-  diff_commit = 1;
+  difftest_exec_once();
 }
 // ========================= Functions =========================
 //将指令读入到mem中(附带打印内存功能)
@@ -288,10 +287,7 @@ int main(int argc, char** argv, char** env) {
 #endif
       exec_once();
 #ifdef CONFIG_DIFFTEST
-  if(diff_commit == 1){
-      difftest_exec_once();
-      diff_commit = 0;
-  }
+
 #endif
     }
 }
