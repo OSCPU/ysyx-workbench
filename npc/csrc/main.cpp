@@ -149,6 +149,9 @@ void difftest_exec_once()
     //exec_once();
     while(is_skip_ref){
     is_skip_ref = false;
+#ifdef CONFIG_ITRACE
+  itrace_record(dut->now_addr);
+#endif
     exec_once();
     exec_once();
     exec_once();
