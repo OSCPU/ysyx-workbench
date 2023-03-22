@@ -1,3 +1,7 @@
+import "DPI-C" function void pmem_read(
+  input longint raddr, output longint rdata);
+import "DPI-C" function void pmem_write(
+  input longint waddr, input longint wdata, input byte mask);
 module ysyx_22050019_AXI_LSU_SRAM # (
     parameter AXI_DATA_WIDTH    = 64,
     parameter AXI_ADDR_WIDTH    = 64
