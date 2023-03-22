@@ -1,3 +1,4 @@
+// 目前写的aw_valid信号是用ram写使能暂时代替，这意味着无法持续，当写请求需要等待时，需要修改这里的逻辑
 module ysyx_22050019_LSU# (
     parameter AXI_DATA_WIDTH    = 64,
     parameter AXI_ADDR_WIDTH    = 64
