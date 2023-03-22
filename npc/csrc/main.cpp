@@ -26,6 +26,7 @@ void ebreak()
 // 同步总线访问
 bool flow_exec = false;
 void balance_exec(){
+  printf("1\n");
   flow_exec = true;
 }
 // =========================== Debug ===========================
