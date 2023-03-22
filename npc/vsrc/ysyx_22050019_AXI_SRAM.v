@@ -11,6 +11,7 @@ module axi_lite_sram(
   //读数据通道
   input                           s_axi_rready,
   output                          s_axi_rvalid,
+  output       [1:0]              s_axi_resp_o,
   output       [31:0]             s_axi_rdata
 );
 
@@ -19,7 +20,7 @@ module axi_lite_sram(
   localparam READ_DATA = 2'd2;
 
   reg [63:0] araddr_reg;
-
+assign s_axi_resp_o =2'b0;
 /* verilator lint_off UNUSED */reg [63:0] rdata_reg;
 
   reg [1:0] state_reg;

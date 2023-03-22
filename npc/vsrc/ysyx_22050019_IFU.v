@@ -12,6 +12,7 @@ module ysyx_22050019_IFU#(
     input   [63:0]        snpc              ,  
     
     input  [31:0]         inst_i            ,
+    input  [1:0]          m_axi_r_resp_i    ,
     output reg            m_axi_rready      ,
     input                 m_axi_rvalid      ,
 
@@ -32,7 +33,8 @@ module ysyx_22050019_IFU#(
 
   reg  state_reg;
   reg  next_state;
-
+  
+  reg [1:0] rresp;
   // 状态转移
   always @(posedge clk) begin
     if (rst_n) begin
@@ -59,6 +61,7 @@ always@(posedge clk)begin
   if(rst_n)begin
         m_axi_arvalid   <= 1'b1;
         m_axi_rready    <= 1'b0;
+        rresp            <= 2'b0;
   end
   else begin
     case(state_reg)
@@ -68,6 +71,7 @@ always@(posedge clk)begin
         m_axi_rready    <= 1'b1;
       end
       else begin
+        rresp            <= 2'b0;
         m_axi_arvalid   <= 1'b1;
         m_axi_rready    <= 1'b0;
       end
@@ -75,6 +79,7 @@ always@(posedge clk)begin
       WAIT_READY:if(next_state==IDLE)begin
         m_axi_arvalid   <= 1'b1;
         m_axi_rready    <= 1'b0;
+        rresp           <= m_axi_r_resp_i;
       end
       else begin
         m_axi_arvalid   <= 1'b0;

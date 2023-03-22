@@ -23,7 +23,7 @@ fetch fetch_data(
 // 虚拟sram_axi握手模拟
 wire axi_if_sram_rready;
 wire axi_if_sram_rvalid;
-
+wire [1:0] axi_if_sram_resp  ;
 wire axi_if_sram_arready;
 wire axi_if_sram_arvalid;
 
@@ -37,6 +37,7 @@ axi_lite_sram sram(
    
    .s_axi_rready      (axi_if_sram_rready),
    .s_axi_rvalid      (axi_if_sram_rvalid),
+   .s_axi_resp_o      (axi_if_sram_resp),
    .s_axi_rdata       (inst_i)
 );
 
@@ -52,6 +53,7 @@ ysyx_22050019_IFU IFU
     .inst_i            (inst_i         ),
     .m_axi_rready      (axi_if_sram_rready),
     .m_axi_rvalid      (axi_if_sram_rvalid),
+    .m_axi_r_resp_i    (axi_if_sram_resp),
 
     //.inst_addr         (inst_addr),       // 取出的指令地址
     .m_axi_arready     (axi_if_sram_arready),
