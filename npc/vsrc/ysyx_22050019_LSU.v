@@ -181,7 +181,7 @@ always@(*) begin
   if(rst) next_rstate = RS_IDLE;
   else case(rstate)
     RS_IDLE :if(m_axi_ar_ready&&m_axi_ar_valid) begin
-            balance_exec()                ;//多跑3个周期平衡
+             balance_exec()                ;//多跑3个周期平衡
              next_rstate = RS_RHS;
     end
       else next_rstate = RS_IDLE;
@@ -193,36 +193,30 @@ always@(*) begin
   endcase
 end
 
+// 握手信号状态机
 always@(posedge clk)begin
   if(rst)begin
     rresp           <= 2'b0;
-    waddr_reg       <= 5'b0;
     m_axi_r_ready   <= 1'b0;
-    axi_m_mem_r_wdth<= 6'b0;
   end
   else begin
     case(rstate)
       RS_IDLE:
       if(next_rstate==RS_RHS) begin
-        waddr_reg        <= waddr_reg_i;
         m_axi_r_ready    <= 1'b1;
-        axi_m_mem_r_wdth <= mem_r_wdth;
       end
       else begin
         rresp            <= 2'b0;
-        waddr_reg        <= 5'b0;
         m_axi_r_ready    <= 1'b0;
-        axi_m_mem_r_wdth <= 6'b0;
+
       end
 
       RS_RHS:if(next_rstate==RS_IDLE)begin
-        waddr_reg        <= 5'b0;
         m_axi_r_ready    <= 1'b0;
-        axi_m_mem_r_wdth <= 6'b0;
         rresp            <= m_axi_r_resp;
       end
       else begin
-        waddr_reg     <= waddr_reg;
+
         m_axi_r_ready <= 1'b1;
       end
       default:begin
@@ -231,11 +225,35 @@ always@(posedge clk)begin
   end
 end
 
+// 寄存器写使能控制
+always@(posedge clk) begin
+  if(rst) 
+    waddr_reg     <= 5'b0;
+  else if(ram_re_i)
+        waddr_reg        <= waddr_reg_i;
+  else if (m_axi_ar_ready&&m_axi_ar_valid)
+        waddr_reg        <= 5'b0;
+  else 
+    waddr_reg     <= waddr_reg;
+end
+
+always@(posedge clk) begin
+  if(rst) 
+    axi_m_mem_r_wdth <= 6'b0;
+  else if(ram_re_i)
+        axi_m_mem_r_wdth <= mem_r_wdth;
+  else if (m_axi_ar_ready&&m_axi_ar_valid)
+        axi_m_mem_r_wdth <= 6'b0;
+  else 
+    axi_m_mem_r_wdth <= axi_m_mem_r_wdth;
+end
+
 //reg_control
 assign wen_reg_o    = m_axi_r_valid;
 assign waddr_reg_o  = m_axi_r_valid ? waddr_reg : 5'b0;
 assign wdata_reg_o  = m_axi_r_valid ? mem_r_data : 64'b0;
 
+//ram的读地址发送端信号控制
 reg ar_valid;
 reg [63:0] ar_addr ;
 always@(posedge clk) begin
