@@ -113,7 +113,7 @@ parameter RS_IDLE = 1;
 parameter RS_S2 = 2;//address handshake
 
 reg r_channel;
-wire w_channel = 1;
+wire w_channel = 100000;
 
 reg[15:0] rstate;
 reg[15:0] next_rstate;
