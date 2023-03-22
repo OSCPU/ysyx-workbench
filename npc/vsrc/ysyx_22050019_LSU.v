@@ -181,7 +181,7 @@ always@(*) begin
   if(rst) next_rstate = RS_IDLE;
   else case(rstate)
     RS_IDLE :if(m_axi_ar_ready&&m_axi_ar_valid) begin
-             balance_exec()                ;//多跑3个周期平衡
+            balance_exec()                ;//多跑3个周期平衡
              next_rstate = RS_RHS;
     end
       else next_rstate = RS_IDLE;
@@ -236,28 +236,9 @@ assign wen_reg_o    = m_axi_r_valid;
 assign waddr_reg_o  = m_axi_r_valid ? waddr_reg : 5'b0;
 assign wdata_reg_o  = m_axi_r_valid ? mem_r_data : 64'b0;
 
-reg        ar_valid;
-reg [63:0] ar_addr ;
-always@(posedge clk) begin
-  if(rst) begin
-    ar_valid <= 1'b0;
-    ar_addr  <= 64'b0;
-  end
-  else if(ram_re_i) begin
-    ar_valid <= ram_re_i;
-    ar_addr  <= result;
-  end
-  else if(m_axi_ar_ready&&m_axi_ar_valid) begin
-    ar_valid <= 1'b0;
-    ar_addr  <= 64'b0;
-  end
-  else begin
-    ar_valid <= ar_valid;
-    ar_addr  <= ar_addr;
-  end
-end
+
 assign ram_raddr      = ram_re_i ? result : 64'b0;
-assign m_axi_ar_valid = ram_re_i ? 1'b1 : ar_valid;
+assign m_axi_ar_valid = ram_re_i;
 
 //=============================================================
 endmodule
