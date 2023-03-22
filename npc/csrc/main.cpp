@@ -162,6 +162,7 @@ void difftest_exec_once()
     exec_once();
     exec_once();
     if(flow_exec){
+    flow_exec = false;
     exec_once();
     exec_once();
     exec_once();
@@ -303,6 +304,7 @@ int main(int argc, char** argv, char** env) {
       exec_once();
       exec_once();
       if(flow_exec){
+      flow_exec = false;
       exec_once();
       exec_once();
       exec_once();
