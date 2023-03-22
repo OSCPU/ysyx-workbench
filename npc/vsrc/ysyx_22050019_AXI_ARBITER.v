@@ -109,14 +109,14 @@ assign s1_axi_r_valid_o=~r_channel?axi_r_valid_i:0;
 assign s1_axi_r_resp_o=~r_channel?axi_r_resp_i:0;
 assign s1_axi_r_data_o=~r_channel?axi_r_data_i:0;
 
-parameter RS_IDLE = 1;
-parameter RS_S2 = 2;//address handshake
+parameter RS_IDLE = 1'b0;
+parameter RS_S2   = 1'b1;//address handshake
 
 reg r_channel;
-wire w_channel = 100000;
+wire w_channel = 1;
 
-reg[15:0] rstate;
-reg[15:0] next_rstate;
+reg rstate;
+reg next_rstate;
    
     //// 读通道状态切换
 always@(posedge clk)begin
