@@ -231,7 +231,7 @@ always@(posedge clk) begin
     waddr_reg     <= 5'b0;
   else if(ram_re_i)
         waddr_reg        <= waddr_reg_i;
-  else if (m_axi_ar_ready&&m_axi_ar_valid)
+  else if (m_axi_r_valid)
         waddr_reg        <= 5'b0;
   else 
     waddr_reg     <= waddr_reg;
@@ -242,7 +242,7 @@ always@(posedge clk) begin
     axi_m_mem_r_wdth <= 6'b0;
   else if(ram_re_i)
         axi_m_mem_r_wdth <= mem_r_wdth;
-  else if (m_axi_ar_ready&&m_axi_ar_valid)
+  else if (m_axi_r_valid)
         axi_m_mem_r_wdth <= 6'b0;
   else 
     axi_m_mem_r_wdth <= axi_m_mem_r_wdth;
