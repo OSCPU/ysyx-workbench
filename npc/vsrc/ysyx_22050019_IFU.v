@@ -41,33 +41,51 @@ module ysyx_22050019_IFU#(
       state_reg <= next_state;
     end
   end
-  
+ always@(*) begin
+  if(rst_n) next_state = IDLE;
+  else case(state_reg)
+    IDLE :if(m_axi_arready) next_state = WAIT_READY;
+      else next_state = IDLE;
+
+    WAIT_READY : if(m_axi_rvalid)next_state = IDLE;
+    else next_state = WAIT_READY;
+
+    default : next_state = IDLE;
+  endcase
+end
+
   // 读的状态机
-  always @(*) begin
-    case (state_reg)
-      IDLE: begin
+always@(posedge clk)begin
+  if(rst_n)begin
         m_axi_arvalid   <= 1'b1;
         m_axi_rready    <= 1'b0;
-        if (m_axi_arready) begin
-          next_state    <= WAIT_READY;
-        end else begin
-          next_state  <= IDLE;
-        end
-      end
-      WAIT_READY: begin
+  end
+  else begin
+    case(state_reg)
+      IDLE:
+      if(next_state==WAIT_READY) begin
         m_axi_arvalid   <= 1'b0;
         m_axi_rready    <= 1'b1;
-        if (m_axi_rvalid) begin
-          next_state    <= IDLE;
-        end else begin
-          next_state  <= WAIT_READY;
-        end
       end
-      default: begin
-        next_state <= IDLE;
+      else begin
+        m_axi_arvalid   <= 1'b1;
+        m_axi_rready    <= 1'b0;
+      end
+
+      WAIT_READY:if(next_state==IDLE)begin
+        m_axi_arvalid   <= 1'b1;
+        m_axi_rready    <= 1'b0;
+      end
+      else begin
+        m_axi_arvalid   <= 1'b0;
+        m_axi_rready    <= 1'b1;
+      end
+      default:begin
       end
     endcase
   end
+end
+
 //=========================
 // pc 计数器
 always @ (posedge clk) begin
