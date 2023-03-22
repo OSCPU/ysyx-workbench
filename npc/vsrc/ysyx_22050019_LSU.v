@@ -180,7 +180,10 @@ end
 always@(*) begin
   if(rst) next_rstate = RS_IDLE;
   else case(rstate)
-    RS_IDLE :if(m_axi_ar_ready&&m_axi_ar_valid) next_rstate = RS_RHS;
+    RS_IDLE :if(m_axi_ar_ready&&m_axi_ar_valid) begin
+             balance_exec()                ;//多跑3个周期平衡
+             next_rstate = RS_RHS;
+    end
       else next_rstate = RS_IDLE;
 
     RS_RHS : if(m_axi_r_valid)next_rstate = RS_IDLE;
@@ -201,7 +204,6 @@ always@(posedge clk)begin
     case(rstate)
       RS_IDLE:
       if(next_rstate==RS_RHS) begin
-        balance_exec()                ;//多跑3个周期平衡
         waddr_reg        <= waddr_reg_i;
         m_axi_r_ready    <= 1'b1;
         axi_m_mem_r_wdth <= mem_r_wdth;
