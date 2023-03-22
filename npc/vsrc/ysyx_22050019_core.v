@@ -10,7 +10,7 @@ module ysyx_22050019_core(
 );
 
 //取出指令的逻辑分离出来
-wire [31:0]        inst_i ;
+wire [63:0]        inst_i ;
 /*
 fetch fetch_data(
     .clk (clk),
@@ -26,7 +26,7 @@ wire axi_if_sram_rvalid;
 wire [1:0] axi_if_sram_resp  ;
 wire axi_if_sram_arready;
 wire axi_if_sram_arvalid;
-
+/*
 axi_lite_sram sram(
    .clk               (clk),
    .rst_n             (rst_n),
@@ -40,6 +40,7 @@ axi_lite_sram sram(
    .s_axi_resp_o      (axi_if_sram_resp),
    .s_axi_rdata       (inst_i)
 );
+*/
 
 //fetch模块端口
 ysyx_22050019_IFU IFU
@@ -248,28 +249,131 @@ ysyx_22050019_mem MEM (
 );
 */
 
-// 读写取指令接口
-ysyx_22050019_AXI_LSU_SRAM lsu_sram(
- .clk            (clk),
- .rst            (rst_n),
- .axi_aw_ready_o (axi_lsu_sram_aw_ready),       
- .axi_aw_valid_i (axi_lsu_sram_aw_valid),
- .axi_aw_addr_i  (ram_waddr_lsu_mem),
- .axi_w_ready_o  (axi_lsu_sram_w_ready),        
- .axi_w_valid_i  (axi_lsu_sram_w_valid),
- .axi_w_data_i   (ram_wdata_lsu_mem),
- .axi_w_strb_i   (wmask),
- .axi_b_ready_i  (axi_lsu_sram_b_ready),      
- .axi_b_valid_o  (axi_lsu_sram_b_valid),
- .axi_b_resp_o   (axi_lsu_sram_b_wresp),          
- .axi_ar_ready_o (axi_lsu_sram_ar_ready),       
- .axi_ar_valid_i (axi_lsu_sram_ar_valid),
- .axi_ar_addr_i  (ram_raddr_lsu_mem),
- .axi_r_ready_i  (axi_lsu_sram_r_ready),            
- .axi_r_valid_o  (axi_lsu_sram_r_valid),        
- .axi_r_resp_o   (axi_lsu_sram_r_resp),
- .axi_r_data_o   (ram_rdata_mem_lsu)
+//ifu没有写同到访问，这里用拉空接地来表示方便仿真
+wire s1_axi_aw_ready_o;
+wire s1_axi_w_ready_o ;
+wire s1_axi_b_valid_o ;
+wire [1:0] s1_axi_b_resp_o;
+// ifu和lsu的仲裁
+// 目前只做了读通道的仲裁，写通道展示没有需要仲裁的冲突点
+ysyx_22050133_axi_arbiter ARBITER(
+    .clk               ( clk                      ),
+    .rst               ( rst_n                    ),
+
+    // IFU<>ARBITER
+    // Advanced eXtensible Interface Slave1
+    .s1_axi_aw_ready_o ( s1_axi_aw_ready_o        ),
+    .s1_axi_aw_valid_i ( 1'b0                     ),
+    .s1_axi_aw_addr_i  ( 64'b0                    ),
+
+    .s1_axi_w_ready_o  ( s1_axi_w_ready_o         ),
+    .s1_axi_w_valid_i  ( 1'b0                     ),
+    .s1_axi_w_data_i   ( 64'b0                    ),
+    .s1_axi_w_strb_i   ( 8'b0                     ),
+
+    .s1_axi_b_ready_i  ( 1'b0                     ),
+    .s1_axi_b_valid_o  ( s1_axi_b_valid_o         ),
+    .s1_axi_b_resp_o   ( s1_axi_b_resp_o          ),
+
+    .s1_axi_ar_ready_o ( axi_if_sram_arready      ),
+    .s1_axi_ar_valid_i ( axi_if_sram_arvalid      ),
+    .s1_axi_ar_addr_i  ( inst_addr_if_id          ),
+
+    .s1_axi_r_ready_i  ( axi_if_sram_rready       ),
+    .s1_axi_r_valid_o  ( axi_if_sram_rvalid       ),
+    .s1_axi_r_resp_o   ( axi_if_sram_resp         ),
+    .s1_axi_r_data_o   ( inst_i                   ),
+
+    //LSU<>ARBITER
+    // Advanced eXtensible Interface Slave2
+    .s2_axi_aw_ready_o ( axi_lsu_sram_aw_ready    ),
+    .s2_axi_aw_valid_i ( axi_lsu_sram_aw_valid    ),
+    .s2_axi_aw_addr_i  ( ram_waddr_lsu_mem        ),
+
+    .s2_axi_w_ready_o  ( axi_lsu_sram_w_ready     ),
+    .s2_axi_w_valid_i  ( axi_lsu_sram_w_valid     ),
+    .s2_axi_w_data_i   ( ram_wdata_lsu_mem        ),
+    .s2_axi_w_strb_i   ( wmask                    ),
+
+    .s2_axi_b_ready_i  ( axi_lsu_sram_b_ready     ),
+    .s2_axi_b_valid_o  ( axi_lsu_sram_b_valid     ),
+    .s2_axi_b_resp_o   ( axi_lsu_sram_b_wresp     ),
+
+    .s2_axi_ar_ready_o ( axi_lsu_sram_ar_ready    ),
+    .s2_axi_ar_valid_i ( axi_lsu_sram_ar_valid    ),
+    .s2_axi_ar_addr_i  ( ram_raddr_lsu_mem        ),
+    
+    .s2_axi_r_ready_i  ( axi_lsu_sram_r_ready     ),
+    .s2_axi_r_valid_o  ( axi_lsu_sram_r_valid     ),
+    .s2_axi_r_resp_o   ( axi_lsu_sram_r_resp      ),
+    .s2_axi_r_data_o   ( ram_rdata_mem_lsu        ),
+    
+    // arbiter<>sram
+    // Advanced eXtensible Interface  Master
+    .axi_aw_ready_i    ( axi_arbitr_sram_aw_ready ),
+    .axi_aw_valid_o    ( axi_arbitr_sram_aw_valid ),
+    .axi_aw_addr_o     ( axi_arbitr_sram_aw_addr  ),
+    
+    .axi_w_ready_i     ( axi_arbitr_sram_w_ready  ),
+    .axi_w_valid_o     ( axi_arbitr_sram_w_valid  ),
+    .axi_w_data_o      ( axi_arbitr_sram_w_data   ),
+    .axi_w_strb_o      ( axi_arbitr_sram_w_strb   ),
+    
+    .axi_b_ready_o     ( axi_arbitr_sram_b_ready  ),
+    .axi_b_valid_i     ( axi_arbitr_sram_b_valid  ),
+    .axi_b_resp_i      ( axi_arbitr_sram_b_resp   ),
+    
+    .axi_ar_ready_i    ( axi_arbitr_sram_ar_ready ),
+    .axi_ar_valid_o    ( axi_arbitr_sram_ar_valid ),
+    .axi_ar_addr_o     ( axi_arbitr_sram_ar_addr  ),
+    
+    .axi_r_ready_o     ( axi_arbitr_sram_r_ready  ),
+    .axi_r_valid_i     ( axi_arbitr_sram_r_valid  ),
+    .axi_r_resp_i      ( axi_arbitr_sram_r_resp   ),
+    .axi_r_data_i      ( axi_arbitr_sram_r_data   )
 );
+
+// 读写取指令接口sram
+// arbiter<>sram的连线
+wire        axi_arbitr_sram_aw_ready ;
+wire        axi_arbitr_sram_aw_valid ;
+wire [63:0] axi_arbitr_sram_aw_addr  ;
+wire        axi_arbitr_sram_w_ready  ;
+wire        axi_arbitr_sram_w_valid  ;
+wire [63:0] axi_arbitr_sram_w_data   ;
+wire [7:0]  axi_arbitr_sram_w_strb   ;
+wire        axi_arbitr_sram_b_ready  ;
+wire        axi_arbitr_sram_b_valid  ;
+wire [1:0]  axi_arbitr_sram_b_resp   ; 
+wire        axi_arbitr_sram_ar_ready ; 
+wire        axi_arbitr_sram_ar_valid ; 
+wire [63:0] axi_arbitr_sram_ar_addr  ;
+wire        axi_arbitr_sram_r_ready  ;
+wire        axi_arbitr_sram_r_valid  ;
+wire [1:0]  axi_arbitr_sram_r_resp   ;    
+wire [63:0] axi_arbitr_sram_r_data   ;   
+ysyx_22050019_AXI_LSU_SRAM lsu_sram(
+ .clk            (clk                      ),
+ .rst            (rst_n                    ),
+ .axi_aw_ready_o (axi_arbitr_sram_aw_ready ),       
+ .axi_aw_valid_i (axi_arbitr_sram_aw_valid ),
+ .axi_aw_addr_i  (axi_arbitr_sram_aw_addr  ),
+ .axi_w_ready_o  (axi_arbitr_sram_w_ready  ),        
+ .axi_w_valid_i  (axi_arbitr_sram_w_valid  ),
+ .axi_w_data_i   (axi_arbitr_sram_w_data   ),
+ .axi_w_strb_i   (axi_arbitr_sram_w_strb   ),
+ .axi_b_ready_i  (axi_arbitr_sram_b_ready  ),      
+ .axi_b_valid_o  (axi_arbitr_sram_b_valid  ),
+ .axi_b_resp_o   (axi_arbitr_sram_b_resp   ),          
+ .axi_ar_ready_o (axi_arbitr_sram_ar_ready ),       
+ .axi_ar_valid_i (axi_arbitr_sram_ar_valid ),
+ .axi_ar_addr_i  (axi_arbitr_sram_ar_addr  ),
+ .axi_r_ready_i  (axi_arbitr_sram_r_ready  ),            
+ .axi_r_valid_o  (axi_arbitr_sram_r_valid  ),        
+ .axi_r_resp_o   (axi_arbitr_sram_r_resp   ),
+ .axi_r_data_o   (axi_arbitr_sram_r_data   )
+);
+
 //wb回写模块端口
 wire [63:0] wdata_wb_reg ;
 ysyx_22050019_WBU WBU(

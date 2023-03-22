@@ -11,7 +11,7 @@ module ysyx_22050019_IFU#(
     input                 inst_j            ,
     input   [63:0]        snpc              ,  
     
-    input  [31:0]         inst_i            ,
+    input  [63:0]         inst_i            ,
     input  [1:0]          m_axi_r_resp_i    ,
     output reg            m_axi_rready      ,
     input                 m_axi_rvalid      ,
@@ -115,6 +115,6 @@ end
 //ysyx_22050019_Reg #(64,64'b0) i1 (clk,rst_n,inst_addr,inst_addr_o,1'b1);
 
 assign inst_addr_o = inst_addr;
-assign inst_o      = inst_i;
+assign inst_o      = inst_i[31:0];
 
 endmodule

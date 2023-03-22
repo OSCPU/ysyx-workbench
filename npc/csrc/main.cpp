@@ -23,6 +23,11 @@ void ebreak()
   printf("%lx,%lx\n",cpu_gpr[10],dut->now_addr) ;
   debug_exit(cpu_gpr[10]);
 }
+// 同步总线访问
+bool flow_exec = false;
+void balance_exec(){
+  flow_exec = true;
+}
 // =========================== Debug ===========================
 // =============== Itrace ===============
 
@@ -156,6 +161,11 @@ void difftest_exec_once()
     exec_once();
     exec_once();
     exec_once();
+    if(flow_exec){
+    exec_once();
+    exec_once();
+    exec_once();
+    }
     }
     
     ref_difftest_regcpy(cpu_gpr, DIFFTEST_TO_REF);
@@ -292,6 +302,11 @@ int main(int argc, char** argv, char** env) {
       exec_once();
       exec_once();
       exec_once();
+      if(flow_exec){
+      exec_once();
+      exec_once();
+      exec_once();
+      }
 #ifdef CONFIG_DIFFTEST
       difftest_exec_once();
 #endif

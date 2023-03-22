@@ -159,6 +159,7 @@ assign m_axi_aw_valid = ram_we_i;
 
 //=============================================================
 //==========================读通道==============================
+import "DPI-C" function void balance_exec();
 localparam RS_IDLE = 2'd1;
 localparam RS_RHS  = 2'd2;
 
@@ -200,6 +201,7 @@ always@(posedge clk)begin
     case(rstate)
       RS_IDLE:
       if(next_rstate==RS_RHS) begin
+        balance_exec()                ;//多跑3个周期平衡
         waddr_reg        <= waddr_reg_i;
         m_axi_r_ready    <= 1'b1;
         axi_m_mem_r_wdth <= mem_r_wdth;
