@@ -236,9 +236,30 @@ assign wen_reg_o    = m_axi_r_valid;
 assign waddr_reg_o  = m_axi_r_valid ? waddr_reg : 5'b0;
 assign wdata_reg_o  = m_axi_r_valid ? mem_r_data : 64'b0;
 
+reg ar_valid;
+reg [63:0] ar_addr ;
+always@(posedge clk) begin
+  if(rst) 
+    ar_valid <= 1'b0;
+  else if(ram_re_i)
+    ar_valid <= 1'1;
+  else if (m_axi_ar_ready&&m_axi_ar_valid)
+    ar_valid <= 1'b0;
+  else ar_valid <= ar_valid;
+end
 
-assign ram_raddr      = ram_re_i ? result : 64'b0;
-assign m_axi_ar_valid = ram_re_i;
+always@(posedge clk) begin
+  if(rst) 
+    ar_addr <= 64'b0;
+  else if(ram_re_i)
+    ar_addr <= result;
+  else if (m_axi_ar_ready&&m_axi_ar_valid)
+    ar_addr <= 64'b0;
+  else ar_addr <= ar_addr;
+end
+
+assign ram_raddr      = ram_re_i ? result : 64'b0 | ar_addr;
+assign m_axi_ar_valid = ram_re_i | ar_valid;
 
 //=============================================================
 endmodule
