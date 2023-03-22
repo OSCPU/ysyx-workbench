@@ -53,8 +53,9 @@ module ysyx_22050133_axi_arbiter # (
     input                               s2_axi_r_ready_i,            
     output                              s2_axi_r_valid_o,        
     output      [1:0]                   s2_axi_r_resp_o,
-    output      [AXI_DATA_WIDTH-1:0]    s2_axi_r_data_o,   
-    //
+    output      [AXI_DATA_WIDTH-1:0]    s2_axi_r_data_o, 
+
+    // arbiter<>sram
     // Advanced eXtensible Interface  Master
     input                               axi_aw_ready_i,             
     output                              axi_aw_valid_o,

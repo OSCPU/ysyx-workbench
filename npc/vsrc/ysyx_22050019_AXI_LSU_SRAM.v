@@ -2,6 +2,7 @@ import "DPI-C" function void pmem_read(
   input longint raddr, output longint rdata);
 import "DPI-C" function void pmem_write(
   input longint waddr, input longint wdata, input byte mask);
+// 使用这一个sram作为arbiter的接受单位，各个单位拉线已经OK
 module ysyx_22050019_AXI_LSU_SRAM # (
     parameter AXI_DATA_WIDTH    = 64,
     parameter AXI_ADDR_WIDTH    = 64
