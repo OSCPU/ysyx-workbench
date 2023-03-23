@@ -4,6 +4,6 @@
  f(xori) f(srli) f(srai) f(ori) f(andi)\
 f(add) f(sub) f(sll) f(slt) f(sltu) f(xor) f(srl) f(sra) f(or) f(and)\
 f(beq) f(bne) f(blt) f(bge) f(bltu) f(bgeu) f(auipc)\
-f(lb) f(lbu) f(lh) f(lhu) f(lw) f(sb) f(sh) f(sw)
+f(lb) f(lbu) f(lh) f(lhu) f(lw) f(sb) f(sh) f(sw) f(jal) f(jalr)
 //f(csrrw) f(csrrs)
 def_all_EXEC_ID();
