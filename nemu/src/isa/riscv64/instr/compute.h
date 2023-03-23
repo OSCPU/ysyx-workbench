@@ -121,7 +121,7 @@ def_EHelper(slti) {
 
 def_EHelper(jal) {
   rtl_addi(s, ddest, &s->pc, 4);
-  rtl_addi(s, &s->dnpc, &s->pc, id_src1->imm);
+  rtl_addi(s, &s->dnpc, &s->pc, id_src1->imm<<1);
 }
 
 def_EHelper(jalr) {
