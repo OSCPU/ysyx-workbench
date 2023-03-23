@@ -47,11 +47,10 @@ static const void* g_exec_table[TOTAL_INSTR] = {
 };
 
 static void fetch_decode_exec_updatepc(Decode *s) {
-  fetch_decode(s, cpu.pc);
-  s->EHelper(s);
-  cpu.pc = s->dnpc;
+  fetch_decode(s, cpu.pc);  //实现取值和匹配译码
+  s->EHelper(s);         //执行
+  cpu.pc = s->dnpc;       //更新pc
 }
-
 static void statistic() {
   IFNDEF(CONFIG_TARGET_AM, setlocale(LC_NUMERIC, ""));
 #define NUMBERIC_FMT MUXDEF(CONFIG_TARGET_AM, "%ld", "%'ld")
