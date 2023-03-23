@@ -41,7 +41,7 @@ static inline def_DHelper(U) {
 }
 
 static inline def_DHelper(J){
-  decode_op_i(s,id_src1, (sword_t)((s->isa.instr.j.simm20<<20) | (s->isa.instr.j.imm19_12<<12) | (s->isa.instr.j.imm11<<11)|(s->isa.instr.j.imm10_1<<1)),true);
+  decode_op_i(s,id_src1, (sword_t)((s->isa.instr.j.simm20<<20) | (s->isa.instr.j.imm19_12<<12) | (s->isa.instr.j.imm11<<11)|(s->isa.instr.j.imm10_1<<1)),false);
   decode_op_r(s,id_dest, s->isa.instr.j.rd,true);
 }
 
