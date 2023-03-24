@@ -29,6 +29,33 @@ def_EHelper(sll) {
 def_EHelper(add) {
   rtl_add(s, ddest, dsrc1, dsrc2);
 }
+def_EHelper(addiw){
+  rtl_addiw(s, ddest, dsrc1, id_src2->imm);
+}
+def_EHelper(addw){
+  rtl_addw(s, ddest, dsrc1, dsrc2);
+}
+def_EHelper(subw){
+  rtl_subw(s, ddest, dsrc1, dsrc2);
+}
+def_EHelper(slliw){
+  rtl_slliw(s, ddest, dsrc1, id_src2->imm);
+}
+def_EHelper(sllw){
+  rtl_sllw(s, ddest, dsrc1, dsrc2);
+}
+def_EHelper(srlw){
+  rtl_srlw(s, ddest, dsrc1, dsrc2);
+}
+def_EHelper(srliw){
+  rtl_srliw(s, ddest, dsrc1, id_src2->imm);
+}
+def_EHelper(sraw){
+  rtl_sraw(s, ddest, dsrc1, dsrc2);
+}
+def_EHelper(sraiw){
+  rtl_sraiw(s, ddest, dsrc1, id_src2->imm);
+}
 
 def_EHelper(sub) {
   rtl_sub(s, ddest, dsrc1, dsrc2);
