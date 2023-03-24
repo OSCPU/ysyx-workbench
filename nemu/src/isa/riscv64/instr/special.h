@@ -8,6 +8,6 @@ def_EHelper(nemu_trap) {
 def_EHelper(ecall) {
   rtl_hostcall(s, HOSTCALL_EXIT, NULL, &gpr(10), NULL, 0); // gpr(10) is $a0
 }
-def_EHelper(ebreak){
+def_EHelper(ebreak) {
   rtl_hostcall(s, HOSTCALL_EXIT, NULL, &gpr(10), NULL, 0); // gpr(10) is $a0
 }
