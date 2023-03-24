@@ -160,13 +160,10 @@ def_EHelper(mul){
   rtl_mulu_lo(s, ddest, dsrc1, dsrc2);
 }
 def_EHelper(mulh){
-  rtl_mulu_hi(s, ddest, dsrc1, dsrc2);
-}
-def_EHelper(mulhsu){
   rtl_muls_hi(s, ddest, dsrc1, dsrc2);
 }
 def_EHelper(mulhu){
-  rtl_mulw(s, ddest, dsrc1, dsrc2);
+  rtl_mulu_hi(s, ddest, dsrc1, dsrc2);
 }
 def_EHelper(div){
   rtl_divw(s, ddest, dsrc1, dsrc2);
@@ -178,5 +175,20 @@ def_EHelper(rem){
   rtl_remw(s, ddest, dsrc1, dsrc2);
 }
 def_EHelper(remu){
+  rtl_remuw(s, ddest, dsrc1, dsrc2);
+}
+def_EHelper(mulw){
+  rtl_mulw(s, ddest, dsrc1, dsrc2);
+}
+def_EHelper(divw){
+  rtl_divw(s, ddest, dsrc1, dsrc2);
+}
+def_EHelper(divuw){
+  rtl_divuw(s, ddest, dsrc1, dsrc2);
+}
+def_EHelper(remw){
+  rtl_remw(s, ddest, dsrc1, dsrc2);
+}
+def_EHelper(remuw){
   rtl_remuw(s, ddest, dsrc1, dsrc2);
 }

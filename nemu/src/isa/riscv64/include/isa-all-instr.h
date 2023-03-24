@@ -6,7 +6,7 @@ f(add) f(sub) f(sll) f(slt) f(sltu) f(xor) f(srl) f(sra) f(or) f(and)\
 f(beq) f(bne) f(blt) f(bge) f(bltu) f(bgeu) f(auipc)\
 f(lb) f(lbu) f(lh) f(lhu) f(lw) f(sb) f(sh) f(sw) f(jal) f(jalr) f(ebreak) f(ecall)\
 f(addiw) f(slliw) f(srliw) f(sraiw) f(addw) f(subw) f(sllw) f(srlw) f(sraw) f(lwu)\
-f(mul) f(mulh) f(mulhsu) f(mulhu) f(div) f(divu) f(rem) f(remu)\
+f(mul) f(mulh) f(mulhu) f(div) f(divu) f(rem) f(remu) f(mulw) f(divw) f(divuw) f(remw) f(remuw)\
 //f(csrrw) f(csrrs)
 
 
