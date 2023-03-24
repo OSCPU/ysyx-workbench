@@ -7,7 +7,10 @@ f(beq) f(bne) f(blt) f(bge) f(bltu) f(bgeu) f(auipc)\
 f(lb) f(lbu) f(lh) f(lhu) f(lw) f(sb) f(sh) f(sw) f(jal) f(jalr) f(ebreak) f(ecall)\
 f(addiw) f(slliw) f(srliw) f(sraiw) f(addw) f(subw) f(sllw) f(srlw) f(sraw) f(lwu)\
 f(mul) f(mulh) f(mulhu) f(div) f(divu) f(rem) f(remu) f(mulw) f(divw) f(divuw) f(remw) f(remuw)\
-//f(csrrw) f(csrrs)
+f(lui)
+
+//f(csrrw) f(csrrs) f(csrrc) f(csrrwi) f(csrrsi) f(csrrci) f(fence) f(fence_i)
+
 
 
 def_all_EXEC_ID();
