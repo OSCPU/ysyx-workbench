@@ -54,7 +54,7 @@ def_EHelper(sraw){
   rtl_sraw(s, ddest, dsrc1, dsrc2);
 }
 def_EHelper(sraiw){
-  rtl_sraiw(s, ddest, dsrc1, id_src2->imm &0b11111u);
+  rtl_sraiw(s, ddest, dsrc1, id_src2->imm);
 }
 
 def_EHelper(sub) {
@@ -86,7 +86,7 @@ def_EHelper(sra) {
 }
 
 def_EHelper(srai) {
-  rtl_srai(s, ddest, dsrc1, id_src2->imm & 0b1111u);//我认为应该用0b11111u只取后五位,但是发现sraiw不加的话也是正确的,所以感到奇怪
+  rtl_srai(s, ddest, dsrc1, id_src2->imm );//我认为应该用0b11111u只取后五位,但是发现sraiw不加的话也是正确的,所以感到奇怪
 }
 
 def_EHelper(srl) {
@@ -94,11 +94,11 @@ def_EHelper(srl) {
 }
 
 def_EHelper(srli) {
-  rtl_srli(s, ddest, dsrc1, id_src2->imm & 0b11111u);
+  rtl_srli(s, ddest, dsrc1, id_src2->imm );
 }
 
 def_EHelper(slli) {
-  rtl_slli(s, ddest, dsrc1, id_src2->imm & 0b111111u);
+  rtl_slli(s, ddest, dsrc1, id_src2->imm );
 }
 
 def_EHelper(beq) {
@@ -164,6 +164,9 @@ def_EHelper(mulh){
 }
 def_EHelper(mulhu){
   rtl_mulu_hi(s, ddest, dsrc1, dsrc2);
+}
+def_EHelper(mulhsu){
+  rtl_mulhsu(s, ddest, dsrc1, dsrc2);
 }
 def_EHelper(div){
   rtl_divw(s, ddest, dsrc1, dsrc2);

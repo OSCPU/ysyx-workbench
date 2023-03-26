@@ -27,6 +27,7 @@
 #ifdef CONFIG_ISA64
 # define c_mulu_hi(a, b) (((__uint128_t)(a) * (__uint128_t)(b)) >> 64)
 # define c_muls_hi(a, b) (((__int128_t)(sword_t)(a) * (__int128_t)(sword_t)(b)) >> 64)
+# define c_mulhsu(a, b) (((__int128_t)(sword_t)(a) * (__uint128_t)(b)) >>64)
 # define c_mulw(a, b) c_sext32to64((a) * (b))
 # define c_divw(a, b)  c_sext32to64(( int32_t)(a) / ( int32_t)(b))
 # define c_divuw(a, b) c_sext32to64((uint32_t)(a) / (uint32_t)(b))
