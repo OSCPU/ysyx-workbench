@@ -12,8 +12,8 @@
 #define _CONCAT(x, y)       x ## y
 #define CONCAT(x, y)        _CONCAT(x, y)
 
-#define putstr(s) \
-  ({ for (const char *p = s; *p; p++) putch(*p); })
+#define putstr(s)  ({for(const char *p = s; *p; p++) \
+                    putch(*p);})
 
 #define io_read(reg) \
   ({ reg##_T __io_param; \
