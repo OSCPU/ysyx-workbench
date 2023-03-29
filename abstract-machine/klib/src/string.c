@@ -26,9 +26,8 @@ char *strcpy(char *dst, const char *src) {
 char *strncpy(char *dst, const char *src, size_t n) {
   //panic("Not implemented");
   int i=0;
-  while(i<n){
+  for(;src[i]!='\0'&&i<n;i++){
     dst[i]=src[i];
-    i++;
   }
   dst[i]='\0';
   return dst;
@@ -40,9 +39,7 @@ char *strcat(char *dst, const char *src) {
   while(dst[i]!='\0'){i++;}
   int j=0;
   while(src[j]!='\0'){
-    dst[i]=src[j];
-    i++;
-    j++;
+    dst[i++]=src[j++];
   }
   dst[i]='\0';
   return dst;
