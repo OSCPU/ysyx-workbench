@@ -45,8 +45,8 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 static void print_iringbuf(void ){
   #ifdef CONFIG_ITRACE_COND
     const char unsuccret[]="return unsuccesful at ";
-    puts(unsuccret);
-    for (int i = buf_cnt%BUF_DISPLAY_SIZE; i != BUF_DISPLAY_SIZE; i++,i=i%BUF_DISPLAY_SIZE){
+    puts(unsuccret);puts(iringbuf[buf_cnt%BUF_DISPLAY_SIZE]);
+    for (int i = buf_cnt%BUF_DISPLAY_SIZE+1; i != buf_cnt%BUF_DISPLAY_SIZE; i++,i=i%BUF_DISPLAY_SIZE){
         puts(iringbuf[i]);
     }
   #endif
