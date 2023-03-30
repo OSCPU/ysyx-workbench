@@ -12,6 +12,7 @@
  * You can modify this value as you want.
  */
 #define MAX_INSTR_TO_PRINT 10
+#define BUF_DISPLAY_SIZE 100
 
 CPU_state cpu = {};
 uint64_t g_nr_guest_instr = 0;
@@ -19,13 +20,15 @@ static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
 const rtlreg_t rzero = 0;
 rtlreg_t tmp_reg[4];
-
+char iringbuf[BUF_DISPLAY_SIZE][128];
+int buf_cnt=0;
 void device_update();
 void fetch_decode(Decode *s, vaddr_t pc);
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
   if (ITRACE_COND) log_write("%s\n", _this->logbuf);
+  strcpy(iringbuf[(buf_cnt++)%BUF_DISPLAY_SIZE], _this->logbuf);
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
@@ -39,6 +42,23 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #endif
 }
 
+static void print_iringbuf(int state){
+  #ifdef CONFIG_ITRACE_COND
+  if (state == NEMU_STOP||NEMU_ABORT){
+    for (int i = buf_cnt; i != BUF_DISPLAY_SIZE; i++,i=i%BUF_DISPLAY_SIZE){
+      if (iringbuf[i][0] != '\0'){
+        puts(iringbuf[i]);
+      }
+    }
+  }
+  else{
+      char sucret[]="return success!";
+      for(int i=0;i<strlen(sucret);i++){
+        puts(iringbuf[i]);
+      }
+    }
+  #endif
+}
 #include <isa-exec.h>
 
 #define FILL_EXEC_TABLE(name) [concat(EXEC_ID_, name)] = concat(exec_, name),
@@ -62,6 +82,7 @@ static void statistic() {
 
 void assert_fail_msg() {
   isa_reg_display();
+  print_iringbuf(nemu_state.state);
   statistic();
 }
 
