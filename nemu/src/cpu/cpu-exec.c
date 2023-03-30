@@ -12,7 +12,7 @@
  * You can modify this value as you want.
  */
 #define MAX_INSTR_TO_PRINT 10
-#define BUF_DISPLAY_SIZE 100
+#define BUF_DISPLAY_SIZE 20
 
 CPU_state cpu = {};
 uint64_t g_nr_guest_instr = 0;
