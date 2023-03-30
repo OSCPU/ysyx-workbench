@@ -153,10 +153,10 @@ config MTRACE_COND
   depends on MTRACE
   string "Only trace instructions when the condition is true"
   default "true"
-  
+
 config WATCHPOINT
   depends on TRACE
-  string " Watcingpoint Only trace instructions when the condition is true"
+  string "Watcingpoint Only trace instructions when the condition is true"
   default y
 
 config DIFFTEST
