@@ -145,7 +145,7 @@ config ITRACE_COND
   default "true"
 
 config MTRACE
-  depends on TRACE 
+  depends on TRACE && TARGET_NATIVE_ELF && ENGINE_INTERPRETER
   bool "Enable instruction mtracer"
   default y
 
