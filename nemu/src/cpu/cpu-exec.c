@@ -42,18 +42,12 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #endif
 }
 
-static void print_iringbuf(int state){
+static void print_iringbuf(void ){
   #ifdef CONFIG_ITRACE_COND
-  if (state == NEMU_END||state==NEMU_ABORT){
     const char unsuccret[]="return unsuccesful at ";
     puts(unsuccret);
     for (int i = buf_cnt%BUF_DISPLAY_SIZE; i != BUF_DISPLAY_SIZE; i++,i=i%BUF_DISPLAY_SIZE){
         puts(iringbuf[i]);
-    }
-  }
-  else{
-      const char sucret[]="return success!";
-      puts(sucret);
     }
   #endif
 }
@@ -80,7 +74,7 @@ static void statistic() {
 
 void assert_fail_msg() {
   //isa_reg_display();
-  print_iringbuf(nemu_state.state);
+  print_iringbuf();
   statistic();
 }
 
