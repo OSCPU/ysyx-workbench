@@ -44,6 +44,10 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 
 static void print_iringbuf(int state){
   #ifdef CONFIG_ITRACE_COND
+  char unsuccret[]="return unsuccesful at ";
+  for(int i=0;i<strlen(unsuccret);i++){
+    puts(iringbuf[i]);
+  }
   if (state == NEMU_STOP||state==NEMU_ABORT){
     for (int i = buf_cnt%BUF_DISPLAY_SIZE; i != BUF_DISPLAY_SIZE; i++,i=i%BUF_DISPLAY_SIZE){
         puts(iringbuf[i]);
