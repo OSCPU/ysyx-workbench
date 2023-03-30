@@ -44,7 +44,6 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 
 static void print_iringbuf(int state){
   #ifdef CONFIG_ITRACE_COND
-  
   if (state == NEMU_STOP||state==NEMU_ABORT){
     const char unsuccret[]="return unsuccesful at ";
     puts(unsuccret);
