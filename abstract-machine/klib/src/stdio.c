@@ -94,17 +94,17 @@ int vsnprintf(char *str, size_t size, const char *format, va_list ap) {
                 }
             }
             break;
-        case 's':
-            char *s = va_arg(ap, char *);
-            while (*s) {
-                if (written + 1 < size) {
-                    str[written++] = *s++;
-                } else {
-                    str[size - 1] = '\0';
-                    return -1;
-                }
-            }
-            break;
+        // case 's':
+        //     char *s = va_arg(ap, char *);
+        //     while (*s) {
+        //         if (written + 1 < size) {
+        //             str[written++] = *s++;
+        //         } else {
+        //             str[size - 1] = '\0';
+        //             return -1;
+        //         }
+        //     }
+        //     break;
         case 'x':
             int num1 = va_arg(ap, int);
             char buf1[20];
