@@ -5,7 +5,7 @@
 
 #define M_TRACEL 10
 paddr_t m_tra[M_TRACEL];
-word_t m_len[M_TRACEL];
+int m_len[M_TRACEL];
 int m_cnt=0;
 #if   defined(CONFIG_TARGET_AM)
 static uint8_t *pmem = NULL;
@@ -47,7 +47,7 @@ word_t paddr_read(paddr_t addr, int len) {
       word_t w = pmem_read(addr, len);
         Log(" Read  from memory at %#.8x for %d bytes for %x.", addr, len, (unsigned)w);
     }
-    #endif
+  #endif
   m_tra[m_cnt]=addr;
   m_len[m_cnt]=len;
   m_cnt++;
