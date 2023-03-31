@@ -50,9 +50,9 @@ word_t paddr_read(paddr_t addr, int len) {
     #endif
   
   if (likely(in_pmem(addr))) {
-    m_tra[m_cnt]=addr;
-    m_len[m_cnt]=len;
-    m_cnt++;
+    // m_tra[m_cnt]=addr;
+    // m_len[m_cnt]=len;
+    // m_cnt++;
     return pmem_read(addr, len);
   }
   // for(int i=m_cnt%M_TRACEL+1;i!=m_cnt%M_TRACEL;(i)%=M_TRACEL,i++){
