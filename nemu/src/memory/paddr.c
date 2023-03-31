@@ -3,7 +3,7 @@
 #include <device/mmio.h>
 #include <isa.h>
 
-#define M_TRACEL 10
+#define M_TRACEL 20
 paddr_t m_tra[M_TRACEL];
 int m_len[M_TRACEL];
 int m_cnt=0;
