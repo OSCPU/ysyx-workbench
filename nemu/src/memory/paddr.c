@@ -58,10 +58,11 @@ word_t paddr_read(paddr_t addr, int len) {
   for(int i=(m_cnt+1)%M_TRACEL;i!=(m_cnt)%M_TRACEL;i++,(i)%=M_TRACEL){
     Log(" Read  from memory at %#.8x for %d bytes for %x.", m_tra[i], m_len[i], (unsigned)pmem_read(m_tra[i], m_len[i]));
   }
+  word_t w = pmem_read(addr, len);
+        Log(" Read  from memory at %#.8x for %d bytes for %x.", addr, len, (unsigned)w);
   MUXDEF(CONFIG_DEVICE, return mmio_read(addr, len),
     panic("address = " FMT_PADDR " is out of bound of pmem [" FMT_PADDR ", " FMT_PADDR ") at pc = " FMT_WORD,
       addr, CONFIG_MBASE, CONFIG_MBASE + CONFIG_MSIZE, cpu.pc));
-    
 }
 
 void paddr_write(paddr_t addr, int len, word_t data) {
