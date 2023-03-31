@@ -5,9 +5,6 @@
 
 #define RESET_VECTOR (CONFIG_MBASE + CONFIG_PC_RESET_OFFSET)
 #define M_TRACEL 10
-paddr_t m_tra[M_TRACEL];
-int m_len[M_TRACEL];
-int m_cnt=0;
 /* convert the guest physical address in the guest program to host virtual address in NEMU */
 uint8_t* guest_to_host(paddr_t paddr);
 /* convert the host virtual address in NEMU to guest physical address in the guest program */
