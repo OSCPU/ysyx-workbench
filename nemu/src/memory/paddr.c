@@ -48,13 +48,13 @@ word_t paddr_read(paddr_t addr, int len) {
         Log(" Read  from memory at %#.8x for %d bytes for %x.", addr, len, (unsigned)w);
     }
   #endif
-  m_tra[m_cnt]=addr;
-  m_len[m_cnt]=len;
-  m_cnt++;
+  // m_tra[m_cnt]=addr;
+  // m_len[m_cnt]=len;
+  // m_cnt++;
   if (likely(in_pmem(addr))) {
     return pmem_read(addr, len);
   }
-  for(int i=m_cnt%M_TRACEL+1;i!=m_cnt%M_TRACEL;(i)%=M_TRACEL,i++){
+  for(int i=(m_cnt+1%M_TRACEL);i!=m_cnt%M_TRACEL;(i)%=M_TRACEL,i++){
     word_t w = pmem_read(m_tra[i], m_len[i]);
     Log(" Read  from memory at %#.8x for %d bytes for %x.", m_tra[i], (int)m_len[i], (unsigned)w);
   }
