@@ -139,15 +139,20 @@ config ITRACE
   bool "Enable instruction itracer"
   default y
 
+config ITRACE_COND
+  depends on ITRACE
+  string "Only trace instructions when the condition is true"
+  default "true"
+
 config MTRACE
   depends on TRACE 
   bool "Enable instruction mtracer"
   default y
 
-config MTRACE_COND
-  depends on MTRACE
-  string "Only trace instructions when the condition is true"
-  default "true"
+# config MTRACE_COND
+#   depends on TRACE
+#   string "Only trace instructions when the condition is true"
+#   default "true"
 
 config WATCHPOINT
   depends on TRACE
