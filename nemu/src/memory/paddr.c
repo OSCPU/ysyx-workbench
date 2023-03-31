@@ -3,8 +3,8 @@
 #include <device/mmio.h>
 #include <isa.h>
 
-extern paddr_t  m_tra[];
-extern int m_len[];
+extern paddr_t m_tra[M_TRACEL];
+extern int m_len[M_TRACEL];
 extern int m_cnt;
 #if   defined(CONFIG_TARGET_AM)
 static uint8_t *pmem = NULL;
