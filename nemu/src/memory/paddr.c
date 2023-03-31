@@ -48,9 +48,9 @@ word_t paddr_read(paddr_t addr, int len) {
         Log(" Read  from memory at %#.8x for %d bytes for %x.", addr, len, (unsigned)w);
     }
   #endif
-  m_tra[m_cnt]=addr;
-  m_len[m_cnt]=len;
-  m_cnt++;
+  // m_tra[m_cnt]=addr;
+  // m_len[m_cnt]=len;
+  // m_cnt++;
   if (likely(in_pmem(addr))) {
     return pmem_read(addr, len);
   }
