@@ -48,8 +48,6 @@ word_t paddr_read(paddr_t addr, int len) {
         Log(" Read  from memory at %#.8x for %d bytes for %x.", addr, len, (unsigned)w);
     }
   #endif
-  word_t w = pmem_read(addr, len);
-        Log(" Now Read  from memory at %#.8x for %d bytes for %x.", addr, len, (unsigned)w);
   m_tra[m_cnt]=addr;
   m_len[m_cnt]=len;
   m_cnt++;
