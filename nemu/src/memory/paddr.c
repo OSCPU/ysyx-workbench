@@ -3,6 +3,10 @@
 #include <device/mmio.h>
 #include <isa.h>
 
+#define M_TRACEL 10
+paddr_t m_tra[M_TRACEL];
+word_t m_len[M_TRACEL];
+int m_cnt=0;
 #if   defined(CONFIG_TARGET_AM)
 static uint8_t *pmem = NULL;
 #else
@@ -45,17 +49,29 @@ word_t paddr_read(paddr_t addr, int len) {
     }
     #endif
   
-  if (likely(in_pmem(addr))) return pmem_read(addr, len);
+  if (likely(in_pmem(addr))) {
+    m_tra[m_cnt]=addr;
+    m_len[m_cnt]=len;
+    m_cnt++;
+    return pmem_read(addr, len);
+  }
+  for(int i=m_cnt%M_TRACEL+1;i!=m_cnt%M_TRACEL;(i)%=M_TRACEL,i++){
+    word_t w = pmem_read(m_tra[i], m_len[i]);
+    Log(" Read  from memory at %#.8x for %d bytes for %x.", m_tra[i], (int)m_len[i], (unsigned)w);
+  }
   MUXDEF(CONFIG_DEVICE, return mmio_read(addr, len),
     panic("address = " FMT_PADDR " is out of bound of pmem [" FMT_PADDR ", " FMT_PADDR ") at pc = " FMT_WORD,
       addr, CONFIG_MBASE, CONFIG_MBASE + CONFIG_MSIZE, cpu.pc));
+    
 }
 
 void paddr_write(paddr_t addr, int len, word_t data) {
   #ifdef CONFIG_MTRACE
       Log("Write %x to memory at %#.8x for %d bytes.", (unsigned)data, addr, len);
     #endif
-  if (likely(in_pmem(addr))) { pmem_write(addr, len, data); return; }
+  if (likely(in_pmem(addr))) { 
+    pmem_write(addr, len, data); 
+    return; }
   MUXDEF(CONFIG_DEVICE, mmio_write(addr, len, data),
     panic("address = " FMT_PADDR " is out of bound of pmem [" FMT_PADDR ", " FMT_PADDR ") at pc = " FMT_WORD,
       addr, CONFIG_MBASE, CONFIG_MBASE + CONFIG_MSIZE, cpu.pc));
