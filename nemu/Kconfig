@@ -139,13 +139,8 @@ config ITRACE
   bool "Enable instruction itracer"
   default y
 
-config ITRACE_COND
-  depends on ITRACE
-  string "Only trace instructions when the condition is true"
-  default "true"
-
 config MTRACE
-  depends on TRACE && TARGET_NATIVE_ELF && ENGINE_INTERPRETER
+  depends on TRACE 
   bool "Enable instruction mtracer"
   default y
 

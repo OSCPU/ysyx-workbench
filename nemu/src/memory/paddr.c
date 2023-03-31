@@ -38,6 +38,15 @@ void init_mem() {
 }
 
 word_t paddr_read(paddr_t addr, int len) {
+  #ifdef CONFIG_MTRACE
+    if (likely(in_pmem(addr))){
+      word_t w = pmem_read(addr, len);
+      if (addr == 0x806BDFF8){
+        Log(" Read  from memory at %#.8x for %d bytes for %x.", addr, len, (unsigned)w);
+      }
+    }
+    #endif
+  
   if (likely(in_pmem(addr))) return pmem_read(addr, len);
   MUXDEF(CONFIG_DEVICE, return mmio_read(addr, len),
     panic("address = " FMT_PADDR " is out of bound of pmem [" FMT_PADDR ", " FMT_PADDR ") at pc = " FMT_WORD,
@@ -45,6 +54,11 @@ word_t paddr_read(paddr_t addr, int len) {
 }
 
 void paddr_write(paddr_t addr, int len, word_t data) {
+  #ifdef CONFIG_MTRACE
+    if (addr == 0x806BDFF8){
+      Log("Write %x to memory at %#.8x for %d bytes.", (unsigned)data, addr, len);
+    }
+    #endif
   if (likely(in_pmem(addr))) { pmem_write(addr, len, data); return; }
   MUXDEF(CONFIG_DEVICE, mmio_write(addr, len, data),
     panic("address = " FMT_PADDR " is out of bound of pmem [" FMT_PADDR ", " FMT_PADDR ") at pc = " FMT_WORD,
