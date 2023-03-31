@@ -3,16 +3,16 @@
 #include <device/mmio.h>
 #include <isa.h>
 
-#define M_TRACEL 20
-paddr_t m_tra[M_TRACEL];
-int m_len[M_TRACEL];
-int m_cnt=0;
+
 #if   defined(CONFIG_TARGET_AM)
 static uint8_t *pmem = NULL;
 #else
 static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 #endif
-
+#define M_TRACEL 20
+paddr_t m_tra[M_TRACEL];
+int m_len[M_TRACEL];
+int m_cnt=0;
 uint8_t* guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
 paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
 
