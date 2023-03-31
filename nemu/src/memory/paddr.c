@@ -9,7 +9,7 @@ static uint8_t *pmem = NULL;
 #else
 static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 #endif
-#define M_TRACEL 20
+#define M_TRACEL 10
 paddr_t m_tra[M_TRACEL];
 int m_len[M_TRACEL];
 int m_cnt=0;
@@ -48,8 +48,8 @@ word_t paddr_read(paddr_t addr, int len) {
         Log(" Read  from memory at %#.8x for %d bytes for %x.", addr, len, (unsigned)w);
     }
   #endif
-  word_t w = pmem_read(addr, len);
-        Log(" Read  from memory at %#.8x for %d bytes for %x.", addr, len, (unsigned)w);
+  // word_t w = pmem_read(addr, len);
+  //       Log(" Read  from memory at %#.8x for %d bytes for %x.", addr, len, (unsigned)w);
   m_tra[m_cnt]=addr;
   m_len[m_cnt]=len;
   m_cnt++;
