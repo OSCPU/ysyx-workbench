@@ -11,7 +11,7 @@ typedef struct {
   size_t disk_offset;
 } Finfo;
 
-static Finfo file_table[] __attribute__((used)) = {
+static Finfo file_table[1024] __attribute__((used)) = {
 };
 
 #endif
