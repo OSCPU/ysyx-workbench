@@ -154,6 +154,11 @@ config MTRACE
 #   string "Only trace instructions when the condition is true"
 #   default "true"
 
+config FTRACE
+  depends on TRACE 
+  bool "Enable instruction ftracer"
+  default y
+
 config WATCHPOINT
   depends on TRACE
   string "Watcingpoint Only trace instructions when the condition is true"

@@ -10,9 +10,9 @@ static uint8_t *pmem = NULL;
 static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 #endif
 
-extern paddr_t m_tra[M_TRACEL];
-extern int m_len[M_TRACEL];
-extern int m_cnt;
+// extern paddr_t m_tra[M_TRACEL];
+// extern int m_len[M_TRACEL];
+// extern int m_cnt;
 uint8_t* guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
 paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
 
@@ -48,16 +48,16 @@ word_t paddr_read(paddr_t addr, int len) {
         Log(" Read  from memory at %#.8x for %d bytes for %x.", addr, len, (unsigned)w);
     }
   #endif
-  m_tra[m_cnt]=addr;
-  m_len[m_cnt]=len;
-  m_cnt++;
-  m_cnt%=M_TRACEL;
+  // m_tra[m_cnt]=addr;
+  // m_len[m_cnt]=len;
+  // m_cnt++;
+  // m_cnt%=M_TRACEL;
   if (likely(in_pmem(addr))) {
     return pmem_read(addr, len);
   }
-  for(int i=(m_cnt+1)%M_TRACEL;i!=(m_cnt)%M_TRACEL;i++,(i)%=M_TRACEL){
-    Log(" Read  from memory at %#.8x for %d bytes for %x.", m_tra[i], m_len[i], (unsigned)pmem_read(m_tra[i], m_len[i]));
-  }
+  // for(int i=(m_cnt+1)%M_TRACEL;i!=(m_cnt)%M_TRACEL;i++,(i)%=M_TRACEL){
+  //   Log(" Read  from memory at %#.8x for %d bytes for %x.", m_tra[i], m_len[i], (unsigned)pmem_read(m_tra[i], m_len[i]));
+  // }
   
   MUXDEF(CONFIG_DEVICE, return mmio_read(addr, len),
     panic("address = " FMT_PADDR " is out of bound of pmem [" FMT_PADDR ", " FMT_PADDR ") at pc = " FMT_WORD,
