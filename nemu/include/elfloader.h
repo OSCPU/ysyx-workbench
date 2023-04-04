@@ -10,7 +10,6 @@ typedef struct {
     size_t size;        // 函数体大小
 }FuncInfo;              // [start, start+size)
 
-FuncInfo elf_func[1024];
 void init_elf(const char* elf_file, size_t global_offset);
 
 FuncInfo* check_func(paddr_t addr);
