@@ -68,21 +68,13 @@ void stack_return(paddr_t cur, paddr_t des){
   #endif
 }
 
-#ifdef CONFIG_FTRACE_COMPLETELY
+#ifdef CONFIG_FTRACE
     static char *action_name[] = {"Call", "Ret"};
 #endif
 
-// static void travel(StackEntry *r, int depth){
-//     if (r != NULL){
-//         travel(r->next, depth + 1);
-//         // for (int i = 0; i < depth; i++)
-//         //     printf("  ");
-//         printf("At " ASNI_FMT("<%#x>", ASNI_FG_YELLOW) ASNI_FMT("\t%s  \n", ASNI_FG_BLUE),  r->info->start, r->info->func_name);
-//     }
-// }
 
 void print_stack_trace(){
-  #ifdef CONFIG_FTRACE_COMPLETELY
+  #ifdef CONFIG_FTRACE
     printf("====== " ASNI_FMT("Call Stack", ASNI_FG_BLUE) " ======\n");
     for (StackEntry* cur = &header; cur != end; cur = cur->next){
         StackEntry* r = cur->next;
