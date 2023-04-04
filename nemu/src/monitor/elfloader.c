@@ -23,9 +23,9 @@ static void get_str_from_file(FILE *elf, size_t offset, size_t n, void* dest){
 
 static int end;
 static void append(char* func_name, paddr_t start, size_t size){
-    strncpy(elf_funcss[end].func_name, func_name, sizeof(elf_funcss[0].func_name));
-    elf_funcss[end].start = start;
-    elf_funcss[end].size = size;
+    strncpy(elf_func[end].func_name, func_name, sizeof(elf_func[0].func_name));
+    elf_func[end].start = start;
+    elf_func[end].size = size;
     end++;
 }
 
@@ -85,13 +85,13 @@ void init_elf(const char* elf_file, size_t global_offset){
             case STT_FUNC:
             get_str_from_file(elf, global_offset + string_table_offset + symbol_section_entry.st_name, 
                 sizeof(function_name), function_name);
-            append(function_name, symbol_section_entry.st_value, symbol_section_entry.st_size);  //st_value是函数的起始地址，st_size是函数的大小 append函数将函数名，函数起始地址，函数大小存入elf_funcss数组中
+            append(function_name, symbol_section_entry.st_value, symbol_section_entry.st_size);  //st_value是函数的起始地址，st_size是函数的大小 append函数将函数名，函数起始地址，函数大小存入elf_func数组中
             break;
         }
     }
     printf("====== Symbol Table ======\n");
     for (int i = 0; i < end; ++i){
-        FuncInfo *info = &elf_funcss[i];
+        FuncInfo *info = &elf_func[i];
         printf("Func: %12s | Start: %#x | Size: %ld\n", info->func_name, 
             info->start, info->size);
     }
@@ -99,7 +99,7 @@ void init_elf(const char* elf_file, size_t global_offset){
 
 FuncInfo* check_func(paddr_t addr){
     for (int i = 0; i < end; ++i){
-        FuncInfo *info = &elf_funcss[i];
+        FuncInfo *info = &elf_func[i];
         if (addr >= info->start && addr < info->start + info->size){
             return info;
         }
