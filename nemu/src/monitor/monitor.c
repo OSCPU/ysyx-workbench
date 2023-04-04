@@ -33,7 +33,7 @@ static char *img_file = NULL;
 static int difftest_port = 1234;
 static char *elf_file = NULL;
 static char *ramdisk_file = NULL;
-
+static char *appname = NULL;
 static long load_img() {
   if (img_file == NULL) {
     Log("No image is given. Use the default build-in image.");
@@ -65,6 +65,7 @@ static int parse_args(int argc, char *argv[]) {
     {"help"     , no_argument      , NULL, 'h'},
     {"elf"      , required_argument, NULL, 'e'},
     {"ramdisk"  , required_argument, NULL, 'r'},
+    {"appname"  , required_argument, NULL, 'a'},
     {0          , 0                , NULL,  0 },
   };
   int o;
@@ -77,6 +78,7 @@ static int parse_args(int argc, char *argv[]) {
       case 1: img_file = optarg; return optind - 1;
       case 'e': elf_file = optarg; break;
       case 'r': ramdisk_file = optarg; break;
+      case 'a': appname = optarg; break;
       default:
         printf("Usage: %s [OPTION...] IMAGE [args]\n\n", argv[0]);
         printf("\t-b,--batch              run with batch mode\n");
@@ -116,7 +118,8 @@ void init_monitor(int argc, char *argv[]) {
 
   /* Initialize differential testing. */
   init_difftest(diff_so_file, img_size, difftest_port);
-
+  if (elf_file || (ramdisk_file && appname))
+    init_ftracer(elf_file, ramdisk_file, appname);
   /* Initialize the simple debugger. */
   init_sdb();
 
