@@ -7,8 +7,8 @@
 #define FT_RET 1
 
 typedef struct __StackEntry{
-    FuncInfo *cur_func; // 当前位置函数地址 
-    FuncInfo *dst_func; // 目标位置函数地址
+    FuncInfo *cur_info; // 当前位置函数地址 
+    FuncInfo *des_info; // 目标位置函数地址
     paddr_t addr;       // 指令所在地址
     int type;           // call 或 return
     struct __StackEntry *next;
