@@ -55,9 +55,10 @@ extern "C" void pmem_write(ll waddr, ll wdata, char mask)
 #ifdef CONFIG_MTRACE
 	printf("[MTrace - Write]: addr = %016llx, data = %016llx  mask = 0x%02x\n", waddr, wdata, (unsigned char)mask);
 #endif
-  
+
   // pemm地址内操作
   if (likely(in_pmem(waddr))){
+  //if(waddr == (ll)0x8000f004) printf("[MTrace - Write]: addr = %016llx, data = %016llx  mask = 0x%02x\n", waddr, wdata, (unsigned char)mask);
    uint8_t *pt = guest_to_host(waddr);
    for (int i = 0; i < 8; ++i) {
      if (mask & 1) *pt = (wdata & 0xff);
@@ -74,13 +75,21 @@ extern "C" void pmem_write(ll waddr, ll wdata, char mask)
         break;
     case(0x0f):wlen=4;
         break;
+    case(0xf0):wlen=4;
+        break;
     case(0xff):wlen=8;
         break;
     default:{
+      	printf("[MTrace - Write]: addr = %016llx, data = %016llx  mask = 0x%02x\n", waddr, wdata, (unsigned char)mask);
         printf("Inst wrong:wrong wmem len");
         assert(0);
     }
   }
+  while ((mask & 0x1) == 0) {
+    mask  = mask >> 1;
+    waddr = waddr + 1;
+    wdata = wdata >> 8;
+} 
   // mimo设备访问
     mmio_write((paddr_t)waddr,wlen,(uint64_t)wdata); 
     return;

@@ -3,7 +3,7 @@
 #define MAX_SIM_TIME 15000000
 uint64_t sim_time = 0;
 unsigned long long debug_time = 0;
-#define DEBUG_SKIP 0
+#define DEBUG_SKIP 500000
 // 一些导入的接口
 void init_device();
 
@@ -24,10 +24,15 @@ void ebreak()
   debug_exit(cpu_gpr[10]);
 }
 // 同步总线访问
-bool flow_exec = false;
-void balance_exec(){
+bool arbiter_exec = false;
+void arbiter_wait(){
   //printf("1\n");
-  flow_exec = true;
+  arbiter_exec = true;
+}
+bool icache_exec = false;
+void icache_wait(){
+  //printf("1\n");
+  icache_exec = true;
 }
 // =========================== Debug ===========================
 // =============== Itrace ===============
@@ -162,8 +167,13 @@ void difftest_exec_once()
     exec_once();
     exec_once();
     exec_once();
-    if(flow_exec){
-    flow_exec = false;
+    if(icache_exec){
+    icache_exec = false;
+    exec_once();
+    exec_once();
+    }
+    if(arbiter_exec){
+    arbiter_exec = false;
     exec_once();
     exec_once();
     exec_once();
@@ -222,7 +232,7 @@ void load_image()
 void gtkwave()
 {
     Verilated::traceEverOn(true);
-    dut->trace(m_trace, 5);
+    dut->trace(m_trace, 99);
     m_trace->open("top.vcd");
 }
 //cpu复位信号控制
@@ -251,10 +261,6 @@ void exec_once()
 {
   dut->clk = 0;
   dut -> eval();
-#ifdef CONFIG_DIFFTEST
-// 会增加一定的性能负担，且这个类型一旦溢出会导致程序被杀死
-  //debug_time++;
-#endif
 #ifdef CONFIG_GTKWAVE
   if(debug_time >= DEBUG_SKIP){
   m_trace -> dump(sim_time++);
@@ -293,10 +299,17 @@ int main(int argc, char** argv, char** env) {
     //exec_once();
     exec_once();
     exec_once();
+    exec_once();
+    exec_once();
+    icache_exec = false;
 #ifdef CONFIG_DIFFTEST
   init_difftest();
 #endif
     while (1) {
+#ifdef CONFIG_DIFFTEST
+// 会增加一定的性能负担，且这个类型一旦溢出会导致程序被杀死
+  debug_time++;
+#endif
       IFDEF(CONFIG_DEVICE, device_update());
 #ifdef CONFIG_ITRACE
   itrace_record(dut->now_addr);
@@ -304,8 +317,13 @@ int main(int argc, char** argv, char** env) {
       exec_once();
       exec_once();
       exec_once();
-      if(flow_exec){
-      flow_exec = false;
+      if(icache_exec){
+      icache_exec = false;
+      exec_once();
+      exec_once();
+      }
+      if(arbiter_exec){
+      arbiter_exec = false;
       exec_once();
       exec_once();
       exec_once();

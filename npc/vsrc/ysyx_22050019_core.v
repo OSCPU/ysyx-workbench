@@ -57,14 +57,31 @@ ysyx_22050019_IFU IFU
     .m_axi_r_resp_i    (axi_if_sram_resp   ),
 
     //.inst_addr         (inst_addr),       // 取出的指令地址
-    .m_axi_arready     (axi_if_sram_arready),
+    .m_axi_arready     (stll_ar_ready),
     .m_axi_arvalid     (axi_if_sram_arvalid),
 
     .inst_addr_o       (inst_addr_if_id    ), // 传入下级模块的地址
     .inst_o            (inst_if_id         )
 );
 
+//拉出来一个控制器来解决读hit与读总线的冲突,这是一个临时的方案
 
+reg stll_ar_ready ;
+reg stll_ar_rvalid;
+always@(*) begin
+  if(rst_n) begin
+  stll_ar_ready = 0;
+  stll_ar_rvalid= 0;
+  end
+  else if(axi_lsu_sram_ar_ready|axi_lsu_sram_r_ready) begin
+    stll_ar_rvalid = 0 ;
+    stll_ar_ready  = 0 ;
+  end
+  else begin
+    stll_ar_rvalid = axi_if_sram_arvalid;
+    stll_ar_ready  = axi_if_sram_arready;
+  end 
+end
 
 //decode模块端口
 //wire [63:0] inst_addr_id_ex;//decode流水
@@ -249,6 +266,35 @@ ysyx_22050019_mem MEM (
 );
 */
 
+//icache的缓存区设置
+wire        axi_icache_sram_ar_valid ;
+wire        axi_icache_sram_ar_ready ;
+wire [63:0] axi_icache_sram_ar_addr  ;
+wire        axi_icache_sram_r_ready  ;
+wire        axi_icache_sram_r_valid  ;
+wire [1:0]  axi_icache_sram_r_resp   ;
+wire [63:0] axi_icache_sram_r_data   ;
+ysyx_22050019_icache I_CACHE(
+    .clk               ( clk                      ),
+    .rst               ( rst_n                    ),
+
+    .ar_valid_i        ( stll_ar_rvalid      ),
+    .ar_ready_o        ( axi_if_sram_arready      ),
+    .ar_addr_i         ( inst_addr_if_id          ),
+    .r_data_valid_o    ( axi_if_sram_rvalid       ),
+    .r_data_ready_i    ( axi_if_sram_rready       ),
+    .r_resp_i          ( axi_if_sram_resp         ),
+    .r_data_o          ( inst_i                   ),
+
+    .cache_ar_valid_o  ( axi_icache_sram_ar_valid ),
+    .cache_ar_ready_i  ( axi_icache_sram_ar_ready ),
+    .cache_ar_addr_o   ( axi_icache_sram_ar_addr  ),
+    .cache_r_ready_o   ( axi_icache_sram_r_ready  ),
+    .cache_r_valid_i   ( axi_icache_sram_r_valid  ),
+    .cache_r_resp_i    ( axi_icache_sram_r_resp   ),
+    .cache_r_data_i    ( axi_icache_sram_r_data   )
+);
+
 //ifu没有写同到访问，这里用拉空接地来表示方便仿真
 wire s1_axi_aw_ready_o;
 wire s1_axi_w_ready_o ;
@@ -275,14 +321,14 @@ ysyx_22050133_axi_arbiter ARBITER(
     .s1_axi_b_valid_o  ( s1_axi_b_valid_o         ),
     .s1_axi_b_resp_o   ( s1_axi_b_resp_o          ),
 
-    .s1_axi_ar_ready_o ( axi_if_sram_arready      ),
-    .s1_axi_ar_valid_i ( axi_if_sram_arvalid      ),
-    .s1_axi_ar_addr_i  ( inst_addr_if_id          ),
+    .s1_axi_ar_valid_i ( axi_icache_sram_ar_valid ),
+    .s1_axi_ar_ready_o ( axi_icache_sram_ar_ready ),
+    .s1_axi_ar_addr_i  ( axi_icache_sram_ar_addr  ),
 
-    .s1_axi_r_ready_i  ( axi_if_sram_rready       ),
-    .s1_axi_r_valid_o  ( axi_if_sram_rvalid       ),
-    .s1_axi_r_resp_o   ( axi_if_sram_resp         ),
-    .s1_axi_r_data_o   ( inst_i                   ),
+    .s1_axi_r_valid_o  ( axi_icache_sram_r_valid  ),
+    .s1_axi_r_ready_i  ( axi_icache_sram_r_ready  ),
+    .s1_axi_r_resp_o   ( axi_icache_sram_r_resp   ),
+    .s1_axi_r_data_o   ( axi_icache_sram_r_data   ),
 
     //LSU<>ARBITER
     // Advanced eXtensible Interface Slave2

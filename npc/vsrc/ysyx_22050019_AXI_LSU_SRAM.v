@@ -119,7 +119,8 @@ always@(posedge clk)begin
       end
       
       WS_BHS:if(next_wstate==WS_IDLE)begin
-        pmem_write(aw_addr, w_data, w_strb);
+        pmem_write({32'h0,aw_addr[31:3],3'b0}, w_data, w_strb);
+        //if(aw_addr[1:0]!=0) $display("aw_addr = %h\n",aw_addr);
         axi_aw_ready_o <= 1'b1;
         axi_b_valid_o  <= 1'b0;
         axi_b_resp_o   <= 2'b0;
@@ -184,7 +185,7 @@ always@(posedge clk)begin
       else begin
         axi_r_valid_o <= 1'b1;
         axi_r_resp_o  <= 2'b0;
-        pmem_read(ar_addr,din);
+        pmem_read({32'h0,ar_addr[31:3],3'b0},din);
         axi_r_data_o  <= din;
       end
       default:begin
@@ -192,5 +193,4 @@ always@(posedge clk)begin
     endcase
   end
 end
-
 endmodule

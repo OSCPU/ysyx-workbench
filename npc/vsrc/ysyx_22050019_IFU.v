@@ -19,7 +19,7 @@ module ysyx_22050019_IFU#(
     //output reg [63:0]     inst_addr         , //送出去看指令的地址
     input                 m_axi_arready     ,
     output reg            m_axi_arvalid     ,
-    
+       
     // 送出指令和对于pc的接口（打了一拍）
     output  [63:0]        inst_addr_o       , //到指令寄存器中取指令的地址
     output  [31:0]        inst_o
@@ -61,7 +61,7 @@ always@(posedge clk)begin
   if(rst_n)begin
         m_axi_arvalid   <= 1'b1;
         m_axi_rready    <= 1'b0;
-        rresp            <= 2'b0;
+        rresp           <= 2'b0;
   end
   else begin
     case(state_reg)
@@ -115,6 +115,6 @@ end
 //ysyx_22050019_Reg #(64,64'b0) i1 (clk,rst_n,inst_addr,inst_addr_o,1'b1);
 
 assign inst_addr_o = inst_addr;
-assign inst_o      = inst_i[31:0];
+assign inst_o      = inst_addr [2] ? inst_i[63:32] : inst_i[31:0];
 
 endmodule
