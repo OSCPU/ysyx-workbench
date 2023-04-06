@@ -80,7 +80,7 @@ void print_stack_trace(){
         StackEntry* r = cur->next;
         printf("<%#x>" ASNI_FMT(" %-12s ", ASNI_FG_BLUE) ASNI_FMT("%s", ASNI_FG_WHITE)  
             ASNI_FMT("\t<%#x> ", ASNI_FG_YELLOW) ASNI_FMT("%-12s \n", ASNI_FG_BLUE),  
-            r->addr, /*r->cur_info ?*/ r->cur_info->func_name , action_name[r->type], 
+            r->addr, r->cur_info ? r->cur_info->func_name :"", action_name[r->type], 
             r->des_info ? r->des_info->start : 0, r->des_info ? r->des_info->func_name : "");
     }
   #endif
