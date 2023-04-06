@@ -72,28 +72,28 @@ int vsnprintf(char *str, size_t size, const char *format, va_list ap) {
             ++format;
         switch (*format)
         {
-        // case 'd':
-        //     int num = va_arg(ap, int);
-        //     char buf[20];
-        //     int i = 0;
-        //     if (num < 0) {
-        //         str[written++] = '-';
-        //         num = -num;
-        //     }
-        //     while (num) {
-        //         buf[i++] = num % 10 + '0';
-        //         num /= 10;
-        //     }
-        //     if (i == 0) buf[i++] = '0';
-        //     while (i > 0) {
-        //         if (written + 1 < size) {
-        //             str[written++] = buf[--i];
-        //         } else {
-        //             str[size - 1] = '\0';
-        //             return -1;
-        //         }
-        //     }
-        //     break;
+        case 'd':
+            int num = va_arg(ap, int);
+            char buf[20];
+            int i = 0;
+            if (num < 0) {
+                str[written++] = '-';
+                num = -num;
+            }
+            while (num) {
+                buf[i++] = num % 10 + '0';
+                num /= 10;
+            }
+            if (i == 0) buf[i++] = '0';
+            while (i > 0) {
+                if (written + 1 < size) {
+                    str[written++] = buf[--i];
+                } else {
+                    str[size - 1] = '\0';
+                    return -1;
+                }
+            }
+            break;
         case 's':
             char *s = va_arg(ap, char *);
             while (*s) {
