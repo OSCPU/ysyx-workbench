@@ -30,7 +30,7 @@ static void append(char* func_name, paddr_t start, size_t size){
 }
 
 void init_elf(const char* elf_file, size_t global_offset){
-    // printf("Loading from %s\n", elf_file);
+    printf("Loading from %s\n", elf_file);
     FILE *elf = fopen(elf_file, "rb");
     assert(elf != NULL);
     Elf32_Ehdr elf_header;
