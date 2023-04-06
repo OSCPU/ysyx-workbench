@@ -122,7 +122,7 @@ void init_monitor(int argc, char *argv[]) {
     init_ftracer(elf_file, ramdisk_file, appname);
   /* Initialize the simple debugger. */
   init_sdb();
-
+  
   IFDEF(CONFIG_ITRACE, init_disasm(
     MUXDEF(CONFIG_ISA_x86,     "i686",
     MUXDEF(CONFIG_ISA_mips32,  "mipsel",
