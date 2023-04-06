@@ -101,6 +101,8 @@ FuncInfo* check_func(paddr_t addr){
     for (int i = 0; i < end; ++i){
         FuncInfo *info = &elf_func[i];
         if (addr >= info->start && addr < info->start + info->size){
+            printf("Func: %12s | Start: %#x | Size: %ld\n", info->func_name, 
+            info->start, info->size);
             return info;
         }
     }
