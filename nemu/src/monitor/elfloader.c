@@ -8,7 +8,7 @@
 // typedef Elf32_Ehdr Elf_Ehdr;
 
 
-FuncInfo elf_func[1024];
+static FuncInfo elf_func[1024];
 static void read_from_file(FILE *elf, size_t offset, size_t size, void* dest){
     fseek(elf, offset, SEEK_SET);        //设置偏移到offset
     int flag = fread(dest, size, 1, elf);//从elf文件中读取1个size大小字节到dest中,返回成功读取的元素的个数
