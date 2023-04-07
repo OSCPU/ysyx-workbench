@@ -5,16 +5,18 @@
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
-int printf(const char *format, ...) {
-  panic("Not implemented");
-  // va_list arg;
-  // int done;
+int printf(const char *fmt, ...) {
+  //panic("Not implemented");
+  char buffer[2048];
+  va_list arg;
+  va_start (arg, fmt);
+  
+  int done = vsprintf(buffer, fmt, arg);
 
-  // va_start (arg, format);
-  // done = vfprintf(stdout, format, arg);
-  // va_end (arg);
+  putstr(buffer);
 
-  // return done;
+  va_end(arg);
+  return done;
 }
 int vsprintf(char *out, const char *fmt, va_list ap) {
   //panic("Not implemented");
