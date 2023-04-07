@@ -152,6 +152,7 @@ static void parse_elf()
     else if (temp.sh_type == SHT_STRTAB && i != elf_header.e_shstrndx)//
     {
       strtab = (Elf32_Shdr *)malloc(sizeof(Elf32_Shdr));
+      printf("strtab offset");
       printf("strtab offset: 0x%x\n", temp.sh_offset);
       Assert(strtab != NULL,"strtab no memory\n");
       memcpy(strtab, &temp, sizeof(temp));
