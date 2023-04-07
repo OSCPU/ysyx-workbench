@@ -6,13 +6,13 @@
 #define FT_CALL 0
 #define FT_RET 1
 
-typedef struct __STACK_ENTRY_{
-    FUNC_INFO* cur_info;
-    FUNC_INFO* des_info;
-    paddr_t addr;
-    int type;
-    struct __STACK_ENTRY_ *next;
-}STACK_ENTRY;
+typedef struct __StackEntry{
+    FuncInfo *cur_info; // 当前位置函数地址 
+    FuncInfo *des_info; // 目标位置函数地址
+    paddr_t addr;       // 指令所在地址
+    int type;           // call 或 return
+    struct __StackEntry *next;
+}StackEntry;
 
 void init_ftracer(const char* elf_file, const char *ramdisk_file, const char *appname);
 

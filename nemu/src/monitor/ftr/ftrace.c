@@ -1,9 +1,11 @@
-#include "ftracer.h"
+#include "ftrace.h"
 
 #include <utils.h>
 #include <stdlib.h>
 #include <isa.h>
-
+#ifdef CONFIG_FTRACE
+    static char *action_name[] = {"Call", "Ret"};
+#endif
 #ifdef CONFIG_FTRACE
 typedef struct {
   char *name;
@@ -12,16 +14,16 @@ typedef struct {
 } Finfo;
 
 static Finfo file_table[] __attribute__((used)) = {
-#include "files.h"
 };
 
 #endif
 
-STACK_ENTRY header;
-STACK_ENTRY *end = &header;
+StackEntry header;
+StackEntry *end = &header;
 
 void init_ftracer(const char* elf_file, const char *ramdisk_file, const char *appname){
   #ifdef CONFIG_FTRACE
+  Log("init_ftracer");
     if(elf_file){
       init_elf(elf_file, 0);
     }if(ramdisk_file && appname){
@@ -45,14 +47,17 @@ void init_ftracer(const char* elf_file, const char *ramdisk_file, const char *ap
 
 #ifdef CONFIG_FTRACE
 static void append(paddr_t cur, paddr_t des, int type){
-    STACK_ENTRY *node = malloc(sizeof(STACK_ENTRY));
+    StackEntry *node = malloc(sizeof(StackEntry));
     end->next = node;
     node->next = NULL;
     node->addr = cur;
     node->cur_info = check_func(cur);
     node->des_info = check_func(des);
     node->type = type;
-
+    printf("<%#x>" ASNI_FMT(" %-12s ", ASNI_FG_BLUE) ASNI_FMT("%s", ASNI_FG_WHITE)  
+            ASNI_FMT("\t<%#x> ", ASNI_FG_YELLOW) ASNI_FMT("%-12s \n", ASNI_FG_BLUE),  
+            node->addr, node->cur_info ? node->cur_info->func_name :"", action_name[node->type], 
+            node->des_info ? node->des_info->start : 0, node->des_info ? node->des_info->func_name : "");
     end = node;
 }
 #endif
@@ -69,36 +74,26 @@ void stack_return(paddr_t cur, paddr_t des){
   #endif
 }
 
-#ifdef CONFIG_FTRACE_COMPLETELY
-    static char *action_name[] = {"Call", "Ret"};
-#endif
 
-// static void travel(STACK_ENTRY *r, int depth){
-//     if (r != NULL){
-//         travel(r->next, depth + 1);
-//         // for (int i = 0; i < depth; i++)
-//         //     printf("  ");
-//         printf("At " ASNI_FMT("<%#x>", ASNI_FG_YELLOW) ASNI_FMT("\t%s  \n", ASNI_FG_BLUE),  r->info->start, r->info->func_name);
-//     }
-// }
+
 
 void print_stack_trace(){
-  #ifdef CONFIG_FTRACE_COMPLETELY
-    printf("====== " ASNI_FMT("Call Stack", ASNI_FG_BLUE) " ======\n");
-    for (STACK_ENTRY* cur = &header; cur != end; cur = cur->next){
-        STACK_ENTRY* r = cur->next;
-        printf("<%#x>" ASNI_FMT(" %-12s ", ASNI_FG_BLUE) ASNI_FMT("%s", ASNI_FG_WHITE)  
-            ASNI_FMT("\t<%#x> ", ASNI_FG_YELLOW) ASNI_FMT("%-12s \n", ASNI_FG_BLUE),  
-            r->addr, r->cur_info ? r->cur_info->func_name : "", action_name[r->type], 
-            r->des_info ? r->des_info->start : 0, r->des_info ? r->des_info->func_name : "");
-    }
+  #ifdef CONFIG_FTRACE
+    // printf("====== " ASNI_FMT("Call Stack", ASNI_FG_BLUE) " ======\n");
+    // for (StackEntry* cur = &header; cur != end; cur = cur->next){
+    //     StackEntry* r = cur->next;
+    //     printf("<%#x>" ASNI_FMT(" %-12s ", ASNI_FG_BLUE) ASNI_FMT("%s", ASNI_FG_WHITE)  
+    //         ASNI_FMT("\t<%#x> ", ASNI_FG_YELLOW) ASNI_FMT("%-12s \n", ASNI_FG_BLUE),  
+    //         r->addr, r->cur_info ? r->cur_info->func_name :"", action_name[r->type], 
+    //         r->des_info ? r->des_info->start : 0, r->des_info ? r->des_info->func_name : "");
+    // }
   #endif
 }
 
 void error_finfo(){
   #ifdef CONFIG_FTRACE
   vaddr_t pc = cpu.pc;
-  FUNC_INFO *info = check_func(pc);
-  printf("Some error happended at %s(%#lx).\n", info->func_name, pc);
+  FuncInfo *info = check_func(pc);
+  printf(ASNI_FMT("Some error happended at %s(%#x).\n", ASNI_FG_RED), info->func_name, (unsigned)pc);
   #endif
 }
