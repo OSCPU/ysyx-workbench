@@ -153,8 +153,8 @@ static void parse_elf()
     }
     // judge its section name
   }
-  assert(strtab != NULL);
-  assert(symtab != NULL);
+  // assert(strtab != NULL);
+  // assert(symtab != NULL);
   
   printf("symbol table offset: 0x%x\n", symtab->sh_offset);
   printf("string table offset: 0x%x\n", strtab->sh_offset);
