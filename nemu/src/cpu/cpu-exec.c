@@ -20,7 +20,7 @@ static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
 const rtlreg_t rzero = 0;
 rtlreg_t tmp_reg[4];
-//char iringbuf[BUF_DISPLAY_SIZE][128];
+char iringbuf[BUF_DISPLAY_SIZE][128];
 int buf_cnt=0;
 void device_update();
 void fetch_decode(Decode *s, vaddr_t pc);
@@ -36,7 +36,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
     WP* pnt = NULL;
     if (check_watchpoint(&pnt)){
       Log("Stoped at \e[1;36mWatchPoint(NO.%d)\e[0m: %s \n", pnt->NO, pnt->par);
-      //puts(_this->logbuf);
+      puts(_this->logbuf);
       nemu_state.state = NEMU_STOP;
     }
 #endif
