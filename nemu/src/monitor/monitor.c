@@ -119,7 +119,7 @@ void init_monitor(int argc, char *argv[]) {
   /* Initialize differential testing. */
   init_difftest(diff_so_file, img_size, difftest_port);
   //if (elf_file || (ramdisk_file && appname))
-    init_ftracer(elf_file, ramdisk_file, appname);
+  init_ftracer(elf_file, ramdisk_file, appname);
   /* Initialize the simple debugger. */
   init_sdb();
   
