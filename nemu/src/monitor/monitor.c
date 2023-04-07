@@ -148,7 +148,7 @@ static void parse_elf()
       symtab = (Elf32_Shdr *)malloc(sizeof(Elf32_Shdr));
       memcpy(symtab, &temp, sizeof(temp));
     }
-    else if (temp.sh_type == SHT_STRTAB && i != elf_header.e_shstrndx)
+    else if (temp.sh_type == SHT_STRTAB )//&& i != elf_header.e_shstrndx
     {
       strtab = (Elf32_Shdr *)malloc(sizeof(Elf32_Shdr));
       memcpy(strtab, &temp, sizeof(temp));
