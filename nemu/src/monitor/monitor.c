@@ -101,7 +101,7 @@ typedef struct Func
 Func * func_head = NULL;
 char * opstr[] = {"call", "ret"};
 int lastest_op = -1;
-static char * ftrace_log_file = "/yzw/ysyx-workbench/am-kernels/tests/cpu-tests/build/ftrace-log.txt";
+static char * ftrace_log_file = "ftrace-log.txt";
 bool ftrace = false;
 // function trace
 static void parse_elf()
