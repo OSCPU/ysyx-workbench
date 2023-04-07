@@ -36,7 +36,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
     WP* pnt = NULL;
     if (check_watchpoint(&pnt)){
       Log("Stoped at \e[1;36mWatchPoint(NO.%d)\e[0m: %s \n", pnt->NO, pnt->par);
-      puts(_this->logbuf);
+      //puts(_this->logbuf);
       nemu_state.state = NEMU_STOP;
     }
 #endif
