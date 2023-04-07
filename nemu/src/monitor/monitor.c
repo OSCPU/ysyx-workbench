@@ -219,10 +219,8 @@ static void ftrace_log(int op, word_t addr, word_t t_addr)
       // log to the ftrace-log
       FILE * fp = fopen(ftrace_log_file, "a+");
       Assert(fp, "fail to open ftrace log file\n");Log("fail to open ftrace log file\n");
-      if(fp) MUXNDEF(CONFIG_DEVICE,, panic("fail to open ftrace log file\n"));
       fwrite(record, 1, strlen(record), fp);
       Assert(fclose(fp) == 0, "fail to close ftrace log file\n");
-      if(fclose(fp) != 0) MUXNDEF(CONFIG_DEVICE,, panic("fail to close ftrace log file\n"));
       lastest_op = op;
 
       return;
