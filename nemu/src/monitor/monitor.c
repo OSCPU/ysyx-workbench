@@ -243,7 +243,7 @@ void log_ret(word_t addr, word_t t_addr)
 void init_monitor(int argc, char *argv[]) {
   /* Perform some global initialization. */
   /* Parse arguments. */
-  Log("init_monitor");
+  puts("Welcome to the NEMU!");
   parse_args(argc, argv);
   /* Set random seed. */
   init_rand();
