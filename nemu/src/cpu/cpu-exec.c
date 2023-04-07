@@ -20,7 +20,7 @@ static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
 const rtlreg_t rzero = 0;
 rtlreg_t tmp_reg[4];
-char iringbuf[BUF_DISPLAY_SIZE][128];
+//char iringbuf[BUF_DISPLAY_SIZE][128];
 int buf_cnt=0;
 void device_update();
 void fetch_decode(Decode *s, vaddr_t pc);

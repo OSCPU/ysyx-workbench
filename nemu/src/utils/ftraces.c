@@ -10,13 +10,13 @@ typedef struct {
   uint32_t inst;
 } ItraceNode;
 
-ItraceNode iringbuf[MAX_IRINGBUF];
+ItraceNode iringbufs[MAX_IRINGBUF];
 int p_cur = 0;
 bool full = false;
 
 void trace_inst(word_t pc, uint32_t inst) {
-  iringbuf[p_cur].pc = pc;
-  iringbuf[p_cur].inst = inst;
+  iringbufs[p_cur].pc = pc;
+  iringbufs[p_cur].inst = inst;
   p_cur = (p_cur + 1) % MAX_IRINGBUF;
   full = full || p_cur == 0;
 }
@@ -32,8 +32,8 @@ void display_inst() {
   char *p;
   do {
     p = buf;
-    p += sprintf(buf, "%s" FMT_WORD ": %08x ", (i+1)%MAX_IRINGBUF==end?" --> ":"     ", iringbuf[i].pc, iringbuf[i].inst);
-    disassemble(p, buf+sizeof(buf)-p, iringbuf[i].pc, (uint8_t *)&iringbuf[i].inst, 4);
+    p += sprintf(buf, "%s" FMT_WORD ": %08x ", (i+1)%MAX_IRINGBUF==end?" --> ":"     ", iringbufs[i].pc, iringbufs[i].inst);
+    disassemble(p, buf+sizeof(buf)-p, iringbufs[i].pc, (uint8_t *)&iringbufs[i].inst, 4);
 
     if ((i+1)%MAX_IRINGBUF==end) printf(ASNI_FG_RED);
     puts(buf);
