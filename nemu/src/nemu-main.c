@@ -10,7 +10,7 @@ int main(int argc, char *argv[]) {
 #ifdef CONFIG_TARGET_AM
   am_init_monitor();
 #else
-  Log("init_monitor");
+  //Log("init_monitor");
   init_monitor(argc, argv);
 
 #endif
