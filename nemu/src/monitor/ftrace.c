@@ -23,6 +23,7 @@ StackEntry *end = &header;
 
 void init_ftracer(const char* elf_file, const char *ramdisk_file, const char *appname){
   #ifdef CONFIG_FTRACE
+  Log("init_ftracer");
     if(elf_file){
       init_elf(elf_file, 0);
     }if(ramdisk_file && appname){
