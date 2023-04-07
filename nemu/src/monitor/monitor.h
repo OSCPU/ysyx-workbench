@@ -2,5 +2,3 @@
 #include <elf.h>
 void log_call(word_t addr, word_t t_addr);
 void log_ret(word_t addr, word_t t_addr);
-vaddr_t s_pc;
-vaddr_t s_npc;
