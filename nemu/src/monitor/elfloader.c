@@ -63,14 +63,14 @@ void init_elf(const char* elf_file, size_t global_offset){
             case SHT_STRTAB:
                 if (i == elf_header.e_shstrndx){}else{
                     string_table_offset = section_entry.sh_offset;
-                    //string_table_total_size = section_entry.sh_size;
+                    symbol_table_total_size = section_entry.sh_size;
                 }
             break;
         }
     }
 
-    // printf("String Table Offset: %#x\n", string_table_offset);
-    // printf("Symbol Table Offset: %#x\n", symbol_table_offset);
+     printf("String Table Offset: %#x\n", string_table_offset);
+     printf("Symbol Table Offset: %#x\n", symbol_table_offset);
     
     char function_name[64];
     assert(symbol_table_entry_size == sizeof(Elf32_Sym));
