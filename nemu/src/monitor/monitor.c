@@ -141,7 +141,7 @@ static void parse_elf()
     // read a section
     readfile = fread(&temp, sizeof(Elf32_Shdr), 1, fp);
     Assert(readfile != 0, "fail to read section\n");
-    Log("readfile %d",readfile);
+    Log("readfile %d",elf_header.e_shnum);
     if (temp.sh_type == SHT_SYMTAB)
     {
       symtab = (Elf32_Shdr *)malloc(sizeof(Elf32_Shdr));
