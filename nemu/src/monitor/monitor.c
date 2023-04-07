@@ -118,7 +118,7 @@ static void parse_elf()
   Assert(fp, "fail to open file %s\n", elf_file);
   
   readfile = fread(&elf_header,sizeof(Elf32_Ehdr),1,fp);
-  printf("readfile = %d\n", readfile);
+  printf("readfile = %d", readfile);
   Assert(readfile != 0, "fail to read header\n");
 
   // find the section table and read each section
@@ -127,7 +127,7 @@ static void parse_elf()
 
   Elf32_Shdr shstrtab;
   // read the Section header string table
-  fseek(fp, sizeof(Elf32_Shdr) * elf_header.e_shstrndx, SEEK_SET);
+  fseek(fp, sizeof(Elf32_Shdr) * elf_header.e_shstrndx, SEEK_CUR);
   readfile = fread(&shstrtab, sizeof(Elf32_Shdr), 1, fp);
   Assert(readfile != 0, "fail to read shstrtab\n");
   fseek(fp, elf_header.e_shoff, SEEK_SET);
