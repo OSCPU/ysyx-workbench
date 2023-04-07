@@ -1,6 +1,7 @@
 #include <isa.h>
 #include <memory/paddr.h>
 //#include "ftr/ftrace.h"
+#include<errno.h>
 #include <elf.h>
 #include <unistd.h>
 void init_rand();
