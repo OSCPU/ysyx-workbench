@@ -1,6 +1,5 @@
 #include "/yzw/ysyx-workbench/nemu/src/monitor/monitor.h"
-extern vaddr_t s_pc;
-extern vaddr_t s_npc;
+
 extern void log_call(word_t addr, word_t t_addr);
 extern void log_ret(word_t addr, word_t t_addr);
 def_EHelper(auipc) {
