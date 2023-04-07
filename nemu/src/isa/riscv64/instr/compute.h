@@ -1,4 +1,5 @@
-#include "/yzw/ysyx-workbench/nemu/src/monitor/ftr/ftrace.h"
+void log_call(word_t addr, word_t t_addr);
+void log_ret(word_t addr, word_t t_addr);
 def_EHelper(auipc) {
   rtl_li(s, ddest, id_src1->imm + s->pc);
 }
@@ -149,7 +150,7 @@ def_EHelper(slti) {
 def_EHelper(jal) {
   rtl_addi(s, ddest, &s->pc, 4);
   rtl_addi(s, &s->dnpc, &s->pc, id_src1->imm);
-  stack_call(s->pc, s->dnpc);
+  log_call(s->pc,s->dnpc);
 }
 
 def_EHelper(jalr) {
@@ -158,9 +159,9 @@ def_EHelper(jalr) {
   rtl_andi(s, &s->dnpc, &s->dnpc, ~1);
   rtl_addi(s, ddest, s0, 0);
   if (s->isa.instr.i.rd == 0 && s->isa.instr.i.rs1 == 1 && s->isa.instr.i.simm11_0 == 0){//Ret
-    stack_return(s->pc, s->dnpc);
+    log_ret(s->pc,s->dnpc);
   }else{
-    stack_call(s->pc, s->dnpc);
+    log_call(s->pc,s->dnpc);
   }
 }
 def_EHelper(mul){
