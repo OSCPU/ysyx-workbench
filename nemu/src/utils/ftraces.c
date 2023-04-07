@@ -83,20 +83,20 @@ static void display_elf_hedaer(Elf64_Ehdr eh) {
 	switch(eh.e_ident[EI_CLASS])
 	{
 		case ELFCLASS32:
-			//Log("32-bit objects\n");
+			Log("32-bit objects\n");
 			break;
 
 		case ELFCLASS64:
-			//Log("64-bit objects\n");
+			Log("64-bit objects\n");
 			break;
 
 		default:
-			//Log("INVALID CLASS\n");
+			Log("INVALID CLASS\n");
 			break;
 	}
 
 	/* Data Format */
-	//Log("Data format\t= ");
+	Log("Data format\t= ");
 	switch(eh.e_ident[EI_DATA])
 	{
 		case ELFDATA2LSB:
