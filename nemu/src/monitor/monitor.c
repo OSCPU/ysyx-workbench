@@ -156,8 +156,8 @@ static void parse_elf()
 
   assert(symtab != NULL);
   assert(strtab != NULL);
-  // printf("symbol table offset: 0x%x\n", symtab.sh_offset);
-  // printf("string table offset: 0x%x\n", strtab.sh_offset);
+  printf("symbol table offset: 0x%x\n", symtab->sh_offset);
+  printf("string table offset: 0x%x\n", strtab->sh_offset);
 
   // read symbol table and find func
   Elf32_Sym symbol;
