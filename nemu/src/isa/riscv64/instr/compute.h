@@ -1,5 +1,4 @@
-void log_call(word_t addr, word_t t_addr);
-void log_ret(word_t addr, word_t t_addr);
+#include </yzw/ysyx-workbench/nemu/src/monitor/monitor.h>
 def_EHelper(auipc) {
   rtl_li(s, ddest, id_src1->imm + s->pc);
 }

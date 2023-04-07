@@ -1,9 +1,9 @@
 #include <isa.h>
 #include <memory/paddr.h>
-//#include "ftr/ftrace.h"
-#include<errno.h>
+#include <errno.h>
 #include <elf.h>
 #include <unistd.h>
+#include "monitor.h"
 void init_rand();
 void init_log(const char *log_file);
 void init_mem();
@@ -25,6 +25,8 @@ static void welcome() {
 
 #ifndef CONFIG_TARGET_AM
 #include <getopt.h>
+#define CALL_OP 0
+#define RET_OP 1
 
 void sdb_set_batch_mode();
 
@@ -87,22 +89,16 @@ static int parse_args(int argc, char *argv[]) {
   }
   return 0;
 }
-struct Func
+
+word_t depth; // the depth of call
+typedef struct Func
 {
   char name[32];
   word_t start;
   word_t end;
   struct Func * next;
-};
-
-typedef struct Func Func;
-
+} Func;
 Func * func_head = NULL;
-word_t depth; // the depth of call
-
-
-#define CALL_OP 0
-#define RET_OP 1
 char * opstr[] = {"call", "ret"};
 int lastest_op = -1;
 static char * ftrace_log_file = "/yzw/ysyx-workbench/nemu/build/ftrace-log.txt";
@@ -194,7 +190,6 @@ static void parse_elf()
   }
   fclose(fp);
 }
-
 static void ftrace_log(int op, word_t addr, word_t t_addr)
 {
   if (!ftrace)
@@ -221,8 +216,6 @@ static void ftrace_log(int op, word_t addr, word_t t_addr)
         blank[i] = ' ';
 
       sprintf(record, "0x%08lx: %s%s[%s@0x%08lx]\n", addr, blank, opstr[op], p->name, t_addr);
-      Log("%s",record);
-      printf("0x%08lx: %s%s[%s@0x%08lx]\n", addr, blank, opstr[op], p->name, t_addr);
       // log to the ftrace-log
       FILE * fp = fopen(ftrace_log_file, "a");
       Assert(fp, "fail to open ftrace log file\n");
@@ -235,6 +228,7 @@ static void ftrace_log(int op, word_t addr, word_t t_addr)
     p = p->next;
   }
 }
+
 void log_call(word_t addr, word_t t_addr)
 {
   ftrace_log(CALL_OP, addr, t_addr);
