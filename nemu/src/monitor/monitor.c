@@ -234,11 +234,13 @@ static void ftrace_log(int op, word_t addr, word_t t_addr)
 void log_call(word_t addr, word_t t_addr)
 {
   ftrace_log(CALL_OP, addr, t_addr);
+  printf("call: 0x%08lx; target: 0x%08lx)\n", addr, t_addr);
 }
 
 void log_ret(word_t addr, word_t t_addr)
 {
   ftrace_log(RET_OP, addr, t_addr);
+  printf("ret: 0x%08lx; target: 0x%08lx)\n", addr, t_addr);
 }
 void init_monitor(int argc, char *argv[]) {
   /* Perform some global initialization. */
