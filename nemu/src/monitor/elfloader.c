@@ -97,8 +97,8 @@ void init_elf(const char* elf_file, size_t global_offset){
 FuncInfo* check_func(paddr_t addr){
     for (int i = 0; i < 1024; ++i){
         FuncInfo *info = &elf_func[i];
-        if (addr >= info->start && addr < info->start + info->size){
-            printf("Func: %12s | Start: %#x | Size: %ld\n", info->func_name, 
+        if (addr >= info->start && addr < (info->start + info->size)){
+            Log("Func: %12s | Start: %#x | Size: %ld\n", info->func_name, 
             info->start, info->size);
             return info;
         }
