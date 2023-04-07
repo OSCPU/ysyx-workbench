@@ -141,6 +141,7 @@ static void parse_elf()
     // read a section
     readfile = fread(&temp, sizeof(Elf32_Shdr), 1, fp);
     Assert(readfile != 0, "fail to read section\n");
+    Log("readfile %d",readfile);
     if (temp.sh_type == SHT_SYMTAB)
     {
       symtab = (Elf32_Shdr *)malloc(sizeof(Elf32_Shdr));
@@ -153,8 +154,8 @@ static void parse_elf()
     }
     // judge its section name
   }
-  // assert(strtab != NULL);
-  // assert(symtab != NULL);
+  assert(strtab != NULL);
+  assert(symtab != NULL);
   
   printf("symbol table offset: 0x%x\n", symtab->sh_offset);
   printf("string table offset: 0x%x\n", strtab->sh_offset);
