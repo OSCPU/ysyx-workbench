@@ -127,7 +127,7 @@ static void parse_elf()
 
   Elf32_Shdr shstrtab;
   // read the Section header string table
-  fseek(fp, sizeof(Elf32_Shdr) * elf_header.e_shstrndx, SEEK_CUR);  // skip the section header
+  fseek(fp, sizeof(Elf32_Shdr) * elf_header.e_shstrndx, SEEK_SET);  // skip the section header
   readfile = fread(&shstrtab, sizeof(Elf32_Shdr), 1, fp);
   Assert(readfile != 0, "fail to read shstrtab\n");
   fseek(fp, elf_header.e_shoff, SEEK_SET);
@@ -153,7 +153,7 @@ static void parse_elf()
     else if (temp.sh_type == SHT_STRTAB && i != elf_header.e_shstrndx)//
     {
       strtab = (Elf32_Shdr *)malloc(sizeof(Elf32_Shdr));
-      printf("In strtab offset: 0x%x\n", temp.sh_offset);
+      printf("strtab offset: 0x%x\n", temp.sh_offset);
       Assert(strtab != NULL,"strtab no memory\n");
       memcpy(strtab, &temp, sizeof(temp));
     }
