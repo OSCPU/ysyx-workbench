@@ -1,6 +1,6 @@
 #include <isa.h>
 #include <memory/paddr.h>
-#include "ftrace.h"
+#include "ftrace/ftracer.h"
 
 void init_rand();
 void init_log(const char *log_file);

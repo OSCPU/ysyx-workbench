@@ -1,4 +1,4 @@
-#include "/yzw/ysyx-workbench/nemu/src/monitor/ftrace.h"
+#include "/yzw/ysyx-workbench/nemu/src/monitor/ftrace/ftracer.h"
 def_EHelper(auipc) {
   rtl_li(s, ddest, id_src1->imm + s->pc);
 }
