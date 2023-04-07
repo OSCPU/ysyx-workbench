@@ -217,7 +217,7 @@ static void ftrace_log(int op, word_t addr, word_t t_addr)
 
       sprintf(record, "0x%08lx: %s%s[%s@0x%08lx]\n", addr, blank, opstr[op], p->name, t_addr);
       // log to the ftrace-log
-      FILE * fp = fopen(ftrace_log_file, "a");
+      FILE * fp = fopen(ftrace_log_file, "a+");
       Assert(fp, "fail to open ftrace log file\n");Log("fail to open ftrace log file\n");
       if(fp) MUXNDEF(CONFIG_DEVICE,, panic("fail to open ftrace log file\n"));
       fwrite(record, 1, strlen(record), fp);
