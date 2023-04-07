@@ -118,6 +118,7 @@ static void parse_elf()
   Assert(fp, "fail to open file %s\n", elf_file);
   
   readfile = fread(&elf_header,sizeof(Elf32_Ehdr),1,fp);
+  printf("readfile = %d", readfile);
   Assert(readfile != 0, "fail to read header\n");
 
   // find the section table and read each section
