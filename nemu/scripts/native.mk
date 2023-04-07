@@ -15,7 +15,7 @@ override ARGS += $(ARGS_DIFF)
 # Command to execute NEMU
 # IMG ?= --img=/yzw/ysyx-workbench/am-kernels/tests/cpu-tests/build/add-riscv64-nemu.bin
 IMG ?=
-ELF ?= --elf=build/add-riscv64-nemu.elf
+ELF ?= --elf add-riscv64-nemu.elf
 NEMU_EXEC := $(BINARY) $(ARGS) $(ELF)$(IMG)
 
 run-env: $(BINARY) $(DIFF_REF_SO)
