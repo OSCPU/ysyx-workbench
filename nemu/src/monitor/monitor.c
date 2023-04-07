@@ -127,7 +127,7 @@ static void parse_elf()
 
   Elf32_Shdr shstrtab;
   // read the Section header string table
-  fseek(fp, sizeof(Elf32_Shdr) * elf_header.e_shstrndx, SEEK_CUR);
+  fseek(fp, sizeof(Elf32_Shdr) * elf_header.e_shstrndx, SEEK_SET);
   readfile = fread(&shstrtab, sizeof(Elf32_Shdr), 1, fp);
   Assert(readfile != 0, "fail to read shstrtab\n");
   fseek(fp, elf_header.e_shoff, SEEK_SET);
@@ -142,7 +142,7 @@ static void parse_elf()
     // read a section
     readfile = fread(&temp, sizeof(Elf32_Shdr), 1, fp);
     Assert(readfile != 0, "fail to read section\n");
-    Log("readfile %d",elf_header.e_shnum);
+    Log("readfile %d\n",elf_header.e_shnum);
     if (temp.sh_type == SHT_SYMTAB)
     {
       symtab = (Elf32_Shdr *)malloc(sizeof(Elf32_Shdr));
