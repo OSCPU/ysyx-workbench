@@ -13,7 +13,7 @@ override ARGS ?= --log=$(BUILD_DIR)/nemu-log.txt
 override ARGS += $(ARGS_DIFF)
 
 # Command to execute NEMU
-IMG ?= --img=/yzw/ysyx-workbench/am-kernels/tests/cpu-tests/build/hello-str-riscv64-nemu.bin
+IMG ?= --img=/yzw/ysyx-workbench/am-kernels/tests/cpu-tests/build/add-riscv64-nemu.bin
 IMG ?=
 ELF ?= --elf=/yzw/ysyx-workbench/am-kernels/tests/cpu-tests/build/hello-str-riscv64-nemu.elf
 NEMU_EXEC := $(BINARY) $(ARGS) $(ELF) $(IMG)
