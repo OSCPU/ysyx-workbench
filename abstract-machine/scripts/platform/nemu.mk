@@ -11,9 +11,9 @@ CFLAGS    += -fdata-sections -ffunction-sections
 LDFLAGS   += -T $(AM_HOME)/scripts/linker.ld \
              --defsym=_pmem_start=0x80000000 --defsym=_entry_offset=0x0
 LDFLAGS   += --gc-sections -e _start
-NEMUFLAGS += -e $(IMAGE).elf 
-NEMUFLAGS += -l nemu-log.txt 
-# $(shell dirname $(IMAGE).elf)/
+# NEMUFLAGS += -e $(IMAGE).elf 
+NEMUFLAGS += -l $(shell dirname $(IMAGE).elf)/nemu-log.txt 
+
 CFLAGS += -DMAINARGS=\"$(mainargs)\"
 CFLAGS += -I$(AM_HOME)/am/src/platform/nemu/include
 .PHONY: $(AM_HOME)/am/src/platform/nemu/trm.c
