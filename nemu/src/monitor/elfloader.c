@@ -4,9 +4,6 @@
 
 #include "elfloader.h"
 
-// typedef Elf32_Shdr Elf_Shdr;
-// typedef Elf32_Ehdr Elf_Ehdr;
-
 
 static FuncInfo elf_func[1024];
 static void read_from_file(FILE *elf, size_t offset, size_t size, void* dest){

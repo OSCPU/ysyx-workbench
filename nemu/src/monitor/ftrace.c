@@ -3,7 +3,9 @@
 #include <utils.h>
 #include <stdlib.h>
 #include <isa.h>
-
+#ifdef CONFIG_FTRACE
+    static char *action_name[] = {"Call", "Ret"};
+#endif
 #ifdef CONFIG_FTRACE
 typedef struct {
   char *name;
@@ -51,7 +53,10 @@ static void append(paddr_t cur, paddr_t des, int type){
     node->cur_info = check_func(cur);
     node->des_info = check_func(des);
     node->type = type;
-
+    printf("<%#x>" ASNI_FMT(" %-12s ", ASNI_FG_BLUE) ASNI_FMT("%s", ASNI_FG_WHITE)  
+            ASNI_FMT("\t<%#x> ", ASNI_FG_YELLOW) ASNI_FMT("%-12s \n", ASNI_FG_BLUE),  
+            node->addr, node->cur_info ? node->cur_info->func_name :"", action_name[node->type], 
+            node->des_info ? node->des_info->start : 0, node->des_info ? node->des_info->func_name : "");
     end = node;
 }
 #endif
@@ -68,9 +73,7 @@ void stack_return(paddr_t cur, paddr_t des){
   #endif
 }
 
-#ifdef CONFIG_FTRACE
-    static char *action_name[] = {"Call", "Ret"};
-#endif
+
 
 
 void print_stack_trace(){
