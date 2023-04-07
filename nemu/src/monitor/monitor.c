@@ -221,6 +221,7 @@ static void ftrace_log(int op, word_t addr, word_t t_addr)
         blank[i] = ' ';
 
       sprintf(record, "0x%08lx: %s%s[%s@0x%08lx]\n", addr, blank, opstr[op], p->name, t_addr);
+      Log("%s",record);
       // log to the ftrace-log
       FILE * fp = fopen(ftrace_log_file, "a");
       Assert(fp, "fail to open ftrace log file\n");
