@@ -149,7 +149,7 @@ static void parse_elf()
       Assert(symtab != NULL,"symtab no memory\n");
       memcpy(symtab, &temp, sizeof(temp));
     }
-    else if (temp.sh_type == SHT_STRTAB )//&& i != elf_header.e_shstrndx
+    else if (temp.sh_type == SHT_STRTAB && i != elf_header.e_shstrndx)//
     {
       strtab = (Elf32_Shdr *)malloc(sizeof(Elf32_Shdr));
       Assert(strtab != NULL,"strtab no memory\n");
