@@ -120,7 +120,7 @@ static void parse_elf()
   readfile = fread(&elf_header,sizeof(Elf32_Ehdr),1,fp);
   printf("readfile = %d\n", readfile);
   Assert(readfile != 0, "fail to read header\n");
-
+  Elf32_Off section_header_offset = elf_header.e_shoff;
   // find the section table and read each section
   printf("Start of section headers: 0x%x\n", elf_header.e_shoff);
   fseek(fp, elf_header.e_shoff, SEEK_SET);
@@ -140,6 +140,7 @@ static void parse_elf()
   for (int i = 0; i < elf_header.e_shnum; i++)
   {
     // read a section
+    fseek(fp, sizeof(Elf32_Shdr) * i+section_header_offset, SEEK_SET);
     readfile = fread(&temp, sizeof(Elf32_Shdr), 1, fp);
     Assert(readfile != 0, "fail to read section\n");
     Log("readfile %d\n",elf_header.e_shnum);
