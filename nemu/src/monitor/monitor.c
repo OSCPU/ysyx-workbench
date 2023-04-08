@@ -104,205 +104,109 @@ int lastest_op = -1;
 static char * ftrace_log_file = "ftrace-log.txt";
 bool ftrace = false;
 // function trace
-// static void parse_elf()
-// {
-//   FILE *fp;
-//   Elf32_Ehdr elf_header;
-//   int readfile;
+static void parse_elf()
+{
+  FILE *fp;
+  Elf32_Ehdr elf_header;
+  int readfile;
 
-//   ftrace = true;
+  ftrace = true;
 
-// // read the header
-//   fp = fopen(elf_file, "rb");
+// read the header
+  fp = fopen(elf_file, "rb");
   
-//   Assert(fp, "fail to open file %s\n", elf_file);
+  Assert(fp, "fail to open file %s\n", elf_file);
   
-//   readfile = fread(&elf_header,sizeof(Elf32_Ehdr),1,fp);
-//   printf("readfile = %d\n", readfile);
-//   Assert(readfile != 0, "fail to read header\n");
-//   //Elf32_Off section_header_offset = elf_header.e_shoff;
-//   // find the section table and read each section
-//   printf("Start of section headers: 0x%x\n", elf_header.e_shoff);
-//   fseek(fp, elf_header.e_shoff, SEEK_SET);
+  readfile = fread(&elf_header,sizeof(Elf32_Ehdr),1,fp);
+  printf("readfile = %d\n", readfile);
+  Assert(readfile != 0, "fail to read header\n");
 
-//   Elf32_Shdr shstrtab;
-//   // read the Section header string table
-//   fseek(fp, sizeof(Elf32_Shdr) * elf_header.e_shstrndx, SEEK_CUR);  // skip the section header
-//   readfile = fread(&shstrtab, sizeof(Elf32_Shdr), 1, fp);
-//   Assert(readfile != 0, "fail to read shstrtab\n");
-//   fseek(fp, elf_header.e_shoff, SEEK_SET);
-//   printf("Section header string table offset: 0x%x\n", shstrtab.sh_offset);
+  // find the section table and read each section
+  printf("Start of section headers: 0x%x\n", elf_header.e_shoff);
+  fseek(fp, elf_header.e_shoff, SEEK_SET);
 
-//   // find the strtab and symtab
-//   Elf32_Shdr *strtab = NULL;
-//   Elf32_Shdr *symtab = NULL;
-//   Elf32_Shdr temp;
-//   for (int i = 0; i < elf_header.e_shnum; i++)
-//   {
-//     // read a section
-//     fseek(fp, sizeof(Elf32_Shdr) * i+shstrtab.sh_offset, SEEK_SET);
-//     readfile = fread(&temp, sizeof(Elf32_Shdr), 1, fp);
-//     Assert(readfile != 0, "fail to read section\n");
-//     Log("readfile %d\n",elf_header.e_shnum);
-//     if (temp.sh_type == SHT_SYMTAB)
-//     {
-//       symtab = (Elf32_Shdr *)malloc(sizeof(Elf32_Shdr));
-//       Assert(symtab != NULL,"symtab no memory\n");
-//       printf("In symtab offset: 0x%x\n", temp.sh_offset);
-//       memcpy(symtab, &temp, sizeof(temp));
-//     }
-//     else if (temp.sh_type == SHT_STRTAB && i != elf_header.e_shstrndx)//
-//     {
-//       strtab = (Elf32_Shdr *)malloc(sizeof(Elf32_Shdr));
-//       printf("strtab offset: 0x%x\n", temp.sh_offset);
-//       Assert(strtab != NULL,"strtab no memory\n");
-//       memcpy(strtab, &temp, sizeof(temp));
-//     }
-//     // judge its section name
-//   }
-//   assert(strtab != NULL);
-//   assert(symtab != NULL);
-  
-//   printf("symbol table offset: 0x%x\n", symtab->sh_offset);
-//   printf("string table offset: 0x%x\n", strtab->sh_offset);
+  Elf32_Shdr shstrtab;
+  // read the Section header string table
+  fseek(fp, sizeof(Elf32_Shdr) * elf_header.e_shstrndx, SEEK_CUR);  // skip the section header
+  readfile = fread(&shstrtab, sizeof(Elf32_Shdr), 1, fp);
+  Assert(readfile != 0, "fail to read shstrtab\n");
+  fseek(fp, elf_header.e_shoff, SEEK_SET);
+  printf("Section header string table offset: 0x%x\n", shstrtab.sh_offset);
 
-//   // read symbol table and find func
-//   Elf32_Sym symbol;
-//   fseek(fp, symtab->sh_offset, SEEK_SET);
-//   int entries = symtab->sh_size / symtab->sh_entsize;
-//   // printf("entries: %d\n", entries);
-//   long addr;
-//   for (int i = 0; i < entries; i++)
-//   {
-//     readfile = fread(&symbol, sizeof(symbol), 1, fp);
-//     Assert(readfile != 0, "fail to read symbol\n");
-//     if ((symbol.st_info  & 0xf) == STT_FUNC)
-//     {
-//       // read the function name
-//       Func *func = (Func *)malloc(sizeof(Func));
-//       addr = ftell(fp);
-//       fseek(fp, strtab->sh_offset + symbol.st_name, SEEK_SET);
-//       int i = 0;
-//       char ch;
-//       while ((ch = fgetc(fp)) != '\0')
-//         func->name[i++] = ch;
-//       func->name[i] = '\0';
-//       func->start = symbol.st_value;
-//       func->end = func->start + symbol.st_size;
-//       func->next = func_head;
-//       func_head = func;
-//       printf("func: %s; start: 0x%lx; end: 0x%lx\n", func->name, func->start, func->end);
-//       fseek(fp, addr, SEEK_SET);
-//     }
-//   }
-//   fclose(fp);
-// }
-typedef struct __FUNC_INFO{
-    char func_name[64];
-    paddr_t start;
-    size_t size;
-}FUNC_INFO;
-static int end = 0;
-static FUNC_INFO elf_funcs[1024];
-static void read_from_file(FILE *elf, size_t offset, size_t size, void* dest){
-    fseek(elf, offset, SEEK_SET);
-    int flag = fread(dest, size, 1, elf);
-    assert(flag == 1);
-}
-
-static void get_str_from_file(FILE *elf, size_t offset, size_t n, void* dest){
-    fseek(elf, offset, SEEK_SET);
-    char* flag = fgets(dest, n, elf);
-    assert(flag != NULL);
-}
-static void append(char* func_name, paddr_t start, size_t size){
-    strncpy(elf_funcs[end].func_name, func_name, sizeof(elf_funcs[0].func_name));
-    elf_funcs[end].start = start;
-    elf_funcs[end].size = size;
-    end++;
-}
-
-void parse_elf(const char* elf_file, size_t global_offset){
-    printf("Loading from %s\n", elf_file);
-    FILE *elf = fopen(elf_file, "rb");
-    assert(elf != NULL);
-    Elf32_Ehdr elf_header;
-    read_from_file(elf, global_offset + 0, sizeof elf_header, &elf_header);
-    
-    Elf32_Off section_header_offset = elf_header.e_shoff;
-    size_t headers_entry_size = elf_header.e_shentsize;
-    int headers_entry_num = elf_header.e_shnum;
-
-    printf("====== Reading ELF File ======\n");
-    printf("e_shoff: %d \n", section_header_offset);
-    printf("e_shentsize: %ld\t e_shnum: %d \n", headers_entry_size, headers_entry_num);
-    
-    assert(sizeof(Elf32_Shdr) == headers_entry_size);
-    
-    // printf("====== Selection Headers ======\n");
-
-    Elf32_Off symbol_table_offset = 0, string_table_offset = 0;
-    size_t symbol_table_total_size = 0;
-    //size_t string_table_total_size;
-    size_t symbol_table_entry_size = 0;
-    for (int i = 0; i < headers_entry_num; ++i){
-        Elf32_Shdr section_entry;
-        read_from_file(elf, global_offset + i * headers_entry_size + section_header_offset,
-            headers_entry_size, &section_entry);
-        switch(section_entry.sh_type){
-            case SHT_SYMTAB:
-                symbol_table_offset = section_entry.sh_offset;
-                symbol_table_total_size = section_entry.sh_size;
-                symbol_table_entry_size = section_entry.sh_entsize;
-            break;
-
-            case SHT_STRTAB:
-                if (i == elf_header.e_shstrndx){}else{
-                    string_table_offset = section_entry.sh_offset;
-                    //string_table_total_size = section_entry.sh_size;
-                }
-            break;
-        }
+  // find the strtab and symtab
+  Elf32_Shdr *strtab = NULL;
+  Elf32_Shdr *symtab = NULL;
+  Elf32_Shdr temp;
+  for (int i = 0; i < elf_header.e_shnum; i++)
+  {
+    // read a section
+    readfile = fread(&temp, sizeof(Elf32_Shdr), 1, fp);
+    Assert(readfile != 0, "fail to read section\n");
+    Log("readfile %d\n",elf_header.e_shnum);
+    if (temp.sh_type == SHT_SYMTAB)
+    {
+      symtab = (Elf32_Shdr *)malloc(sizeof(Elf32_Shdr));
+      Assert(symtab != NULL,"symtab no memory\n");
+      printf("In symtab offset: 0x%x\n", temp.sh_offset);
+      memcpy(symtab, &temp, sizeof(temp));
     }
-
-    // printf("String Table Offset: %#x\n", string_table_offset);
-    // printf("Symbol Table Offset: %#x\n", symbol_table_offset);
-    
-    char function_name[64];
-    assert(symbol_table_entry_size == sizeof(Elf32_Sym));
-    for (int i = 0; i < symbol_table_total_size / symbol_table_entry_size; ++i){
-        Elf32_Sym symbol_section_entry;
-        read_from_file(elf, global_offset + i * symbol_table_entry_size + symbol_table_offset, 
-            symbol_table_entry_size, &symbol_section_entry);
-        switch(ELF32_ST_TYPE(symbol_section_entry.st_info)){
-            case STT_FUNC:
-            get_str_from_file(elf, global_offset + string_table_offset + symbol_section_entry.st_name, 
-                sizeof(function_name), function_name);
-            append(function_name, symbol_section_entry.st_value, symbol_section_entry.st_size);  
-            break;
-        }
+    else if (temp.sh_type == SHT_STRTAB && i != elf_header.e_shstrndx)//
+    {
+      strtab = (Elf32_Shdr *)malloc(sizeof(Elf32_Shdr));
+      printf("strtab offset: 0x%x\n", temp.sh_offset);
+      Assert(strtab != NULL,"strtab no memory\n");
+      memcpy(strtab, &temp, sizeof(temp));
     }
-    // printf("====== Symbol Table ======\n");
-    // for (int i = 0; i < end; ++i){
-    //     FUNC_INFO *info = &elf_funcs[i];
-    //     printf("Func: %12s | Start: %#x | Size: %ld\n", info->func_name, 
-    //         info->start, info->size);
-    // }
-}
+    // judge its section name
+  }
+  assert(strtab != NULL);
+  assert(symtab != NULL);
+  
+  printf("symbol table offset: 0x%x\n", symtab->sh_offset);
+  printf("string table offset: 0x%x\n", strtab->sh_offset);
 
+  // read symbol table and find func
+  Elf32_Sym symbol;
+  fseek(fp, symtab->sh_offset, SEEK_SET);
+  int entries = symtab->sh_size / symtab->sh_entsize;
+  // printf("entries: %d\n", entries);
+  long addr;
+  for (int i = 0; i < entries; i++)
+  {
+    readfile = fread(&symbol, sizeof(symbol), 1, fp);
+    Assert(readfile != 0, "fail to read symbol\n");
+    if ((symbol.st_info  & 0xf) == STT_FUNC)
+    {
+      // read the function name
+      Func *func = (Func *)malloc(sizeof(Func));
+      addr = ftell(fp);
+      fseek(fp, strtab->sh_offset + symbol.st_name, SEEK_SET);
+      int i = 0;
+      char ch;
+      while ((ch = fgetc(fp)) != '\0')
+        func->name[i++] = ch;
+      func->name[i] = '\0';
+      func->start = symbol.st_value;
+      func->end = func->start + symbol.st_size;
+      func->next = func_head;
+      func_head = func;
+      printf("func: %s; start: 0x%lx; end: 0x%lx\n", func->name, func->start, func->end);
+      fseek(fp, addr, SEEK_SET);
+    }
+  }
+  fclose(fp);
+}
 static void ftrace_log(int op, word_t addr, word_t t_addr)
 {
   if (!ftrace)
     return;
-  // Func * p = func_head;
-  FUNC_INFO * p =elf_funcs;
+  Func * p = func_head;
   char record[128];
   char blank[32];
 
   while (p)
   {
-    if (t_addr >= p->start && t_addr < p->start + p->size)
-      break;
+    if (t_addr >= p->start && t_addr < p->end)
     {
       // blank
       if (lastest_op == op)
@@ -316,12 +220,8 @@ static void ftrace_log(int op, word_t addr, word_t t_addr)
       memset(blank, '\0', sizeof(blank));
       for (int i = 0; i < depth; i++)
         blank[i] = ' ';
-      int i = 0;
-      while(p->func_name[i] != '\0')
-      {
-        sprintf(record, "%c", p->func_name[i]);
-      }
-      sprintf(record, "0x%08lx: %s%s[@0x%lu]\n", addr, blank, opstr[op], t_addr);
+
+      sprintf(record, "0x%08lx: %s%s[%s@0x%08lx]\n", addr, blank, opstr[op], p->name, t_addr);
       // log to the ftrace-log
       FILE * fp = fopen(ftrace_log_file, "a+");
       Assert(fp, "fail to open ftrace log file\n");Log("fail to open ftrace log file\n");
@@ -331,7 +231,7 @@ static void ftrace_log(int op, word_t addr, word_t t_addr)
 
       return;
     }
-    p ++;
+    p = p->next;
   }
 }
 
@@ -354,7 +254,7 @@ void init_monitor(int argc, char *argv[]) {
   init_rand();
   /* elf */
   if (elf_file)
-    parse_elf(elf_file,0);
+    parse_elf();
   /* Open the log file. */
   init_log(log_file);
 
