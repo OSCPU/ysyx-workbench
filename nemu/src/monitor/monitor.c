@@ -127,7 +127,7 @@ static void parse_elf()
 
   Elf32_Shdr shstrtab;
   // read the Section header string table
-  fseek(fp, sizeof(Elf32_Shdr) * elf_header.e_shstrndx, SEEK_SET);  // skip the section header
+  fseek(fp, sizeof(Elf32_Shdr) * elf_header.e_shstrndx, SEEK_CUR);  // skip the section header
   readfile = fread(&shstrtab, sizeof(Elf32_Shdr), 1, fp);
   Assert(readfile != 0, "fail to read shstrtab\n");
   fseek(fp, elf_header.e_shoff, SEEK_SET);
@@ -140,7 +140,7 @@ static void parse_elf()
   for (int i = 0; i < elf_header.e_shnum; i++)
   {
     // read a section
-    fseek(fp, sizeof(Elf32_Shdr) * i+elf_header.e_shoff, SEEK_SET);
+    fseek(fp, sizeof(Elf32_Shdr) * i+shstrtab.sh_offset, SEEK_SET);
     readfile = fread(&temp, sizeof(Elf32_Shdr), 1, fp);
     Assert(readfile != 0, "fail to read section\n");
     Log("readfile %d\n",elf_header.e_shnum);
