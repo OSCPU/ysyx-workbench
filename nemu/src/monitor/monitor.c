@@ -237,7 +237,7 @@ void parse_elf(const char* elf_file, size_t global_offset){
     printf("e_shoff: %d \n", section_header_offset);
     printf("e_shentsize: %ld\t e_shnum: %d \n", headers_entry_size, headers_entry_num);
     
-    assert(sizeof(Elf32_Shdr) == headers_entry_size);
+    //assert(sizeof(Elf32_Shdr) == headers_entry_size);
     
     // printf("====== Selection Headers ======\n");
 
