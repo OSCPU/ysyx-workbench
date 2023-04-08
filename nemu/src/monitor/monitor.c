@@ -93,7 +93,7 @@ static int parse_args(int argc, char *argv[]) {
 word_t depth; // the depth of call
 typedef struct Func
 {
-  char name[32];
+  char name[64];
   word_t start;
   word_t end;
   struct Func * next;
@@ -127,7 +127,7 @@ static void parse_elf()
 
   Elf32_Shdr shstrtab;
   // read the Section header string table
-  fseek(fp, sizeof(Elf32_Shdr) * elf_header.e_shstrndx, SEEK_SET);  // skip the section header
+  fseek(fp, sizeof(Elf32_Shdr) * elf_header.e_shstrndx, SEEK_CUR);  // skip the section header
   readfile = fread(&shstrtab, sizeof(Elf32_Shdr), 1, fp);
   Assert(readfile != 0, "fail to read shstrtab\n");
   fseek(fp, elf_header.e_shoff, SEEK_SET);
