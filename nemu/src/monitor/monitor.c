@@ -234,19 +234,23 @@ static void ftrace_log(int op, word_t addr, word_t t_addr)
     p = p->next;
   }
 }
-
+#endif
 void log_call(word_t addr, word_t t_addr)
-{
+{ 
+  #ifdef CONFIG_FTRACE
   ftrace_log(CALL_OP, addr, t_addr);
   printf("call: 0x%08lx; target: 0x%08lx)\n", addr, t_addr);
+  #endif
 }
 
 void log_ret(word_t addr, word_t t_addr)
-{
+{ 
+  #ifdef CONFIG_FTRACE
   ftrace_log(RET_OP, addr, t_addr);
   printf("ret: 0x%08lx; target: 0x%08lx)\n", addr, t_addr);
+  #endif
 }
-#endif
+
 void init_monitor(int argc, char *argv[]) {
   /* Perform some global initialization. */
   /* Parse arguments. */
