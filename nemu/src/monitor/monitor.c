@@ -89,7 +89,7 @@ static int parse_args(int argc, char *argv[]) {
   }
   return 0;
 }
-
+#ifdef CONFIG_FTRACE
 word_t depth; // the depth of call
 typedef struct Func
 {
@@ -246,6 +246,7 @@ void log_ret(word_t addr, word_t t_addr)
   ftrace_log(RET_OP, addr, t_addr);
   printf("ret: 0x%08lx; target: 0x%08lx)\n", addr, t_addr);
 }
+#endif
 void init_monitor(int argc, char *argv[]) {
   /* Perform some global initialization. */
   /* Parse arguments. */
@@ -253,8 +254,10 @@ void init_monitor(int argc, char *argv[]) {
   /* Set random seed. */
   init_rand();
   /* elf */
+  #ifdef CONFIG_FTRACE
   if (elf_file)
     parse_elf();
+  #endif
   /* Open the log file. */
   init_log(log_file);
 
