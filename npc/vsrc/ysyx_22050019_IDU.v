@@ -104,10 +104,10 @@ wire rv32_funct7_010_0000 = ( funct7 == `ysyx_22050019_RV32_FUNCT7_0100000) ;
 // 一些加法和减法指令，通过加法器接受根据指令来源的输入来实现
 wire add  = op_r&&rv32_funct3_000&&rv32_funct7_000_0000;
 wire addi = op_i&&rv32_funct3_000;
-wire addiw= inst_addiw&&rv32_funct3_001;
+wire addiw= inst_addiw&&rv32_funct3_000;
 wire addw = inst_w&&rv32_funct3_000&&(~rv32_funct7_000_0001)&&(~rv32_funct7_010_0000);
 
-wire sub  = op_r&&rv32_funct3_000&&rv32_funct7_010_0000;
+wire sub  = op_r&&rv32_funct3_000&&rv32_funct7_000_0000;
 wire subw = inst_w&&rv32_funct3_000&&rv32_funct7_010_0000;
 
 // 比较指令
