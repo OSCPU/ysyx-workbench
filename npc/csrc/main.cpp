@@ -3,7 +3,7 @@
 #define MAX_SIM_TIME 15000000
 uint64_t sim_time = 0;
 unsigned long long debug_time = 0;
-#define DEBUG_SKIP 500000
+#define DEBUG_SKIP 0
 // 一些导入的接口
 void init_device();
 
