@@ -93,7 +93,7 @@ wire [INDEX_DEPTH-1:0] RAM_D   = cache_r_data_i                                 
 
 always@(*) begin
   if(rst)begin
-    RAM_CEN[0] = 1;
+    RAM_CEN[0] = 0;
     RAM_CEN[1] = 1;
   end
   else if((state == S_IDLE)&(next_state == S_HIT)|(state == S_R)&(next_state == S_HIT))
