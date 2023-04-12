@@ -83,7 +83,7 @@ ysyx_22050019_mux #( .NR_KEY(4), .KEY_LEN(4), .DATA_LEN(8)) mem_w_wdth_mux      
   .lut         ({		 4'b1000,8'b11111111,
                      4'b0100,result[2] ? 8'b00010000 << result[1:0] : 8'b00000001 << result[1:0],
                  		 4'b0010,result[2] ? 8'b00110000 << result[1:0] : 8'b00000011 << result[1:0],
-				             4'b0001,result[2] ? 8'b11110000                : 8'b00001111 << result[1:0]
+				             4'b0001,result[2] ? 8'b11110000 << result[1:0] : 8'b00001111 << result[1:0]
                     }),        
   .out         (mem_w_mask)  
 );
