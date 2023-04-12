@@ -107,7 +107,7 @@ wire addi = op_i&&rv32_funct3_000;
 wire addiw= inst_addiw&&rv32_funct3_000;
 wire addw = inst_w&&rv32_funct3_000&&(~rv32_funct7_000_0001)&&(~rv32_funct7_010_0000);
 
-wire sub  = op_r&&rv32_funct3_000&&rv32_funct7_000_0000;
+wire sub  = op_r&&rv32_funct3_000&&rv32_funct7_010_0000;
 wire subw = inst_w&&rv32_funct3_000&&rv32_funct7_010_0000;
 
 // 比较指令

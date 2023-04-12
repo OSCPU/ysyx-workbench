@@ -76,9 +76,6 @@ parameter RAM_DEPTH= INDEX_DEPTH                         ;//64$pow(2,INDEX_WIDTH
 parameter RAML     = INDEX_WIDTH+OFFSET_WIDTH-1          ;//8
 parameter RAMR     = OFFSET_WIDTH                        ;//3
 
-
-
-
 // 保存地址，miss后的写数据，偏移寄存器
 reg [ADDR_WIDTH-1:0]   addr  ;
 wire[INDEX_WIDTH-1:0]  index = addr[INDEXL:INDEXR];
@@ -109,7 +106,6 @@ end
 wire [INDEX_DEPTH-1:0] RAM_Q  [WAY_DEPTH-1:0]                                                            ;//读出的cache数据
 reg                    RAM_CEN[WAY_DEPTH-1:0]                                                            ;//为0有效，为1是无效（2个使能信号需要同时满足不然会读出随机数）使能信号控制
 wire                   RAM_WEN = (state == S_IDLE)&(next_state == S_HIT)|(next_state == S_AW)            ;//为0是写使能1是读使能，读写控制hit是读数据
-reg                    wen_ram;
 wire [DATA_WIDTH-1:0]  maskn   = 64'h0                                                                   ;//写掩码，目前是全位写，掩码在发送端处理了
 wire [INDEX_DEPTH-1:0] RAM_BWEN= maskn                                                                   ;//ram写掩码目前一样不用过多处理
 wire [INDEX_WIDTH-1:0] RAM_A   = (next_state == S_HIT)|(next_state == S_AW) ? index_in : addr[RAML:RAMR] ;//ram地址索引
@@ -181,7 +177,7 @@ always@(*) begin
     S_B:if(cache_b_valid_i&cache_b_ready_o&cache_ar_ready_i)next_state=S_AR;
       else next_state=S_B;
 
-    S_AR:if(cache_ar_valid_o&cache_ar_ready_i)next_state=S_R;
+    S_AR:if(cache_ar_valid&cache_ar_ready_i)next_state=S_R;
       else next_state=S_AR;
 
     S_R:if(cache_r_ready_o&cache_r_valid_i)next_state=S_HIT;
@@ -198,7 +194,7 @@ always@(posedge clk)begin
     aw_ready_o          <= 1;
 		r_data_valid_o      <= 0;
 		r_data_o            <= 0;
-    cache_ar_valid_o    <= 0;
+    cache_ar_valid    <= 0;
     cache_ar_addr_o     <= 0;
 		cache_r_ready_o     <= 0;
     waynum              <= 0;
@@ -207,13 +203,13 @@ always@(posedge clk)begin
   else begin
     case(state)
       S_IDLE:if(next_state==S_HIT)begin
-          rw_control              <= aw_valid_i&aw_ready_o           ;
 					ar_ready_o              <= 0                               ;
           aw_ready_o              <= 0                               ;
           r_data_valid_o          <= 0                               ; 
           waynum                  <= hit_waynum_i                    ;
           addr                    <= {ar_addr_i[TAGL:INDEXR],OFFSET0};
           if(aw_valid_i&aw_ready_o) begin
+          rw_control              <= 1                               ;
           w_data_ready_o          <= 1                               ;
           end
         end
@@ -224,16 +220,18 @@ always@(posedge clk)begin
           addr                    <= {ar_addr_i[TAGL:INDEXR],OFFSET0}      ;
           valid[random][index_in] <= 0                                     ;
           tag[random][index_in]   <= ar_addr_i[TAGL:TAGR]                  ;
-          cache_ar_valid_o        <= 1                                     ;
+          cache_ar_valid          <= 1                                     ;
           cache_ar_addr_o         <= {32'b0,ar_addr_i[TAGL:INDEXR],OFFSET0};
         end
         else if(next_state==S_Aw)begin
-          rw_control              <= aw_valid_i&aw_ready_o                 ;
 					ar_ready_o              <= 0                                     ;
           aw_ready_o              <= 0                                     ;
           waynum                  <= random                                ;
           addr                    <= {ar_addr_i[TAGL:INDEXR],OFFSET0}      ;
           valid[random][index_in] <= 0                                     ;
+          if(aw_valid_i&aw_ready_o) begin
+          rw_control              <= 1                               ;
+          end
 
           cache_aw_valid_o        <= 1;
           cache_aw_addr_o         <= {32'b0,tag[random][index_in],index_in,OFFSET0};
@@ -271,20 +269,20 @@ always@(posedge clk)begin
           cache_w_data_i          <= RAM_Q[waynum];
         end
       S_W:if(next_state==S_B)begin
-          cache_w_valid_i         <= 0;
-          cache_b_ready_o         <= 1;
-          dirty[waynum][index]    <= 0;
-          valid[waynum][index]    <= 0;
+          cache_w_valid_i         <= 0              ;
+          cache_b_ready_o         <= 1              ;
+          dirty[waynum][index]    <= 0              ;
+          valid[waynum][index]    <= 0              ;
           tag[waynum][index]      <= addr[TAGL:TAGR];
           end
       S_B:if(next_state==S_AR)begin
           cache_b_ready_o         <= 0                                     ;
-          cache_ar_valid_o        <= 1                                     ;
+          cache_ar_valid          <= 1                                     ;
           cache_ar_addr_o         <= {32'b0,addr[TAGL:INDEXR],OFFSET0}     ;
         end
       S_AR:if(next_state==S_R)begin
-          cache_ar_valid_o  <= 0;
-          cache_r_ready_o   <= 1;
+          cache_ar_valid    <= 0               ;
+          cache_r_ready_o   <= 1               ;
           end
       S_R:if(next_state==S_HIT)begin
           cache_r_ready_o     <= 0             ;
@@ -297,4 +295,8 @@ always@(posedge clk)begin
     endcase
   end
 end
+//axi的一些需要适配仲裁器的信号
+reg cache_ar_valid;
+assign cache_ar_valid_o = cache_ar_valid|next_state==S_AR;
+
 endmodule
