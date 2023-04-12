@@ -106,8 +106,8 @@ end
 wire [INDEX_DEPTH-1:0] RAM_Q  [WAY_DEPTH-1:0]                                                            ;//读出的cache数据
 reg                    RAM_CEN[WAY_DEPTH-1:0]                                                            ;//为0有效，为1是无效（2个使能信号需要同时满足不然会读出随机数）使能信号控制
 wire                   RAM_WEN = (state == S_IDLE)&(next_state == S_HIT)|(next_state == S_AW)            ;//为0是写使能1是读使能，读写控制hit是读数据
-wire [DATA_WIDTH-1:0]  maskn   = 64'hffff                                                                ;//写掩码，目前是全位写，掩码在发送端处理了
-
+wire [DATA_WIDTH-1:0]  maskn   = (state == S_HIT)&(rw_control) ? {{8{w_w_strb_i[7]}},{8{w_w_strb_i[6]}},{8{w_w_strb_i[5]}},{8{w_w_strb_i[4]}},{8{w_w_strb_i[3]}},{8{w_w_strb_i[2]}},{8{w_w_strb_i[1]}},{8{w_w_strb_i[0]}}}
+                                                               : 64'hffffffffffffffff                    ;//写掩码，目前是全位写，掩码在发送端处理了
 wire [INDEX_DEPTH-1:0] RAM_BWEN= ~maskn                                                                  ;//ram写掩码目前一样不用过多处理
 wire [INDEX_WIDTH-1:0] RAM_A   = (next_state == S_HIT)|(next_state == S_AW) ? index_in : addr[RAML:RAMR] ;//ram地址索引
 wire [INDEX_DEPTH-1:0] RAM_D   = cache_r_data_i|w_data_o                                                 ;//更新ram数据
