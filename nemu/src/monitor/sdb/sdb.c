@@ -54,6 +54,18 @@ static int cmd_q(char *args) {
 
 static int cmd_help(char *args);
 
+static int cmd_si(char *args);
+
+static int cmd_info(char *args);
+
+static int cmd_nexpr(char *args);
+
+static int cmd_pexpr(char *args);
+
+static int cmd_wexpr(char *args);
+
+static int cmd_d(char *args);
+
 static struct {
   const char *name;
   const char *description;
@@ -62,8 +74,16 @@ static struct {
   { "help", "Display information about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
-
-  /* TODO: Add more commands */
+  {"si","let program execute N steps and stop,default N is 1.",cmd_si},
+  {"info","print the state of register or watchpoint.",cmd_info},
+  {"x","get the EXPR value,set the result as initial memory address,output the continual N 4 bits in hex",cmd_nexpr},
+  {"p","get tje EXPR value",cmd_pexpr},
+  {"w","pause when expr changes",cmd_wexpr},
+  {"d","delete NO.N watchpoint",cmd_d}
+  /*
+  TODO: Add more commands
+  DONE
+   */
 
 };
 
@@ -92,6 +112,71 @@ static int cmd_help(char *args) {
   return 0;
 }
 
+static int cmd_si(char *args)
+{ 
+  if(args==NULL)
+  {
+    cpu_exec(1);
+  }
+  else{
+    if(atoi(args)<48||atoi(args)>57)
+    {
+      printf("illegal number,please input again.\n");
+    }
+    unsigned tmp =strtoull(args,NULL,10);
+    cpu_exec(tmp);
+  }
+  return 0;
+}
+static int cmd_info(char *args)
+{
+  if(args==NULL)
+  {
+    printf("please note what info you want to search.\n");
+  }
+  else
+  {
+    if(*args=='r')
+    {
+      isa_reg_display();
+    }
+    else if(*args=='b')
+    {
+      //这一部分留到后面实现
+    }
+    else{
+      printf("please input a targeted info.\n");
+    }
+  }
+
+  return 0;
+}
+
+static int cmd_nexpr(char *args)
+{
+  int N=args[0]-'0';
+  char *expr=NULL;
+  expr=(args+2);
+  for(int i=0;i<N;i++)
+  {
+    printf("%p\n",expr+4*N);
+  }
+  return 0;
+}
+
+static int cmd_pexpr(char *args)
+{
+  return 0;
+}
+static int cmd_wexpr(char *args)
+{
+  return 0;
+}
+
+static int cmd_d(char *args)
+{
+  return 0;
+}
 void sdb_set_batch_mode() {
   is_batch_mode = true;
 }
