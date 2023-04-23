@@ -224,6 +224,7 @@ always@(posedge clk)begin
         else if(next_state==S_AR)begin
           icache_wait()                                                    ;//多跑2个周期平衡
 					ar_ready_o              <= 0                                     ;
+          aw_ready_o              <= 0                                     ;
           waynum                  <= random                                ;
           addr                    <= {rw_addr_i[TAGL:INDEXR],OFFSET0}      ;
           valid[random][index_in] <= 0                                     ;

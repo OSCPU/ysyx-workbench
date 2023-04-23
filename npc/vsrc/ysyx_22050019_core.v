@@ -320,7 +320,7 @@ wire        axi_lsu_dcache_r_valid  ;
 wire [1:0]  axi_lsu_dcache_r_resp   = uncache ? 0 : axi_lsu_sram_r_resp  ;    
 wire [63:0] axi_lsu_dcache_r_data   ;
 
-wire        axi_dcache_aw_ready     = uncache ? 0 : axi_dcache_arbiter_aw_ready  ; 
+wire        axi_dcache_aw_ready    = uncache ? 0 : axi_dcache_arbiter_aw_ready  ; 
 wire        axi_dcache_aw_valid    ;
 wire [63:0] axi_dcache_aw_addr     ;
 wire        axi_dcache_w_ready     ;
@@ -330,7 +330,7 @@ wire [7:0]  axi_dcache_w_strb      ;
 wire        axi_dcache_b_ready     ;
 wire        axi_dcache_b_valid     ;
 wire [1:0]  axi_dcache_b_resp      ;
-wire        axi_dcache_ar_ready    ;
+wire        axi_dcache_ar_ready    = uncache ? 0 : axi_dcache_arbiter_ar_ready  ; 
 wire        axi_dcache_ar_valid    ;
 wire [63:0] axi_dcache_ar_addr     ;
 wire        axi_dcache_r_ready     ;
