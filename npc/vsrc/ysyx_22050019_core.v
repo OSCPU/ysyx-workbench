@@ -334,9 +334,9 @@ wire        axi_dcache_ar_ready    = uncache ? 0 : axi_dcache_arbiter_ar_ready  
 wire        axi_dcache_ar_valid    ;
 wire [63:0] axi_dcache_ar_addr     ;
 wire        axi_dcache_r_ready     ;
-wire        axi_dcache_r_valid     ;
-wire [1:0]  axi_dcache_r_resp      ;
-wire [63:0] axi_dcache_r_data      ;
+wire        axi_dcache_r_valid     = uncache ? 0 : axi_dcache_arbiter_r_valid   ; 
+wire [1:0]  axi_dcache_r_resp      = uncache ? 0 : axi_dcache_arbiter_r_resp    ; 
+wire [63:0] axi_dcache_r_data      = uncache ? 0 : axi_dcache_arbiter_r_data    ; 
 
 wire        axi_dcache_arbiter_aw_ready ;
 wire        axi_dcache_arbiter_aw_valid = uncache ? axi_lsu_sram_aw_valid : axi_dcache_aw_valid ;
