@@ -299,7 +299,7 @@ ysyx_22050019_icache I_CACHE(
 // dcache的信号处理模块，包含uncache和的cache的分流处理
 //***********************************************************************
 //uncache的控制逻辑
-wire uncache = ram_waddr_lsu_mem[31]|ram_raddr_lsu_mem[31];
+wire uncache = ~(ram_waddr_lsu_mem[31]|ram_raddr_lsu_mem[31]);
 //=======================================================================
 //dcache与uncache信号的生成与选择控制
 wire        axi_lsu_dcache_aw_ready ;
