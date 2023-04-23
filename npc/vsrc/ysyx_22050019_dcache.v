@@ -77,6 +77,7 @@ parameter RAM_DEPTH= INDEX_DEPTH                         ;//64$pow(2,INDEX_WIDTH
 parameter RAML     = INDEX_WIDTH+OFFSET_WIDTH-1          ;//8
 parameter RAMR     = OFFSET_WIDTH                        ;//3
 
+wire [R_ADDR_WIDTH-1:0]  rw_addr_i = ar_addr_i|aw_addr_i ; 
 // 保存地址，miss后的写数据，偏移寄存器
 reg [ADDR_WIDTH-1:0]   addr  ;
 wire[INDEX_WIDTH-1:0]  index = addr[INDEXL:INDEXR];
@@ -87,8 +88,8 @@ reg                 valid[WAY_DEPTH-1:0][INDEX_DEPTH-1:0];
 reg                 dirty[WAY_DEPTH-1:0][INDEX_DEPTH-1:0];
 
 // wire类型传入的地址解析
-wire[TAG_WIDTH-1:0]    tag_in  = ar_addr_i[TAGL:TAGR]    ;
-wire[INDEX_WIDTH-1:0]  index_in= ar_addr_i[INDEXL:INDEXR];
+wire[TAG_WIDTH-1:0]    tag_in  = rw_addr_i[TAGL:TAGR]    ;
+wire[INDEX_WIDTH-1:0]  index_in= rw_addr_i[INDEXL:INDEXR];
 wire[OFFSET_WIDTH-1:0] OFFSET0 = 0                       ;//3'b0对于这里是持有怀疑态度的
 
 // 命中路的判断逻辑      0-1 两路
@@ -197,11 +198,15 @@ always@(posedge clk)begin
     aw_ready_o                    <= 1                                     ;
 		r_data_valid_o                <= 0                                     ;
 		r_data_o                      <= 0                                     ;
+    w_data_ready_o                <= 0                                     ;
+    b_valid_o                     <= 0                                     ;
+    b_resp_o                      <= 0                                     ;
     cache_ar_valid                <= 0                                     ;
     cache_ar_addr_o               <= 0                                     ;
 		cache_r_ready_o               <= 0                                     ;
     waynum                        <= 0                                     ;
     addr                          <= 0                                     ;
+
   end
   else begin
     case(state)
@@ -210,7 +215,7 @@ always@(posedge clk)begin
           aw_ready_o              <= 0                                     ;
           r_data_valid_o          <= 0                                     ; 
           waynum                  <= hit_waynum_i                          ;
-          addr                    <= {ar_addr_i[TAGL:INDEXR],OFFSET0}      ;
+          addr                    <= {rw_addr_i[TAGL:INDEXR],OFFSET0}      ;
           if(aw_valid_i&aw_ready_o) begin
           rw_control              <= 1                                     ;
           w_data_ready_o          <= 1                                     ;
@@ -220,17 +225,21 @@ always@(posedge clk)begin
           icache_wait()                                                    ;//多跑2个周期平衡
 					ar_ready_o              <= 0                                     ;
           waynum                  <= random                                ;
-          addr                    <= {ar_addr_i[TAGL:INDEXR],OFFSET0}      ;
+          addr                    <= {rw_addr_i[TAGL:INDEXR],OFFSET0}      ;
           valid[random][index_in] <= 0                                     ;
-          tag[random][index_in]   <= ar_addr_i[TAGL:TAGR]                  ;
+          tag[random][index_in]   <= rw_addr_i[TAGL:TAGR]                  ;
           cache_ar_valid          <= 1                                     ;
-          cache_ar_addr_o         <= {32'b0,ar_addr_i[TAGL:INDEXR],OFFSET0};
+          cache_ar_addr_o         <= {32'b0,rw_addr_i[TAGL:INDEXR],OFFSET0};
+          if(aw_valid_i&aw_ready_o) begin
+          rw_control              <= 1                                     ;
+          w_data_ready_o          <= 0                                     ;
+          end
         end
         else if(next_state==S_AW)begin
 					ar_ready_o              <= 0                                     ;
           aw_ready_o              <= 0                                     ;
           waynum                  <= random                                ;
-          addr                    <= {ar_addr_i[TAGL:INDEXR],OFFSET0}      ;
+          addr                    <= {rw_addr_i[TAGL:INDEXR],OFFSET0}      ;
           valid[random][index_in] <= 0                                     ;
           if(aw_valid_i&aw_ready_o) begin
           rw_control              <= 1                                     ;
@@ -293,6 +302,9 @@ always@(posedge clk)begin
           valid[waynum][index]    <= 1                                     ;
           r_data_o                <= cache_r_data_i                        ;
           r_data_valid_o          <= 1                                     ;
+          if(rw_control) begin
+          w_data_ready_o          <= 1                                     ;
+          end
           end
       default:begin
       end
