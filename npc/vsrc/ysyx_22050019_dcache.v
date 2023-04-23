@@ -15,6 +15,7 @@
  * Tag = 32 - 3 - 6 = 23位
  * 
  * 访问外设的情况是uncache的，不需要进入cache直接访问主存
+ * 对于存储器的控制使用的是组合逻辑
  */
 module ysyx_22050019_dcache#(
   parameter DATA_WIDTH        = 64,
@@ -43,7 +44,7 @@ module ysyx_22050019_dcache#(
   input                              w_data_valid_i      ,     
   output reg                         w_data_ready_o      ,
   input     [DATA_WIDTH/8-1:0]       w_w_strb_i          ,     
-  input     [DATA_WIDTH-1:0]         w_data_o            ,   
+  input     [DATA_WIDTH-1:0]         w_data_i            ,   
   input                              b_ready_i           ,      
   output reg                         b_valid_o           ,
   output reg  [1:0]                  b_resp_o            , 
@@ -66,8 +67,8 @@ module ysyx_22050019_dcache#(
   input     [1:0]                    cache_r_resp_i      ,      
   input     [DATA_WIDTH-1:0]         cache_r_data_i
 );
-parameter TAGL     = R_ADDR_WIDTH-1                      ;//31
-parameter TAGR     = R_ADDR_WIDTH-TAG_WTH                ;//9
+parameter TAGL     = ADDR_WIDTH-1                        ;//31
+parameter TAGR     = ADDR_WIDTH-TAG_WIDTH                ;//9
 parameter INDEXL   = TAGR-1                              ;//8              
 parameter INDEXR   = TAGR-INDEX_WIDTH                    ;//3
 
@@ -106,11 +107,11 @@ end
 wire [INDEX_DEPTH-1:0] RAM_Q  [WAY_DEPTH-1:0]                                                            ;//读出的cache数据
 reg                    RAM_CEN[WAY_DEPTH-1:0]                                                            ;//为0有效，为1是无效（2个使能信号需要同时满足不然会读出随机数）使能信号控制
 wire                   RAM_WEN = (state == S_IDLE)&(next_state == S_HIT)|(next_state == S_AW)            ;//为0是写使能1是读使能，读写控制hit是读数据
-wire [DATA_WIDTH-1:0]  maskn   = (state == S_HIT)&(rw_control) ? {{8{w_w_strb_i[7]}},{8{w_w_strb_i[6]}},{8{w_w_strb_i[5]}},{8{w_w_strb_i[4]}},{8{w_w_strb_i[3]}},{8{w_w_strb_i[2]}},{8{w_w_strb_i[1]}},{8{w_w_strb_i[0]}}}
+wire [DATA_WIDTH-1:0]  maskn   = (state == S_HIT) ? {{8{w_w_strb_i[7]}},{8{w_w_strb_i[6]}},{8{w_w_strb_i[5]}},{8{w_w_strb_i[4]}},{8{w_w_strb_i[3]}},{8{w_w_strb_i[2]}},{8{w_w_strb_i[1]}},{8{w_w_strb_i[0]}}}
                                                                : 64'hffffffffffffffff                    ;//写掩码，目前是全位写，掩码在发送端处理了
 wire [INDEX_DEPTH-1:0] RAM_BWEN= ~maskn                                                                  ;//ram写掩码目前一样不用过多处理
 wire [INDEX_WIDTH-1:0] RAM_A   = (next_state == S_HIT)|(next_state == S_AW) ? index_in : addr[RAML:RAMR] ;//ram地址索引
-wire [INDEX_DEPTH-1:0] RAM_D   = cache_r_data_i|w_data_o                                                 ;//更新ram数据
+wire [INDEX_DEPTH-1:0] RAM_D   = cache_r_data_i|w_data_i                                                 ;//更新ram数据
 
 always@(*) begin
   if(rst)begin
@@ -147,6 +148,7 @@ parameter S_AR   =2;
 parameter S_R    =3;
 parameter S_AW   =4;
 parameter S_W    =5;
+parameter S_B    =6;
 
 reg[15:0] state;
 reg[15:0] next_state;
@@ -172,10 +174,10 @@ always@(*) begin
     S_AW:if(cache_aw_valid_o&cache_aw_ready_i)next_state=S_W;
       else next_state=S_AW;
 
-    S_W:if(cache_w_data_ready_o&cache_w_data_valid_i)next_state=S_B;
+    S_W:if(cache_w_ready_o&cache_w_valid_i)next_state=S_B;
       else next_state=S_W;
 
-    S_B:if(cache_b_valid_i&cache_b_ready_o&cache_ar_ready_i)next_state=S_AR;
+    S_B:if(cache_b_valid_i&cache_b_ready_o)next_state=S_AR;
       else next_state=S_B;
 
     S_AR:if(cache_ar_valid&cache_ar_ready_i)next_state=S_R;
@@ -190,28 +192,28 @@ end
 import "DPI-C" function void icache_wait();
 always@(posedge clk)begin
   if(rst)begin
-    rw_control          <= 0;
-		ar_ready_o          <= 1;
-    aw_ready_o          <= 1;
-		r_data_valid_o      <= 0;
-		r_data_o            <= 0;
-    cache_ar_valid    <= 0;
-    cache_ar_addr_o     <= 0;
-		cache_r_ready_o     <= 0;
-    waynum              <= 0;
-    addr                <= 0;
+    rw_control                    <= 0                                     ;
+		ar_ready_o                    <= 1                                     ;
+    aw_ready_o                    <= 1                                     ;
+		r_data_valid_o                <= 0                                     ;
+		r_data_o                      <= 0                                     ;
+    cache_ar_valid                <= 0                                     ;
+    cache_ar_addr_o               <= 0                                     ;
+		cache_r_ready_o               <= 0                                     ;
+    waynum                        <= 0                                     ;
+    addr                          <= 0                                     ;
   end
   else begin
     case(state)
       S_IDLE:if(next_state==S_HIT)begin
-					ar_ready_o              <= 0                               ;
-          aw_ready_o              <= 0                               ;
-          r_data_valid_o          <= 0                               ; 
-          waynum                  <= hit_waynum_i                    ;
-          addr                    <= {ar_addr_i[TAGL:INDEXR],OFFSET0};
+					ar_ready_o              <= 0                                     ;
+          aw_ready_o              <= 0                                     ;
+          r_data_valid_o          <= 0                                     ; 
+          waynum                  <= hit_waynum_i                          ;
+          addr                    <= {ar_addr_i[TAGL:INDEXR],OFFSET0}      ;
           if(aw_valid_i&aw_ready_o) begin
-          rw_control              <= 1                               ;
-          w_data_ready_o          <= 1                               ;
+          rw_control              <= 1                                     ;
+          w_data_ready_o          <= 1                                     ;
           end
         end
         else if(next_state==S_AR)begin
@@ -224,57 +226,58 @@ always@(posedge clk)begin
           cache_ar_valid          <= 1                                     ;
           cache_ar_addr_o         <= {32'b0,ar_addr_i[TAGL:INDEXR],OFFSET0};
         end
-        else if(next_state==S_Aw)begin
+        else if(next_state==S_AW)begin
 					ar_ready_o              <= 0                                     ;
           aw_ready_o              <= 0                                     ;
           waynum                  <= random                                ;
           addr                    <= {ar_addr_i[TAGL:INDEXR],OFFSET0}      ;
           valid[random][index_in] <= 0                                     ;
           if(aw_valid_i&aw_ready_o) begin
-          rw_control              <= 1                               ;
+          rw_control              <= 1                                     ;
           end
 
           cache_aw_valid_o        <= 1;
           cache_aw_addr_o         <= {32'b0,tag[random][index_in],index_in,OFFSET0};
         end
         else begin
-					ar_ready_o              <= 1;
-          aw_ready_o              <= 1;
-					r_data_valid_o          <= 0;
-					cache_r_ready_o         <= 0;
+					ar_ready_o              <= 1                                     ;
+          aw_ready_o              <= 1                                     ;
+					r_data_valid_o          <= 0                                     ;
+					cache_r_ready_o         <= 0                                     ;
         end
       S_HIT:if(next_state==S_IDLE)begin
-          rw_control              <= 0;
-					ar_ready_o              <= 1;
-          aw_ready_o              <= 1;
-					r_data_valid_o          <= 0;
-          waynum                  <= 0;
-          r_data_o                <= 0;
-          b_valid_o               <= 0;
+          rw_control              <= 0                                     ;
+					ar_ready_o              <= 1                                     ;
+          aw_ready_o              <= 1                                     ;
+					r_data_valid_o          <= 0                                     ;
+          waynum                  <= 0                                     ;
+          r_data_o                <= 0                                     ;
+          b_valid_o               <= 0                                     ;
       end
       else if(rw_control) begin
          if(w_data_valid_i) begin
-         w_data_ready_o           <= 0;
-         b_valid_o                <= 1;
-         b_resp_o                 <= 0;
+         dirty[waynum][index]     <= 1                                     ;
+         w_data_ready_o           <= 0                                     ;
+         b_valid_o                <= 1                                     ;
+         b_resp_o                 <= 0                                     ;
          end
       end
       else if(~rw_control) begin
-          r_data_valid_o          <= 1            ; 
-          r_data_o                <= RAM_Q[waynum];
+          r_data_valid_o          <= 1                                     ; 
+          r_data_o                <= RAM_Q[waynum]                         ;
       end
       S_AW:if(next_state==S_W)begin
-          cache_aw_valid_o        <= 0;
-          cache_w_valid_i         <= 1;
-          cache_w_strb_o          <= 8'hff;
-          cache_w_data_i          <= RAM_Q[waynum];
+          cache_aw_valid_o        <= 0                                     ;
+          cache_w_valid_i         <= 1                                     ;
+          cache_w_strb_o          <= 8'hff                                 ;
+          cache_w_data_i          <= RAM_Q[waynum]                         ;
         end
       S_W:if(next_state==S_B)begin
-          cache_w_valid_i         <= 0              ;
-          cache_b_ready_o         <= 1              ;
-          dirty[waynum][index]    <= 0              ;
-          valid[waynum][index]    <= 0              ;
-          tag[waynum][index]      <= addr[TAGL:TAGR];
+          cache_w_valid_i         <= 0                                     ;
+          cache_b_ready_o         <= 1                                     ;
+          dirty[waynum][index]    <= 0                                     ;
+          valid[waynum][index]    <= 0                                     ;
+          tag[waynum][index]      <= addr[TAGL:TAGR]                       ;
           end
       S_B:if(next_state==S_AR)begin
           cache_b_ready_o         <= 0                                     ;
@@ -282,14 +285,14 @@ always@(posedge clk)begin
           cache_ar_addr_o         <= {32'b0,addr[TAGL:INDEXR],OFFSET0}     ;
         end
       S_AR:if(next_state==S_R)begin
-          cache_ar_valid    <= 0               ;
-          cache_r_ready_o   <= 1               ;
+          cache_ar_valid          <= 0                                     ;
+          cache_r_ready_o         <= 1                                     ;
           end
       S_R:if(next_state==S_HIT)begin
-          cache_r_ready_o     <= 0             ;
-          valid[waynum][index]<= 1             ;
-          r_data_o            <= cache_r_data_i;
-          r_data_valid_o      <= 1             ;
+          cache_r_ready_o         <= 0                                     ;
+          valid[waynum][index]    <= 1                                     ;
+          r_data_o                <= cache_r_data_i                        ;
+          r_data_valid_o          <= 1                                     ;
           end
       default:begin
       end

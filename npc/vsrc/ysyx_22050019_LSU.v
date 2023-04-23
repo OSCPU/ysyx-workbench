@@ -157,7 +157,18 @@ always@(posedge clk)begin
   end
 end
 
-assign ram_waddr      = ram_we_i ? result : 64'b0;
+reg [63:0] aw_addr ;
+always@(posedge clk) begin
+  if(rst) 
+    aw_addr <= 64'b0;
+  else if(ram_we_i)
+    aw_addr <= result;
+  else if (m_axi_b_valid&&m_axi_b_ready)
+    aw_addr <= 64'b0;
+  else aw_addr <= aw_addr;
+end
+
+assign ram_waddr      = ram_we_i ? result : 64'b0|aw_addr;
 assign m_axi_aw_valid = ram_we_i;
 
 //=============================================================

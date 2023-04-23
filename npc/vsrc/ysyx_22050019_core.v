@@ -192,23 +192,23 @@ ysyx_22050019_EXU EXU(
 wire [63:0] wdata_lsu_wb;
 //wire        ram_we_lsu_mem   ;//存储器写使能
 wire [63:0] ram_waddr_lsu_mem ;//mem索引
-wire        axi_lsu_sram_aw_ready;
+wire        axi_lsu_sram_aw_ready = uncache ? axi_dcache_arbiter_aw_ready  : axi_lsu_dcache_aw_ready;
 wire        axi_lsu_sram_aw_valid;
-wire [63:0] ram_wdata_lsu_mem ;
+wire [63:0] ram_wdata_lsu_mem    ;
 wire [7:0]  wmask             ;
-wire        axi_lsu_sram_w_ready;
+wire        axi_lsu_sram_w_ready  = uncache ? axi_dcache_arbiter_w_ready   : axi_lsu_dcache_w_ready ;
 wire        axi_lsu_sram_w_valid;
-wire [1:0]  axi_lsu_sram_b_wresp;
+wire [1:0]  axi_lsu_sram_b_wresp  = uncache ? axi_dcache_arbiter_b_resp    : axi_lsu_dcache_b_resp  ;
 wire        axi_lsu_sram_b_ready;
-wire        axi_lsu_sram_b_valid;
+wire        axi_lsu_sram_b_valid  = uncache ? axi_dcache_arbiter_b_valid   : axi_lsu_dcache_b_valid ;
 //wire        ram_re_lsu_mem   ;//存储器读使能
-wire [63:0] ram_rdata_mem_lsu ;
+wire [63:0] ram_rdata_mem_lsu     = uncache ? axi_dcache_arbiter_r_data    : axi_lsu_dcache_r_data;
 wire [63:0] ram_raddr_lsu_mem ;//mem读索引
-wire        axi_lsu_sram_ar_ready;
+wire        axi_lsu_sram_ar_ready = uncache ? axi_dcache_arbiter_ar_ready  : axi_lsu_dcache_ar_ready;
 wire        axi_lsu_sram_ar_valid;
 wire [1:0]  axi_lsu_sram_r_resp ;
 wire        axi_lsu_sram_r_ready;
-wire        axi_lsu_sram_r_valid;
+wire        axi_lsu_sram_r_valid  = uncache ? axi_dcache_arbiter_r_valid : axi_lsu_dcache_r_valid;
 
 wire [63:0] result_exu_lsu;
 wire        wen_lsu_reg;
@@ -295,6 +295,108 @@ ysyx_22050019_icache I_CACHE(
     .cache_r_data_i    ( axi_icache_sram_r_data   )
 );
 
+//***********************************************************************
+// dcache的信号处理模块，包含uncache和的cache的分流处理
+//***********************************************************************
+//uncache的控制逻辑
+wire uncache = ram_waddr_lsu_mem[31]|ram_raddr_lsu_mem[31];
+//=======================================================================
+//dcache与uncache信号的生成与选择控制
+wire        axi_lsu_dcache_aw_ready ;
+wire        axi_lsu_dcache_aw_valid = uncache ? 0 : axi_lsu_sram_aw_valid;
+wire [63:0] axi_lsu_dcache_aw_addr  = uncache ? 0 : ram_waddr_lsu_mem    ;
+wire        axi_lsu_dcache_w_ready  ;
+wire        axi_lsu_dcache_w_valid  = uncache ? 0 : axi_lsu_sram_w_valid ;
+wire [63:0] axi_lsu_dcache_w_data   = uncache ? 0 : ram_wdata_lsu_mem    ;
+wire [7:0]  axi_lsu_dcache_w_strb   = uncache ? 0 : wmask                ;
+wire        axi_lsu_dcache_b_ready  = uncache ? 0 : axi_lsu_sram_b_ready ;
+wire        axi_lsu_dcache_b_valid  ;
+wire [1:0]  axi_lsu_dcache_b_resp   ; 
+wire        axi_lsu_dcache_ar_ready ; 
+wire        axi_lsu_dcache_ar_valid = uncache ? 0 : axi_lsu_sram_ar_valid; 
+wire [63:0] axi_lsu_dcache_ar_addr  = uncache ? 0 : ram_raddr_lsu_mem    ; 
+wire        axi_lsu_dcache_r_ready  = uncache ? 0 : axi_lsu_sram_r_ready ;
+wire        axi_lsu_dcache_r_valid  ;
+wire [1:0]  axi_lsu_dcache_r_resp   = uncache ? 0 : axi_lsu_sram_r_resp  ;    
+wire [63:0] axi_lsu_dcache_r_data   ;
+
+wire        axi_dcache_aw_ready     = uncache ? 0 : axi_dcache_arbiter_aw_ready  ; 
+wire        axi_dcache_aw_valid    ;
+wire [63:0] axi_dcache_aw_addr     ;
+wire        axi_dcache_w_ready     ;
+wire        axi_dcache_w_valid     ;
+wire [63:0] axi_dcache_w_data      ;
+wire [7:0]  axi_dcache_w_strb      ;
+wire        axi_dcache_b_ready     ;
+wire        axi_dcache_b_valid     ;
+wire [1:0]  axi_dcache_b_resp      ;
+wire        axi_dcache_ar_ready    ;
+wire        axi_dcache_ar_valid    ;
+wire [63:0] axi_dcache_ar_addr     ;
+wire        axi_dcache_r_ready     ;
+wire        axi_dcache_r_valid     ;
+wire [1:0]  axi_dcache_r_resp      ;
+wire [63:0] axi_dcache_r_data      ;
+
+wire        axi_dcache_arbiter_aw_ready ;
+wire        axi_dcache_arbiter_aw_valid = uncache ? axi_lsu_sram_aw_valid : axi_dcache_aw_valid ;
+wire [63:0] axi_dcache_arbiter_aw_addr  = uncache ? ram_waddr_lsu_mem     : axi_dcache_aw_addr  ;
+wire        axi_dcache_arbiter_w_ready  ;
+wire        axi_dcache_arbiter_w_valid  = uncache ? axi_lsu_sram_w_valid  : axi_dcache_w_valid  ;
+wire [63:0] axi_dcache_arbiter_w_data   = uncache ? ram_wdata_lsu_mem     : axi_dcache_w_data   ;
+wire [7:0]  axi_dcache_arbiter_w_strb   = uncache ? wmask                 : axi_dcache_w_strb   ;
+wire        axi_dcache_arbiter_b_ready  = uncache ? axi_lsu_sram_b_ready  : axi_dcache_b_ready  ;
+wire        axi_dcache_arbiter_b_valid  ;
+wire [1:0]  axi_dcache_arbiter_b_resp   ;
+wire        axi_dcache_arbiter_ar_ready ;
+wire        axi_dcache_arbiter_ar_valid = uncache ? axi_lsu_sram_ar_valid : axi_dcache_ar_valid ;
+wire [63:0] axi_dcache_arbiter_ar_addr  = uncache ? ram_raddr_lsu_mem     : axi_dcache_ar_addr  ;
+wire        axi_dcache_arbiter_r_ready  = uncache ? axi_lsu_sram_r_ready  : axi_dcache_r_ready  ;
+wire        axi_dcache_arbiter_r_valid  ;
+wire [1:0]  axi_dcache_arbiter_r_resp   ;
+wire [63:0] axi_dcache_arbiter_r_data   ;
+
+ysyx_22050019_dcache D_CACHE(
+    .clk               ( clk                            ),
+    .rst               ( rst_n                          ),
+    .ar_valid_i        ( axi_lsu_dcache_ar_valid        ),
+    .ar_ready_o        ( axi_lsu_dcache_ar_ready        ),
+    .ar_addr_i         ( axi_lsu_dcache_ar_addr         ),
+    .r_data_valid_o    ( axi_lsu_dcache_r_valid         ),
+    .r_data_ready_i    ( axi_lsu_dcache_r_ready         ),
+    .r_resp_i          ( axi_lsu_dcache_r_resp          ),
+    .r_data_o          ( axi_lsu_dcache_r_data          ),
+    .aw_valid_i        ( axi_lsu_dcache_aw_valid        ),
+    .aw_ready_o        ( axi_lsu_dcache_aw_ready        ),
+    .aw_addr_i         ( axi_lsu_dcache_aw_addr         ),
+    .w_data_valid_i    ( axi_lsu_dcache_w_valid         ),
+    .w_data_ready_o    ( axi_lsu_dcache_w_ready         ),
+    .w_w_strb_i        ( axi_lsu_dcache_w_strb          ),
+    .w_data_i          ( axi_lsu_dcache_w_data          ),
+    .b_ready_i         ( axi_lsu_dcache_b_ready         ),
+    .b_valid_o         ( axi_lsu_dcache_b_valid         ),
+    .b_resp_o          ( axi_lsu_dcache_b_resp          ),
+    
+    .cache_aw_valid_o  ( axi_dcache_aw_valid  ),
+    .cache_aw_ready_i  ( axi_dcache_aw_ready  ),
+    .cache_aw_addr_o   ( axi_dcache_aw_addr   ),
+    .cache_w_ready_o   ( axi_dcache_w_ready   ),
+    .cache_w_valid_i   ( axi_dcache_w_valid   ),
+    .cache_w_data_i    ( axi_dcache_w_data    ),
+    .cache_w_strb_o    ( axi_dcache_w_strb    ),
+    .cache_b_ready_o   ( axi_dcache_b_ready   ),
+    .cache_b_valid_i   ( axi_dcache_b_valid   ),
+    .cache_b_resp_i    ( axi_dcache_b_resp    ),
+    .cache_ar_valid_o  ( axi_dcache_ar_valid  ),
+    .cache_ar_ready_i  ( axi_dcache_ar_ready  ),
+    .cache_ar_addr_o   ( axi_dcache_ar_addr   ),
+    .cache_r_ready_o   ( axi_dcache_r_ready   ),
+    .cache_r_valid_i   ( axi_dcache_r_valid   ),
+    .cache_r_resp_i    ( axi_dcache_r_resp    ),
+    .cache_r_data_i    ( axi_dcache_r_data    )
+);
+
+//***********************************************************************
 //ifu没有写同到访问，这里用拉空接地来表示方便仿真
 wire s1_axi_aw_ready_o;
 wire s1_axi_w_ready_o ;
@@ -303,80 +405,80 @@ wire [1:0] s1_axi_b_resp_o;
 // ifu和lsu的仲裁
 // 目前只做了读通道的仲裁，写通道展示没有需要仲裁的冲突点
 ysyx_22050133_axi_arbiter ARBITER(
-    .clk               ( clk                      ),
-    .rst               ( rst_n                    ),
+    .clk               ( clk                         ),
+    .rst               ( rst_n                       ),
 
     // IFU<>ARBITER
     // Advanced eXtensible Interface Slave1
-    .s1_axi_aw_ready_o ( s1_axi_aw_ready_o        ),
-    .s1_axi_aw_valid_i ( 1'b0                     ),
-    .s1_axi_aw_addr_i  ( 64'b0                    ),
+    .s1_axi_aw_ready_o ( s1_axi_aw_ready_o           ),
+    .s1_axi_aw_valid_i ( 1'b0                        ),
+    .s1_axi_aw_addr_i  ( 64'b0                       ),
 
-    .s1_axi_w_ready_o  ( s1_axi_w_ready_o         ),
-    .s1_axi_w_valid_i  ( 1'b0                     ),
-    .s1_axi_w_data_i   ( 64'b0                    ),
-    .s1_axi_w_strb_i   ( 8'b0                     ),
+    .s1_axi_w_ready_o  ( s1_axi_w_ready_o            ),
+    .s1_axi_w_valid_i  ( 1'b0                        ),
+    .s1_axi_w_data_i   ( 64'b0                       ),
+    .s1_axi_w_strb_i   ( 8'b0                        ),
 
-    .s1_axi_b_ready_i  ( 1'b0                     ),
-    .s1_axi_b_valid_o  ( s1_axi_b_valid_o         ),
-    .s1_axi_b_resp_o   ( s1_axi_b_resp_o          ),
+    .s1_axi_b_ready_i  ( 1'b0                        ),
+    .s1_axi_b_valid_o  ( s1_axi_b_valid_o            ),
+    .s1_axi_b_resp_o   ( s1_axi_b_resp_o             ),
 
-    .s1_axi_ar_valid_i ( axi_icache_sram_ar_valid ),
-    .s1_axi_ar_ready_o ( axi_icache_sram_ar_ready ),
-    .s1_axi_ar_addr_i  ( axi_icache_sram_ar_addr  ),
+    .s1_axi_ar_valid_i ( axi_icache_sram_ar_valid    ),
+    .s1_axi_ar_ready_o ( axi_icache_sram_ar_ready    ),
+    .s1_axi_ar_addr_i  ( axi_icache_sram_ar_addr     ),
 
-    .s1_axi_r_valid_o  ( axi_icache_sram_r_valid  ),
-    .s1_axi_r_ready_i  ( axi_icache_sram_r_ready  ),
-    .s1_axi_r_resp_o   ( axi_icache_sram_r_resp   ),
-    .s1_axi_r_data_o   ( axi_icache_sram_r_data   ),
+    .s1_axi_r_valid_o  ( axi_icache_sram_r_valid     ),
+    .s1_axi_r_ready_i  ( axi_icache_sram_r_ready     ),
+    .s1_axi_r_resp_o   ( axi_icache_sram_r_resp      ),
+    .s1_axi_r_data_o   ( axi_icache_sram_r_data      ),
 
     //LSU<>ARBITER
     // Advanced eXtensible Interface Slave2
-    .s2_axi_aw_ready_o ( axi_lsu_sram_aw_ready    ),
-    .s2_axi_aw_valid_i ( axi_lsu_sram_aw_valid    ),
-    .s2_axi_aw_addr_i  ( ram_waddr_lsu_mem        ),
+    .s2_axi_aw_ready_o ( axi_dcache_arbiter_aw_ready ),
+    .s2_axi_aw_valid_i ( axi_dcache_arbiter_aw_valid ),
+    .s2_axi_aw_addr_i  ( axi_dcache_arbiter_aw_addr  ),
 
-    .s2_axi_w_ready_o  ( axi_lsu_sram_w_ready     ),
-    .s2_axi_w_valid_i  ( axi_lsu_sram_w_valid     ),
-    .s2_axi_w_data_i   ( ram_wdata_lsu_mem        ),
-    .s2_axi_w_strb_i   ( wmask                    ),
+    .s2_axi_w_ready_o  ( axi_dcache_arbiter_w_ready  ),
+    .s2_axi_w_valid_i  ( axi_dcache_arbiter_w_valid  ),
+    .s2_axi_w_data_i   ( axi_dcache_arbiter_w_data   ),
+    .s2_axi_w_strb_i   ( axi_dcache_arbiter_w_strb   ),
 
-    .s2_axi_b_ready_i  ( axi_lsu_sram_b_ready     ),
-    .s2_axi_b_valid_o  ( axi_lsu_sram_b_valid     ),
-    .s2_axi_b_resp_o   ( axi_lsu_sram_b_wresp     ),
+    .s2_axi_b_ready_i  ( axi_dcache_arbiter_b_ready  ),
+    .s2_axi_b_valid_o  ( axi_dcache_arbiter_b_valid  ),
+    .s2_axi_b_resp_o   ( axi_dcache_arbiter_b_resp   ),
 
-    .s2_axi_ar_ready_o ( axi_lsu_sram_ar_ready    ),
-    .s2_axi_ar_valid_i ( axi_lsu_sram_ar_valid    ),
-    .s2_axi_ar_addr_i  ( ram_raddr_lsu_mem        ),
+    .s2_axi_ar_ready_o ( axi_dcache_arbiter_ar_ready ),
+    .s2_axi_ar_valid_i ( axi_dcache_arbiter_ar_valid ),
+    .s2_axi_ar_addr_i  ( axi_dcache_arbiter_ar_addr  ),
     
-    .s2_axi_r_ready_i  ( axi_lsu_sram_r_ready     ),
-    .s2_axi_r_valid_o  ( axi_lsu_sram_r_valid     ),
-    .s2_axi_r_resp_o   ( axi_lsu_sram_r_resp      ),
-    .s2_axi_r_data_o   ( ram_rdata_mem_lsu        ),
+    .s2_axi_r_ready_i  ( axi_dcache_arbiter_r_ready  ),
+    .s2_axi_r_valid_o  ( axi_dcache_arbiter_r_valid  ),
+    .s2_axi_r_resp_o   ( axi_dcache_arbiter_r_resp   ),
+    .s2_axi_r_data_o   ( axi_dcache_arbiter_r_data   ),
     
     // arbiter<>sram
     // Advanced eXtensible Interface  Master
-    .axi_aw_ready_i    ( axi_arbitr_sram_aw_ready ),
-    .axi_aw_valid_o    ( axi_arbitr_sram_aw_valid ),
-    .axi_aw_addr_o     ( axi_arbitr_sram_aw_addr  ),
+    .axi_aw_ready_i    ( axi_arbitr_sram_aw_ready    ),
+    .axi_aw_valid_o    ( axi_arbitr_sram_aw_valid    ),
+    .axi_aw_addr_o     ( axi_arbitr_sram_aw_addr     ),
     
-    .axi_w_ready_i     ( axi_arbitr_sram_w_ready  ),
-    .axi_w_valid_o     ( axi_arbitr_sram_w_valid  ),
-    .axi_w_data_o      ( axi_arbitr_sram_w_data   ),
-    .axi_w_strb_o      ( axi_arbitr_sram_w_strb   ),
+    .axi_w_ready_i     ( axi_arbitr_sram_w_ready     ),
+    .axi_w_valid_o     ( axi_arbitr_sram_w_valid     ),
+    .axi_w_data_o      ( axi_arbitr_sram_w_data      ),
+    .axi_w_strb_o      ( axi_arbitr_sram_w_strb      ),
     
-    .axi_b_ready_o     ( axi_arbitr_sram_b_ready  ),
-    .axi_b_valid_i     ( axi_arbitr_sram_b_valid  ),
-    .axi_b_resp_i      ( axi_arbitr_sram_b_resp   ),
+    .axi_b_ready_o     ( axi_arbitr_sram_b_ready     ),
+    .axi_b_valid_i     ( axi_arbitr_sram_b_valid     ),
+    .axi_b_resp_i      ( axi_arbitr_sram_b_resp      ),
     
-    .axi_ar_ready_i    ( axi_arbitr_sram_ar_ready ),
-    .axi_ar_valid_o    ( axi_arbitr_sram_ar_valid ),
-    .axi_ar_addr_o     ( axi_arbitr_sram_ar_addr  ),
+    .axi_ar_ready_i    ( axi_arbitr_sram_ar_ready    ),
+    .axi_ar_valid_o    ( axi_arbitr_sram_ar_valid    ),
+    .axi_ar_addr_o     ( axi_arbitr_sram_ar_addr     ),
     
-    .axi_r_ready_o     ( axi_arbitr_sram_r_ready  ),
-    .axi_r_valid_i     ( axi_arbitr_sram_r_valid  ),
-    .axi_r_resp_i      ( axi_arbitr_sram_r_resp   ),
-    .axi_r_data_i      ( axi_arbitr_sram_r_data   )
+    .axi_r_ready_o     ( axi_arbitr_sram_r_ready     ),
+    .axi_r_valid_i     ( axi_arbitr_sram_r_valid     ),
+    .axi_r_resp_i      ( axi_arbitr_sram_r_resp      ),
+    .axi_r_data_i      ( axi_arbitr_sram_r_data      )
 );
 
 // 读写取指令接口sram
