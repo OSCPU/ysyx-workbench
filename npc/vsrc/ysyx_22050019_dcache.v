@@ -119,7 +119,7 @@ always@(*) begin
     RAM_CEN[0] = 1;
     RAM_CEN[1] = 1;
   end
-  else if((state == S_IDLE)&(next_state == S_HIT)&(ar_valid_i)|(state == S_R)&(next_state == S_HIT)|(next_state == S_AW)|(w_data_valid_i))
+  else if((state == S_IDLE)&(next_state == S_HIT)&(ar_valid_i)|(state == S_R)&(next_state == S_HIT)|(next_state == S_AW)|(w_data_valid_i&w_data_ready_o))
   RAM_CEN[hit_waynum_i|waynum] = 0;
   else
   RAM_CEN[hit_waynum_i|waynum] = 1;
