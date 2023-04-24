@@ -129,7 +129,7 @@ void checkregs(uint64_t *ref_regs)
 #endif
 
       printf("================= reg diff ========================\n");
-      printf("Error: Difftest failed at reg %d, pc = 0x%016lx\n", i, dut->now_addr);
+      printf("Error: Difftest failed at reg %d, pc = 0x%016lx inst = 0x%016lx\n", i, dut->now_addr,dut->now_inst);
       for (int j = 0; j <= 32; ++j) {
         if (cpu_gpr[j] != ref_regs[j]) printf(COLOR_RED);
         printf("reg %02d: dut = 0x%016lx, ref = 0x%016lx\n", j, cpu_gpr[j], ref_regs[j]);
@@ -308,7 +308,7 @@ int main(int argc, char** argv, char** env) {
     while (1) {
 #ifdef CONFIG_DIFFTEST
 // 会增加一定的性能负担，且这个类型一旦溢出会导致程序被杀死
-  debug_time++;
+  //debug_time++;
 #endif
       IFDEF(CONFIG_DEVICE, device_update());
 #ifdef CONFIG_ITRACE
