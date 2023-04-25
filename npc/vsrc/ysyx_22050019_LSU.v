@@ -271,10 +271,10 @@ reg [63:0] ar_addr ;
 always@(posedge clk) begin
   if(rst) 
     ar_valid <= 1'b0;
-  else if(ram_re_i)
-    ar_valid <= 1'1;
   else if (m_axi_ar_ready&&m_axi_ar_valid)
     ar_valid <= 1'b0;
+  else if(ram_re_i)
+    ar_valid <= 1'1;
   else ar_valid <= ar_valid;
 end
 
