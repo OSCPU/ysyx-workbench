@@ -281,10 +281,10 @@ end
 always@(posedge clk) begin
   if(rst) 
     ar_addr <= 64'b0;
-  else if (m_axi_r_ready&&m_axi_r_valid)
-    ar_addr <= 64'b0;
   else if(ram_re_i)
     ar_addr <= result;
+  else if (m_axi_r_ready&&m_axi_r_valid)
+    ar_addr <= 64'b0;
   else ar_addr <= ar_addr;
 end
 
