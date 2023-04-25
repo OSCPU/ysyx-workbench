@@ -1,4 +1,5 @@
 #include <common.h>
+//#define DEBUG_DIFFTRACE
 // ============ verilator sim ===========
 #define MAX_SIM_TIME 15000000
 uint64_t sim_time = 0;
@@ -170,13 +171,13 @@ void difftest_exec_once()
     exec_once();
       if(icache_exec){
       icache_exec = false;
-      printf("icache_exec \n");
+      IFDEF(DEBUG_DIFFTRACE, printf("icache_exec \n"));
       exec_once();
       exec_once();
       }
       if(arbiter_exec){
       arbiter_exec = false;
-      printf("arbiter_exec \n");
+      IFDEF(DEBUG_DIFFTRACE, printf("arbiter_exec \n"));
       exec_once();
       exec_once();
       exec_once();
@@ -322,13 +323,13 @@ int main(int argc, char** argv, char** env) {
       exec_once();
       if(icache_exec){
       icache_exec = false;
-      printf("icache_exec  %d\n",icache_exec);
+      IFDEF(DEBUG_DIFFTRACE, printf("icache_exec  %d\n",icache_exec));
       exec_once();
       exec_once();
       }
       if(arbiter_exec){
       arbiter_exec = false;
-      printf("arbiter_exec %d\n",arbiter_exec);
+      IFDEF(DEBUG_DIFFTRACE, printf("arbiter_exec %d\n",arbiter_exec));
       exec_once();
       exec_once();
       exec_once();

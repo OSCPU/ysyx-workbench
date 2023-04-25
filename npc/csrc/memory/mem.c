@@ -37,7 +37,7 @@ extern "C" void pmem_read(ll raddr, ll *rdata)
    *rdata = ret;
    return ;
    }
-   printf("pmem_read-,addr = %016llx  rdata = %016llx is_skip_ref= %d\n",raddr,*rdata,is_skip_ref);
+   //printf("pmem_read-,addr = %016llx  rdata = %016llx is_skip_ref= %d\n",raddr,*rdata,is_skip_ref);
    // mimo设备访问
     *rdata=mmio_read((paddr_t)(raddr),8);
     return;
