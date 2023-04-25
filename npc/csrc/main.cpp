@@ -1,5 +1,5 @@
 #include <common.h>
-#define DEBUG_DIFFTRACE
+#define DEBUG_DIFFTRACE 1
 // ============ verilator sim ===========
 #define MAX_SIM_TIME 15000000
 uint64_t sim_time = 0;
