@@ -1,5 +1,5 @@
 #include <common.h>
-//#define DEBUG_DIFFTRACE
+#define DEBUG_DIFFTRACE
 // ============ verilator sim ===========
 #define MAX_SIM_TIME 15000000
 uint64_t sim_time = 0;
@@ -118,7 +118,7 @@ void init_difftest() {
 
 void checkregs(uint64_t *ref_regs)
 {
-  printf("diff_log: Difftest pc = 0x%016lx inst = 0x%016lx\n", dut->now_addr,dut->now_inst);
+  IFDEF(DEBUG_DIFFTRACE, printf("diff_log: Difftest pc = 0x%016lx inst = 0x%016lx\n", dut->now_addr,dut->now_inst));
   for (int i = 0; i <= 36; ++i) {
     if (ref_regs[i] != cpu_gpr[i]) {
 
