@@ -322,13 +322,13 @@ int main(int argc, char** argv, char** env) {
       exec_once();
       if(icache_exec){
       icache_exec = false;
-      printf("icache_exec \n");
+      printf("icache_exec %d\n",icache_exec);
       exec_once();
       exec_once();
       }
       if(arbiter_exec){
       arbiter_exec = false;
-      printf("arbiter_exec \n");
+      printf("arbiter_exec %d\n",arbiter_exec);
       exec_once();
       exec_once();
       exec_once();
