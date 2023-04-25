@@ -52,9 +52,9 @@ module ysyx_22050019_dcache#(
   output reg                         cache_aw_valid_o    ,       
   input                              cache_aw_ready_i    ,     
   output reg[R_ADDR_WIDTH-1:0]       cache_aw_addr_o     ,          
-  input                              cache_w_ready_o     ,     
-  output reg                         cache_w_valid_i     ,     
-  output reg[DATA_WIDTH-1:0]         cache_w_data_i      ,
+  input                              cache_w_ready_i     ,     
+  output reg                         cache_w_valid_o     ,     
+  output reg[DATA_WIDTH-1:0]         cache_w_data_o      ,
   output reg[DATA_WIDTH/8-1:0]       cache_w_strb_o      ,
   output reg                         cache_b_ready_o     ,          
   input                              cache_b_valid_i     ,
@@ -175,7 +175,7 @@ always@(*) begin
     S_AW:if(cache_aw_valid_o&cache_aw_ready_i)next_state=S_W;
       else next_state=S_AW;
 
-    S_W:if(cache_w_ready_o&cache_w_valid_i)next_state=S_B;
+    S_W:if(cache_w_ready_i&cache_w_valid_o)next_state=S_B;
       else next_state=S_W;
 
     S_B:if(cache_b_valid_i&cache_b_ready_o)next_state=S_AR;
@@ -278,12 +278,12 @@ always@(posedge clk)begin
       end
       S_AW:if(next_state==S_W)begin
           cache_aw_valid_o        <= 0                                     ;
-          cache_w_valid_i         <= 1                                     ;
+          cache_w_valid_o         <= 1                                     ;
           cache_w_strb_o          <= 8'hff                                 ;
-          cache_w_data_i          <= RAM_Q[waynum]                         ;
+          cache_w_data_o          <= RAM_Q[waynum]                         ;
         end
       S_W:if(next_state==S_B)begin
-          cache_w_valid_i         <= 0                                     ;
+          cache_w_valid_o         <= 0                                     ;
           cache_b_ready_o         <= 1                                     ;
           dirty[waynum][index]    <= 0                                     ;
           valid[waynum][index]    <= 0                                     ;

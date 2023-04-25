@@ -323,7 +323,7 @@ wire [63:0] axi_lsu_dcache_r_data   ;
 wire        axi_dcache_aw_ready    = uncache ? 0 : axi_dcache_arbiter_aw_ready  ; 
 wire        axi_dcache_aw_valid    ;
 wire [63:0] axi_dcache_aw_addr     ;
-wire        axi_dcache_w_ready     ;
+wire        axi_dcache_w_ready     = uncache ? 0 : axi_dcache_arbiter_w_ready   ; 
 wire        axi_dcache_w_valid     ;
 wire [63:0] axi_dcache_w_data      ;
 wire [7:0]  axi_dcache_w_strb      ;
@@ -380,9 +380,9 @@ ysyx_22050019_dcache D_CACHE(
     .cache_aw_valid_o  ( axi_dcache_aw_valid  ),
     .cache_aw_ready_i  ( axi_dcache_aw_ready  ),
     .cache_aw_addr_o   ( axi_dcache_aw_addr   ),
-    .cache_w_ready_o   ( axi_dcache_w_ready   ),
-    .cache_w_valid_i   ( axi_dcache_w_valid   ),
-    .cache_w_data_i    ( axi_dcache_w_data    ),
+    .cache_w_ready_i   ( axi_dcache_w_ready   ),
+    .cache_w_valid_o   ( axi_dcache_w_valid   ),
+    .cache_w_data_o    ( axi_dcache_w_data    ),
     .cache_w_strb_o    ( axi_dcache_w_strb    ),
     .cache_b_ready_o   ( axi_dcache_b_ready   ),
     .cache_b_valid_i   ( axi_dcache_b_valid   ),
