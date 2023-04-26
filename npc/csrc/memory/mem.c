@@ -65,7 +65,7 @@ extern "C" void pmem_write(ll waddr, ll wdata, char mask)
    }
    return;
    }
-  if((ll)0x00000000a00003f8 <= waddr <= (ll)0x00000000a00003ff) printf("[MTrace - Write]: addr = %016llx, data = %016llx  mask = 0x%02x\n", waddr, wdata, (unsigned char)mask);
+  if(0x00000000a00003f8 <= waddr <= 0x00000000a00003ff) printf("[MTrace - Write]: addr = %016llx, data = %016llx  mask = 0x%02x\n", waddr, wdata, (unsigned char)mask);
   uint8_t wlen=8;
   switch((unsigned char)mask){
     case(0x01):wlen=1;
