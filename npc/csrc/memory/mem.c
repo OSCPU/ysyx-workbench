@@ -56,8 +56,10 @@ extern "C" void pmem_write(ll waddr, ll wdata, char mask)
 #ifdef CONFIG_MTRACE
 	printf("[MTrace - Write]: addr = %016llx, data = %016llx  mask = 0x%02x\n", waddr, wdata, (unsigned char)mask);
 #endif
+
   // pemm地址内操作
   if (likely(in_pmem(waddr))){
+  //if(waddr == (ll)0x8000f004) printf("[MTrace - Write]: addr = %016llx, data = %016llx  mask = 0x%02x\n", waddr, wdata, (unsigned char)mask);
    uint8_t *pt = guest_to_host(waddr);
    for (int i = 0; i < 8; ++i) {
      if (mask & 1) *pt = (wdata & 0xff);
@@ -65,7 +67,7 @@ extern "C" void pmem_write(ll waddr, ll wdata, char mask)
    }
    return;
    }
-  if(0x00000000a00003f8 <= waddr <= 0x00000000a00003ff) printf("[MTrace - Write]: addr = %016llx, data = %016llx  mask = 0x%02x\n", waddr, wdata, (unsigned char)mask);
+
   uint8_t wlen=8;
   switch((unsigned char)mask){
     case(0x01):wlen=1;
