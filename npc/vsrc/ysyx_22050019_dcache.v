@@ -222,7 +222,7 @@ always@(posedge clk)begin
           end
         end
         else if(next_state==S_AR)begin
-//          icache_wait()                                                    ;//多跑2个周期平衡
+          icache_wait()                                                    ;//多跑2个周期平衡
 					ar_ready_o              <= 0                                     ;
           aw_ready_o              <= 0                                     ;
           waynum                  <= random                                ;
