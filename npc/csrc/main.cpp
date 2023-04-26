@@ -130,7 +130,7 @@ void checkregs(uint64_t *ref_regs)
 #endif
 
       printf("================= reg diff ========================\n");
-      printf("Error: Difftest failed at reg %d, pc = 0x%016lx inst = 0x%016lx\n", i, dut->now_addr,dut->now_inst);
+      printf("Error: Difftest failed at reg %d, pc = 0x%016lx inst = 0x%016x\n", i, dut->now_addr,dut->now_inst);
       for (int j = 0; j <= 32; ++j) {
         if (cpu_gpr[j] != ref_regs[j]) printf(COLOR_RED);
         printf("reg %02d: dut = 0x%016lx, ref = 0x%016lx\n", j, cpu_gpr[j], ref_regs[j]);
