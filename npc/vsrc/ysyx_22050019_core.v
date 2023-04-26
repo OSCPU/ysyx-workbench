@@ -73,7 +73,7 @@ always@(*) begin
   stll_ar_ready = 0;
   stll_ar_rvalid= 0;
   end
-  else if(axi_dcache_arbiter_ar_ready|axi_dcache_arbiter_r_ready|axi_dcache_aw_valid&axi_dcache_aw_ready|axi_dcache_w_ready|axi_dcache_b_ready&axi_dcache_b_valid) begin
+  else if(axi_dcache_arbiter_ar_ready|axi_dcache_arbiter_r_ready|axi_dcache_aw_valid&axi_dcache_aw_ready|axi_dcache_w_ready|axi_dcache_b_ready&axi_dcache_b_ready) begin
     stll_ar_rvalid = 0 ;
     stll_ar_ready  = 0 ;
   end
