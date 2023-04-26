@@ -59,6 +59,7 @@ extern uint8_t pmem[];
 uint8_t* guest_to_host(ll addr);
 extern "C" void disassemble(char *str, uint64_t pc, uint8_t *code, int nbyte);
 extern "C" void init_disasm(const char *triple);
+extern "C" void debug_exit(int status);
 uint64_t get_time();
 
 #endif
