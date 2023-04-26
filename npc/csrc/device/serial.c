@@ -5,7 +5,7 @@
 static uint8_t *serial_base = NULL;
 
 static void serial_io_handler(uint32_t offset, int len, bool is_write) {
-  //assert(len == 1);
+  assert(len == 1);
   switch (offset) {
     /* We bind the serial port with the host stderr in NEMU. */
     case CH_OFFSET:
