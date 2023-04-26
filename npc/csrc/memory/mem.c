@@ -91,6 +91,7 @@ extern "C" void pmem_write(ll waddr, ll wdata, char mask)
     waddr = waddr + 1;
     wdata = wdata >> 8;
 } 
+  printf("[Mimo - Write]: addr = %016llx, data = %016llx  mask = 0x%02x\n", waddr, wdata, (unsigned char)mask);
   // mimo设备访问
     mmio_write((paddr_t)waddr,wlen,(uint64_t)wdata); 
     return;
