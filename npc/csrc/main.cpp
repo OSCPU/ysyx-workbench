@@ -313,6 +313,7 @@ int main(int argc, char** argv, char** env) {
 // 会增加一定的性能负担，且这个类型一旦溢出会导致程序被杀死
   //debug_time++;
 #endif
+debug_time++;
       IFDEF(CONFIG_DEVICE, device_update());
 #ifdef CONFIG_ITRACE
   itrace_record(dut->now_addr);
