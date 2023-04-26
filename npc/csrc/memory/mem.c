@@ -38,6 +38,7 @@ extern "C" void pmem_read(ll raddr, ll *rdata)
    return ;
    }
    //printf("pmem_read-,addr = %016llx  rdata = %016llx is_skip_ref= %d\n",raddr,*rdata,is_skip_ref);
+   printf("[Mimo - Read]: addr = %016llx data = %016llx\n", raddr, *rdata);
    //if(raddr == 0) return;
    // mimo设备访问
     *rdata=mmio_read((paddr_t)(raddr),8);
@@ -91,7 +92,7 @@ extern "C" void pmem_write(ll waddr, ll wdata, char mask)
     waddr = waddr + 1;
     wdata = wdata >> 8;
 } 
-  //printf("[Mimo - Write]: addr = %016llx, data = %016llx  mask = 0x%02x\n", waddr, wdata, (unsigned char)mask);
+  printf("[Mimo - Write]: addr = %016llx, data = %016llx  mask = 0x%02x\n", waddr, wdata, (unsigned char)mask);
   // mimo设备访问
     mmio_write((paddr_t)waddr,wlen,(uint64_t)wdata); 
     return;
