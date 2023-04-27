@@ -61,7 +61,7 @@ module ysyx_22050019_dcache#(
   input  [1:0]                       cache_b_resp_i      , 
   output reg                         cache_ar_valid_o    ,       
   input                              cache_ar_ready_i    ,     
-  output reg[R_ADDR_WIDTH-1:0]       cache_ar_addr_o     ,          
+  output reg[ADDR_WIDTH-1:0]         cache_ar_addr_o     ,          
   output reg                         cache_r_ready_o     ,     
   input                              cache_r_valid_i     ,
   input     [1:0]                    cache_r_resp_i      ,      
@@ -230,7 +230,7 @@ always@(posedge clk)begin
           valid[random][index_in] <= 0                                     ;
           tag[random][index_in]   <= rw_addr_i[TAGL:TAGR]                  ;
           cache_ar_valid          <= 1                                     ;
-          cache_ar_addr_o         <= {32'b0,rw_addr_i[TAGL:INDEXR],OFFSET0};
+          cache_ar_addr_o         <= {rw_addr_i[TAGL:INDEXR],OFFSET0};
           if(aw_valid_i&aw_ready_o) begin
           rw_control              <= 1                                     ;
           w_data_ready_o          <= 0                                     ;
@@ -293,7 +293,7 @@ always@(posedge clk)begin
       S_B:if(next_state==S_AR)begin
           cache_b_ready_o         <= 0                                     ;
           cache_ar_valid          <= 1                                     ;
-          cache_ar_addr_o         <= {32'b0,addr[TAGL:INDEXR],OFFSET0}     ;
+          cache_ar_addr_o         <= {addr[TAGL:INDEXR],OFFSET0}     ;
         end
       S_AR:if(next_state==S_R)begin
           cache_ar_valid          <= 0                                     ;

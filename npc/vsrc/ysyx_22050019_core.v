@@ -333,7 +333,7 @@ wire        axi_dcache_b_valid     = uncache ? 0 : axi_dcache_arbiter_b_valid   
 wire [1:0]  axi_dcache_b_resp      = uncache ? 0 : axi_dcache_arbiter_b_resp    ; 
 wire        axi_dcache_ar_ready    = uncache ? 0 : axi_dcache_arbiter_ar_ready  ; 
 wire        axi_dcache_ar_valid    ;
-wire [63:0] axi_dcache_ar_addr     ;
+wire [31:0] axi_dcache_ar_addr     ;
 wire        axi_dcache_r_ready     ;
 wire        axi_dcache_r_valid     = uncache ? 0 : axi_dcache_arbiter_r_valid   ; 
 wire [1:0]  axi_dcache_r_resp      = uncache ? 0 : axi_dcache_arbiter_r_resp    ; 
@@ -351,7 +351,7 @@ wire        axi_dcache_arbiter_b_valid  ;
 wire [1:0]  axi_dcache_arbiter_b_resp   ;
 wire        axi_dcache_arbiter_ar_ready ;
 wire        axi_dcache_arbiter_ar_valid = uncache ? axi_lsu_sram_ar_valid : axi_dcache_ar_valid ;
-wire [31:0] axi_dcache_arbiter_ar_addr  = uncache ? ram_raddr_lsu_mem[31:0]     : axi_dcache_ar_addr [31:0]  ;
+wire [31:0] axi_dcache_arbiter_ar_addr  = uncache ? ram_raddr_lsu_mem[31:0]     : axi_dcache_ar_addr;
 wire        axi_dcache_arbiter_r_ready  = uncache ? axi_lsu_sram_r_ready  : axi_dcache_r_ready  ;
 wire        axi_dcache_arbiter_r_valid  ;
 wire [1:0]  axi_dcache_arbiter_r_resp   ;
