@@ -496,7 +496,7 @@ wire        axi_arbitr_sram_b_valid  ;
 wire [1:0]  axi_arbitr_sram_b_resp   ; 
 wire        axi_arbitr_sram_ar_ready ; 
 wire        axi_arbitr_sram_ar_valid ; 
-wire [63:0] axi_arbitr_sram_ar_addr  ;
+wire [31:0] axi_arbitr_sram_ar_addr  ;
 wire        axi_arbitr_sram_r_ready  ;
 wire        axi_arbitr_sram_r_valid  ;
 wire [1:0]  axi_arbitr_sram_r_resp   ;    
