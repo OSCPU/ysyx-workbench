@@ -31,7 +31,7 @@ module ysyx_22050019_AXI_LSU_SRAM # (
     // 读地址通道
     output reg                          axi_ar_ready_o,       
     input                               axi_ar_valid_i,
-    input [31:0]          axi_ar_addr_i,
+    input [32-1:0]          axi_ar_addr_i,
     
     // 读数据通道
     input                               axi_r_ready_i,            
@@ -177,15 +177,15 @@ always@(posedge clk)begin
       end
 
       RS_RHS:if(next_rstate==RS_IDLE)begin
-        axi_ar_ready_o<= 1;
-        axi_r_valid_o <= 0;
-        axi_r_resp_o  <= 0;
-        axi_r_data_o  <= 0;
+        axi_ar_ready_o<= 1'b1;
+        axi_r_valid_o <= 1'b0;
+        axi_r_resp_o  <= 2'b0;
+        axi_r_data_o  <= 64'b0;
       end
       else begin
-        axi_r_valid_o <= 1;
-        axi_r_resp_o  <= 0;
-        pmem_read({32'h0,ar_addr[31:0]},din);
+        axi_r_valid_o <= 1'b1;
+        axi_r_resp_o  <= 2'b0;
+        pmem_read({32'h0,ar_addr[31:3],3'b0},din);
         axi_r_data_o  <= din;
       end
       default:begin
