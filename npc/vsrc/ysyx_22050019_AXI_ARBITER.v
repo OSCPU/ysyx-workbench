@@ -48,7 +48,7 @@ module ysyx_22050133_axi_arbiter # (
 
     output                              s2_axi_ar_ready_o,       
     input                               s2_axi_ar_valid_i,
-    input [AXI_ADDR_WIDTH-1:0]          s2_axi_ar_addr_i,
+    input [31:0]                        s2_axi_ar_addr_i,
     
     input                               s2_axi_r_ready_i,            
     output                              s2_axi_r_valid_o,        
@@ -100,7 +100,7 @@ assign s1_axi_b_resp_o=~w_channel?axi_b_resp_i:0;
 assign s2_axi_ar_ready_o=r_channel?axi_ar_ready_i:0;
 assign s1_axi_ar_ready_o=~r_channel?axi_ar_ready_i:0;
 assign axi_ar_valid_o=r_channel?  s2_axi_ar_valid_i  :s1_axi_ar_valid_i;
-assign axi_ar_addr_o=r_channel?   s2_axi_ar_addr_i   :{32'b0,s1_axi_ar_addr_i};
+assign axi_ar_addr_o=r_channel?   {32'b0,s2_axi_ar_addr_i} :{32'b0,s1_axi_ar_addr_i};
 
 assign axi_r_ready_o=r_channel?   s2_axi_r_ready_i   :s1_axi_r_ready_i;    
 assign s2_axi_r_valid_o=r_channel?axi_r_valid_i:0;
