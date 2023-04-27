@@ -38,7 +38,7 @@ module ysyx_22050019_icache#(
 
   output reg                         cache_ar_valid_o    ,       
   input                              cache_ar_ready_i    ,     
-  output reg[R_ADDR_WIDTH-1:0]       cache_ar_addr_o     ,          
+  output reg[ADDR_WIDTH-1:0]         cache_ar_addr_o     ,          
   output reg                         cache_r_ready_o     ,     
   input                              cache_r_valid_i     ,
   input     [1:0]                    cache_r_resp_i      ,      
@@ -182,7 +182,7 @@ always@(posedge clk)begin
           valid[random][index_in] <= 0;
           tag[random][index_in]   <= ar_addr_i[TAGL:TAGR];
           cache_ar_valid_o        <= 1;
-          cache_ar_addr_o         <= {32'b0,ar_addr_i[TAGL:INDEXR],OFFSET0};
+          cache_ar_addr_o         <= {ar_addr_i[TAGL:INDEXR],OFFSET0};
         end
         else begin
 					ar_ready_o              <= 1;

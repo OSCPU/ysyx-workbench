@@ -269,7 +269,7 @@ ysyx_22050019_mem MEM (
 //icache的缓存区设置
 wire        axi_icache_sram_ar_valid ;
 wire        axi_icache_sram_ar_ready ;
-wire [63:0] axi_icache_sram_ar_addr  ;
+wire [31:0] axi_icache_sram_ar_addr  ;
 wire        axi_icache_sram_r_ready  ;
 wire        axi_icache_sram_r_valid  ;
 wire [1:0]  axi_icache_sram_r_resp   ;
