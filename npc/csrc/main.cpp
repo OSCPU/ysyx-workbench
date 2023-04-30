@@ -332,12 +332,7 @@ int main(int argc, char** argv, char** env) {
       exec_once();
       exec_once();
       }
-      if(icache_exec){
-      icache_exec = false;
-      IFDEF(DEBUG_DIFFTRACE, printf("icache_exec  %d\n",icache_exec));
-      exec_once();
-      exec_once();
-      }
+
 #ifdef CONFIG_DIFFTEST
       difftest_exec_once();
 #endif
