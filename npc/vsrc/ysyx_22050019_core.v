@@ -13,7 +13,7 @@ module ysyx_22050019_core(
 wire [63:0]        inst_i ;
 /*
 fetch fetch_data(
-    .clk (clk),
+    .clk (clk), 
     .rst (rst_n),
     .addr(inst_addr),
     .data(inst_i)
