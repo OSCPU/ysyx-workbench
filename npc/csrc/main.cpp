@@ -88,7 +88,7 @@ void (*ref_difftest_raise_intr)(uint64_t NO) = NULL;
 
 
 void init_difftest() {
-  printf("diff_init\n");
+  printf("diff_init   ok\n");
   char ref_so_file[]="/home/zyx/ysyx-workbench/nemu/build/riscv64-nemu-interpreter-so";
   assert(ref_so_file != NULL);
 
