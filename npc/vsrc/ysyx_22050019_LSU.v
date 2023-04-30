@@ -29,7 +29,7 @@ module ysyx_22050019_LSU# (
   // 写通道
   //output              ram_we      ,
 
-  output     [63:0]   ram_waddr   ,
+  output     [31:0]   ram_waddr   ,
   input               m_axi_aw_ready,
   output              m_axi_aw_valid,
 
@@ -52,7 +52,7 @@ module ysyx_22050019_LSU# (
 
   input               m_axi_ar_ready,
   output              m_axi_ar_valid,
-  output  [63:0]      ram_raddr   
+  output  [31:0]      ram_raddr   
 
 );
 //==========================信号初始化==============================
@@ -157,18 +157,18 @@ always@(posedge clk)begin
   end
 end
 
-reg [63:0] aw_addr ;
+reg [31:0] aw_addr ;
 always@(posedge clk) begin
   if(rst) 
-    aw_addr <= 64'b0;
+    aw_addr <= 0;
   else if(ram_we_i)
-    aw_addr <= result;
+    aw_addr <= result[31:0];
   else if (m_axi_b_valid&&m_axi_b_ready)
-    aw_addr <= 64'b0;
+    aw_addr <= 0;
   else aw_addr <= aw_addr;
 end
 
-assign ram_waddr      = ram_we_i ? result : 64'b0|aw_addr;
+assign ram_waddr      = ram_we_i ? result[31:0] : 32'b0|aw_addr;
 assign m_axi_aw_valid = ram_we_i;
 
 //=============================================================
@@ -267,7 +267,7 @@ assign wdata_reg_o  = m_axi_r_valid ? mem_r_data : 64'b0;
 
 //ram的读地址发送端信号控制
 reg ar_valid;
-reg [63:0] ar_addr ;
+reg [31:0] ar_addr ;
 always@(posedge clk) begin
   if(rst) 
     ar_valid <= 1'b0;
@@ -280,15 +280,15 @@ end
 
 always@(posedge clk) begin
   if(rst) 
-    ar_addr <= 64'b0;
+    ar_addr <= 0;
   else if(ram_re_i)
-    ar_addr <= result;
+    ar_addr <= result[31:0];
   else if (m_axi_r_ready&&m_axi_r_valid)
-    ar_addr <= 64'b0;
+    ar_addr <= 0;
   else ar_addr <= ar_addr;
 end
 
-assign ram_raddr      = ram_re_i ? result : 64'b0 | ar_addr;
+assign ram_raddr      = ram_re_i ? result[31:0] : 32'b0 | ar_addr;
 assign m_axi_ar_valid = ram_re_i | ar_valid;
 
 //=============================================================

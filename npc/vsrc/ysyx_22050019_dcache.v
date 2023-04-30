@@ -33,14 +33,14 @@ module ysyx_22050019_dcache#(
 
   input                              ar_valid_i          ,         
   output reg                         ar_ready_o          ,     
-  input     [R_ADDR_WIDTH-1:0]       ar_addr_i           ,             
+  input     [ADDR_WIDTH-1:0]         ar_addr_i           ,             
   output reg                         r_data_valid_o      ,     
   input                              r_data_ready_i      ,
   input     [1:0]                    r_resp_i            ,     
   output reg[DATA_WIDTH-1:0]         r_data_o            ,
   input                              aw_valid_i          ,         
   output reg                         aw_ready_o          ,     
-  input     [R_ADDR_WIDTH-1:0]       aw_addr_i           ,             
+  input     [ADDR_WIDTH-1:0]         aw_addr_i           ,             
   input                              w_data_valid_i      ,     
   output reg                         w_data_ready_o      ,
   input     [DATA_WIDTH/8-1:0]       w_w_strb_i          ,     
@@ -77,7 +77,7 @@ parameter RAM_DEPTH= INDEX_DEPTH                         ;//64$pow(2,INDEX_WIDTH
 parameter RAML     = INDEX_WIDTH+OFFSET_WIDTH-1          ;//8
 parameter RAMR     = OFFSET_WIDTH                        ;//3
 
-wire [R_ADDR_WIDTH-1:0]  rw_addr_i = ar_addr_i|aw_addr_i ; 
+wire [ADDR_WIDTH-1:0]  rw_addr_i = ar_addr_i|aw_addr_i ; 
 // 保存地址，miss后的写数据，偏移寄存器
 reg [ADDR_WIDTH-1:0]   addr  ;
 wire[INDEX_WIDTH-1:0]  index = addr[INDEXL:INDEXR];
