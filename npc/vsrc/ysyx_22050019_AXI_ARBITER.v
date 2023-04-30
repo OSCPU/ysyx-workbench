@@ -1,6 +1,6 @@
 module ysyx_22050133_axi_arbiter # (
     parameter AXI_DATA_WIDTH    = 64,
-    parameter AXI_ADDR_WIDTH    = 64,
+    parameter AXI_ADDR_WIDTH    = 32,
     parameter AXI_STRB_WIDTH    = AXI_DATA_WIDTH/8,
     parameter AXI_USER_WIDTH    = 1
 )(//IF&MEM输入信号
@@ -24,7 +24,7 @@ module ysyx_22050133_axi_arbiter # (
 
     output                              s1_axi_ar_ready_o,       
     input                               s1_axi_ar_valid_i,
-    input [31:0]                        s1_axi_ar_addr_i,
+    input [AXI_ADDR_WIDTH-1:0]          s1_axi_ar_addr_i,
     
     input                               s1_axi_r_ready_i,            
     output                              s1_axi_r_valid_o,        
@@ -48,7 +48,7 @@ module ysyx_22050133_axi_arbiter # (
 
     output                              s2_axi_ar_ready_o,       
     input                               s2_axi_ar_valid_i,
-    input [31:0]                        s2_axi_ar_addr_i,
+    input [AXI_ADDR_WIDTH-1:0]          s2_axi_ar_addr_i,
     
     input                               s2_axi_r_ready_i,            
     output                              s2_axi_r_valid_o,        
@@ -72,7 +72,7 @@ module ysyx_22050133_axi_arbiter # (
 
     input                               axi_ar_ready_i,             
     output                              axi_ar_valid_o,
-    output     [32-1:0]                 axi_ar_addr_o,
+    output     [AXI_ADDR_WIDTH-1:0]     axi_ar_addr_o,
     
     output                              axi_r_ready_o,          
     input                               axi_r_valid_i,             

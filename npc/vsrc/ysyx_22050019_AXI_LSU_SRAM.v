@@ -5,7 +5,7 @@ import "DPI-C" function void pmem_write(
 // 使用这一个sram作为arbiter的接受单位，各个单位拉线已经OK
 module ysyx_22050019_AXI_LSU_SRAM # (
     parameter AXI_DATA_WIDTH    = 64,
-    parameter AXI_ADDR_WIDTH    = 64
+    parameter AXI_ADDR_WIDTH    = 32
     //parameter AXI_ID_WIDTH      = 4,
     //parameter AXI_USER_WIDTH    = 1
 )(  // LSU&MEM输入信号
@@ -31,7 +31,7 @@ module ysyx_22050019_AXI_LSU_SRAM # (
     // 读地址通道
     output reg                          axi_ar_ready_o,       
     input                               axi_ar_valid_i,
-    input [32-1:0]          axi_ar_addr_i,
+    input [AXI_ADDR_WIDTH-1:0]          axi_ar_addr_i,
     
     // 读数据通道
     input                               axi_r_ready_i,            
@@ -47,7 +47,7 @@ localparam WS_IDLE = 2'd1;
 localparam WS_WHS  = 2'd2;
 localparam WS_BHS  = 2'd3;
 
-reg  [32-1:0]   ar_addr;          //LSU&MEM输入信号
+reg  [AXI_ADDR_WIDTH-1:0]   ar_addr;          //LSU&MEM输入信号
                                    
 reg  [AXI_ADDR_WIDTH-1:0]   aw_addr;          //LSU&MEM输入信号
 reg  [AXI_DATA_WIDTH-1:0]   w_data ;          //LSU&MEM输入信号

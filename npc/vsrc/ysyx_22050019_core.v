@@ -323,7 +323,7 @@ wire [63:0] axi_lsu_dcache_r_data   ;
 
 wire        axi_dcache_aw_ready    = uncache ? 0 : axi_dcache_arbiter_aw_ready  ; 
 wire        axi_dcache_aw_valid    ;
-wire [63:0] axi_dcache_aw_addr     ;
+wire [31:0] axi_dcache_aw_addr     ;
 wire        axi_dcache_w_ready     = uncache ? 0 : axi_dcache_arbiter_w_ready   ; 
 wire        axi_dcache_w_valid     ;
 wire [63:0] axi_dcache_w_data      ;
@@ -340,8 +340,8 @@ wire [1:0]  axi_dcache_r_resp      = uncache ? 0 : axi_dcache_arbiter_r_resp    
 wire [63:0] axi_dcache_r_data      = uncache ? 0 : axi_dcache_arbiter_r_data    ; 
 
 wire        axi_dcache_arbiter_aw_ready ;
-wire        axi_dcache_arbiter_aw_valid = uncache ? axi_lsu_sram_aw_valid : axi_dcache_aw_valid ;
-wire [63:0] axi_dcache_arbiter_aw_addr  = uncache ? ram_waddr_lsu_mem     : axi_dcache_aw_addr  ;
+wire        axi_dcache_arbiter_aw_valid = uncache ? axi_lsu_sram_aw_valid  : axi_dcache_aw_valid ;
+wire [31:0] axi_dcache_arbiter_aw_addr  = uncache ? ram_waddr_lsu_mem[31:0]: axi_dcache_aw_addr  ;
 wire        axi_dcache_arbiter_w_ready  ;
 wire        axi_dcache_arbiter_w_valid  = uncache ? axi_lsu_sram_w_valid  : axi_dcache_w_valid  ;
 wire [63:0] axi_dcache_arbiter_w_data   = uncache ? ram_wdata_lsu_mem     : axi_dcache_w_data   ;
@@ -413,7 +413,7 @@ ysyx_22050133_axi_arbiter ARBITER(
     // Advanced eXtensible Interface Slave1
     .s1_axi_aw_ready_o ( s1_axi_aw_ready_o           ),
     .s1_axi_aw_valid_i ( 1'b0                        ),
-    .s1_axi_aw_addr_i  ( 64'b0                       ),
+    .s1_axi_aw_addr_i  ( 32'b0                       ),
 
     .s1_axi_w_ready_o  ( s1_axi_w_ready_o            ),
     .s1_axi_w_valid_i  ( 1'b0                        ),
@@ -486,7 +486,7 @@ ysyx_22050133_axi_arbiter ARBITER(
 // arbiter<>sram的连线
 wire        axi_arbitr_sram_aw_ready ;
 wire        axi_arbitr_sram_aw_valid ;
-wire [63:0] axi_arbitr_sram_aw_addr  ;
+wire [31:0] axi_arbitr_sram_aw_addr  ;
 wire        axi_arbitr_sram_w_ready  ;
 wire        axi_arbitr_sram_w_valid  ;
 wire [63:0] axi_arbitr_sram_w_data   ;
