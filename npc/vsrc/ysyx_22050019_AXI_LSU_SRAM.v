@@ -166,7 +166,7 @@ always@(posedge clk)begin
       RS_IDLE:
       if(next_rstate==RS_RHS) begin
         ar_addr       <= axi_ar_addr_i;
-        axi_ar_ready_o<= 1'b0;
+        axi_ar_ready_o<= 0;
       end
       else begin
         ar_addr       <= 0;
