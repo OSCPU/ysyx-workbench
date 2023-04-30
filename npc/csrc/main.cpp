@@ -88,6 +88,7 @@ void (*ref_difftest_raise_intr)(uint64_t NO) = NULL;
 
 
 void init_difftest() {
+  printf("diff_init");
   char ref_so_file[]="/home/zyx/ysyx-workbench/nemu/build/riscv64-nemu-interpreter-so";
   assert(ref_so_file != NULL);
 
@@ -316,7 +317,9 @@ int main(int argc, char** argv, char** env) {
 // 会增加一定的性能负担，且这个类型一旦溢出会导致程序被杀死
   debug_time++;
 #endif
-
+      exec_once();
+      exec_once();
+      exec_once();
       if(icache_exec){
       icache_exec = false;
       IFDEF(DEBUG_DIFFTRACE, printf("icache_exec  %d\n",icache_exec));
