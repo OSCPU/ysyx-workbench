@@ -55,7 +55,7 @@ module ysyx_22050019_IFU#(
     default : next_state = IDLE;
   endcase
 end
-
+import "DPI-C" function void difftest_valid();
   // 读的状态机
 always@(posedge clk)begin
   if(rst_n)begin
@@ -77,6 +77,7 @@ always@(posedge clk)begin
       end
 
       WAIT_READY:if(next_state==IDLE)begin
+        difftest_valid();
         m_axi_arvalid   <= 1'b1;
         m_axi_rready    <= 1'b0;
         rresp           <= m_axi_r_resp_i;
