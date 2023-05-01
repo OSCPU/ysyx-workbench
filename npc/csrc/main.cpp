@@ -176,6 +176,7 @@ void difftest_exec_once()
       exec_once();
        }
       IFDEF(CONFIG_ITRACE, itrace_record(dut->now_addr));
+      IFDEF(CONFIG_DEVICE, device_update());
     }
     
     ref_difftest_regcpy(cpu_gpr, DIFFTEST_TO_REF);
