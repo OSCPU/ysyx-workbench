@@ -304,7 +304,7 @@ int main(int argc, char** argv, char** env) {
 
       IFDEF(CONFIG_DEVICE, device_update());
 
-      while(~difftest_ok){
+      while(difftest_ok == false){
       exec_once();
        }
 #ifdef CONFIG_ITRACE
