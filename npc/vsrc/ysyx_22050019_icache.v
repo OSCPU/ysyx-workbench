@@ -191,7 +191,6 @@ always@(posedge clk)begin
 					cache_r_ready_o         <= 0;
         end
       S_HIT:if(next_state==S_IDLE)begin
-          difftest_valid();
 					ar_ready_o          <= 1;
 					r_data_valid_o      <= 0;
           waynum              <= 0;
@@ -206,6 +205,7 @@ always@(posedge clk)begin
           cache_r_ready_o  <= 1;
           end
       S_R:if(next_state==S_HIT)begin
+          difftest_valid();
           cache_r_ready_o     <= 0             ;
           valid[waynum][index]<= 1             ;
           r_data_o            <= cache_r_data_i;
