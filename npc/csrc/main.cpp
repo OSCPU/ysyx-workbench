@@ -175,10 +175,7 @@ void difftest_exec_once()
       while(difftest_ok){
       exec_once();
        }
-#ifdef CONFIG_ITRACE
-  itrace_record(dut->now_addr);
-#endif
-      IFDEF(CONFIG_DEVICE, device_update());
+      IFDEF(CONFIG_ITRACE, itrace_record(dut->now_addr));
     }
     
     ref_difftest_regcpy(cpu_gpr, DIFFTEST_TO_REF);
