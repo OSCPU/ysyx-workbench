@@ -155,6 +155,7 @@ always@(*) begin
   endcase
 end
 import "DPI-C" function void icache_wait();
+import "DPI-C" function void difftest_valid();
 always@(posedge clk)begin
   if(rst)begin
 		ar_ready_o          <= 1;
@@ -204,6 +205,7 @@ always@(posedge clk)begin
           cache_r_ready_o  <= 1;
           end
       S_R:if(next_state==S_HIT)begin
+          difftest_valid();
           cache_r_ready_o     <= 0             ;
           valid[waynum][index]<= 1             ;
           r_data_o            <= cache_r_data_i;
