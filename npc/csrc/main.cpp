@@ -24,6 +24,8 @@ void ebreak()
   debug_exit(cpu_gpr[10]);
 }
 // 同步总线访问
+#ifdef CONFIG_ITRACE
+//程序profling的接口
 bool arbiter_exec = false;
 void arbiter_wait(){
   //printf("1\n");
@@ -34,6 +36,7 @@ void icache_wait(){
   //printf("1\n");
   icache_exec = true;
 }
+#endif
 bool difftest_ok = false;
 void difftest_valid(){
   //printf("1\n");
@@ -175,6 +178,7 @@ void difftest_exec_once()
 #ifdef CONFIG_ITRACE
   itrace_record(dut->now_addr);
 #endif
+      IFDEF(CONFIG_DEVICE, device_update());
     }
     
     ref_difftest_regcpy(cpu_gpr, DIFFTEST_TO_REF);

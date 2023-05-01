@@ -190,7 +190,7 @@ always@(*) begin
     default:next_state=S_IDLE;
   endcase
 end
-import "DPI-C" function void icache_wait();
+//import "DPI-C" function void icache_wait();
 always@(posedge clk)begin
   if(rst)begin
     rw_control                    <= 0                                     ;
@@ -222,7 +222,6 @@ always@(posedge clk)begin
           end
         end
         else if(next_state==S_AR)begin
-//          icache_wait()                                                    ;//多跑2个周期平衡
 					ar_ready_o              <= 0                                     ;
           aw_ready_o              <= 0                                     ;
           waynum                  <= random                                ;
@@ -237,7 +236,7 @@ always@(posedge clk)begin
           end
         end
         else if(next_state==S_AW)begin
-          icache_wait()                                                    ;//多跑2个周期平衡
+//          icache_wait()                                                    ;//多跑2个周期平衡
 					ar_ready_o              <= 0                                     ;
           aw_ready_o              <= 0                                     ;
           waynum                  <= random                                ;

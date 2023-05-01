@@ -119,7 +119,7 @@ wire w_channel = 1;
 reg rstate;
 reg next_rstate;
 
-import "DPI-C" function void arbiter_wait();
+//import "DPI-C" function void arbiter_wait();
     //// 读通道状态切换
 always@(posedge clk)begin
   if(rst)rstate<=RS_IDLE;
@@ -145,7 +145,7 @@ always@(posedge clk)begin
     case(rstate)
       RS_IDLE:
       if(next_rstate==RS_S2)begin
-        arbiter_wait();//多跑3个周期平衡
+//        arbiter_wait();//多跑3个周期平衡
         r_channel<=1;
       end
       else begin

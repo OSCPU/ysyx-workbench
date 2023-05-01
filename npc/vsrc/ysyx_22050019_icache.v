@@ -154,7 +154,7 @@ always@(*) begin
     default:next_state=S_IDLE;
   endcase
 end
-import "DPI-C" function void icache_wait();
+//import "DPI-C" function void icache_wait();
 import "DPI-C" function void difftest_valid();
 always@(posedge clk)begin
   if(rst)begin
@@ -176,7 +176,7 @@ always@(posedge clk)begin
           addr                    <= {ar_addr_i[TAGL:INDEXR],OFFSET0};
         end
         else if(next_state==S_AR)begin
-          icache_wait()               ;//多跑2个周期平衡
+//          icache_wait()               ;//多跑2个周期平衡
 					ar_ready_o              <= 0;
           waynum                  <= random;
           addr                    <= {ar_addr_i[TAGL:INDEXR],OFFSET0};
