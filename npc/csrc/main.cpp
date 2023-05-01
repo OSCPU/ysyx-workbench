@@ -306,7 +306,10 @@ int main(int argc, char** argv, char** env) {
     init_disasm("riscv64-pc-linux-gnu");
 //2流水线择在这里将cpu先跑一次，不可放在‘init_disasm（）’初始前
     //exec_once();
-
+    exec_once();
+    exec_once();
+    exec_once();
+    exec_once();
     icache_exec = false;
 #ifdef CONFIG_DIFFTEST
   init_difftest();
