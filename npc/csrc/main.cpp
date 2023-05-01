@@ -172,7 +172,7 @@ void difftest_exec_once()
     while(is_skip_ref){
     is_skip_ref = false;
 
-      while(difftest_ok){
+      while(~difftest_ok){
       exec_once();
        }
       IFDEF(CONFIG_ITRACE, itrace_record(dut->now_addr));
