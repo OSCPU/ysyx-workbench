@@ -171,7 +171,15 @@ void difftest_exec_once()
 //一个冒险的开关当开启这里时，会跳过连续访问外设的diff写reg覆盖，但会将访问后一条指令的结果直接写入参考模型，这是一个对正确性的隐患。（提升效果2~3倍）
     while(is_skip_ref){
     is_skip_ref = false;
-
+    #ifdef CONFIG_ITRACE
+    itrace_record(dut->now_addr);
+// 会增加一定的性能负担，且这个类型一旦溢出会导致程序被杀死
+//  debug_time++;
+#endif
+      while(difftest_ok == false){
+      exec_once();
+       }
+      difftest_ok = false;
     }
     
     ref_difftest_regcpy(cpu_gpr, DIFFTEST_TO_REF);
