@@ -197,6 +197,7 @@ always@(posedge clk)begin
           r_data_o            <= 0;
       end
       else begin
+        difftest_valid();
           r_data_valid_o          <= 1            ; 
           r_data_o                <= RAM_Q[waynum];
       end
