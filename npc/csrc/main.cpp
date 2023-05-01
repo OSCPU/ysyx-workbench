@@ -317,16 +317,18 @@ int main(int argc, char** argv, char** env) {
     while (1) {
 
       IFDEF(CONFIG_DEVICE, device_update());
-/*#ifdef CONFIG_ITRACE
-  itrace_record(dut->now_addr);
+
+      exec_once();
+#ifdef CONFIG_ITRACE
+    
 // 会增加一定的性能负担，且这个类型一旦溢出会导致程序被杀死
 //  debug_time++;
 #endif
-*/
-      exec_once();
+
 #ifdef CONFIG_DIFFTEST
       if(difftest_ok) {
         difftest_ok = false;
+        itrace_record(dut->now_addr);
         difftest_exec_once();}
 #endif
     }
