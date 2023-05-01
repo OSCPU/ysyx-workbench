@@ -303,21 +303,17 @@ int main(int argc, char** argv, char** env) {
     while (1) {
 
       IFDEF(CONFIG_DEVICE, device_update());
-
-      while(difftest_ok == false){
-      exec_once();
-       }
 #ifdef CONFIG_ITRACE
-    
+    itrace_record(dut->now_addr);
 // 会增加一定的性能负担，且这个类型一旦溢出会导致程序被杀死
 //  debug_time++;
 #endif
-
+      while(difftest_ok == false){
+      exec_once();
+       }
+       difftest_ok = false;
 #ifdef CONFIG_DIFFTEST
-      if(difftest_ok) {
-        difftest_ok = false;
-        itrace_record(dut->now_addr);
-        difftest_exec_once();}
+        difftest_exec_once();
 #endif
     }
 }
