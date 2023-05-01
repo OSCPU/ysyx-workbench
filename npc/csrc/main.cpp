@@ -172,11 +172,6 @@ void difftest_exec_once()
     while(is_skip_ref){
     is_skip_ref = false;
 
-      while(~difftest_ok){
-      exec_once();
-       }
-      IFDEF(CONFIG_ITRACE, itrace_record(dut->now_addr));
-      IFDEF(CONFIG_DEVICE, device_update());
     }
     
     ref_difftest_regcpy(cpu_gpr, DIFFTEST_TO_REF);
@@ -309,7 +304,9 @@ int main(int argc, char** argv, char** env) {
 
       IFDEF(CONFIG_DEVICE, device_update());
 
+      while(~difftest_ok){
       exec_once();
+       }
 #ifdef CONFIG_ITRACE
     
 // 会增加一定的性能负担，且这个类型一旦溢出会导致程序被杀死
