@@ -59,7 +59,6 @@ always@(*) begin
   end 
 end
 //==================IF/ID=======================
-//*****************第一级流水*********************
 wire [63:0] pc_ifu_id  ;
 wire [31:0] inst_ifu_id;
 ysyx_22050019_IF_ID IF_ID(
@@ -159,7 +158,6 @@ ysyx_22050019_CSR CSR(
 );
 
 //==================ID/EX=======================
-//*****************第二级流水*********************
 wire         ram_we_id_exu   ;
 wire [63:0]  ram_wdata_id_exu;
 wire [3:0]   mem_w_wdth_exu  ;
@@ -172,7 +170,7 @@ wire [4:0]   reg_waddr_id_exu;
 wire [`LEN:0]alu_sel_exu     ;
 wire [63:0]  wdate_csr_exu   ;
 /* verilator lint_off UNUSED */wire [63:0]csr_regs_diff_exu[3:0];//验证用
-ysyx_22050019_ID_EX u_ysyx_22050019_ID_EX(
+ysyx_22050019_ID_EX ID_EX(
     .clk              ( clk              ),
     .rst_n            ( rst_n            ),
     .ram_we_i         ( ram_we_id        ),
@@ -218,7 +216,6 @@ ysyx_22050019_EXU EXU(
 );
 
 //==================EX/MEM======================
-//*****************第三级流水*********************
 wire [63:0]  result_exu_lsu   ;
 wire         ram_we_exu_lsu   ;
 wire [63:0]  ram_wdata_exu_lsu;
@@ -230,7 +227,7 @@ wire [4:0]   reg_waddr_exu_lsu;
 wire [63:0]  wdate_csr_lsu    ;
 wire [63:0]  wdata_reg_exu_lsu;
 /* verilator lint_off UNUSED */wire [63:0]csr_regs_diff_lsu[3:0];//验证用
-ysyx_22050019_EX_MEM u_ysyx_22050019_EX_MEM(
+ysyx_22050019_EX_MEM EX_MEM(
     .clk              ( clk              ),
     .rst_n            ( rst_n            ),
     .result_i         ( result_exu       ),
@@ -320,21 +317,6 @@ ysyx_22050019_LSU LSU(
  .waddr_reg_o    (waddr_lsu_reg        ),
  .wdata_reg_o    (wdata_lsu_wb         )
 );
-
-/*
-//MEM读取端口
-ysyx_22050019_mem MEM (
-  .ren(ram_re_lsu_mem),
-  .wen(ram_we_lsu_mem),
-
-  .raddr(ram_raddr_lsu_mem),
-  .rdata(ram_rdata_mem_lsu),
-
-  .waddr(ram_waddr_lsu_mem),
-  .wdata(ram_wdata_lsu_mem),
-  .mask(wmask)
-);
-*/
 
 //icache的缓存区设置
 wire        axi_icache_sram_ar_valid ;
@@ -593,29 +575,39 @@ ysyx_22050019_AXI_LSU_SRAM lsu_sram(
  .axi_r_data_o   (axi_arbitr_sram_r_data   )
 );
 
-//wb回写模块端口
-wire [63:0] wdata_wb_reg ;
-ysyx_22050019_WBU WBU(
- // 写入寄存器控制信号
- .reg_wen      (reg_we_exu_lsu),
- .reg_lsu_wen  (wen_lsu_reg  ),
+//==================MEM/WBU=====================
+//wb回写模块端口合一了因为wbu的事情太少了打算直接在寄存时合进来。
+wire         reg_we_wbu   ;
+wire [4:0]   reg_waddr_wbu;
+wire [63:0]  reg_wdata_wbu;
+/* verilator lint_off UNUSED */wire [63:0]csr_regs_diff_wbu[3:0];//验证用
+ysyx_22050019_MEM_WB MEM_WB(
+    .clk              ( clk              ),
+    .rst_n            ( rst_n            ),
+    .reg_we_exu_lsu_i ( reg_we_exu_lsu ),
+    .reg_we_lsu_i     ( wen_lsu_reg     ),
+    .reg_waddr_exu_i  ( reg_waddr_exu_lsu  ),
+    .reg_waddr_lsu_i  ( waddr_lsu_reg  ),
+    .reg_wdata_lsu_i  ( wdata_lsu_wb  ),
+    .reg_wdata_csr_i  ( wdate_csr_lsu  ),
+    .reg_wdata_exu_i  ( wdata_reg_exu_lsu  ),
+    .csr_regs_diff_i  ( csr_regs_diff_lsu),
 
- .wdata_exu_wbu(wdata_reg_exu_lsu ),
- .wdata_lsu_wbu(wdata_lsu_wb ),
- .wdata_csr_wbu(wdate_csr_lsu),
-
- .wdata_o      (wdata_wb_reg )
+    .reg_we_wbu_o     ( reg_we_wbu     ),
+    .reg_waddr_wbu_o  ( reg_waddr_wbu  ),
+    .reg_wdata_wbu_o  ( reg_wdata_wbu  ),
+    .csr_regs_diff_o  ( csr_regs_diff_wbu)
 );
 
 //寄存器组端口
 ysyx_22050019_regs REGS(
  .clk        (clk                       ),
  .now_pc     (pc_ifu           ),         
- .wdata      (wdata_wb_reg              ),
- .waddr      (reg_waddr_id_exu|waddr_lsu_reg),
- .wen        (reg_we_exu_lsu||wen_lsu_reg),
+ .wdata      (reg_wdata_wbu              ),
+ .waddr      (reg_waddr_wbu),
+ .wen        (reg_we_wbu),
 
- .csr_regs_diff(csr_regs_diff_lsu           ),
+ .csr_regs_diff(csr_regs_diff_wbu           ),
  
  .raddr1     (raddr1_id_regs            ),
  .raddr2     (raddr2_id_regs            ),
