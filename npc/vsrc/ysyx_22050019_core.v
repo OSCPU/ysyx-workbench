@@ -219,7 +219,44 @@ ysyx_22050019_EXU EXU(
 
 //==================EX/MEM======================
 //*****************第三级流水*********************
+wire [63:0]  result_exu_lsu   ;
+wire         ram_we_exu_lsu   ;
+wire [63:0]  ram_wdata_exu_lsu;
+wire [3:0]   mem_w_wdth_lsu   ;
+wire         ram_re_exu_lsu   ;
+wire [5:0]   mem_r_wdth_lsu   ;
+wire         reg_we_exu_lsu   ;
+wire [4:0]   reg_waddr_exu_lsu;
+wire [63:0]  wdate_csr_lsu    ;
+wire [63:0]  wdata_reg_exu_lsu;
+/* verilator lint_off UNUSED */wire [63:0]csr_regs_diff_lsu[3:0];//验证用
+ysyx_22050019_EX_MEM u_ysyx_22050019_EX_MEM(
+    .clk              ( clk              ),
+    .rst_n            ( rst_n            ),
+    .result_i         ( result_exu       ),
+    .wdata_exu_reg_i  ( wdata_ex_reg     ),
+    .ram_we_i         ( ram_we_id_exu    ),
+    .ram_wdata_i      ( ram_wdata_id_exu ),
+    .mem_w_wdth_i     ( mem_w_wdth_exu   ),
+    .ram_re_i         ( ram_re_id_exu    ),
+    .mem_r_wdth_i     ( mem_r_wdth_exu   ),
+    .reg_we_i         ( reg_we_id_exu    ),
+    .reg_waddr_i      ( reg_waddr_id_exu ),
+    .wdate_csr_reg_i  ( wdate_csr_exu    ),
+    .csr_regs_diff_i  ( csr_regs_diff_exu),
 
+    .result_o         ( result_exu_lsu   ),
+    .wdata_exu_reg_o  ( wdata_reg_exu_lsu),
+    .ram_we_o         ( ram_we_exu_lsu   ),
+    .ram_wdata_o      ( ram_wdata_exu_lsu),
+    .mem_w_wdth_o     ( mem_w_wdth_lsu   ),
+    .ram_re_o         ( ram_re_exu_lsu   ),
+    .mem_r_wdth_o     ( mem_r_wdth_lsu   ),
+    .reg_we_o         ( reg_we_exu_lsu   ),
+    .reg_waddr_o      ( reg_waddr_exu_lsu),
+    .wdate_csr_reg_o  ( wdate_csr_lsu    ),
+    .csr_regs_diff_o  ( csr_regs_diff_lsu)
+);
 
 // lsu模块端口
 wire [63:0] wdata_lsu_wb;
@@ -249,13 +286,13 @@ wire [4:0]  waddr_lsu_reg;
 ysyx_22050019_LSU LSU(
  .clk            (clk                  ),
  .rst            (rst_n                ),
- .result         (result_exu       ),
- .ram_we_i       (ram_we_id_exu        ),
- .ram_wdata_i    (ram_wdata_id_exu     ),
- .ram_re_i       (ram_re_id_exu        ),
+ .result         (result_exu_lsu       ),
+ .ram_we_i       (ram_we_exu_lsu        ),
+ .ram_wdata_i    (ram_wdata_exu_lsu     ),
+ .ram_re_i       (ram_re_exu_lsu        ),
  
- .mem_r_wdth     (mem_r_wdth_exu           ),
- .mem_w_wdth     (mem_w_wdth_exu           ),
+ .mem_r_wdth     (mem_r_wdth_lsu           ),
+ .mem_w_wdth     (mem_w_wdth_lsu           ),
    
  //.ram_we       (ram_we_lsu_mem),
  .ram_waddr      (ram_waddr_lsu_mem    ),
@@ -560,12 +597,12 @@ ysyx_22050019_AXI_LSU_SRAM lsu_sram(
 wire [63:0] wdata_wb_reg ;
 ysyx_22050019_WBU WBU(
  // 写入寄存器控制信号
- .reg_wen      (reg_we_id_exu),
+ .reg_wen      (reg_we_exu_lsu),
  .reg_lsu_wen  (wen_lsu_reg  ),
 
- .wdata_exu_wbu(wdata_ex_reg ),
+ .wdata_exu_wbu(wdata_reg_exu_lsu ),
  .wdata_lsu_wbu(wdata_lsu_wb ),
- .wdata_csr_wbu(wdate_csr_exu),
+ .wdata_csr_wbu(wdate_csr_lsu),
 
  .wdata_o      (wdata_wb_reg )
 );
@@ -576,9 +613,9 @@ ysyx_22050019_regs REGS(
  .now_pc     (pc_ifu           ),         
  .wdata      (wdata_wb_reg              ),
  .waddr      (reg_waddr_id_exu|waddr_lsu_reg),
- .wen        (reg_we_id_exu||wen_lsu_reg),
+ .wen        (reg_we_exu_lsu||wen_lsu_reg),
 
- .csr_regs_diff(csr_regs_diff_exu           ),
+ .csr_regs_diff(csr_regs_diff_lsu           ),
  
  .raddr1     (raddr1_id_regs            ),
  .raddr2     (raddr2_id_regs            ),
