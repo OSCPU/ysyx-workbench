@@ -204,21 +204,17 @@ ysyx_22050019_ID_EX u_ysyx_22050019_ID_EX(
 
 //EXecut模块端口
 wire [63:0]  wdata_ex_reg  ;
-wire         reg_we_ex_reg ;
-wire [4:0]   waddr_ex_reg  ;
+//wire         reg_we_id_exu ;
+//wire [4:0]   reg_waddr_id_exu  ;
 
 ysyx_22050019_EXU EXU(
  .alu_sel     (alu_sel_exu),
 
  .op1         (op1_id_exu      ),
  .op2         (op2_id_exu      ),
- .reg_we_i    (reg_we_id_exu   ),
- .reg_waddr_i (reg_waddr_id_exu),
 
  .result      (result_exu_lsu ),
- .wdata       (wdata_ex_reg   ),
- .reg_we      (reg_we_ex_reg  ),
- .waddr       (waddr_ex_reg   )
+ .wdata       (wdata_ex_reg   )
 );
 
 // lsu模块端口
@@ -278,7 +274,7 @@ ysyx_22050019_LSU LSU(
  .m_axi_r_valid  (axi_lsu_sram_r_valid ),
 
 
- .waddr_reg_i    (waddr_ex_reg         ),
+ .waddr_reg_i    (reg_waddr_id_exu         ),
  .wen_reg_o      (wen_lsu_reg          ),
  .waddr_reg_o    (waddr_lsu_reg        ),
  .wdata_reg_o    (wdata_lsu_wb         )
@@ -560,7 +556,7 @@ ysyx_22050019_AXI_LSU_SRAM lsu_sram(
 wire [63:0] wdata_wb_reg ;
 ysyx_22050019_WBU WBU(
  // 写入寄存器控制信号
- .reg_wen      (reg_we_ex_reg),
+ .reg_wen      (reg_we_id_exu),
  .reg_lsu_wen  (wen_lsu_reg  ),
 
  .wdata_exu_wbu(wdata_ex_reg ),
@@ -575,8 +571,8 @@ ysyx_22050019_regs REGS(
  .clk        (clk                       ),
  .now_pc     (pc_ifu           ),         
  .wdata      (wdata_wb_reg              ),
- .waddr      (waddr_ex_reg|waddr_lsu_reg),
- .wen        (reg_we_ex_reg||wen_lsu_reg),
+ .waddr      (reg_waddr_id_exu|waddr_lsu_reg),
+ .wen        (reg_we_id_exu||wen_lsu_reg),
 
  .csr_regs_diff(csr_regs_diff_exu           ),
  
