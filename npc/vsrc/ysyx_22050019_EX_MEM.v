@@ -24,7 +24,6 @@ module ysyx_22050019_EX_MEM (
     output [4:0]    reg_waddr_o         ,
     output [63:0]   wdate_csr_reg_o     ,
     output [63:0]   csr_regs_diff_o[3:0]
-
 );
 assign result_o            = result_i       ;
 assign wdata_exu_reg_o     = wdata_exu_reg_i;
@@ -38,3 +37,31 @@ assign reg_waddr_o         = reg_waddr_i    ;
 assign wdate_csr_reg_o     = wdate_csr_reg_i;
 assign csr_regs_diff_o[3:0]= csr_regs_diff_i;
 endmodule
+/*
+ysyx_22050019_EX_MEM u_ysyx_22050019_EX_MEM(
+    .clk              ( clk              ),
+    .rst_n            ( rst_n            ),
+    .result_i         ( result_exu_lsu         ),
+    .wdata_exu_reg_i  ( wdata_exu_reg_i  ),
+    .ram_we_i         ( ram_we_i         ),
+    .ram_wdata_i      ( ram_wdata_i      ),
+    .mem_w_wdth_i     ( mem_w_wdth_i     ),
+    .ram_re_i         ( ram_re_i         ),
+    .mem_r_wdth_i     ( mem_r_wdth_i     ),
+    .reg_we_i         ( reg_we_i         ),
+    .reg_waddr_i      ( reg_waddr_i      ),
+    .wdate_csr_reg_i  ( wdate_csr_reg_i  ),
+    .                 (                  ),
+    .result_o         ( result_o         ),
+    .wdata_exu_reg_o  ( wdata_exu_reg_o  ),
+    .ram_we_o         ( ram_we_o         ),
+    .ram_wdata_o      ( ram_wdata_o      ),
+    .mem_w_wdth_o     ( mem_w_wdth_o     ),
+    .ram_re_o         ( ram_re_o         ),
+    .mem_r_wdth_o     ( mem_r_wdth_o     ),
+    .reg_we_o         ( reg_we_o         ),
+    .reg_waddr_o      ( reg_waddr_o      ),
+    .wdate_csr_reg_o  ( wdate_csr_reg_o  ),
+    .                 (                  )
+);
+*/
