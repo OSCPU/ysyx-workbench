@@ -1,6 +1,7 @@
 module ysyx_22050019_ID_EX (
     input          clk                 ,
     input          rst_n               ,
+    input [63:0]   pc_i                ,
     input          ram_we_i            ,
     input [63:0]   ram_wdata_i         ,
     input [3:0]    mem_w_wdth_i        ,
@@ -14,6 +15,7 @@ module ysyx_22050019_ID_EX (
     input [63:0]   wdate_csr_reg_i     ,
     input [63:0]   csr_regs_diff_i[3:0],
 
+    output [63:0]  pc_o                ,
     output         ram_we_o            ,
     output [63:0]  ram_wdata_o         ,
     output [3:0]   mem_w_wdth_o        ,
@@ -39,6 +41,7 @@ assign reg_waddr_o     = reg_waddr_i    ;
 assign alu_sel_o       = alu_sel_i      ;
 assign wdate_csr_reg_o = wdate_csr_reg_i;
 assign csr_regs_diff_o = csr_regs_diff_i;
+assign pc_o            = pc_i           ;
 endmodule
 
 

@@ -1,6 +1,7 @@
 module ysyx_22050019_EX_MEM (
     input           clk                 ,
     input           rst_n               ,
+    input  [63:0]   pc_i                ,
     input  [63:0]   result_i            ,
     input  [63:0]   wdata_exu_reg_i     ,
     input           ram_we_i            ,
@@ -13,6 +14,7 @@ module ysyx_22050019_EX_MEM (
     input  [63:0]   wdate_csr_reg_i     ,
     input  [63:0]   csr_regs_diff_i[3:0],
 
+    output [63:0]   pc_o                ,
     output [63:0]   result_o            ,
     output [63:0]   wdata_exu_reg_o     ,
     output          ram_we_o            ,
@@ -35,6 +37,7 @@ assign mem_r_wdth_o        = mem_r_wdth_i   ;
 assign reg_we_o            = reg_we_i       ;
 assign reg_waddr_o         = reg_waddr_i    ;
 assign wdate_csr_reg_o     = wdate_csr_reg_i;
-assign csr_regs_diff_o[3:0]= csr_regs_diff_i;
+assign csr_regs_diff_o     = csr_regs_diff_i;
+assign pc_o                = pc_i           ;
 endmodule
 
