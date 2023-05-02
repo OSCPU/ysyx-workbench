@@ -206,14 +206,14 @@ ysyx_22050019_ID_EX u_ysyx_22050019_ID_EX(
 wire [63:0]  wdata_ex_reg  ;
 //wire         reg_we_id_exu ;
 //wire [4:0]   reg_waddr_id_exu  ;
-
+wire [63:0] result_exu;
 ysyx_22050019_EXU EXU(
  .alu_sel     (alu_sel_exu),
 
  .op1         (op1_id_exu      ),
  .op2         (op2_id_exu      ),
 
- .result      (result_exu_lsu ),
+ .result      (result_exu ),
  .wdata       (wdata_ex_reg   )
 );
 
@@ -243,13 +243,13 @@ wire [1:0]  axi_lsu_sram_r_resp ;
 wire        axi_lsu_sram_r_ready;
 wire        axi_lsu_sram_r_valid  = uncache ? axi_dcache_arbiter_r_valid : axi_lsu_dcache_r_valid;
 
-wire [63:0] result_exu_lsu;
+
 wire        wen_lsu_reg;
 wire [4:0]  waddr_lsu_reg;
 ysyx_22050019_LSU LSU(
  .clk            (clk                  ),
  .rst            (rst_n                ),
- .result         (result_exu_lsu       ),
+ .result         (result_exu       ),
  .ram_we_i       (ram_we_id_exu        ),
  .ram_wdata_i    (ram_wdata_id_exu     ),
  .ram_re_i       (ram_re_id_exu        ),
