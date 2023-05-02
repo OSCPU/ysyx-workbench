@@ -5,20 +5,12 @@ module ysyx_22050019_core(
   //output [31:0]inst_i,         //1_inst
   //output[63:0]inst_addr,
   
-  output[63:0]inst_addr_if_id, //2_inst(目前查看执行状态的指令)
-  output[31:0]inst_if_id      
+  output[63:0]pc_ifu, //2_inst(目前查看执行状态的指令)
+  output[31:0]inst_ifu      
 );
 
 //取出指令的逻辑分离出来
 wire [63:0]        inst_i ;
-/*
-fetch fetch_data(
-    .clk (clk), 
-    .rst (rst_n),
-    .addr(inst_addr),
-    .data(inst_i)
-);
-*/
 
 // 虚拟sram_axi握手模拟
 wire axi_if_sram_rready;
@@ -26,22 +18,6 @@ wire axi_if_sram_rvalid;
 wire [1:0] axi_if_sram_resp  ;
 wire axi_if_sram_arready;
 wire axi_if_sram_arvalid;
-/*
-axi_lite_sram sram(
-   .clk               (clk),
-   .rst_n             (rst_n),
-   
-   .s_axi_arvalid     (axi_if_sram_arvalid),
-   .s_axi_araddr      (inst_addr_if_id),
-   .s_axi_arready     (axi_if_sram_arready),
-   
-   .s_axi_rready      (axi_if_sram_rready),
-   .s_axi_rvalid      (axi_if_sram_rvalid),
-   .s_axi_resp_o      (axi_if_sram_resp),
-   .s_axi_rdata       (inst_i)
-);
-*/
-
 //fetch模块端口
 ysyx_22050019_IFU IFU
 (
@@ -60,8 +36,8 @@ ysyx_22050019_IFU IFU
     .m_axi_arready     (stll_ar_ready),
     .m_axi_arvalid     (axi_if_sram_arvalid),
 
-    .inst_addr_o       (inst_addr_if_id    ), // 传入下级模块的地址
-    .inst_o            (inst_if_id         )
+    .inst_addr_o       (pc_ifu    ), // 传入下级模块的地址
+    .inst_o            (inst_ifu         )
 );
 
 //拉出来一个控制器来解决读hit与读总线的冲突,这是一个临时的方案
@@ -82,6 +58,19 @@ always@(*) begin
     stll_ar_ready  = axi_if_sram_arready;
   end 
 end
+//==============================================
+//*****************第一级流水*********************
+wire [63:0] pc_ifu_id  ;
+wire [31:0] inst_ifu_id;
+ysyx_22050019_IF_ID IF_ID(
+    .clk     ( clk    ),
+    .rst_n   ( rst_n  ),
+    .pc_i    ( pc_ifu   ),
+    .inst_i  ( inst_ifu ),
+    .pc_o    ( pc_ifu_id   ),
+    .inst_o  ( inst_ifu_id  )
+);
+
 
 //decode模块端口
 //wire [63:0] inst_addr_id_ex;//decode流水
@@ -104,8 +93,8 @@ wire [5:0]  mem_r_wdth     ;
 wire [3:0]  mem_w_wdth     ;
 
 ysyx_22050019_IDU IDU(
-.inst_addr_pc  (inst_addr_if_id      ),
- .inst_i       (inst_if_id           ),
+ .inst_addr_pc (pc_ifu_id      ),
+ .inst_i       (inst_ifu_id           ),
  
  .snpc         (snpc                 ),
  .inst_j       (inst_j               ),
@@ -154,7 +143,7 @@ wire [63:0]snpc_csr_id;
 ysyx_22050019_CSR CSR(
     .clk            (clk                ),
     .rst_n          (rst_n              ),
-    .pc             (inst_addr_if_id    ),
+    .pc             (pc_ifu_id    ),
   
     .csr_inst_type  (csr_inst_type_id_ex),
     .csr_addr       (csr_addr_id_ex     ),
@@ -280,7 +269,7 @@ ysyx_22050019_icache I_CACHE(
 
     .ar_valid_i        ( stll_ar_rvalid      ),
     .ar_ready_o        ( axi_if_sram_arready      ),
-    .ar_addr_i         ( inst_addr_if_id          ),
+    .ar_addr_i         ( pc_ifu          ),
     .r_data_valid_o    ( axi_if_sram_rvalid       ),
     .r_data_ready_i    ( axi_if_sram_rready       ),
     .r_resp_i          ( axi_if_sram_resp         ),
@@ -540,7 +529,7 @@ ysyx_22050019_WBU WBU(
 //寄存器组端口
 ysyx_22050019_regs REGS(
  .clk        (clk                       ),
- .now_pc     (inst_addr_if_id           ),         
+ .now_pc     (pc_ifu           ),         
  .wdata      (wdata_wb_reg              ),
  .waddr      (waddr_ex_reg|waddr_lsu_reg),
  .wen        (reg_we_ex_reg||wen_lsu_reg),

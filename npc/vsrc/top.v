@@ -15,8 +15,8 @@ ysyx_22050019_core ysyx_22050019_core_inst(
  //.inst_addr(inst_addr_o),
  //.inst_i   (inst),
  
- .inst_addr_if_id(now_addr),
- .inst_if_id     (now_inst)
+ .pc_ifu         (now_addr),
+ .inst_ifu     (now_inst)
 );
 endmodule
 

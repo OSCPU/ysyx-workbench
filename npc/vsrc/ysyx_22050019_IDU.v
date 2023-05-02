@@ -161,7 +161,7 @@ wire mulw = inst_w&&rv32_funct3_000&&rv32_funct7_000_0001;
 // 加载指令，从内存中获取相应的数据
 wire lb   = inst_l&&rv32_funct3_000;
 wire lbu  = inst_l&&rv32_funct3_100;
-/* verilator lint_off UNUSED */wire ld   = inst_l&&rv32_funct3_011;//读双字就已经默认了全读，exu在default中个设定控制
+/* verilator lint_off UNUSED */wire ld   = inst_l&&rv32_funct3_011;//读双字就已经默认了全读，exu在default中个设定控制,方便调试用的
 wire lh   = inst_l&&rv32_funct3_001;
 wire lhu  = inst_l&&rv32_funct3_101;
 wire lw   = inst_l&&rv32_funct3_010;
