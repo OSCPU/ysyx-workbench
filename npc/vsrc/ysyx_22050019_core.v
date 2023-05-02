@@ -160,17 +160,17 @@ ysyx_22050019_CSR CSR(
 
 //==================ID/EX=======================
 //*****************第二级流水*********************
-wire         ram_we_id_lsu   ;
-wire [63:0]  ram_wdata_id_lsu;
-wire [3:0]   mem_w_wdth_lsu  ;
-wire         ram_re_id_lsu   ;
-wire [5:0]   mem_r_wdth_lsu  ;
+wire         ram_we_id_exu   ;
+wire [63:0]  ram_wdata_id_exu;
+wire [3:0]   mem_w_wdth_exu  ;
+wire         ram_re_id_exu   ;
+wire [5:0]   mem_r_wdth_exu  ;
 wire [63:0]  op1_id_exu      ;
 wire [63:0]  op2_id_exu      ;
 wire         reg_we_id_exu   ;
 wire [4:0]   reg_waddr_id_exu;
 wire [`LEN:0]alu_sel_exu     ;
-wire [63:0]  wdate_csr_lsu   ;
+wire [63:0]  wdate_csr_exu   ;
 /* verilator lint_off UNUSED */wire [63:0]csr_regs_diff_exu[3:0];//验证用
 ysyx_22050019_ID_EX u_ysyx_22050019_ID_EX(
     .clk              ( clk              ),
@@ -188,17 +188,17 @@ ysyx_22050019_ID_EX u_ysyx_22050019_ID_EX(
     .wdate_csr_reg_i  ( wdate_csr        ),
     .csr_regs_diff_i  ( csr_regs_diff    ),
 
-    .ram_we_o         ( ram_we_id_lsu    ),
-    .ram_wdata_o      ( ram_wdata_id_lsu ),
-    .mem_w_wdth_o     ( mem_w_wdth_lsu   ),
-    .ram_re_o         ( ram_re_id_lsu    ),
-    .mem_r_wdth_o     ( mem_r_wdth_lsu   ),
+    .ram_we_o         ( ram_we_id_exu    ),
+    .ram_wdata_o      ( ram_wdata_id_exu ),
+    .mem_w_wdth_o     ( mem_w_wdth_exu   ),
+    .ram_re_o         ( ram_re_id_exu    ),
+    .mem_r_wdth_o     ( mem_r_wdth_exu   ),
     .op1_o            ( op1_id_exu       ),
     .op2_o            ( op2_id_exu       ),
     .reg_we_o         ( reg_we_id_exu    ),
     .reg_waddr_o      ( reg_waddr_id_exu ),
     .alu_sel_o        ( alu_sel_exu      ),
-    .wdate_csr_reg_o  ( wdate_csr_lsu    ),
+    .wdate_csr_reg_o  ( wdate_csr_exu    ),
     .csr_regs_diff_o  ( csr_regs_diff_exu)
 );
 
@@ -250,12 +250,12 @@ ysyx_22050019_LSU LSU(
  .clk            (clk                  ),
  .rst            (rst_n                ),
  .result         (result_exu_lsu       ),
- .ram_we_i       (ram_we_id_lsu        ),
- .ram_wdata_i    (ram_wdata_id_lsu     ),
- .ram_re_i       (ram_re_id_lsu        ),
+ .ram_we_i       (ram_we_id_exu        ),
+ .ram_wdata_i    (ram_wdata_id_exu     ),
+ .ram_re_i       (ram_re_id_exu        ),
  
- .mem_r_wdth     (mem_r_wdth_lsu           ),
- .mem_w_wdth     (mem_w_wdth_lsu           ),
+ .mem_r_wdth     (mem_r_wdth_exu           ),
+ .mem_w_wdth     (mem_w_wdth_exu           ),
    
  //.ram_we       (ram_we_lsu_mem),
  .ram_waddr      (ram_waddr_lsu_mem    ),
@@ -565,7 +565,7 @@ ysyx_22050019_WBU WBU(
 
  .wdata_exu_wbu(wdata_ex_reg ),
  .wdata_lsu_wbu(wdata_lsu_wb ),
- .wdata_csr_wbu(wdate_csr_lsu),
+ .wdata_csr_wbu(wdate_csr_exu),
 
  .wdata_o      (wdata_wb_reg )
 );
