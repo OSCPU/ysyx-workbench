@@ -5,7 +5,7 @@ module ysyx_22050019_ID_EX (
     input [63:0]   ram_wdata_i         ,
     input [3:0]    mem_w_wdth_i        ,
     input          ram_re_i            ,
-    input [5:0]   mem_r_wdth_i        ,
+    input [5:0]    mem_r_wdth_i        ,
     input [63:0]   op1_i               ,
     input [63:0]   op2_i               ,
     input          reg_we_i            ,
