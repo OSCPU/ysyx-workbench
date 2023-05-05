@@ -157,10 +157,10 @@ int vsnprintf(char *str, size_t size, const char *format, va_list ap) {
                 }
             }
             break;
-        case 'c':
-            char c = va_arg(ap, int);
-            str[written++] = c;
-            break;
+        // case 'c':
+        //     char c = va_arg(ap, int);
+        //     str[written++] = c;
+        //     break;
 
         default:
             panic("Not %% to match");
