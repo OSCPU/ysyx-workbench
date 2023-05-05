@@ -103,7 +103,7 @@ void read_elf(char *elf_name)
             elf_func[elf_cnt].fun_addr = table_sym[i].st_value;
             elf_func[elf_cnt].fun_size = table_sym[i].st_size;
             elf_func[elf_cnt].fun_name = (char *)(buffer + shdr_strtab->sh_offset + table_sym[i].st_name);
-            Log("%lx %lx %s", elf_func[i].fun_addr, elf_func[i].fun_size, elf_func[i].fun_name);
+            Log("%lx %lx %s", elf_func[elf_cnt].fun_addr, elf_func[elf_cnt].fun_size, elf_func[elf_cnt].fun_name);
             elf_cnt++;
         }
     }
