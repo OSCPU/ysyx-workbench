@@ -107,30 +107,30 @@ int vsnprintf(char *str, size_t size, const char *format, va_list ap) {
         //         }
         //     }
         //     break;
-        case 'x':
-            int num1 = va_arg(ap, int);
-            char buf1[20];
-            int i1 = 0;
-            if (num1 < 0) {
-                str[written++] = '-';
-                num1 = -num1;
-            }
-            while (num1) {
-                int temp = num1 % 16;
-                if (temp < 10) buf1[i1++] = temp + '0';
-                else buf1[i1++] = temp - 10 + 'a';
-                num1 /= 16;
-            }
-            if (i1 == 0) buf1[i1++] = '0';
-            while (i1 > 0) {
-                if (written + 1 < size) {
-                    str[written++] = buf1[--i1];
-                } else {
-                    str[size - 1] = '\0';
-                    return -1;
-                }
-            }
-            break;
+        // case 'x':
+        //     int num1 = va_arg(ap, int);
+        //     char buf1[20];
+        //     int i1 = 0;
+        //     if (num1 < 0) {
+        //         str[written++] = '-';
+        //         num1 = -num1;
+        //     }
+        //     while (num1) {
+        //         int temp = num1 % 16;
+        //         if (temp < 10) buf1[i1++] = temp + '0';
+        //         else buf1[i1++] = temp - 10 + 'a';
+        //         num1 /= 16;
+        //     }
+        //     if (i1 == 0) buf1[i1++] = '0';
+        //     while (i1 > 0) {
+        //         if (written + 1 < size) {
+        //             str[written++] = buf1[--i1];
+        //         } else {
+        //             str[size - 1] = '\0';
+        //             return -1;
+        //         }
+        //     }
+        //     break;
         case 'p':
             str[written++] = '0';
             str[written++] = 'x';
@@ -157,10 +157,10 @@ int vsnprintf(char *str, size_t size, const char *format, va_list ap) {
                 }
             }
             break;
-        // case 'c':
-        //     char c = va_arg(ap, int);
-        //     str[written++] = c;
-        //     break;
+        case 'c':
+            char c = va_arg(ap, int);
+            str[written++] = c;
+            break;
 
         default:
             panic("Not %% to match");
