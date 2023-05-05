@@ -34,8 +34,7 @@ def_EHelper(addiw){
   rtl_addiw(s, ddest, dsrc1, id_src2->imm);
 }
 def_EHelper(addw){
-  // rtl_addw(s, ddest, dsrc1, dsrc2);
-  rtl_add(s, ddest, dsrc1, dsrc2);
+  rtl_addw(s, ddest, dsrc1, dsrc2);
 }
 def_EHelper(subw){
   rtl_subw(s, ddest, dsrc1, dsrc2);
