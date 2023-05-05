@@ -106,6 +106,12 @@ void fetch_decode(Decode *s, vaddr_t pc) {
   disassemble(p, s->logbuf + sizeof(s->logbuf) - p,
       MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc), (uint8_t *)&s->isa.instr.val, ilen);
 #endif
+
+#ifdef CONFIG_FTRACE
+  void ftrace_judge(uint64_t pc, uint64_t dnpc, int is_call);
+  if (s->dnpc != s->pc)
+    ftrace_judge(s->pc, s->dnpc, ((BITS(s->isa.instr.val, 6, 0) == 0x6F || BITS(s->isa.instr.val, 6, 0) == 0x67) && BITS(s->isa.instr.val, 11, 7) == 0X1));
+#endif
 }
 
 /* Simulate how the CPU works. */
@@ -141,6 +147,10 @@ void cpu_exec(uint64_t n) {
            (nemu_state.halt_ret == 0 ? ASNI_FMT("HIT GOOD TRAP", ASNI_FG_GREEN) :
             ASNI_FMT("HIT BAD TRAP", ASNI_FG_RED))),
           nemu_state.halt_pc);
+      #ifdef CONFIG_FTRACE
+      void print_ftrace();
+      print_ftrace();
+#endif
       // fall through
     case NEMU_QUIT: statistic();
   }

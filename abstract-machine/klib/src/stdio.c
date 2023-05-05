@@ -2,7 +2,6 @@
 #include <klib.h>
 #include <klib-macros.h>
 #include <stdarg.h>
-
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
 int printf(const char *fmt, ...) {
@@ -74,63 +73,63 @@ int vsnprintf(char *str, size_t size, const char *format, va_list ap) {
             ++format;
         switch (*format)
         {
-        // case 'd':
-        //     int num = va_arg(ap, int);
-        //     char buf[20];
-        //     int i = 0;
-        //     if (num < 0) {
-        //         str[written++] = '-';
-        //         num = -num;
-        //     }
-        //     while (num) {
-        //         buf[i++] = num % 10 + '0';
-        //         num /= 10;
-        //     }
-        //     if (i == 0) buf[i++] = '0';
-        //     while (i > 0) {
-        //         if (written + 1 < size) {
-        //             str[written++] = buf[--i];
-        //         } else {
-        //             str[size - 1] = '\0';
-        //             return -1;
-        //         }
-        //     }
-        //     break;
-        // case 's':
-        //     char *s = va_arg(ap, char *);
-        //     while (*s) {
-        //         if (written + 1 < size) {
-        //             str[written++] = *s++;
-        //         } else {
-        //             str[size - 1] = '\0';
-        //             return -1;
-        //         }
-        //     }
-        //     break;
-        // case 'x':
-        //     int num1 = va_arg(ap, int);
-        //     char buf1[20];
-        //     int i1 = 0;
-        //     if (num1 < 0) {
-        //         str[written++] = '-';
-        //         num1 = -num1;
-        //     }
-        //     while (num1) {
-        //         int temp = num1 % 16;
-        //         if (temp < 10) buf1[i1++] = temp + '0';
-        //         else buf1[i1++] = temp - 10 + 'a';
-        //         num1 /= 16;
-        //     }
-        //     if (i1 == 0) buf1[i1++] = '0';
-        //     while (i1 > 0) {
-        //         if (written + 1 < size) {
-        //             str[written++] = buf1[--i1];
-        //         } else {
-        //             str[size - 1] = '\0';
-        //             return -1;
-        //         }
-        //     }
-        //     break;
+        case 'd':
+            int num = va_arg(ap, int);
+            char buf[20];
+            int i = 0;
+            if (num < 0) {
+                str[written++] = '-';
+                num = -num;
+            }
+            while (num) {
+                buf[i++] = num % 10 + '0';
+                num /= 10;
+            }
+            if (i == 0) buf[i++] = '0';
+            while (i > 0) {
+                if (written + 1 < size) {
+                    str[written++] = buf[--i];
+                } else {
+                    str[size - 1] = '\0';
+                    return -1;
+                }
+            }
+            break;
+        case 's':
+            char *s = va_arg(ap, char *);
+            while (*s) {
+                if (written + 1 < size) {
+                    str[written++] = *s++;
+                } else {
+                    str[size - 1] = '\0';
+                    return -1;
+                }
+            }
+            break;
+        case 'x':
+            int num1 = va_arg(ap, int);
+            char buf1[20];
+            int i1 = 0;
+            if (num1 < 0) {
+                str[written++] = '-';
+                num1 = -num1;
+            }
+            while (num1) {
+                int temp = num1 % 16;
+                if (temp < 10) buf1[i1++] = temp + '0';
+                else buf1[i1++] = temp - 10 + 'a';
+                num1 /= 16;
+            }
+            if (i1 == 0) buf1[i1++] = '0';
+            while (i1 > 0) {
+                if (written + 1 < size) {
+                    str[written++] = buf1[--i1];
+                } else {
+                    str[size - 1] = '\0';
+                    return -1;
+                }
+            }
+            break;
         case 'p':
             str[written++] = '0';
             str[written++] = 'x';
