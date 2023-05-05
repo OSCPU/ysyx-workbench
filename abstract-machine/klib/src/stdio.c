@@ -130,7 +130,7 @@ int vsnprintf(char *str, size_t size, const char *format, va_list ap) {
                     return -1;
                 }
             }
-            break;
+            // break;
         case 'p':
             str[written++] = '0';
             str[written++] = 'x';
