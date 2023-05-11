@@ -1,46 +1,64 @@
 module ysyx_22050019_EX_MEM (
-    input           clk                 ,
-    input           rst_n               ,
-    input  [63:0]   pc_i                ,
-    input  [31:0]   inst_i              ,
-    input  [63:0]   result_i            ,
-    input  [63:0]   wdata_exu_reg_i     ,
-    input           ram_we_i            ,
-    input  [63:0]   ram_wdata_i         ,
-    input  [3:0]    mem_w_wdth_i        ,
-    input           ram_re_i            ,
-    input  [5:0]    mem_r_wdth_i        ,
-    input           reg_we_i            ,
-    input  [4:0]    reg_waddr_i         ,
-    input  [63:0]   wdate_csr_reg_i     ,
-    input  [63:0]   csr_regs_diff_i[3:0],
+    input              clk                 ,
+    input              rst_n               ,
+    input     [63:0]   pc_i                ,
+    input     [31:0]   inst_i              ,
+    input     [63:0]   result_i            ,
+    input     [63:0]   wdata_exu_reg_i     ,
+    input              ram_we_i            ,
+    input     [63:0]   ram_wdata_i         ,
+    input     [3:0]    mem_w_wdth_i        ,
+    input              ram_re_i            ,
+    input     [5:0]    mem_r_wdth_i        ,
+    input              reg_we_i            ,
+    input     [4:0]    reg_waddr_i         ,
+    input     [63:0]   wdate_csr_reg_i     ,
+    input     [63:0]   csr_regs_diff_i[3:0],
 
-    output [63:0]   pc_o                ,
-    output [31:0]   inst_o              ,
-    output [63:0]   result_o            ,
-    output [63:0]   wdata_exu_reg_o     ,
-    output          ram_we_o            ,
-    output [63:0]   ram_wdata_o         ,
-    output [3:0]    mem_w_wdth_o        ,
-    output          ram_re_o            ,
-    output [5:0]    mem_r_wdth_o        ,
-    output          reg_we_o            ,
-    output [4:0]    reg_waddr_o         ,
-    output [63:0]   wdate_csr_reg_o     ,
-    output [63:0]   csr_regs_diff_o[3:0]
+    output reg[63:0]   pc_o                ,
+    output reg[31:0]   inst_o              ,
+    output reg[63:0]   result_o            ,
+    output reg[63:0]   wdata_exu_reg_o     ,
+    output reg         ram_we_o            ,
+    output reg[63:0]   ram_wdata_o         ,
+    output reg[3:0]    mem_w_wdth_o        ,
+    output reg         ram_re_o            ,
+    output reg[5:0]    mem_r_wdth_o        ,
+    output reg         reg_we_o            ,
+    output reg[4:0]    reg_waddr_o         ,
+    output reg[63:0]   wdate_csr_reg_o     ,
+    output reg[63:0]   csr_regs_diff_o[3:0]
 );
-assign result_o            = result_i       ;
-assign wdata_exu_reg_o     = wdata_exu_reg_i;
-assign ram_we_o            = ram_we_i       ;
-assign ram_wdata_o         = ram_wdata_i    ;
-assign mem_w_wdth_o        = mem_w_wdth_i   ;
-assign ram_re_o            = ram_re_i       ;
-assign mem_r_wdth_o        = mem_r_wdth_i   ;
-assign reg_we_o            = reg_we_i       ;
-assign reg_waddr_o         = reg_waddr_i    ;
-assign wdate_csr_reg_o     = wdate_csr_reg_i;
-assign csr_regs_diff_o     = csr_regs_diff_i;
-assign pc_o                = pc_i           ;
-assign inst_o              = inst_i         ;
+  always @(posedge clk) begin
+    if(rst_n) begin
+        result_o        <= 0;   
+        wdata_exu_reg_o <= 0;   
+        ram_we_o        <= 0;   
+        ram_wdata_o     <= 0;   
+        mem_w_wdth_o    <= 0;   
+        ram_re_o        <= 0;   
+        mem_r_wdth_o    <= 0;   
+        reg_we_o        <= 0;   
+        reg_waddr_o     <= 0;   
+        wdate_csr_reg_o <= 0;      
+        pc_o            <= 0;   
+        inst_o          <= 0;   
+    end
+    else begin
+        result_o        <= result_i       ;   
+        wdata_exu_reg_o <= wdata_exu_reg_i;   
+        ram_we_o        <= ram_we_i       ;   
+        ram_wdata_o     <= ram_wdata_i    ;   
+        mem_w_wdth_o    <= mem_w_wdth_i   ;   
+        ram_re_o        <= ram_re_i       ;   
+        mem_r_wdth_o    <= mem_r_wdth_i   ;   
+        reg_we_o        <= reg_we_i       ;   
+        reg_waddr_o     <= reg_waddr_i    ;   
+        wdate_csr_reg_o <= wdate_csr_reg_i;   
+        csr_regs_diff_o <= csr_regs_diff_i;   
+        pc_o            <= pc_i           ;   
+        inst_o          <= inst_i         ;  
+    end
+  end
 endmodule
 
