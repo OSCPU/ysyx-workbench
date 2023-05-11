@@ -22,33 +22,25 @@ module ysyx_22050019_MEM_WB (
 
   always @(posedge clk) begin
     if(rst_n) begin
+        pc_o   <= 0;
+        inst_o <= 0;
         reg_we_wbu_o         <= 0;
         reg_waddr_wbu_o      <= 0;
         reg_wdata_wbu_o      <= 0;
+        csr_regs_diff_o[0]   <= 0;
+        csr_regs_diff_o[1]   <= 0;
+        csr_regs_diff_o[2]   <= 0;
+        csr_regs_diff_o[3]   <= 0;
     end
     else begin
+        pc_o   <= pc_i  ;
+        inst_o <= inst_i;
         reg_we_wbu_o         <= reg_we_exu_lsu_i|reg_we_lsu_i  ;
         reg_waddr_wbu_o      <= reg_waddr_exu_i|reg_waddr_lsu_i;
         reg_wdata_wbu_o      <= reg_we_exu_lsu_i ? reg_wdata_exu_i|reg_wdata_csr_i : reg_we_lsu_i ? reg_wdata_lsu_i : 64'b0;
+        csr_regs_diff_o[3:0] <= csr_regs_diff_i[3:0];
     end
   end
 
-//======================================
-//仿真信号
-  always @(posedge clk) begin
-    if(rst_n) begin
-        pc_o             <= 0;
-        inst_o           <= 0;
-    for (int i = 0; i < 4; i++) begin
-      csr_regs_diff_o[i] <= 0;
-    end
-    end
-    else begin
-        pc_o            <= pc_i           ;
-        inst_o          <= inst_i         ;
-    for (int i = 0; i < 4; i++) begin
-      csr_regs_diff_o[i] <= csr_regs_diff_i[i];
-    end
-    end
-  end
+
 endmodule
