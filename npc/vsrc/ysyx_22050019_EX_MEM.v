@@ -40,9 +40,7 @@ module ysyx_22050019_EX_MEM (
         mem_r_wdth_o    <= 0;   
         reg_we_o        <= 0;   
         reg_waddr_o     <= 0;   
-        wdate_csr_reg_o <= 0;      
-        pc_o            <= 0;   
-        inst_o          <= 0;   
+        wdate_csr_reg_o <= 0;    
     end
     else begin
         result_o        <= result_i       ;   
@@ -54,10 +52,26 @@ module ysyx_22050019_EX_MEM (
         mem_r_wdth_o    <= mem_r_wdth_i   ;   
         reg_we_o        <= reg_we_i       ;   
         reg_waddr_o     <= reg_waddr_i    ;   
-        wdate_csr_reg_o <= wdate_csr_reg_i;   
-        csr_regs_diff_o <= csr_regs_diff_i;   
-        pc_o            <= pc_i           ;   
-        inst_o          <= inst_i         ;  
+        wdate_csr_reg_o <= wdate_csr_reg_i;    
+    end
+  end
+
+//======================================
+//仿真信号
+  always @(posedge clk) begin
+    if(rst_n) begin
+        pc_o             <= 0;
+        inst_o           <= 0;
+    for (int i = 0; i < 4; i++) begin
+      csr_regs_diff_o[i] <= 0;
+    end
+    end
+    else begin
+        pc_o            <= pc_i           ;
+        inst_o          <= inst_i         ;
+    for (int i = 0; i < 4; i++) begin
+      csr_regs_diff_o[i] <= csr_regs_diff_i[i];
+    end
     end
   end
 endmodule
