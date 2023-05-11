@@ -76,6 +76,7 @@ int vsnprintf(char *str, size_t size, const char *format, va_list ap) {
             ++format;
         switch (*format)
         {
+        case 'i':
         case 'd':
             int num = va_arg(ap, int);
             char buf[20];
