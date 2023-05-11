@@ -12,7 +12,10 @@ int printf(const char *fmt, ...) {
   
   int done = vsprintf(buffer, fmt, arg);
 
-  putstr(buffer);
+  for (int i = 0; i < done; ++i)
+  {
+    putch(buffer[i]);
+  }
 
   va_end(arg);
   return done;
