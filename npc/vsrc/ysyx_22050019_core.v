@@ -623,7 +623,7 @@ ysyx_22050019_MEM_WB MEM_WB(
     .csr_regs_diff_i  ( csr_regs_diff_lsu),
 
     .pc_o             ( pc               ),
-    .inst_o           ( inst_mem_wbu     ),
+    .inst_o           ( inst             ),
     .commite_o        ( commite_mem_wb   ), 
     .reg_we_wbu_o     ( reg_we_wbu       ),
     .reg_waddr_wbu_o  ( reg_waddr_wbu    ),
