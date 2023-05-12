@@ -63,13 +63,16 @@ end
 //==================IF/ID=======================
 wire [63:0] pc_ifu_id  ;
 wire [31:0] inst_ifu_id;
+wire commite_if_id;
 ysyx_22050019_IF_ID IF_ID(
-    .clk     ( clk          ),
-    .rst_n   ( rst_n        ),
-    .pc_i    ( pc_ifu       ),
-    .inst_i  ( inst_ifu     ),
-    .pc_o    ( pc_ifu_id    ),
-    .inst_o  ( inst_ifu_id  )
+    .clk      ( clk          ),
+    .rst_n    ( rst_n        ),
+    .commite_i( ifu_commite  ),
+    .pc_i     ( pc_ifu       ),
+    .inst_i   ( inst_ifu     ),
+    .commite_o( commite_if_id),
+    .pc_o     ( pc_ifu_id    ),
+    .inst_o   ( inst_ifu_id  )
 );
 
 
@@ -174,11 +177,13 @@ wire [63:0]  wdate_csr_exu   ;
 wire [63:0]  pc_id_exu       ;
 wire [31:0]  inst_id_ex      ;
 /* verilator lint_off UNUSED */wire [63:0]csr_regs_diff_exu[3:0];//验证用
+wire commite_id_ex;
 ysyx_22050019_ID_EX ID_EX(
     .clk              ( clk              ),
     .rst_n            ( rst_n            ),
     .pc_i             ( pc_ifu_id        ),
     .inst_i           ( inst_ifu_id      ),
+    .commite_i        ( commite_if_id    ),
     .ram_we_i         ( ram_we_id        ),
     .ram_wdata_i      ( ram_wdata_id     ),
     .mem_w_wdth_i     ( mem_w_wdth       ),
@@ -194,6 +199,7 @@ ysyx_22050019_ID_EX ID_EX(
 
     .pc_o             ( pc_id_exu        ),
     .inst_o           ( inst_id_ex       ),
+    .commite_o        ( commite_id_ex    ),
     .ram_we_o         ( ram_we_id_exu    ),
     .ram_wdata_o      ( ram_wdata_id_exu ),
     .mem_w_wdth_o     ( mem_w_wdth_exu   ),
@@ -237,11 +243,13 @@ wire [63:0]  wdata_reg_exu_lsu;
 /* verilator lint_off UNUSED */wire [63:0]csr_regs_diff_lsu[3:0];//验证用
 wire [63:0]  pc_exu_mem       ;
 wire [31:0]  inst_exu_mem     ;
+wire commite_ex_mem;
 ysyx_22050019_EX_MEM EX_MEM(
     .clk              ( clk              ),
     .rst_n            ( rst_n            ),
     .pc_i             ( pc_id_exu        ),
     .inst_i           ( inst_id_ex       ),
+    .commite_i        ( commite_id_ex    ),
     .result_i         ( result_exu       ),
     .wdata_exu_reg_i  ( wdata_ex_reg     ),
     .ram_we_i         ( ram_we_id_exu    ),
@@ -256,6 +264,7 @@ ysyx_22050019_EX_MEM EX_MEM(
 
     .pc_o             ( pc_exu_mem       ),
     .inst_o           ( inst_exu_mem     ), 
+    .commite_o        ( commite_ex_mem   ),
     .result_o         ( result_exu_lsu   ),
     .wdata_exu_reg_o  ( wdata_reg_exu_lsu),
     .ram_we_o         ( ram_we_exu_lsu   ),
@@ -597,11 +606,13 @@ wire [63:0]  reg_wdata_wbu;
 /* verilator lint_off UNUSED */wire [63:0]csr_regs_diff_wbu[3:0];//验证用
 wire [63:0]  pc_mem_wbu;
 wire [31:0]  inst_mem_wbu;
+wire commite_mem_wb;
 ysyx_22050019_MEM_WB MEM_WB(
     .clk              ( clk              ),
     .rst_n            ( rst_n            ),
     .pc_i             ( pc_exu_mem       ),
     .inst_i           ( inst_exu_mem     ),
+    .commite_i        ( commite_ex_mem    ),
     .reg_we_exu_lsu_i ( reg_we_exu_lsu   ),
     .reg_we_lsu_i     ( wen_lsu_reg      ),
     .reg_waddr_exu_i  ( reg_waddr_exu_lsu),
@@ -612,7 +623,8 @@ ysyx_22050019_MEM_WB MEM_WB(
     .csr_regs_diff_i  ( csr_regs_diff_lsu),
 
     .pc_o             ( pc_mem_wbu       ),
-    .inst_o           ( inst_mem_wbu     ), 
+    .inst_o           ( inst_mem_wbu     ),
+    .commite_o        ( commite_mem_wb   ), 
     .reg_we_wbu_o     ( reg_we_wbu       ),
     .reg_waddr_wbu_o  ( reg_waddr_wbu    ),
     .reg_wdata_wbu_o  ( reg_wdata_wbu    ),

@@ -11,7 +11,9 @@ module ysyx_22050019_MEM_WB (
     input     [63:0] reg_wdata_csr_i     ,
     input     [63:0] reg_wdata_exu_i     ,
     input     [63:0] csr_regs_diff_i[3:0],
+    input            commite_i           ,
 
+    output reg       commite_o           ,
     output reg[63:0]pc_o                 ,
     output reg[31:0]inst_o               ,
     output reg      reg_we_wbu_o         ,
@@ -44,6 +46,7 @@ reg [63:0] mcause  = csr_regs_diff_i[3];
     if(rst_n) begin
         pc_o             <= 0;
         inst_o           <= 0;
+        commite_o        <= 0;
         mtvec            <= 0;
         mepc             <= 0;
         mstatus          <= 0;
@@ -52,6 +55,7 @@ reg [63:0] mcause  = csr_regs_diff_i[3];
     else begin
         pc_o            <= pc_i           ;
         inst_o          <= inst_i         ;
+        commite_o       <= commite_i      ;
         mtvec           <= csr_regs_diff_i[0];
         mepc            <= csr_regs_diff_i[1];
         mstatus         <= csr_regs_diff_i[2];
