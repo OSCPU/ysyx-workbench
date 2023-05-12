@@ -126,7 +126,7 @@ void init_difftest() {
 
 void checkregs(uint64_t *ref_regs)
 {
-  IFDEF(DEBUG_DIFFTRACE, printf("diff_log: Difftest pc = 0x%016lx inst = 0x%016x\n", dut->now_addr,dut->now_inst));
+  IFDEF(DEBUG_DIFFTRACE, printf("diff_log: Difftest pc = 0x%016lx inst = 0x%016x\n", cpu_gpr[32],dut->now_inst));
   for (int i = 0; i <= 36; ++i) {
     if (ref_regs[i] != cpu_gpr[i]) {
 

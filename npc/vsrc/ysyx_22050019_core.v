@@ -5,8 +5,8 @@ module ysyx_22050019_core(
   //output [31:0]inst_i,         //1_inst
   //output[63:0]inst_addr,
   
-  output[63:0]pc_ifu, //2_inst(目前查看执行状态的指令)
-  output[31:0]inst_ifu      
+  output[63:0]pc, //2_inst(目前查看执行状态的指令)
+  output[31:0]inst      
 );
 
 //取出指令的逻辑分离出来
@@ -19,6 +19,8 @@ wire [1:0] axi_if_sram_resp  ;
 wire axi_if_sram_arready;
 wire axi_if_sram_arvalid;
 wire ifu_commite;
+wire [63:0]pc_ifu;
+wire [31:0]inst_ifu;
 //fetch模块端口
 ysyx_22050019_IFU IFU
 (
@@ -604,8 +606,7 @@ wire         reg_we_wbu   ;
 wire [4:0]   reg_waddr_wbu;
 wire [63:0]  reg_wdata_wbu;
 /* verilator lint_off UNUSED */wire [63:0]csr_regs_diff_wbu[3:0];//验证用
-wire [63:0]  pc_mem_wbu;
-wire [31:0]  inst_mem_wbu;
+
 wire commite_mem_wb;
 ysyx_22050019_MEM_WB MEM_WB(
     .clk              ( clk              ),
@@ -622,8 +623,8 @@ ysyx_22050019_MEM_WB MEM_WB(
     .reg_wdata_exu_i  ( wdata_reg_exu_lsu),
     .csr_regs_diff_i  ( csr_regs_diff_lsu),
 
-    .pc_o             ( pc_mem_wbu       ),
-    .inst_o           ( inst_mem_wbu     ),
+    .pc_o             ( pc               ),
+    .inst_o           ( inst             ),
     .commite_o        ( commite_mem_wb   ), 
     .reg_we_wbu_o     ( reg_we_wbu       ),
     .reg_waddr_wbu_o  ( reg_waddr_wbu    ),
@@ -634,7 +635,7 @@ ysyx_22050019_MEM_WB MEM_WB(
 //寄存器组端口
 ysyx_22050019_regs REGS(
  .clk        (clk                      ),
- .now_pc     (pc_mem_wbu               ),         
+ .now_pc     (pc                       ),         
  .wdata      (reg_wdata_wbu            ),
  .waddr      (reg_waddr_wbu            ),
  .wen        (reg_we_wbu               ),
