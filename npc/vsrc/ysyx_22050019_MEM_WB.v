@@ -17,7 +17,7 @@ module ysyx_22050019_MEM_WB (
     output reg      reg_we_wbu_o         ,
     output reg[4:0] reg_waddr_wbu_o      ,
     output reg[63:0]reg_wdata_wbu_o      ,
-    output reg[63:0]csr_regs_diff_o[3:0] 
+    output    [63:0]csr_regs_diff_o[3:0] 
 );
 
   always @(posedge clk) begin

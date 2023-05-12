@@ -29,7 +29,7 @@ module ysyx_22050019_ID_EX (
     output reg[4:0]   reg_waddr_o         ,
     output reg[`LEN:0]alu_sel_o           ,
     output reg[63:0]  wdate_csr_reg_o     ,
-    output reg[63:0]  csr_regs_diff_o[3:0]
+    output    [63:0]  csr_regs_diff_o[3:0]
 );
   always @(posedge clk) begin
     if(rst_n) begin
