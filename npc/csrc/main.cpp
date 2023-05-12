@@ -314,10 +314,14 @@ int main(int argc, char** argv, char** env) {
     while (1) {
 
       IFDEF(CONFIG_DEVICE, device_update());
+
       while(difftest_ok == false){
       exec_once();
        }
        difftest_ok = false;
+#ifdef CONFIG_ITRACE
+    itrace_record(cpu_gpr[32]);
+#endif
 #ifdef CONFIG_DIFFTEST
         difftest_exec_once();
 #endif
