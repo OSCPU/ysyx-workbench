@@ -308,6 +308,9 @@ int main(int argc, char** argv, char** env) {
     exec_once();
     exec_once();
     exec_once();
+#ifdef CONFIG_ITRACE
+    itrace_record(dut->now_addr);
+#endif
     exec_once();
 //    icache_exec = false;
     //difftest_ok = false;
