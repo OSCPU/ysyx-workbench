@@ -302,15 +302,9 @@ int main(int argc, char** argv, char** env) {
     exec_once();
     exec_once();
     exec_once();
-#ifdef CONFIG_ITRACE
-    itrace_record(dut->now_addr);
-#endif
     exec_once();
     exec_once();
     exec_once();
-#ifdef CONFIG_ITRACE
-    itrace_record(dut->now_addr);
-#endif
     exec_once();
 //    icache_exec = false;
     //difftest_ok = false;
@@ -320,11 +314,6 @@ int main(int argc, char** argv, char** env) {
     while (1) {
 
       IFDEF(CONFIG_DEVICE, device_update());
-#ifdef CONFIG_ITRACE
-    itrace_record(dut->now_addr);
-// 会增加一定的性能负担，且这个类型一旦溢出会导致程序被杀死
-//  debug_time++;
-#endif
       while(difftest_ok == false){
       exec_once();
        }
