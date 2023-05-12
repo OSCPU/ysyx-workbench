@@ -304,7 +304,6 @@ int main(int argc, char** argv, char** env) {
     exec_once();
     exec_once();
     exec_once();
-    exec_once();
 //    icache_exec = false;
     difftest_ok = false;
 #ifdef CONFIG_DIFFTEST
