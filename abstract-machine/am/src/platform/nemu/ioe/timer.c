@@ -2,7 +2,7 @@
 #include <nemu.h>
 #include <klib.h>
 
-static uint32_t boot_time;
+static uint32_t boot_time=0;
 void __am_timer_init() {
     //boot_time = (((uint64_t)inl(RTC_ADDR+4)<<32) + (uint64_t)inl(RTC_ADDR));
     //printf("Initializing timer is %d\n",(int)boot_time);
