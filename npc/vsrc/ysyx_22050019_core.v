@@ -18,6 +18,7 @@ wire axi_if_sram_rvalid;
 wire [1:0] axi_if_sram_resp  ;
 wire axi_if_sram_arready;
 wire axi_if_sram_arvalid;
+wire ifu_commite;
 //fetch模块端口
 ysyx_22050019_IFU IFU
 (
@@ -35,6 +36,7 @@ ysyx_22050019_IFU IFU
     //.inst_addr         (inst_addr),       // 取出的指令地址
     .m_axi_arready     (stll_ar_ready      ),
     .m_axi_arvalid     (axi_if_sram_arvalid),
+    .inst_commite      (ifu_commite        ),
 
     .inst_addr_o       (pc_ifu             ), // 传入下级模块的地址
     .inst_o            (inst_ifu           )
