@@ -34,7 +34,7 @@ module ysyx_22050019_MEM_WB (
         reg_wdata_wbu_o      <= reg_we_exu_lsu_i ? reg_wdata_exu_i|reg_wdata_csr_i : reg_we_lsu_i ? reg_wdata_lsu_i : 64'b0;
     end
   end
-
+import "DPI-C" function void difftest_valid();
 //======================================
 //仿真信号
 reg [63:0] mtvec   = csr_regs_diff_i[0];
@@ -67,5 +67,7 @@ assign csr_regs_diff_o[1] = mepc   ;
 assign csr_regs_diff_o[2] = mstatus;
 assign csr_regs_diff_o[3] = mcause ;
 
-
+always@(*)begin
+  if(commite_o) difftest_valid();
+end
 endmodule
