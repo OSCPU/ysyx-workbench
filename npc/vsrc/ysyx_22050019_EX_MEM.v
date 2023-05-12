@@ -58,6 +58,11 @@ module ysyx_22050019_EX_MEM (
 
 //======================================
 //仿真信号
+wire [63:0] mtvec   = csr_regs_diff_i[0];
+wire [63:0] mepc    = csr_regs_diff_i[1];
+wire [63:0] mstatus = csr_regs_diff_i[2];
+wire [63:0] mcause  = csr_regs_diff_i[3];
+
   always @(posedge clk) begin
     if(rst_n) begin
         pc_o             <= 0;
@@ -70,10 +75,10 @@ module ysyx_22050019_EX_MEM (
     else begin
         pc_o            <= pc_i           ;
         inst_o          <= inst_i         ;
-        csr_regs_diff_o[0]   <= csr_regs_diff_i[0];
-        csr_regs_diff_o[1]   <= csr_regs_diff_i[1];
-        csr_regs_diff_o[2]   <= csr_regs_diff_i[2];
-        csr_regs_diff_o[3]   <= csr_regs_diff_i[3];
+        csr_regs_diff_o[0]   <= mtvec  ;
+        csr_regs_diff_o[1]   <= mepc   ;
+        csr_regs_diff_o[2]   <= mstatus;
+        csr_regs_diff_o[3]   <= mcause ;
     end
   end
 endmodule

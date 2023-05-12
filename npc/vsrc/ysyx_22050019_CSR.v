@@ -146,9 +146,9 @@ assign snpc    = ecall_w?mtvec:
 
 //*********************** csr_regs给diff传递部分csr信息******************
 
-assign csr_regs_diff[0] =mtvec;
-assign csr_regs_diff[1] =mepc;
+assign csr_regs_diff[0] =mtvec  ;
+assign csr_regs_diff[1] =mepc   ;
 assign csr_regs_diff[2] =mstatus;
-assign csr_regs_diff[3] =mcause;
+assign csr_regs_diff[3] =mcause ;
 
 endmodule
