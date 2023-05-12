@@ -244,6 +244,7 @@ wire [63:0]  wdate_csr_lsu    ;
 wire [63:0]  wdata_reg_exu_lsu;
 /* verilator lint_off UNUSED */wire [63:0]csr_regs_diff_lsu[3:0];//验证用
 wire [63:0]  pc_exu_mem       ;
+wire [31:0]  inst_exu_mem     ;
 wire commite_ex_mem;
 ysyx_22050019_EX_MEM EX_MEM(
     .clk              ( clk              ),
@@ -264,7 +265,7 @@ ysyx_22050019_EX_MEM EX_MEM(
     .csr_regs_diff_i  ( csr_regs_diff_exu),
 
     .pc_o             ( pc_exu_mem       ),
-    .inst_o           ( inst             ), 
+    .inst_o           ( inst_exu_mem     ), 
     .commite_o        ( commite_ex_mem   ),
     .result_o         ( result_exu_lsu   ),
     .wdata_exu_reg_o  ( wdata_reg_exu_lsu),
@@ -605,13 +606,12 @@ wire         reg_we_wbu   ;
 wire [4:0]   reg_waddr_wbu;
 wire [63:0]  reg_wdata_wbu;
 /* verilator lint_off UNUSED */wire [63:0]csr_regs_diff_wbu[3:0];//验证用
-wire [31:0]inst_mem_wbu;
 wire commite_mem_wb;
 ysyx_22050019_MEM_WB MEM_WB(
     .clk              ( clk              ),
     .rst_n            ( rst_n            ),
     .pc_i             ( pc_exu_mem       ),
-    .inst_i           ( inst             ),
+    .inst_i           ( inst_exu_mem     ),
     .commite_i        ( commite_ex_mem    ),
     .reg_we_exu_lsu_i ( reg_we_exu_lsu   ),
     .reg_we_lsu_i     ( wen_lsu_reg      ),
