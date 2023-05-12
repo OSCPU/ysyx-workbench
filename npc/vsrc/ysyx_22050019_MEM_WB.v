@@ -38,7 +38,10 @@ module ysyx_22050019_MEM_WB (
         reg_we_wbu_o         <= reg_we_exu_lsu_i|reg_we_lsu_i  ;
         reg_waddr_wbu_o      <= reg_waddr_exu_i|reg_waddr_lsu_i;
         reg_wdata_wbu_o      <= reg_we_exu_lsu_i ? reg_wdata_exu_i|reg_wdata_csr_i : reg_we_lsu_i ? reg_wdata_lsu_i : 64'b0;
-        csr_regs_diff_o[3:0] <= csr_regs_diff_i[3:0];
+        csr_regs_diff_o[0]   <= csr_regs_diff_i[0];
+        csr_regs_diff_o[1]   <= csr_regs_diff_i[1];
+        csr_regs_diff_o[2]   <= csr_regs_diff_i[2];
+        csr_regs_diff_o[3]   <= csr_regs_diff_i[3];
     end
   end
 
