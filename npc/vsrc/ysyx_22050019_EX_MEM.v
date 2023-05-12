@@ -58,28 +58,32 @@ module ysyx_22050019_EX_MEM (
 
 //======================================
 //仿真信号
-wire [63:0] mtvec   = csr_regs_diff_i[0];
-wire [63:0] mepc    = csr_regs_diff_i[1];
-wire [63:0] mstatus = csr_regs_diff_i[2];
-wire [63:0] mcause  = csr_regs_diff_i[3];
+reg [63:0] mtvec   = csr_regs_diff_i[0];
+reg [63:0] mepc    = csr_regs_diff_i[1];
+reg [63:0] mstatus = csr_regs_diff_i[2];
+reg [63:0] mcause  = csr_regs_diff_i[3];
 
   always @(posedge clk) begin
     if(rst_n) begin
         pc_o             <= 0;
         inst_o           <= 0;
-        csr_regs_diff_o[0]   <= 0;
-        csr_regs_diff_o[1]   <= 0;
-        csr_regs_diff_o[2]   <= 0;
-        csr_regs_diff_o[3]   <= 0;
+        mtvec            <= 0;
+        mepc             <= 0;
+        mstatus          <= 0;
+        mcause           <= 0;
     end
     else begin
         pc_o            <= pc_i           ;
         inst_o          <= inst_i         ;
-        csr_regs_diff_o[0]   <= mtvec  ;
-        csr_regs_diff_o[1]   <= mepc   ;
-        csr_regs_diff_o[2]   <= mstatus;
-        csr_regs_diff_o[3]   <= mcause ;
+        mtvec           <= csr_regs_diff_i[0];
+        mepc            <= csr_regs_diff_i[1];
+        mstatus         <= csr_regs_diff_i[2];
+        mcause          <= csr_regs_diff_i[3];
     end
   end
+assign csr_regs_diff_o[0] = mtvec  ;
+assign csr_regs_diff_o[1] = mepc   ;
+assign csr_regs_diff_o[2] = mstatus;
+assign csr_regs_diff_o[3] = mcause ;
 endmodule
 
