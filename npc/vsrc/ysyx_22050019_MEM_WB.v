@@ -67,7 +67,7 @@ assign csr_regs_diff_o[1] = mepc   ;
 assign csr_regs_diff_o[2] = mstatus;
 assign csr_regs_diff_o[3] = mcause ;
 
-always@(*)begin
+always@(posedge clk)begin
   if(commite_o) difftest_valid();
 end
 endmodule
