@@ -315,7 +315,7 @@ always@(posedge clk) begin
   if(RAM_A == 6'h1b &&write_enable) begin
   $display("rwaddr   = %h\n\
      w_data_i       = %h\n\
-    ",rw_addr_i|addr,cache_r_data_i|w_data_i );
+    ",RAM_A,cache_r_data_i|w_data_i );
   end
 end
 endmodule
