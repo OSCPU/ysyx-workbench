@@ -106,24 +106,17 @@ end
 
 // ram的一些配置信息
 wire [INDEX_DEPTH-1:0] RAM_Q  [WAY_DEPTH-1:0]                                                                 ;//读出的cache数据
-reg                    RAM_CEN[WAY_DEPTH-1:0]                                                                 ;//为0有效，为1是无效（2个使能信号需要同时满足不然会读出随机数）使能信号控制
-wire                   RAM_WEN = (state == S_R)&(next_state == S_HIT)|(state == S_HIT)&w_data_valid_i ? 0 : 1 ;//为0是写使能1是读使能，读写控制hit是读数据
+wire                   RAM_CEN = 0                                                                            ;//为0有效，为1是无效（2个使能信号需要同时满足不然会读出随机数）使能信号控制
+wire                   RAM_WEN[WAY_DEPTH-1:0]                                                                 ;//为0是写使能1是读使能，读写控制hit是读数据
 wire [DATA_WIDTH-1:0]  maskn   = (state == S_HIT) ? {{8{w_w_strb_i[7]}},{8{w_w_strb_i[6]}},{8{w_w_strb_i[5]}},{8{w_w_strb_i[4]}},{8{w_w_strb_i[3]}},{8{w_w_strb_i[2]}},{8{w_w_strb_i[1]}},{8{w_w_strb_i[0]}}}
                                                                : 64'hffffffffffffffff                         ;//写掩码，目前是全位写，掩码在发送端处理了
 wire [INDEX_DEPTH-1:0] RAM_BWEN= ~maskn                                                                       ;//ram写掩码目前一样不用过多处理
 wire [INDEX_WIDTH-1:0] RAM_A   = (next_state == S_HIT)|(next_state == S_AW) ? index_in : addr[RAML:RAMR]      ;//ram地址索引
 wire [INDEX_DEPTH-1:0] RAM_D   = cache_r_data_i|w_data_i                                                      ;//更新ram数据
 
-always@(*) begin
-  if(rst)begin
-    RAM_CEN[0] = 1;
-    RAM_CEN[1] = 1;
-  end
-  else if((state == S_IDLE)&(next_state == S_HIT)&(ar_valid_i)|(state == S_R)&(next_state == S_HIT)|(next_state == S_AW)|(w_data_valid_i&w_data_ready_o))
-  RAM_CEN[hit_waynum_i|(next_state == S_AW) ? random : waynum] = 0;
-  else
-  RAM_CEN[hit_waynum_i|(next_state == S_AW) ? random : waynum] = 1;
-end
+wire write_enable = (state == S_R)&(next_state == S_HIT)|(state == S_HIT)&w_data_valid_i ? 0 : 1 ;
+assign  RAM_WEN[0] = waynum ? 1 :write_enable;
+assign  RAM_WEN[1] = waynum ? write_enable :1;
 
 //实例化两块ram以及他们的命中逻辑的添加
 generate
@@ -134,8 +127,8 @@ generate
       (
         .Q(RAM_Q[i]),
         .CLK(clk),
-        .CEN(RAM_CEN[i]),
-        .WEN(RAM_WEN),
+        .CEN(RAM_CEN),
+        .WEN(RAM_WEN[i]),
         .BWEN(RAM_BWEN),
         .A(RAM_A),
         .D(RAM_D)
@@ -164,7 +157,7 @@ always@(*) begin
   else case(state)
     S_IDLE:if(ar_valid_i&ar_ready_o|aw_valid_i&aw_ready_o)begin
             if(|hit_wayflag)next_state=S_HIT;
-            if(dirty[random][index_in])next_state=S_AW;
+            else if(dirty[random][index_in])next_state=S_AW;
             else next_state=S_AR;
           end
         else next_state=S_IDLE;
@@ -222,6 +215,7 @@ always@(posedge clk)begin
           end
         end
         else if(next_state==S_AR)begin
+//          icache_wait()                                                    ;//多跑2个周期平衡
 					ar_ready_o              <= 0                                     ;
           aw_ready_o              <= 0                                     ;
           waynum                  <= random                                ;
@@ -236,7 +230,7 @@ always@(posedge clk)begin
           end
         end
         else if(next_state==S_AW)begin
-//          icache_wait()                                                    ;//多跑2个周期平衡
+//          icache_wait()                                                  ;//多跑2个周期平衡
 					ar_ready_o              <= 0                                     ;
           aw_ready_o              <= 0                                     ;
           waynum                  <= random                                ;
