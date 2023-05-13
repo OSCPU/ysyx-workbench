@@ -67,14 +67,7 @@ reg [63:0] mtvec;
 wire [61:0] mtvec_base = mtvec[63:2];
 wire [1:0] mtvec_mode = mtvec[1:0];
 
-  always @(posedge clk) begin
-    if (rst_n) begin
-      mtvec <= 64'b0;
-    end
-    else if (csrrw_w&&csr_addr == `CSR_MTVEC) begin
-      mtvec <= csr_wdata;
-    end
-  end
+ysyx_22050019_Reg #(64,64'b0) mtvec_reg (clk,rst_n,csr_wdata,mtvec,csrrw_w&&csr_addr == `CSR_MTVEC);
 
 /* ==============================mepc============================== */
 // 机器模式异常PC寄存器
@@ -146,9 +139,9 @@ assign snpc    = ecall_w?mtvec:
 
 //*********************** csr_regs给diff传递部分csr信息******************
 
-assign csr_regs_diff[0] =mtvec  ;
-assign csr_regs_diff[1] =mepc   ;
+assign csr_regs_diff[0] =mtvec;
+assign csr_regs_diff[1] =mepc;
 assign csr_regs_diff[2] =mstatus;
-assign csr_regs_diff[3] =mcause ;
+assign csr_regs_diff[3] =mcause;
 
 endmodule

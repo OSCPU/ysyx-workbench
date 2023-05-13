@@ -3,7 +3,7 @@
 #define MAX_SIM_TIME 15000000
 uint64_t sim_time = 0;
 unsigned long long debug_time = 0;
-#define DEBUG_SKIP 0
+#define DEBUG_SKIP 400000
 // 一些导入的接口
 void init_device();
 
@@ -24,8 +24,6 @@ void ebreak()
   debug_exit(cpu_gpr[10]);
 }
 // 同步总线访问
-#ifdef CONFIG_ITRACE
-//程序profling的接口
 bool arbiter_exec = false;
 void arbiter_wait(){
   //printf("1\n");
@@ -35,12 +33,6 @@ bool icache_exec = false;
 void icache_wait(){
   //printf("1\n");
   icache_exec = true;
-}
-#endif
-bool difftest_ok = false;
-void difftest_valid(){
-  printf("1\n");
-  difftest_ok = true;
 }
 // =========================== Debug ===========================
 // =============== Itrace ===============
@@ -96,7 +88,6 @@ void (*ref_difftest_raise_intr)(uint64_t NO) = NULL;
 
 
 void init_difftest() {
-  printf("diff_init   ok\n");
   char ref_so_file[]="/home/zyx/ysyx-workbench/nemu/build/riscv64-nemu-interpreter-so";
   assert(ref_so_file != NULL);
 
@@ -126,7 +117,7 @@ void init_difftest() {
 
 void checkregs(uint64_t *ref_regs)
 {
-  IFDEF(DEBUG_DIFFTRACE, printf("diff_log: Difftest pc = 0x%016lx inst = 0x%016x\n", cpu_gpr[32],dut->now_inst));
+  IFDEF(DEBUG_DIFFTRACE, printf("diff_log: Difftest pc = 0x%016lx inst = 0x%016x\n", dut->now_addr,dut->now_inst));
   for (int i = 0; i <= 36; ++i) {
     if (ref_regs[i] != cpu_gpr[i]) {
 
@@ -166,20 +157,30 @@ void difftest_exec_once()
   if (is_skip_ref) {
     //printf("is_skip_ref= %d\n",is_skip_ref);
     //防止递归失败的false设置，放在后面会被覆盖
-    //is_skip_ref = false;
+    is_skip_ref = false;
     //exec_once();
 //一个冒险的开关当开启这里时，会跳过连续访问外设的diff写reg覆盖，但会将访问后一条指令的结果直接写入参考模型，这是一个对正确性的隐患。（提升效果2~3倍）
     while(is_skip_ref){
     is_skip_ref = false;
-    #ifdef CONFIG_ITRACE
-    itrace_record(dut->now_addr);
-// 会增加一定的性能负担，且这个类型一旦溢出会导致程序被杀死
-//  debug_time++;
+#ifdef CONFIG_ITRACE
+  itrace_record(dut->now_addr);
 #endif
-      while(difftest_ok == false){
+    exec_once();
+    exec_once();
+    exec_once();
+      if(icache_exec){
+      icache_exec = false;
+      IFDEF(DEBUG_DIFFTRACE, printf("icache_exec \n"));
       exec_once();
-       }
-      difftest_ok = false;
+      exec_once();
+      }
+      if(arbiter_exec){
+      arbiter_exec = false;
+      IFDEF(DEBUG_DIFFTRACE, printf("arbiter_exec \n"));
+      exec_once();
+      exec_once();
+      exec_once();
+      }
     }
     
     ref_difftest_regcpy(cpu_gpr, DIFFTEST_TO_REF);
@@ -298,32 +299,47 @@ int main(int argc, char** argv, char** env) {
     cpu_reset();
     init_disasm("riscv64-pc-linux-gnu");
 //2流水线择在这里将cpu先跑一次，不可放在‘init_disasm（）’初始前
+    //exec_once();
     exec_once();
     exec_once();
     exec_once();
     exec_once();
-    exec_once();
-    exec_once();
-    exec_once();
-    exec_once();
-//    icache_exec = false;
-    //difftest_ok = false;
+    icache_exec = false;
 #ifdef CONFIG_DIFFTEST
   init_difftest();
 #endif
     while (1) {
 
       IFDEF(CONFIG_DEVICE, device_update());
-
-      while(difftest_ok == false){
-      exec_once();
-       }
-       difftest_ok = false;
 #ifdef CONFIG_ITRACE
-    itrace_record(cpu_gpr[32]);
+  itrace_record(dut->now_addr);
+// 会增加一定的性能负担，且这个类型一旦溢出会导致程序被杀死
+  debug_time++;
 #endif
+      exec_once();
+      exec_once();
+      exec_once();
+      if(icache_exec){
+      icache_exec = false;
+      IFDEF(DEBUG_DIFFTRACE, printf("icache_exec  %d\n",icache_exec));
+      exec_once();
+      exec_once();
+      }
+      if(arbiter_exec){
+      arbiter_exec = false;
+      IFDEF(DEBUG_DIFFTRACE, printf("arbiter_exec %d\n",arbiter_exec));
+      exec_once();
+      exec_once();
+      exec_once();
+      }
+      if(icache_exec){
+      icache_exec = false;
+      IFDEF(DEBUG_DIFFTRACE, printf("icache_exec  %d\n",icache_exec));
+      exec_once();
+      exec_once();
+      }
 #ifdef CONFIG_DIFFTEST
-        difftest_exec_once();
+      difftest_exec_once();
 #endif
     }
 }

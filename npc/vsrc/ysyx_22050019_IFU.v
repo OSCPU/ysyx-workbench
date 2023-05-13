@@ -16,15 +16,17 @@ module ysyx_22050019_IFU#(
     output reg            m_axi_rready      ,
     input                 m_axi_rvalid      ,
 
+    //output reg [63:0]     inst_addr         , //送出去看指令的地址
     input                 m_axi_arready     ,
     output reg            m_axi_arvalid     ,
-    output                inst_commite      ,
        
     // 送出指令和对于pc的接口（打了一拍）
     output  [63:0]        inst_addr_o       , //到指令寄存器中取指令的地址
     output  [31:0]        inst_o
 );
-//=========================        
+//=========================
+  wire pc_wen = m_axi_rready && m_axi_rvalid ;// 暂停指示信号，目前用这个代替，后面需要参考优秀设计
+  reg [63:0]     inst_addr;         
   // 状态准备
   localparam IDLE = 1'd0;
   localparam WAIT_READY = 1'd1;
@@ -53,6 +55,7 @@ module ysyx_22050019_IFU#(
     default : next_state = IDLE;
   endcase
 end
+
   // 读的状态机
 always@(posedge clk)begin
   if(rst_n)begin
@@ -87,8 +90,7 @@ always@(posedge clk)begin
     endcase
   end
 end
-  wire pc_wen = m_axi_rready && m_axi_rvalid ;// 暂停指示信号，目前用这个代替，后面需要参考优秀设计
-  reg [63:0]     inst_addr; 
+
 //=========================
 // pc 计数器
 always @ (posedge clk) begin
@@ -96,7 +98,7 @@ always @ (posedge clk) begin
     if (rst_n) begin
         inst_addr <= RESET_VAL;
     // 跳转
-    end else if (inst_j) begin
+    end else if (inst_j && pc_wen) begin
         inst_addr <= snpc;
     // 暂停
     end else if (~pc_wen) begin
@@ -112,8 +114,7 @@ end
 //ysyx_22050019_Reg #(32,32'b0) i0 (clk,rst_n,inst_i,inst_o,1'b1);
 //ysyx_22050019_Reg #(64,64'b0) i1 (clk,rst_n,inst_addr,inst_addr_o,1'b1);
 
-assign inst_addr_o = inst_j ? snpc : inst_addr;
+assign inst_addr_o = inst_addr;
 assign inst_o      = inst_addr [2] ? inst_i[63:32] : inst_i[31:0];
-assign inst_commite= m_axi_rvalid;
 
 endmodule
