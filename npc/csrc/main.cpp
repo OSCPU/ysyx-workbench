@@ -3,7 +3,7 @@
 #define MAX_SIM_TIME 15000000
 uint64_t sim_time = 0;
 unsigned long long debug_time = 0;
-#define DEBUG_SKIP 0
+#define DEBUG_SKIP 400000
 // 一些导入的接口
 void init_device();
 
@@ -88,6 +88,7 @@ void (*ref_difftest_raise_intr)(uint64_t NO) = NULL;
 
 
 void init_difftest() {
+  printf("diff_init   ok\n");
   char ref_so_file[]="/home/zyx/ysyx-workbench/nemu/build/riscv64-nemu-interpreter-so";
   assert(ref_so_file != NULL);
 

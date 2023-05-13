@@ -191,7 +191,7 @@ ysyx_22050019_EXU EXU(
 // lsu模块端口
 wire [63:0] wdata_lsu_wb;
 //wire        ram_we_lsu_mem   ;//存储器写使能
-wire [63:0] ram_waddr_lsu_mem ;//mem索引
+wire [31:0] ram_waddr_lsu_mem ;//mem索引
 wire        axi_lsu_sram_aw_ready = uncache ? axi_dcache_arbiter_aw_ready  : axi_lsu_dcache_aw_ready;
 wire        axi_lsu_sram_aw_valid;
 wire [63:0] ram_wdata_lsu_mem    ;
@@ -203,7 +203,7 @@ wire        axi_lsu_sram_b_ready;
 wire        axi_lsu_sram_b_valid  = uncache ? axi_dcache_arbiter_b_valid   : axi_lsu_dcache_b_valid ;
 //wire        ram_re_lsu_mem   ;//存储器读使能
 wire [63:0] ram_rdata_mem_lsu     = uncache ? axi_dcache_arbiter_r_data    : axi_lsu_dcache_r_data;
-wire [63:0] ram_raddr_lsu_mem ;//mem读索引
+wire [31:0] ram_raddr_lsu_mem ;//mem读索引
 wire        axi_lsu_sram_ar_ready = uncache ? axi_dcache_arbiter_ar_ready  : axi_lsu_dcache_ar_ready;
 wire        axi_lsu_sram_ar_valid;
 wire [1:0]  axi_lsu_sram_r_resp ;
@@ -269,7 +269,7 @@ ysyx_22050019_mem MEM (
 //icache的缓存区设置
 wire        axi_icache_sram_ar_valid ;
 wire        axi_icache_sram_ar_ready ;
-wire [63:0] axi_icache_sram_ar_addr  ;
+wire [31:0] axi_icache_sram_ar_addr  ;
 wire        axi_icache_sram_r_ready  ;
 wire        axi_icache_sram_r_valid  ;
 wire [1:0]  axi_icache_sram_r_resp   ;
@@ -300,12 +300,12 @@ ysyx_22050019_icache I_CACHE(
 //***********************************************************************
 //uncache的控制逻辑
 //wire uncache = ~(ram_waddr_lsu_mem[31]|ram_raddr_lsu_mem[31]);
-wire uncache=(((ram_waddr_lsu_mem|ram_raddr_lsu_mem)<64'h80000000)||(ram_waddr_lsu_mem|ram_raddr_lsu_mem)>64'h88000000);
+wire uncache=(((ram_waddr_lsu_mem|ram_raddr_lsu_mem)<32'h80000000)&&(ram_waddr_lsu_mem|ram_raddr_lsu_mem)>32'h88000000)? 0:1;
 //=======================================================================
 //dcache与uncache信号的生成与选择控制
 wire        axi_lsu_dcache_aw_ready ;
 wire        axi_lsu_dcache_aw_valid = uncache ? 0 : axi_lsu_sram_aw_valid;
-wire [63:0] axi_lsu_dcache_aw_addr  = uncache ? 0 : ram_waddr_lsu_mem    ;
+wire [31:0] axi_lsu_dcache_aw_addr  = uncache ? 0 : ram_waddr_lsu_mem    ;
 wire        axi_lsu_dcache_w_ready  ;
 wire        axi_lsu_dcache_w_valid  = uncache ? 0 : axi_lsu_sram_w_valid ;
 wire [63:0] axi_lsu_dcache_w_data   = uncache ? 0 : ram_wdata_lsu_mem    ;
@@ -315,7 +315,7 @@ wire        axi_lsu_dcache_b_valid  ;
 wire [1:0]  axi_lsu_dcache_b_resp   ; 
 wire        axi_lsu_dcache_ar_ready ; 
 wire        axi_lsu_dcache_ar_valid = uncache ? 0 : axi_lsu_sram_ar_valid; 
-wire [63:0] axi_lsu_dcache_ar_addr  = uncache ? 0 : ram_raddr_lsu_mem    ; 
+wire [31:0] axi_lsu_dcache_ar_addr  = uncache ? 0 : ram_raddr_lsu_mem    ; 
 wire        axi_lsu_dcache_r_ready  = uncache ? 0 : axi_lsu_sram_r_ready ;
 wire        axi_lsu_dcache_r_valid  ;
 wire [1:0]  axi_lsu_dcache_r_resp   = uncache ? 0 : axi_lsu_sram_r_resp  ;    
@@ -323,7 +323,7 @@ wire [63:0] axi_lsu_dcache_r_data   ;
 
 wire        axi_dcache_aw_ready    = uncache ? 0 : axi_dcache_arbiter_aw_ready  ; 
 wire        axi_dcache_aw_valid    ;
-wire [63:0] axi_dcache_aw_addr     ;
+wire [31:0] axi_dcache_aw_addr     ;
 wire        axi_dcache_w_ready     = uncache ? 0 : axi_dcache_arbiter_w_ready   ; 
 wire        axi_dcache_w_valid     ;
 wire [63:0] axi_dcache_w_data      ;
@@ -333,15 +333,15 @@ wire        axi_dcache_b_valid     = uncache ? 0 : axi_dcache_arbiter_b_valid   
 wire [1:0]  axi_dcache_b_resp      = uncache ? 0 : axi_dcache_arbiter_b_resp    ; 
 wire        axi_dcache_ar_ready    = uncache ? 0 : axi_dcache_arbiter_ar_ready  ; 
 wire        axi_dcache_ar_valid    ;
-wire [63:0] axi_dcache_ar_addr     ;
+wire [31:0] axi_dcache_ar_addr     ;
 wire        axi_dcache_r_ready     ;
 wire        axi_dcache_r_valid     = uncache ? 0 : axi_dcache_arbiter_r_valid   ; 
 wire [1:0]  axi_dcache_r_resp      = uncache ? 0 : axi_dcache_arbiter_r_resp    ; 
 wire [63:0] axi_dcache_r_data      = uncache ? 0 : axi_dcache_arbiter_r_data    ; 
 
 wire        axi_dcache_arbiter_aw_ready ;
-wire        axi_dcache_arbiter_aw_valid = uncache ? axi_lsu_sram_aw_valid : axi_dcache_aw_valid ;
-wire [63:0] axi_dcache_arbiter_aw_addr  = uncache ? ram_waddr_lsu_mem     : axi_dcache_aw_addr  ;
+wire        axi_dcache_arbiter_aw_valid = uncache ? axi_lsu_sram_aw_valid  : axi_dcache_aw_valid ;
+wire [31:0] axi_dcache_arbiter_aw_addr  = uncache ? ram_waddr_lsu_mem[31:0]: axi_dcache_aw_addr  ;
 wire        axi_dcache_arbiter_w_ready  ;
 wire        axi_dcache_arbiter_w_valid  = uncache ? axi_lsu_sram_w_valid  : axi_dcache_w_valid  ;
 wire [63:0] axi_dcache_arbiter_w_data   = uncache ? ram_wdata_lsu_mem     : axi_dcache_w_data   ;
@@ -351,7 +351,7 @@ wire        axi_dcache_arbiter_b_valid  ;
 wire [1:0]  axi_dcache_arbiter_b_resp   ;
 wire        axi_dcache_arbiter_ar_ready ;
 wire        axi_dcache_arbiter_ar_valid = uncache ? axi_lsu_sram_ar_valid : axi_dcache_ar_valid ;
-wire [63:0] axi_dcache_arbiter_ar_addr  = uncache ? ram_raddr_lsu_mem     : axi_dcache_ar_addr  ;
+wire [31:0] axi_dcache_arbiter_ar_addr  = uncache ? ram_raddr_lsu_mem[31:0]     : axi_dcache_ar_addr;
 wire        axi_dcache_arbiter_r_ready  = uncache ? axi_lsu_sram_r_ready  : axi_dcache_r_ready  ;
 wire        axi_dcache_arbiter_r_valid  ;
 wire [1:0]  axi_dcache_arbiter_r_resp   ;
@@ -413,7 +413,7 @@ ysyx_22050133_axi_arbiter ARBITER(
     // Advanced eXtensible Interface Slave1
     .s1_axi_aw_ready_o ( s1_axi_aw_ready_o           ),
     .s1_axi_aw_valid_i ( 1'b0                        ),
-    .s1_axi_aw_addr_i  ( 64'b0                       ),
+    .s1_axi_aw_addr_i  ( 32'b0                       ),
 
     .s1_axi_w_ready_o  ( s1_axi_w_ready_o            ),
     .s1_axi_w_valid_i  ( 1'b0                        ),
@@ -486,7 +486,7 @@ ysyx_22050133_axi_arbiter ARBITER(
 // arbiter<>sram的连线
 wire        axi_arbitr_sram_aw_ready ;
 wire        axi_arbitr_sram_aw_valid ;
-wire [63:0] axi_arbitr_sram_aw_addr  ;
+wire [31:0] axi_arbitr_sram_aw_addr  ;
 wire        axi_arbitr_sram_w_ready  ;
 wire        axi_arbitr_sram_w_valid  ;
 wire [63:0] axi_arbitr_sram_w_data   ;
@@ -496,7 +496,7 @@ wire        axi_arbitr_sram_b_valid  ;
 wire [1:0]  axi_arbitr_sram_b_resp   ; 
 wire        axi_arbitr_sram_ar_ready ; 
 wire        axi_arbitr_sram_ar_valid ; 
-wire [63:0] axi_arbitr_sram_ar_addr  ;
+wire [31:0] axi_arbitr_sram_ar_addr  ;
 wire        axi_arbitr_sram_r_ready  ;
 wire        axi_arbitr_sram_r_valid  ;
 wire [1:0]  axi_arbitr_sram_r_resp   ;    

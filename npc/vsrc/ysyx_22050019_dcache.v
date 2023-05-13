@@ -33,14 +33,14 @@ module ysyx_22050019_dcache#(
 
   input                              ar_valid_i          ,         
   output reg                         ar_ready_o          ,     
-  input     [R_ADDR_WIDTH-1:0]       ar_addr_i           ,             
+  input     [ADDR_WIDTH-1:0]         ar_addr_i           ,             
   output reg                         r_data_valid_o      ,     
   input                              r_data_ready_i      ,
   input     [1:0]                    r_resp_i            ,     
   output reg[DATA_WIDTH-1:0]         r_data_o            ,
   input                              aw_valid_i          ,         
   output reg                         aw_ready_o          ,     
-  input     [R_ADDR_WIDTH-1:0]       aw_addr_i           ,             
+  input     [ADDR_WIDTH-1:0]         aw_addr_i           ,             
   input                              w_data_valid_i      ,     
   output reg                         w_data_ready_o      ,
   input     [DATA_WIDTH/8-1:0]       w_w_strb_i          ,     
@@ -51,7 +51,7 @@ module ysyx_22050019_dcache#(
 
   output reg                         cache_aw_valid_o    ,       
   input                              cache_aw_ready_i    ,     
-  output reg[R_ADDR_WIDTH-1:0]       cache_aw_addr_o     ,          
+  output reg[ADDR_WIDTH-1:0]         cache_aw_addr_o     ,          
   input                              cache_w_ready_i     ,     
   output reg                         cache_w_valid_o     ,     
   output reg[DATA_WIDTH-1:0]         cache_w_data_o      ,
@@ -61,7 +61,7 @@ module ysyx_22050019_dcache#(
   input  [1:0]                       cache_b_resp_i      , 
   output reg                         cache_ar_valid_o    ,       
   input                              cache_ar_ready_i    ,     
-  output reg[R_ADDR_WIDTH-1:0]       cache_ar_addr_o     ,          
+  output reg[ADDR_WIDTH-1:0]         cache_ar_addr_o     ,          
   output reg                         cache_r_ready_o     ,     
   input                              cache_r_valid_i     ,
   input     [1:0]                    cache_r_resp_i      ,      
@@ -77,7 +77,7 @@ parameter RAM_DEPTH= INDEX_DEPTH                         ;//64$pow(2,INDEX_WIDTH
 parameter RAML     = INDEX_WIDTH+OFFSET_WIDTH-1          ;//8
 parameter RAMR     = OFFSET_WIDTH                        ;//3
 
-wire [R_ADDR_WIDTH-1:0]  rw_addr_i = ar_addr_i|aw_addr_i ; 
+wire [ADDR_WIDTH-1:0]  rw_addr_i = ar_addr_i|aw_addr_i ; 
 // 保存地址，miss后的写数据，偏移寄存器
 reg [ADDR_WIDTH-1:0]   addr  ;
 wire[INDEX_WIDTH-1:0]  index = addr[INDEXL:INDEXR];
@@ -230,7 +230,7 @@ always@(posedge clk)begin
           valid[random][index_in] <= 0                                     ;
           tag[random][index_in]   <= rw_addr_i[TAGL:TAGR]                  ;
           cache_ar_valid          <= 1                                     ;
-          cache_ar_addr_o         <= {32'b0,rw_addr_i[TAGL:INDEXR],OFFSET0};
+          cache_ar_addr_o         <= {rw_addr_i[TAGL:INDEXR],OFFSET0};
           if(aw_valid_i&aw_ready_o) begin
           rw_control              <= 1                                     ;
           w_data_ready_o          <= 0                                     ;
@@ -248,7 +248,7 @@ always@(posedge clk)begin
           end
 
           cache_aw_valid_o        <= 1;
-          cache_aw_addr_o         <= {32'b0,tag[random][index_in],index_in,OFFSET0};
+          cache_aw_addr_o         <= {tag[random][index_in],index_in,OFFSET0};
         end
         else begin
 					ar_ready_o              <= 1                                     ;
@@ -293,7 +293,7 @@ always@(posedge clk)begin
       S_B:if(next_state==S_AR)begin
           cache_b_ready_o         <= 0                                     ;
           cache_ar_valid          <= 1                                     ;
-          cache_ar_addr_o         <= {32'b0,addr[TAGL:INDEXR],OFFSET0}     ;
+          cache_ar_addr_o         <= {addr[TAGL:INDEXR],OFFSET0}     ;
         end
       S_AR:if(next_state==S_R)begin
           cache_ar_valid          <= 0                                     ;
