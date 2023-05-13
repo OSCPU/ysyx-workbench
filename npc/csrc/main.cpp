@@ -314,7 +314,7 @@ int main(int argc, char** argv, char** env) {
 #ifdef CONFIG_ITRACE
     itrace_record(dut->now_addr);
 // 会增加一定的性能负担，且这个类型一旦溢出会导致程序被杀死
-//  debug_time++;
+  debug_time++;
 #endif
       while(difftest_ok == false){
       exec_once();
