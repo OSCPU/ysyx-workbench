@@ -2,7 +2,7 @@
 // ============ verilator sim ===========
 #define MAX_SIM_TIME 15000000
 uint64_t sim_time = 0;
-unsigned long long debug_time = 1435938;
+unsigned long long debug_time = 2871876;
 #define DEBUG_SKIP 0
 // 一些导入的接口
 void init_device();
@@ -201,7 +201,7 @@ void difftest_exec_once()
 
 void debug_exit(int status)
 {
-  printf("仿真周期=%llds\n", (long long)debug_time);
+  printf("仿真周期=%lld\n", (long long)debug_time);
 #ifdef CONFIG_GTKWAVE
   m_trace -> close();
 #endif
