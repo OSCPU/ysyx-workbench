@@ -42,10 +42,12 @@ reg [63:0] mepc    = csr_regs_diff_i[1];
 reg [63:0] mstatus = csr_regs_diff_i[2];
 reg [63:0] mcause  = csr_regs_diff_i[3];
 
+reg [31:0] insttemp;//给commit提供inst的仿真信号
   always @(posedge clk) begin
     if(rst_n) begin
         pc_o             <= 0;
         inst_o           <= 0;
+        insttemp         <= 0;
         commite_o        <= 0;
         mtvec            <= 0;
         mepc             <= 0;
@@ -54,7 +56,8 @@ reg [63:0] mcause  = csr_regs_diff_i[3];
     end
     else begin
         pc_o            <= pc_i           ;
-        inst_o          <= inst_i         ;
+        inst_o          <= insttemp       ;
+        insttemp        <= inst_i         ;
         commite_o       <= commite_i      ;
         mtvec           <= csr_regs_diff_i[0];
         mepc            <= csr_regs_diff_i[1];
