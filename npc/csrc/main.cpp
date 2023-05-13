@@ -1,10 +1,9 @@
 #include <common.h>
-#define DEBUG_DIFFTRACE 1
 // ============ verilator sim ===========
 #define MAX_SIM_TIME 15000000
 uint64_t sim_time = 0;
 unsigned long long debug_time = 0;
-#define DEBUG_SKIP 0
+#define DEBUG_SKIP 400000
 // 一些导入的接口
 void init_device();
 
@@ -118,7 +117,7 @@ void init_difftest() {
 
 void checkregs(uint64_t *ref_regs)
 {
-  IFDEF(DEBUG_DIFFTRACE, printf("diff_log: Difftest pc = 0x%016lx inst = 0x%016lx\n", dut->now_addr,dut->now_inst));
+  IFDEF(DEBUG_DIFFTRACE, printf("diff_log: Difftest pc = 0x%016lx inst = 0x%016x\n", dut->now_addr,dut->now_inst));
   for (int i = 0; i <= 36; ++i) {
     if (ref_regs[i] != cpu_gpr[i]) {
 
@@ -131,7 +130,7 @@ void checkregs(uint64_t *ref_regs)
 #endif
 
       printf("================= reg diff ========================\n");
-      printf("Error: Difftest failed at reg %d, pc = 0x%016lx inst = 0x%016lx\n", i, dut->now_addr,dut->now_inst);
+      printf("Error: Difftest failed at reg %d, pc = 0x%016lx inst = 0x%016x\n", i, dut->now_addr,dut->now_inst);
       for (int j = 0; j <= 32; ++j) {
         if (cpu_gpr[j] != ref_regs[j]) printf(COLOR_RED);
         printf("reg %02d: dut = 0x%016lx, ref = 0x%016lx\n", j, cpu_gpr[j], ref_regs[j]);
@@ -310,13 +309,12 @@ int main(int argc, char** argv, char** env) {
   init_difftest();
 #endif
     while (1) {
-#ifdef CONFIG_DIFFTEST
-// 会增加一定的性能负担，且这个类型一旦溢出会导致程序被杀死
-  //debug_time++;
-#endif
+
       IFDEF(CONFIG_DEVICE, device_update());
 #ifdef CONFIG_ITRACE
   itrace_record(dut->now_addr);
+// 会增加一定的性能负担，且这个类型一旦溢出会导致程序被杀死
+  debug_time++;
 #endif
       exec_once();
       exec_once();
@@ -331,6 +329,12 @@ int main(int argc, char** argv, char** env) {
       arbiter_exec = false;
       IFDEF(DEBUG_DIFFTRACE, printf("arbiter_exec %d\n",arbiter_exec));
       exec_once();
+      exec_once();
+      exec_once();
+      }
+      if(icache_exec){
+      icache_exec = false;
+      IFDEF(DEBUG_DIFFTRACE, printf("icache_exec  %d\n",icache_exec));
       exec_once();
       exec_once();
       }
