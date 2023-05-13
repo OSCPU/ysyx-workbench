@@ -158,12 +158,12 @@ always@(posedge clk) begin
   if(rst)state<=S_IDLE;
   else state<=next_state;
 end
-
+wire hit_sign = hit_wayflag[0]|hit_wayflag[1];
 always@(*) begin
   if(rst)next_state=S_IDLE;
   else case(state)
     S_IDLE:if(ar_valid_i&ar_ready_o|aw_valid_i&aw_ready_o)begin
-            if(hit_wayflag[0]|hit_wayflag[1])next_state=S_HIT;
+            if(hit_sign)next_state=S_HIT;
             if(dirty[random][index_in])next_state=S_AW;
             else next_state=S_AR;
           end
