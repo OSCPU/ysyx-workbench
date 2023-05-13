@@ -154,7 +154,8 @@ always@(*) begin
     default:next_state=S_IDLE;
   endcase
 end
-import "DPI-C" function void icache_wait();
+//import "DPI-C" function void icache_wait();
+import "DPI-C" function void difftest_valid();
 always@(posedge clk)begin
   if(rst)begin
 		ar_ready_o          <= 1;
@@ -175,7 +176,7 @@ always@(posedge clk)begin
           addr                    <= {ar_addr_i[TAGL:INDEXR],OFFSET0};
         end
         else if(next_state==S_AR)begin
-          icache_wait()               ;//多跑2个周期平衡
+//          icache_wait()               ;//多跑2个周期平衡
 					ar_ready_o              <= 0;
           waynum                  <= random;
           addr                    <= {ar_addr_i[TAGL:INDEXR],OFFSET0};
@@ -196,6 +197,7 @@ always@(posedge clk)begin
           r_data_o            <= 0;
       end
       else begin
+          difftest_valid();
           r_data_valid_o          <= 1            ; 
           r_data_o                <= RAM_Q[waynum];
       end
@@ -204,6 +206,7 @@ always@(posedge clk)begin
           cache_r_ready_o  <= 1;
           end
       S_R:if(next_state==S_HIT)begin
+          difftest_valid();
           cache_r_ready_o     <= 0             ;
           valid[waynum][index]<= 1             ;
           r_data_o            <= cache_r_data_i;
