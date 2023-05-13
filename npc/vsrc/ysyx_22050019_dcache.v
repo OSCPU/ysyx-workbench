@@ -114,15 +114,16 @@ wire [INDEX_DEPTH-1:0] RAM_BWEN= ~maskn                                         
 wire [INDEX_WIDTH-1:0] RAM_A   = (next_state == S_HIT)|(next_state == S_AW) ? index_in : addr[RAML:RAMR]      ;//ram地址索引
 wire [INDEX_DEPTH-1:0] RAM_D   = cache_r_data_i|w_data_i                                                      ;//更新ram数据
 
+
 always@(*) begin
   if(rst)begin
     RAM_CEN[0] = 1;
     RAM_CEN[1] = 1;
   end
   else if((state == S_IDLE)&(next_state == S_HIT)&(ar_valid_i)|(state == S_R)&(next_state == S_HIT)|(next_state == S_AW)|(w_data_valid_i&w_data_ready_o))
-  RAM_CEN[(next_state == S_AW) ? random : hit_waynum_i|waynum] = 0;
+  RAM_CEN[hit_waynum_i|(next_state == S_AW) ? random : waynum] = 0;
   else
-  RAM_CEN[(next_state == S_AW) ? random : hit_waynum_i|waynum] = 1;
+  RAM_CEN[hit_waynum_i|(next_state == S_AW) ? random : waynum] = 1;
 end
 
 //实例化两块ram以及他们的命中逻辑的添加
