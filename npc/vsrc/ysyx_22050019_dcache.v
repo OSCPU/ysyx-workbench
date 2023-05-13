@@ -164,7 +164,7 @@ always@(*) begin
   else case(state)
     S_IDLE:if(ar_valid_i&ar_ready_o|aw_valid_i&aw_ready_o)begin
             if(hit_sign)next_state=S_HIT;
-            if(dirty[random][index_in])next_state=S_AW;
+            else if(dirty[random][index_in])next_state=S_AW;
             else next_state=S_AR;
           end
         else next_state=S_IDLE;
