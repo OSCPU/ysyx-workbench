@@ -1,10 +1,11 @@
 #include <am.h>
-
+static uint64_t boot_time = 0;
 void __am_timer_init() {
+  boot_time = read_time();
 }
 
 void __am_timer_uptime(AM_TIMER_UPTIME_T *uptime) {
-  uptime->us = 0;
+  uptime->us = read_time() - boot_time;
 }
 
 void __am_timer_rtc(AM_TIMER_RTC_T *rtc) {
