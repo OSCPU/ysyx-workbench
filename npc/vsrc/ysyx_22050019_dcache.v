@@ -315,7 +315,7 @@ always@(posedge clk) begin
   if(RAM_A == 6'h1b &&RAM_WEN[waynum]) begin
   $display("rwaddr   = %h\n\
      w_data_i       = %h\n\
-    ",rw_addr_i,w_data_i);
+    ",rw_addr_i|addr,w_data_i);
   end
 end
 endmodule
