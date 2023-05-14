@@ -112,7 +112,7 @@ wire [DATA_WIDTH-1:0]  maskn   = (state == S_HIT) ? {{8{w_w_strb_i[7]}},{8{w_w_s
                                                                : 64'hffffffffffffffff                         ;//写掩码，目前是全位写，掩码在发送端处理了
 wire [INDEX_DEPTH-1:0] RAM_BWEN= ~maskn                                                                       ;//ram写掩码目前一样不用过多处理
 wire [INDEX_WIDTH-1:0] RAM_A   = (next_state == S_HIT)|(next_state == S_AW) ? index_in : addr[RAML:RAMR]      ;//ram地址索引
-wire [INDEX_DEPTH-1:0] RAM_D   = cache_r_data_i|w_data_i                                                      ;//更新ram数据
+wire [INDEX_DEPTH-1:0] RAM_D   = cache_r_valid_i&&cache_r_ready_o ? cache_r_data_i : w_data_i ;                                                      ;//更新ram数据
 
 wire write_enable = (state == S_R)&(next_state == S_HIT)|(state == S_HIT)&w_data_valid_i ? 0 : 1 ;
 assign  RAM_WEN[0] = waynum ? 1 :write_enable;
