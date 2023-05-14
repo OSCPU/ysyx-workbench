@@ -312,7 +312,7 @@ assign cache_ar_valid_o = cache_ar_valid|next_state==S_AR;
 
 //仿真程序接入
 always@(posedge clk) begin
-  if(RAM_A == 6'h1b &&~write_enable&&RAM_WEN[0]) begin
+  if(RAM_A == 6'h1b &&~RAM_WEN[0]) begin
   $display("rwaddr   = %h\n\
      w_data_i       = %h\n\
      cache_r_data_i       = %h\n\
