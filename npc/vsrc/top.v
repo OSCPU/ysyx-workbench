@@ -18,6 +18,8 @@ ysyx_22050019_core ysyx_22050019_core_inst(
  .pc       (now_addr),
  .inst     (now_inst)
 );
-
+wire [7:0]a;wire b;
+assign a = 8'd20;
+assign b = ~(^a);
 endmodule
 
