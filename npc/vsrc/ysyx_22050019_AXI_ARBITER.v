@@ -134,7 +134,7 @@ always@(*) begin
     RS_IDLE:if(s1_axi_ar_valid_i)next_rstate=RS_S1;
 		  else if(s2_axi_ar_valid_i)next_rstate=RS_S2;
       else next_rstate=RS_IDLE;
-		RS_S1:if(s1_axi_r_ready_i&axi_r_valid_i)next_rstate=RS_IDLE;
+		RS_S1:if(s1_axi_r_ready_i&axi_r_valid_i)next_rstate= s2_axi_ar_valid_i ? RS_S2 :RS_IDLE;
 	    else next_rstate=RS_S1;
 		RS_S2:if(s2_axi_r_ready_i&axi_r_valid_i)next_rstate=RS_IDLE;
     else next_rstate=RS_S2;
