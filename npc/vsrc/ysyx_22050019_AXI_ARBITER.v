@@ -155,10 +155,15 @@ always@(posedge clk)begin
       else begin
         r_channel<=0;
       end
-      RS_S1:if(next_rstate==RS_IDLE)begin
+      RS_S1:
+      if(next_rstate==RS_IDLE)begin
         r_channel<=0;
       end
-      RS_S2:if(next_rstate==RS_IDLE)begin
+      else if(next_rstate==RS_S2)begin
+        r_channel<=1;
+      end
+      RS_S2:
+      if(next_rstate==RS_IDLE)begin
         r_channel<=0;
       end
       default:begin
