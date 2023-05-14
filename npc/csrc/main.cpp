@@ -39,7 +39,7 @@ void icache_wait(){
 #endif
 bool difftest_ok = false;
 void difftest_valid(){
-  printf("1\n");
+  //printf("1\n");
   difftest_ok = true;
 }
 // =========================== Debug ===========================
