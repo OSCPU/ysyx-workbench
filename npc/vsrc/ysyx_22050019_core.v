@@ -45,7 +45,7 @@ ysyx_22050019_IFU IFU
 );
 
 //拉出来一个控制器来解决读hit与读总线的冲突,这是一个临时的方案
-
+/*
 reg stll_ar_ready ;
 reg stll_ar_rvalid;
 always@(*) begin
@@ -62,6 +62,9 @@ always@(*) begin
     stll_ar_ready  = axi_if_sram_arready;
   end 
 end
+*/
+wire stll_ar_rvalid = axi_if_sram_arvalid;
+wire stll_ar_ready  = axi_if_sram_arready;
 //==================IF/ID=======================
 wire [63:0] pc_ifu_id  ;
 wire [31:0] inst_ifu_id;
