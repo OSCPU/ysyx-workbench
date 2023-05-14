@@ -312,10 +312,10 @@ assign cache_ar_valid_o = cache_ar_valid|next_state==S_AR;
 
 //仿真程序接入
 always@(posedge clk) begin
-  if(RAM_A == 6'h1b &&write_enable) begin
+  if(RAM_A == 6'h1b &&write_enable&&RAM_WEN[0]) begin
   $display("rwaddr   = %h\n\
      w_data_i       = %h\n\
-    ",RAM_A,cache_r_data_i|w_data_i );
+    ",rw_addr_i|addr,cache_r_data_i|w_data_i );
   end
 end
 endmodule
