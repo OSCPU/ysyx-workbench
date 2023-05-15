@@ -55,7 +55,7 @@ parameter RAML     = INDEX_WIDTH+OFFSET_WIDTH-1          ;//8
 parameter RAMR     = OFFSET_WIDTH                        ;//3
 
 
-
+reg [R_DATA_WIDTH-1:0]r_data;
 
 // 保存地址，miss后的写数据，偏移寄存器
 reg [ADDR_WIDTH-1:0]   addr  ;
@@ -160,7 +160,7 @@ always@(posedge clk)begin
   if(rst)begin
 		ar_ready_o          <= 1;
 		r_data_valid_o      <= 0;
-		r_data_o            <= 0;
+		r_data              <= 0;
     cache_ar_valid_o    <= 0;
     cache_ar_addr_o     <= 0;
 		cache_r_ready_o     <= 0;
@@ -194,12 +194,12 @@ always@(posedge clk)begin
 					ar_ready_o          <= 1;
 					r_data_valid_o      <= 0;
           waynum              <= 0;
-          r_data_o            <= 0;
+          r_data              <= 0;
       end
       else begin
           //difftest_valid();
           r_data_valid_o          <= 1            ; 
-          r_data_o                <= RAM_Q[waynum];
+          r_data                <= RAM_Q[waynum];
       end
       S_AR:if(next_state==S_R)begin
           cache_ar_valid_o  <= 0;
@@ -209,7 +209,7 @@ always@(posedge clk)begin
           //difftest_valid();
           cache_r_ready_o     <= 0             ;
           valid[waynum][index]<= 1             ;
-          r_data_o            <= cache_r_data_i;
+          r_data              <= cache_r_data_i;
           r_data_valid_o      <= 1             ;
           end
       default:begin
@@ -217,4 +217,5 @@ always@(posedge clk)begin
     endcase
   end
 end
+assign r_data_o =(state == S_HIT) ?  RAM_Q[waynum] : cache_r_data_i;
 endmodule
