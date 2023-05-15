@@ -168,7 +168,7 @@ always@(posedge clk)begin
         ar_addr       <= axi_ar_addr_i;
         axi_r_valid_o <= 1;
         axi_ar_ready_o<= 0;
-        pmem_read({32'h0,ar_addr[31:3],3'b0},din);
+        pmem_read({32'h0,axi_ar_addr_i[31:3],3'b0},din);
         axi_r_data_o  <= din;
       end
       else begin
