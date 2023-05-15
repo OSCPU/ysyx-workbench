@@ -171,7 +171,7 @@ always@(posedge clk)begin
     case(state)
       S_IDLE:if(next_state==S_HIT)begin
 					ar_ready_o              <= 0           ;
-          r_data_valid_o          <= 0           ; 
+          r_data_valid_o          <= 1           ; 
           waynum                  <= hit_waynum_i;
           addr                    <= {ar_addr_i[TAGL:INDEXR],OFFSET0};
         end
@@ -198,7 +198,6 @@ always@(posedge clk)begin
       end
       else begin
           //difftest_valid();
-          r_data_valid_o          <= 1            ; 
           r_data                <= RAM_Q[waynum];
       end
       S_AR:if(next_state==S_R)begin
