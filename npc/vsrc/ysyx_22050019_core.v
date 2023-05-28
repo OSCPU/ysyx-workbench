@@ -640,7 +640,7 @@ ysyx_22050019_MEM_WB MEM_WB(
     .rst_n            ( rst_n                     ),
     .pc_i             ( pc_exu_mem                ),
     .inst_i           ( inst_exu_mem              ),
-    .commite_i        ( ram_we_exu_lsu ? commite_ex_mem|wen_lsu_reg :0 ),
+    .commite_i        ( commite_ex_mem|wen_lsu_reg),
     .reg_we_exu_lsu_i ( reg_we_exu_lsu            ),
     .reg_we_lsu_i     ( wen_lsu_reg               ),
     .reg_waddr_exu_i  ( reg_waddr_exu_lsu         ),
