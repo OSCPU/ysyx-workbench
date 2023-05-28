@@ -61,7 +61,7 @@ reg [31:0] insttemp;//给commit提供inst的仿真信号
         pc_o            <= pc_i           ;
         inst_o          <= insttemp       ;
         insttemp        <= inst_i         ;
-        commite_o       <= commite_i      ;
+        commite_o       <= 0              ;
         mtvec           <= csr_regs_diff_i[0];
         mepc            <= csr_regs_diff_i[1];
         mstatus         <= csr_regs_diff_i[2];
