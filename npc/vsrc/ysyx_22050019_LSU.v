@@ -5,53 +5,54 @@ module ysyx_22050019_LSU# (
     //parameter AXI_ID_WIDTH      = 4,
     //parameter AXI_USER_WIDTH    = 1
 )(
-  input               clk,
-  input               rst,
+  input               clk            ,
+  input               rst            ,
   // 读写位宽
-  input [5:0]         mem_r_wdth ,
-  input [3:0]         mem_w_wdth ,
+  input [5:0]         mem_r_wdth     ,
+  input [3:0]         mem_w_wdth     ,
 
   // 读写数据
-  input [63:0]        ram_wdata_i ,
-  input               ram_we_i    ,
+  input [63:0]        ram_wdata_i    ,
+  input               ram_we_i       ,
 
-  input               ram_re_i    ,
+  input               ram_re_i       ,
   
   // alu 结果
   input [63:0]        result,
-  input  [4:0]        waddr_reg_i ,
+  input  [4:0]        waddr_reg_i    ,
   // 向reg的写数据
-  output              wen_reg_o   ,
-  output     [4:0]    waddr_reg_o ,
-  output     [63:0]   wdata_reg_o ,
+  output              wen_reg_o      ,
+  output     [4:0]    waddr_reg_o    ,
+  output     [63:0]   wdata_reg_o    ,
 
   // 分为读写两个通道描述信号
   // 写通道
-  //output              ram_we      ,
 
-  output     [31:0]   ram_waddr   ,
-  input               m_axi_aw_ready,
-  output              m_axi_aw_valid,
+  output     [31:0]   ram_waddr      ,
+  input               m_axi_aw_ready ,
+  output              m_axi_aw_valid ,
 
-  output reg [63:0]   ram_wdata   ,
-  output reg [7:0]    wmask       ,
-  input               m_axi_w_ready,
-  output reg          m_axi_w_valid,
+  output reg [63:0]   ram_wdata      ,
+  output reg [7:0]    wmask          ,
+  input               m_axi_w_ready  ,
+  output reg          m_axi_w_valid  ,
 
-  input [1:0]         ram_wresp_i  ,
-  output reg          m_axi_b_ready,
-  input               m_axi_b_valid,
+  input [1:0]         ram_wresp_i    ,
+  output reg          m_axi_b_ready  ,
+  input               m_axi_b_valid  ,
+
+  /* control */
+  output              lsu_stall_req  ,
 
   // 读通道
-  //output              ram_re      ,
 
-  input [63:0]        ram_rdata_i ,
-  input [1:0]         m_axi_r_resp ,
-  output reg          m_axi_r_ready,
-  input               m_axi_r_valid,
+  input [63:0]        ram_rdata_i    ,
+  input [1:0]         m_axi_r_resp   ,
+  output reg          m_axi_r_ready  ,
+  input               m_axi_r_valid  ,
 
-  input               m_axi_ar_ready,
-  output              m_axi_ar_valid,
+  input               m_axi_ar_ready ,
+  output              m_axi_ar_valid ,
   output  [31:0]      ram_raddr   
 
 );
@@ -291,6 +292,9 @@ end
 assign ram_raddr      = ram_re_i ? result[31:0] : 32'b0 | ar_addr;
 assign m_axi_ar_valid = ram_re_i | ar_valid;
 
+//流水线control
+//在流水段暂停时，如果下方模块不暂停，会清空该流水段寄存器的数据，这会让流水段寄存器不在发出重复数据请求，但同事，这也会丢失
+assign lsu_stall_req = (m_axi_aw_valid||m_axi_w_valid||m_axi_b_ready)||(next_rstate == RS_RHS);
 //=============================================================
 endmodule
 

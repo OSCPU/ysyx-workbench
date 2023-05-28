@@ -16,6 +16,10 @@ module ysyx_22050019_EX_MEM (
     input     [63:0]   csr_regs_diff_i[3:0],
     input              commite_i           ,
 
+    /* control */
+    input              ex_mem_stall_i      ,
+    input  wire        mem_wb_stall_i      ,
+
     output reg         commite_o           ,
     output reg[63:0]   pc_o                ,
     output reg[31:0]   inst_o              ,
@@ -31,8 +35,9 @@ module ysyx_22050019_EX_MEM (
     output reg[63:0]   wdate_csr_reg_o     ,
     output    [63:0]   csr_regs_diff_o[3:0]
 );
+
   always @(posedge clk) begin
-    if(rst_n) begin
+    if (rst_n) begin
         result_o        <= 0;   
         wdata_exu_reg_o <= 0;   
         ram_we_o        <= 0;   
@@ -42,9 +47,21 @@ module ysyx_22050019_EX_MEM (
         mem_r_wdth_o    <= 0;   
         reg_we_o        <= 0;   
         reg_waddr_o     <= 0;   
-        wdate_csr_reg_o <= 0;    
+        wdate_csr_reg_o <= 0;  
     end
-    else begin
+    else if (ex_mem_stall_i && (~mem_wb_stall_i)) begin
+        result_o        <= 0;   
+        wdata_exu_reg_o <= 0;   
+        ram_we_o        <= 0;   
+        ram_wdata_o     <= 0;   
+        mem_w_wdth_o    <= 0;   
+        ram_re_o        <= 0;   
+        mem_r_wdth_o    <= 0;   
+        reg_we_o        <= 0;   
+        reg_waddr_o     <= 0;   
+        wdate_csr_reg_o <= 0;  
+    end
+    else if (~ex_mem_stall_i) begin
         result_o        <= result_i       ;   
         wdata_exu_reg_o <= wdata_exu_reg_i;   
         ram_we_o        <= ram_we_i       ;   
@@ -54,10 +71,22 @@ module ysyx_22050019_EX_MEM (
         mem_r_wdth_o    <= mem_r_wdth_i   ;   
         reg_we_o        <= reg_we_i       ;   
         reg_waddr_o     <= reg_waddr_i    ;   
-        wdate_csr_reg_o <= wdate_csr_reg_i;    
+        wdate_csr_reg_o <= wdate_csr_reg_i;  
     end
-  end
+    else begin
+        result_o        <= result_o       ;   
+        wdata_exu_reg_o <= wdata_exu_reg_o;   
+        ram_we_o        <= ram_we_o       ;   
+        ram_wdata_o     <= ram_wdata_o    ;   
+        mem_w_wdth_o    <= mem_w_wdth_o   ;   
+        ram_re_o        <= ram_re_o       ;   
+        mem_r_wdth_o    <= mem_r_wdth_o   ;   
+        reg_we_o        <= reg_we_o       ;   
+        reg_waddr_o     <= reg_waddr_o    ;   
+        wdate_csr_reg_o <= wdate_csr_reg_o;  
+    end
 
+  end
 //======================================
 //仿真信号
 reg [63:0] mtvec   = csr_regs_diff_i[0];
@@ -66,24 +95,43 @@ reg [63:0] mstatus = csr_regs_diff_i[2];
 reg [63:0] mcause  = csr_regs_diff_i[3];
 
   always @(posedge clk) begin
-    if(rst_n) begin
-        pc_o             <= 0;
-        inst_o           <= 0;
-        commite_o        <= 0;
-        mtvec            <= 0;
-        mepc             <= 0;
-        mstatus          <= 0;
-        mcause           <= 0;
+    if (rst_n) begin
+        pc_o             <= 0                ;
+        inst_o           <= 0                ;
+        commite_o        <= 0                ;
+        mtvec            <= 0                ;
+        mepc             <= 0                ;
+        mstatus          <= 0                ;
+        mcause           <= 0                ;
     end
-    else begin
-        pc_o            <= pc_i           ;
-        inst_o          <= inst_i         ;
-        commite_o       <= commite_i      ;
+    else if (ex_mem_stall_i && (~mem_wb_stall_i)) begin
+        pc_o             <= pc_i              ;
+        inst_o           <= inst_i            ;
+        commite_o        <= 0                 ;
+        mtvec            <= csr_regs_diff_i[0];
+        mepc             <= csr_regs_diff_i[1];
+        mstatus          <= csr_regs_diff_i[2];
+        mcause           <= csr_regs_diff_i[3];
+    end
+    else if (~ex_mem_stall_i) begin
+        pc_o            <= pc_i              ;
+        inst_o          <= inst_i            ;
+        commite_o       <= commite_i         ;
         mtvec           <= csr_regs_diff_i[0];
         mepc            <= csr_regs_diff_i[1];
         mstatus         <= csr_regs_diff_i[2];
         mcause          <= csr_regs_diff_i[3];
     end
+    else begin
+        pc_o            <= pc_o              ;
+        inst_o          <= inst_o            ;
+        commite_o       <= commite_o         ;
+        mtvec           <= mtvec             ;
+        mepc            <= mepc              ;
+        mstatus         <= mstatus           ;
+        mcause          <= mcause            ;
+    end
+
   end
 assign csr_regs_diff_o[0] = mtvec  ;
 assign csr_regs_diff_o[1] = mepc   ;

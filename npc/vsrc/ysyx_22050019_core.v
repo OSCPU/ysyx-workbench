@@ -21,6 +21,8 @@ wire axi_if_sram_arvalid;
 wire ifu_commite;
 wire [63:0]pc_ifu;
 wire [31:0]inst_ifu;
+
+wire pc_stall;
 //fetch模块端口
 ysyx_22050019_IFU IFU
 (
@@ -39,6 +41,8 @@ ysyx_22050019_IFU IFU
     .m_axi_arready     (stll_ar_ready      ),
     .m_axi_arvalid     (axi_if_sram_arvalid),
     .inst_commite      (ifu_commite        ),
+
+    .pc_stall_i        (pc_stall           ),
 
     .inst_addr_o       (pc_ifu             ), // 传入下级模块的地址
     .inst_o            (inst_ifu           )
@@ -69,15 +73,19 @@ wire stll_ar_ready  = axi_if_sram_arready;
 wire [63:0] pc_ifu_id  ;
 wire [31:0] inst_ifu_id;
 wire commite_if_id;
+wire if_id_stall;
+wire id_ex_stall;
 ysyx_22050019_IF_ID IF_ID(
-    .clk      ( clk          ),
-    .rst_n    ( rst_n        ),
-    .commite_i( ifu_commite  ),
-    .pc_i     ( pc_ifu       ),
-    .inst_i   ( inst_ifu     ),
-    .commite_o( commite_if_id),
-    .pc_o     ( pc_ifu_id    ),
-    .inst_o   ( inst_ifu_id  )
+    .clk          ( clk          ),
+    .rst_n        ( rst_n        ),
+    .commite_i    ( ifu_commite  ),
+    .pc_i         ( pc_ifu       ),
+    .inst_i       ( inst_ifu     ),
+    .commite_o    ( commite_if_id),
+    .if_id_stall_i( if_id_stall  ),
+    .id_ex_stall_i( id_ex_stall  ),
+    .pc_o         ( pc_ifu_id    ),
+    .inst_o       ( inst_ifu_id  )
 );
 
 
@@ -183,6 +191,8 @@ wire [63:0]  pc_id_exu       ;
 wire [31:0]  inst_id_ex      ;
 /* verilator lint_off UNUSED */wire [63:0]csr_regs_diff_exu[3:0];//验证用
 wire commite_id_ex;
+wire id_ex_stall;
+wire ex_mem_stall;
 ysyx_22050019_ID_EX ID_EX(
     .clk              ( clk              ),
     .rst_n            ( rst_n            ),
@@ -201,6 +211,10 @@ ysyx_22050019_ID_EX ID_EX(
     .alu_sel_i        ( alu_sel          ),
     .wdate_csr_reg_i  ( wdate_csr        ),
     .csr_regs_diff_i  ( csr_regs_diff    ),
+
+// control
+    .id_ex_stall_i    ( id_ex_stall      ),
+    .ex_mem_stall_i   ( ex_mem_stall     ),
 
     .pc_o             ( pc_id_exu        ),
     .inst_o           ( inst_id_ex       ),
@@ -249,6 +263,8 @@ wire [63:0]  wdata_reg_exu_lsu;
 wire [63:0]  pc_exu_mem       ;
 wire [31:0]  inst_exu_mem     ;
 wire commite_ex_mem;
+wire ex_mem_stall;
+wire mem_wb_stall;
 ysyx_22050019_EX_MEM EX_MEM(
     .clk              ( clk              ),
     .rst_n            ( rst_n            ),
@@ -266,6 +282,10 @@ ysyx_22050019_EX_MEM EX_MEM(
     .reg_waddr_i      ( reg_waddr_id_exu ),
     .wdate_csr_reg_i  ( wdate_csr_exu    ),
     .csr_regs_diff_i  ( csr_regs_diff_exu),
+
+// comtrol
+    .ex_mem_stall_i   ( ex_mem_stall     ),
+    .mem_wb_stall_i   ( mem_wb_stall     ),
 
     .pc_o             ( pc_exu_mem       ),
     .inst_o           ( inst_exu_mem     ), 
@@ -308,6 +328,7 @@ wire        axi_lsu_sram_r_valid  = uncache ? axi_dcache_arbiter_r_valid : axi_l
 
 wire        wen_lsu_reg;
 wire [4:0]  waddr_lsu_reg;
+wire lsu_stall_req;
 ysyx_22050019_LSU LSU(
  .clk            (clk                  ),
  .rst            (rst_n                ),
@@ -339,6 +360,9 @@ ysyx_22050019_LSU LSU(
  .m_axi_r_ready  (axi_lsu_sram_r_ready ),
  .m_axi_r_valid  (axi_lsu_sram_r_valid ),
 
+// control
+
+ .lsu_stall_req  (lsu_stall_req        ),
 
  .waddr_reg_i    (reg_waddr_id_exu     ),
  .wen_reg_o      (wen_lsu_reg          ),
@@ -610,29 +634,44 @@ wire [4:0]   reg_waddr_wbu;
 wire [63:0]  reg_wdata_wbu;
 /* verilator lint_off UNUSED */wire [63:0]csr_regs_diff_wbu[3:0];//验证用
 wire commite_mem_wb;
+wire mem_wb_stall;
 ysyx_22050019_MEM_WB MEM_WB(
-    .clk              ( clk              ),
-    .rst_n            ( rst_n            ),
-    .pc_i             ( pc_exu_mem       ),
-    .inst_i           ( inst_exu_mem     ),
-    .commite_i        ( commite_ex_mem    ),
-    .reg_we_exu_lsu_i ( reg_we_exu_lsu   ),
-    .reg_we_lsu_i     ( wen_lsu_reg      ),
-    .reg_waddr_exu_i  ( reg_waddr_exu_lsu),
-    .reg_waddr_lsu_i  ( waddr_lsu_reg    ),
-    .reg_wdata_lsu_i  ( wdata_lsu_wb     ),
-    .reg_wdata_csr_i  ( wdate_csr_lsu    ),
-    .reg_wdata_exu_i  ( wdata_reg_exu_lsu),
-    .csr_regs_diff_i  ( csr_regs_diff_lsu),
+    .clk              ( clk                       ),
+    .rst_n            ( rst_n                     ),
+    .pc_i             ( pc_exu_mem                ),
+    .inst_i           ( inst_exu_mem              ),
+    .commite_i        ( commite_ex_mem|wen_lsu_reg),
+    .reg_we_exu_lsu_i ( reg_we_exu_lsu            ),
+    .reg_we_lsu_i     ( wen_lsu_reg               ),
+    .reg_waddr_exu_i  ( reg_waddr_exu_lsu         ),
+    .reg_waddr_lsu_i  ( waddr_lsu_reg             ),
+    .reg_wdata_lsu_i  ( wdata_lsu_wb              ),
+    .reg_wdata_csr_i  ( wdate_csr_lsu             ),
+    .reg_wdata_exu_i  ( wdata_reg_exu_lsu         ),
+    .csr_regs_diff_i  ( csr_regs_diff_lsu         ),
 
-    .pc_o             ( pc               ),
-    .inst_o           ( inst             ),
-    .commite_o        ( commite_mem_wb   ), 
-    .reg_we_wbu_o     ( reg_we_wbu       ),
-    .reg_waddr_wbu_o  ( reg_waddr_wbu    ),
-    .reg_wdata_wbu_o  ( reg_wdata_wbu    ),
-    .csr_regs_diff_o  ( csr_regs_diff_wbu)
+/* control */
+    .mem_wb_stall_i   ( mem_wb_stall              ),
+
+    .pc_o             ( pc                        ),
+    .inst_o           ( inst                      ),
+    .commite_o        ( commite_mem_wb            ), 
+    .reg_we_wbu_o     ( reg_we_wbu                ),
+    .reg_waddr_wbu_o  ( reg_waddr_wbu             ),
+    .reg_wdata_wbu_o  ( reg_wdata_wbu             ),
+    .csr_regs_diff_o  ( csr_regs_diff_wbu         )
 );
+
+//pipeline 总控制器模块
+ysyx_22050019_pipeline_Control pipe_control(
+    .lsu_stall_req ( lsu_stall_req ),
+    .pc_stall_o    ( pc_stall      ),
+    .if_id_stall_o ( if_id_stall   ),
+    .id_ex_stall_o ( id_ex_stall   ),
+    .ex_mem_stall_o( ex_mem_stall  ),
+    .mem_wb_stall_o( mem_wb_stall  )
+);
+
 
 //寄存器组端口
 ysyx_22050019_regs REGS(
