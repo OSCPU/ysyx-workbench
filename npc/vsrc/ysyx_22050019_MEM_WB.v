@@ -36,6 +36,7 @@ module ysyx_22050019_MEM_WB (
         reg_waddr_wbu_o      <= reg_waddr_exu_i|reg_waddr_lsu_i;
         reg_wdata_wbu_o      <= reg_we_exu_lsu_i ? reg_wdata_exu_i|reg_wdata_csr_i : reg_we_lsu_i ? reg_wdata_lsu_i : 64'b0;
     end
+
   end
 import "DPI-C" function void difftest_valid();
 //======================================
@@ -61,7 +62,7 @@ reg [31:0] insttemp;//给commit提供inst的仿真信号
         pc_o            <= pc_i           ;
         inst_o          <= insttemp       ;
         insttemp        <= inst_i         ;
-        commite_o       <= 0              ;
+        commite_o       <= commite_i      ;
         mtvec           <= csr_regs_diff_i[0];
         mepc            <= csr_regs_diff_i[1];
         mstatus         <= csr_regs_diff_i[2];
@@ -71,7 +72,7 @@ reg [31:0] insttemp;//给commit提供inst的仿真信号
         pc_o            <= pc_o     ;
         inst_o          <= inst_o   ;
         insttemp        <= insttemp ;
-        commite_o       <= commite_o;
+        commite_o       <= 0        ;
         mtvec           <= mtvec    ;
         mepc            <= mepc     ;
         mstatus         <= mstatus  ;
