@@ -16,7 +16,7 @@ module ysyx_22050019_pipeline_Control (
   assign pc_stall_o     = if_id_stall_o;
   assign if_id_stall_o  = id_ex_stall_o;
   assign id_ex_stall_o  = ex_mem_stall_o;
-  assign ex_mem_stall_o = mem_wb_stall_o;
-  assign mem_wb_stall_o = lsu_stall_req;
+  assign ex_mem_stall_o = mem_wb_stall_o | lsu_stall_req;
+  assign mem_wb_stall_o = 0;
 
 endmodule
