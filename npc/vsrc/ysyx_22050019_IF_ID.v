@@ -33,9 +33,9 @@ module ysyx_22050019_IF_ID (
         commite_o<= commite_i;
     end
     else begin
-        pc_o     <= pc_i     ;
-        inst_o   <= inst_i   ;
-        commite_o<= commite_i;
+        pc_o     <= pc_o     ;
+        inst_o   <= inst_o   ;
+        commite_o<= commite_o;
     end
 
   end
