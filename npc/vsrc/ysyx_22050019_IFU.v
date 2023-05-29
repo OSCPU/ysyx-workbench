@@ -121,5 +121,5 @@ end
 assign inst_addr_o = inst_j ? snpc : inst_addr;
 assign inst_o      = inst_addr [2] ? inst_i[63:32] : inst_i[31:0];
 assign inst_commite= pc_wen;
-assign ifu_ok_o    = m_axi_rvalid ;
+assign ifu_ok_o    =  m_axi_rready && m_axi_rvalid ;
 endmodule
