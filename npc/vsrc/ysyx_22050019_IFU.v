@@ -59,11 +59,12 @@ module ysyx_22050019_IFU#(
     default : next_state = IDLE;
   endcase
 end
+reg rready;
   // 读的状态机
 always@(posedge clk)begin
   if(rst_n)begin
         m_axi_arvalid   <= 1'b1;
-        m_axi_rready    <= 1'b0;
+        rready    <= 1'b0;
         rresp           <= 2'b0;
   end
   else begin
@@ -71,33 +72,33 @@ always@(posedge clk)begin
       IDLE:
       if(next_state==WAIT_READY) begin
         m_axi_arvalid   <= 1'b0;
-        m_axi_rready    <= (~pc_stall_i);
+        rready          <= 1;
       end
       else begin
         rresp           <= 2'b0;
         m_axi_arvalid   <= 1'b1;
-        m_axi_rready    <= 1'b0;
+        rready          <= 1'b0;
       end
 
       WAIT_READY:if(next_state==IDLE)begin
         m_axi_arvalid   <= 1'b1;
-        m_axi_rready    <= 1'b0;
+        rready          <= 1'b0;
         rresp           <= m_axi_r_resp_i;
       end
       else begin
         m_axi_arvalid   <= 1'b0;
-        m_axi_rready    <= ~pc_stall_i;
+        rready          <= 1;
       end
       default:begin
       end
     endcase
   end
 end
-
+assign m_axi_rready = (~pc_stall_i) ? 0 : rready;
 //=========================
 //=========================
 
-  wire pc_wen = m_axi_rready && m_axi_rvalid && (~pc_stall_i); //暂停指示信号，目前用这个代替，后面需要参考优秀设计
+  wire pc_wen = rready && m_axi_rvalid && (~pc_stall_i); //暂停指示信号，目前用这个代替，后面需要参考优秀设计
   reg [63:0]     inst_addr; 
 // pc 计数器
 always @ (posedge clk) begin
@@ -116,10 +117,9 @@ always @ (posedge clk) begin
     end
 end
 //=========================
-
 //IFU第一级取指令流水操作
 assign inst_addr_o = inst_j ? snpc : inst_addr;
 assign inst_o      = inst_addr [2] ? inst_i[63:32] : inst_i[31:0];
 assign inst_commite= pc_wen;
-assign ifu_ok_o    =  m_axi_rready && m_axi_rvalid ;
+assign ifu_ok_o    =  rready && m_axi_rvalid ;
 endmodule
