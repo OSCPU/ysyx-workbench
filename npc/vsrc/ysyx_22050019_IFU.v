@@ -71,7 +71,7 @@ always@(posedge clk)begin
       IDLE:
       if(next_state==WAIT_READY) begin
         m_axi_arvalid   <= 1'b0;
-        m_axi_rready    <= 1;
+        m_axi_rready    <= (~pc_stall_i);
       end
       else begin
         rresp           <= 2'b0;
@@ -86,7 +86,7 @@ always@(posedge clk)begin
       end
       else begin
         m_axi_arvalid   <= 1'b0;
-        m_axi_rready    <= 1;
+        m_axi_rready    <= ~pc_stall_i;
       end
       default:begin
       end
