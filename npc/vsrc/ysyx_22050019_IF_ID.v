@@ -4,6 +4,7 @@ module ysyx_22050019_IF_ID (
     input     [63:0] pc_i         ,
     input     [31:0] inst_i       ,
 
+    input            ifu_ok_i     ,
     /* valid */
     input            commite_i    ,
     output reg       commite_o    ,
@@ -27,10 +28,16 @@ module ysyx_22050019_IF_ID (
         inst_o   <= 0;
         commite_o<= 0;
     end
-    else begin
+    else if (~if_id_stall_i|ifu_ok_i) begin
         pc_o     <= pc_i     ;
         inst_o   <= inst_i   ;
         commite_o<= commite_i;
     end
+    else begin
+        pc_o     <= pc_o     ;
+        inst_o   <= inst_o   ;
+        commite_o<= commite_o;
+    end
+
   end
 endmodule

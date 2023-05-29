@@ -83,20 +83,20 @@ always@(posedge clk)begin//随机替换的替换策略
 end
 
 // ram的一些配置信息
-wire [INDEX_DEPTH-1:0] RAM_Q  [WAY_DEPTH-1:0]                                    ;//读出的cache数据
-reg                    RAM_CEN[WAY_DEPTH-1:0]                                    ;//为0有效，为1是无效（2个使能信号需要同时满足不然会读出随机数）使能信号控制
-wire                   RAM_WEN = (state == S_IDLE)&(next_state == S_HIT)         ;//为0是写使能1是读使能，读写控制hit是读数据
-wire [R_DATA_WIDTH-1:0]maskn   = 64'hffffffffffffffff                            ;//写掩码，目前是全位写，掩码在发送端处理了
-wire [INDEX_DEPTH-1:0] RAM_BWEN= ~maskn                                          ;//ram写掩码目前一样不用过多处理
-wire [INDEX_WIDTH-1:0] RAM_A   = (next_state == S_HIT) ? index_in : addr[RAML:RAMR] ;//ram地址索引
-wire [INDEX_DEPTH-1:0] RAM_D   = cache_r_data_i                                  ;//更新ram数据
+wire [INDEX_DEPTH-1:0] RAM_Q  [WAY_DEPTH-1:0]                                                                    ;//读出的cache数据
+reg                    RAM_CEN[WAY_DEPTH-1:0]                                                                    ;//为0有效，为1是无效（2个使能信号需要同时满足不然会读出随机数）使能信号控制
+wire                   RAM_WEN = (state == S_IDLE)&(next_state == S_HIT)|(state == S_HIT)&(next_state == S_HIT)  ;//为0是写使能1是读使能，读写控制hit是读数据
+wire [R_DATA_WIDTH-1:0]maskn   = 64'hffffffffffffffff                                                            ;//写掩码，目前是全位写，掩码在发送端处理了
+wire [INDEX_DEPTH-1:0] RAM_BWEN= ~maskn                                                                          ;//ram写掩码目前一样不用过多处理
+wire [INDEX_WIDTH-1:0] RAM_A   = (state == S_IDLE)&(next_state == S_HIT) ? index_in : addr[RAML:RAMR]            ;//ram地址索引
+wire [INDEX_DEPTH-1:0] RAM_D   = cache_r_data_i                                                                  ;//更新ram数据
 
 always@(*) begin
   if(rst)begin
     RAM_CEN[0] = 1;
     RAM_CEN[1] = 1;
   end
-  else if((state == S_IDLE)&(next_state == S_HIT)|(state == S_R)&(next_state == S_HIT))
+  else if((state == S_IDLE)&(next_state == S_HIT)|(state == S_R)&(next_state == S_HIT)|(state == S_HIT)&(next_state == S_HIT))
   RAM_CEN[hit_waynum_i|waynum] = 0;
   else
   RAM_CEN[hit_waynum_i|waynum] = 1;
