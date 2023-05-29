@@ -338,12 +338,7 @@ wire b_ab_1_u      = ( ( ( rdata1[63] == 1'b0 ) && ( rdata2[63] == 1'b1 ) )
                         | ( (rdata1[63] == rdata2[63] ) && ( b_ab_s[63] == 1'b1 ) ) );//无符号小于<
 
 
-//=====================================================================
-//inst_control，设置了捕捉没实现的csr指令
-always @(*) begin
-  if (inst_i == 32'b00000000000100000000000001110011||op_csr&~csrrw&~ecall&~csrrs&~mret)
-    ebreak();
-end
+
 
 
 endmodule
