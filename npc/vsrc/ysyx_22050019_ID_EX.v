@@ -111,13 +111,13 @@ reg [63:0] mcause  = csr_regs_diff_i[3];
         mcause           <= 0                ;
     end
     else if (id_ex_stall_i && (~ex_mem_stall_i)) begin
-        pc_o             <= 0                ;
-        inst_o           <= 0                ;
-        commite_o        <= 0                ;
-        mtvec            <= 0                ;
-        mepc             <= 0                ;
-        mstatus          <= 0                ;
-        mcause           <= 0                ;
+        pc_o             <= pc_i              ;
+        inst_o           <= inst_i            ;
+        commite_o        <= 0                 ;
+        mtvec            <= csr_regs_diff_i[0];
+        mepc             <= csr_regs_diff_i[1];
+        mstatus          <= csr_regs_diff_i[2];
+        mcause           <= csr_regs_diff_i[3];
     end
     else if (~id_ex_stall_i) begin
         pc_o            <= pc_i              ;
