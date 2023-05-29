@@ -27,16 +27,10 @@ module ysyx_22050019_IF_ID (
         inst_o   <= 0;
         commite_o<= 0;
     end
-    else if (~if_id_stall_i) begin
+    else begin
         pc_o     <= pc_i     ;
         inst_o   <= inst_i   ;
         commite_o<= commite_i;
     end
-    else begin
-        pc_o     <= pc_o     ;
-        inst_o   <= inst_o   ;
-        commite_o<= commite_o;
-    end
-
   end
 endmodule
