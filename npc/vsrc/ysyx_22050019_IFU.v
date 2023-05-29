@@ -71,7 +71,7 @@ always@(posedge clk)begin
       IDLE:
       if(next_state==WAIT_READY) begin
         m_axi_arvalid   <= 1'b0;
-        m_axi_rready    <= (~pc_stall_i);
+        m_axi_rready    <= 1;
       end
       else begin
         rresp           <= 2'b0;
@@ -86,7 +86,7 @@ always@(posedge clk)begin
       end
       else begin
         m_axi_arvalid   <= 1'b0;
-        m_axi_rready    <= ~pc_stall_i;
+        m_axi_rready    <= 1;
       end
       default:begin
       end
@@ -121,5 +121,5 @@ end
 assign inst_addr_o = inst_j ? snpc : inst_addr;
 assign inst_o      = inst_addr [2] ? inst_i[63:32] : inst_i[31:0];
 assign inst_commite= pc_wen;
-assign ifu_ok_o    = m_axi_rready && m_axi_rvalid;
+assign ifu_ok_o    = m_axi_rready && m_axi_rvalid ;
 endmodule
