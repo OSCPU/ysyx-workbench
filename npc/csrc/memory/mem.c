@@ -1,7 +1,7 @@
 #include <common.h>
 uint8_t pmem[MEM_SIZE];
-bool is_skip_ref = false;
-
+bool is_skip_ref       = false;
+bool skip_ref_wait_reg = false;
 // 虚拟地址为load/store在指令中访问处，物理地址指虚拟地址在实际内存中的映射
 // 虚拟地址padder转换为物理地址的值
 uint8_t* guest_to_host(ll addr) {return pmem + addr - MEM_BASE; }//将指令地址转变为mem内的地址
@@ -22,8 +22,9 @@ static void out_of_bound(ll addr) {
 */
 
 void difftest_skip_ref() {
-  is_skip_ref = true;
+  skip_ref_wait_reg = true;
 }
+
 //读mem
 extern "C" void pmem_read(ll raddr, ll *rdata)
  {

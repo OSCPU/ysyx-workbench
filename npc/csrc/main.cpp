@@ -171,7 +171,7 @@ void difftest_exec_once()
 //一个冒险的开关当开启这里时，会跳过连续访问外设的diff写reg覆盖，但会将访问后一条指令的结果直接写入参考模型，这是一个对正确性的隐患。（提升效果2~3倍）
     while(is_skip_ref){
     is_skip_ref = false;
-    #ifdef CONFIG_ITRACE
+#ifdef CONFIG_ITRACE
     itrace_record(dut->now_addr);
 // 会增加一定的性能负担，且这个类型一旦溢出会导致程序被杀死
 //  debug_time++;
@@ -194,6 +194,14 @@ void difftest_exec_once()
   //printf("is_skip_ref= %d\n",is_skip_ref);
   checkregs(ref_regs);
   return;
+  }
+
+  // 对于五级流水线验证框架打的补丁，因为lsu访问外设后，对比的第一条指令并不是外设这条指令，
+  // 而是上一条，考虑这是仿真框架的问题，于是直接在仿真框架内打入如下补丁，延时到下一次对比-外设这一条指令来对比
+  if(skip_ref_wait_reg)
+  {
+    skip_ref_wait_reg = false;
+    is_skip_ref = true;
   }
 }
 
