@@ -84,16 +84,23 @@ end
 
 // ram的一些配置信息
 wire [INDEX_DEPTH-1:0] RAM_Q  [WAY_DEPTH-1:0]                                    ;//读出的cache数据
-wire                   RAM_CEN = 0                                                                            ;//为0有效，为1是无效（2个使能信号需要同时满足不然会读出随机数）使能信号控制
-wire                   RAM_WEN[WAY_DEPTH-1:0]                                                                 ;//为0是写使能1是读使能，读写控制hit是读数据
+reg                    RAM_CEN[WAY_DEPTH-1:0]                                    ;//为0有效，为1是无效（2个使能信号需要同时满足不然会读出随机数）使能信号控制
+wire                   RAM_WEN = (state == S_IDLE)&(next_state == S_HIT)         ;//为0是写使能1是读使能，读写控制hit是读数据
 wire [R_DATA_WIDTH-1:0]maskn   = 64'hffffffffffffffff                            ;//写掩码，目前是全位写，掩码在发送端处理了
 wire [INDEX_DEPTH-1:0] RAM_BWEN= ~maskn                                          ;//ram写掩码目前一样不用过多处理
 wire [INDEX_WIDTH-1:0] RAM_A   = (next_state == S_HIT) ? index_in : addr[RAML:RAMR] ;//ram地址索引
 wire [INDEX_DEPTH-1:0] RAM_D   = cache_r_data_i                                  ;//更新ram数据
 
-wire write_enable = (state == S_R)&(next_state == S_HIT) ? 0 : 1 ;
-assign  RAM_WEN[0] = waynum ? 1 :write_enable;
-assign  RAM_WEN[1] = waynum ? write_enable :1;
+always@(*) begin
+  if(rst)begin
+    RAM_CEN[0] = 1;
+    RAM_CEN[1] = 1;
+  end
+  else if((state == S_IDLE)&(next_state == S_HIT)|(state == S_R)&(next_state == S_HIT))
+  RAM_CEN[hit_waynum_i|waynum] = 0;
+  else
+  RAM_CEN[hit_waynum_i|waynum] = 1;
+end
 
 //实例化两块ram以及他们的命中逻辑的添加
 generate
@@ -104,8 +111,8 @@ generate
       (
         .Q(RAM_Q[i]),
         .CLK(clk),
-        .CEN(RAM_CEN),
-        .WEN(RAM_WEN[i]),
+        .CEN(RAM_CEN[i]),
+        .WEN(RAM_WEN),
         .BWEN(RAM_BWEN),
         .A(RAM_A),
         .D(RAM_D)
@@ -188,10 +195,6 @@ always@(posedge clk)begin
 					r_data_valid_o      <= 0;
           waynum              <= 0;
           r_data_o            <= 0;
-      end
-      else if(r_data_valid_o)begin
-        //避免没写入缓存的数据短暂污染输出数据-这个原因是取出数据后接收方没准备好造成的切换的漏洞
-          r_data_valid_o          <= 1            ; 
       end
       else begin
           //difftest_valid();

@@ -19,18 +19,12 @@ module ysyx_22050019_IFU#(
     input                 m_axi_arready     ,
     output reg            m_axi_arvalid     ,
     output                inst_commite      ,
-
-    //五级流水的适配控制信号的输入和输出
-    input                 pc_stall_i        ,
-    
+       
     // 送出指令和对于pc的接口（打了一拍）
-    output                ifu_ok_o          ,
     output  [63:0]        inst_addr_o       , //到指令寄存器中取指令的地址
     output  [31:0]        inst_o
 );
-
-//=========================  
-// AXI的接口逻辑      
+//=========================        
   // 状态准备
   localparam IDLE = 1'd0;
   localparam WAIT_READY = 1'd1;
@@ -53,18 +47,17 @@ module ysyx_22050019_IFU#(
     IDLE :if(m_axi_arready) next_state = WAIT_READY;
       else next_state = IDLE;
 
-    WAIT_READY : if(pc_wen)next_state = IDLE;
+    WAIT_READY : if(m_axi_rvalid)next_state = IDLE;
     else next_state = WAIT_READY;
 
     default : next_state = IDLE;
   endcase
 end
-reg rready;
   // 读的状态机
 always@(posedge clk)begin
   if(rst_n)begin
         m_axi_arvalid   <= 1'b1;
-        rready    <= 1'b0;
+        m_axi_rready    <= 1'b0;
         rresp           <= 2'b0;
   end
   else begin
@@ -72,34 +65,31 @@ always@(posedge clk)begin
       IDLE:
       if(next_state==WAIT_READY) begin
         m_axi_arvalid   <= 1'b0;
-        rready          <= 1;
+        m_axi_rready    <= 1'b1;
       end
       else begin
-        rresp           <= 2'b0;
+        rresp            <= 2'b0;
         m_axi_arvalid   <= 1'b1;
-        rready          <= 1'b0;
+        m_axi_rready    <= 1'b0;
       end
 
       WAIT_READY:if(next_state==IDLE)begin
         m_axi_arvalid   <= 1'b1;
-        rready          <= 1'b0;
+        m_axi_rready    <= 1'b0;
         rresp           <= m_axi_r_resp_i;
       end
       else begin
         m_axi_arvalid   <= 1'b0;
-        rready          <= 1;
+        m_axi_rready    <= 1'b1;
       end
       default:begin
       end
     endcase
   end
 end
-assign m_axi_rready = (~pc_stall_i) ? rready : 0;
-//=========================
-//=========================
-
-  wire pc_wen = rready && m_axi_rvalid && (~pc_stall_i); //暂停指示信号，目前用这个代替，后面需要参考优秀设计
+  wire pc_wen = m_axi_rready && m_axi_rvalid ;// 暂停指示信号，目前用这个代替，后面需要参考优秀设计
   reg [63:0]     inst_addr; 
+//=========================
 // pc 计数器
 always @ (posedge clk) begin
     // 复位
@@ -117,9 +107,13 @@ always @ (posedge clk) begin
     end
 end
 //=========================
+
 //IFU第一级取指令流水操作
+//ysyx_22050019_Reg #(32,32'b0) i0 (clk,rst_n,inst_i,inst_o,1'b1);
+//ysyx_22050019_Reg #(64,64'b0) i1 (clk,rst_n,inst_addr,inst_addr_o,1'b1);
+
 assign inst_addr_o = inst_j ? snpc : inst_addr;
 assign inst_o      = inst_addr [2] ? inst_i[63:32] : inst_i[31:0];
-assign inst_commite= pc_wen;
-assign ifu_ok_o    = pc_wen;
+assign inst_commite= m_axi_rvalid;
+
 endmodule
