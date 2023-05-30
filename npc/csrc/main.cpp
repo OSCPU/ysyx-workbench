@@ -185,6 +185,7 @@ void difftest_exec_once()
     ref_difftest_regcpy(cpu_gpr, DIFFTEST_TO_REF);
     //printf("time-last-is_skip_ref= %d\n",is_skip_ref);
     //printf("%lx\n",cpu_gpr[32]);
+    return;
   }
   else{
   //printf("nemu-is_skip_ref= %d\n",is_skip_ref);
@@ -192,17 +193,8 @@ void difftest_exec_once()
   ref_difftest_regcpy(ref_regs, DIFFTEST_TO_DUT);
   //printf("is_skip_ref= %d\n",is_skip_ref);
   checkregs(ref_regs);
-
+    return;
   }
-  // 对于五级流水线验证框架打的补丁，因为lsu访问外设后，对比的第一条指令并不是外设这条指令，
-  // 而是上一条，考虑这是仿真框架的问题，于是直接在仿真框架内打入如下补丁，延时到下一次对比-外设这一条指令来对比
-  if(skip_ref_wait_reg)
-  {
-    printf("wait_diff\n");
-    skip_ref_wait_reg = false;
-    is_skip_ref = true;
-  }
-  return;
 }
 
 #endif
@@ -333,5 +325,13 @@ int main(int argc, char** argv, char** env) {
 #ifdef CONFIG_DIFFTEST
         difftest_exec_once();
 #endif
+  // 对于五级流水线验证框架打的补丁，因为lsu访问外设后，对比的第一条指令并不是外设这条指令，
+  // 而是上一条，考虑这是仿真框架的问题，于是直接在仿真框架内打入如下补丁，延时到下一次对比-外设这一条指令来对比
+  if(skip_ref_wait_reg)
+  {
+    printf("wait_diff\n");
+    skip_ref_wait_reg = false;
+    is_skip_ref = true;
+  }
     }
 }
