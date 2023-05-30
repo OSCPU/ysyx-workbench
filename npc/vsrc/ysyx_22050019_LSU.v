@@ -29,7 +29,7 @@ module ysyx_22050019_LSU# (
   // 写通道
   //output              ram_we      ,
 
-  output     [31:0]   ram_waddr   ,
+  output     [63:0]   ram_waddr   ,
   input               m_axi_aw_ready,
   output              m_axi_aw_valid,
 
@@ -52,42 +52,39 @@ module ysyx_22050019_LSU# (
 
   input               m_axi_ar_ready,
   output              m_axi_ar_valid,
-  output  [31:0]      ram_raddr   
+  output  [63:0]      ram_raddr   
 
 );
 //==========================信号初始化==============================
 //mem_r_data_mux
 wire [63:0] mem_r_data;
-wire [31:0] strb_rdata = ram_raddr[2] ? ram_rdata_i[63:32] >> {ar_addr[1:0],3'b0}: ram_rdata_i[31:0] >> {ar_addr[1:0],3'b0};
 ysyx_22050019_mux #( .NR_KEY(6), .KEY_LEN(6), .DATA_LEN(64)) mem_r_data_mux          //of32,16,8  || 32,16,8
 (
   .key         (axi_m_mem_r_wdth),
   .default_out (ram_rdata_i),
-  .lut         ({		 6'b100000,{{32{strb_rdata[31]}},strb_rdata[31:0]} ,
-                 		 6'b010000,{{48{strb_rdata[15]}},strb_rdata[15:0]} ,
-				             6'b001000,{{56{strb_rdata[7 ]}},strb_rdata[7 :0]} ,
-				             6'b000100,{32'b0,strb_rdata[31:0]}                 ,
-				             6'b000010,{48'b0,strb_rdata[15:0]}                 ,
-				             6'b000001,{56'b0,strb_rdata[7 :0]}                 
+  .lut         ({		 6'b100000,{{32{ram_rdata_i[31]}},ram_rdata_i[31:0]},
+                 		 6'b010000,{{48{ram_rdata_i[15]}},ram_rdata_i[15:0]},
+				             6'b001000,{{56{ram_rdata_i[7 ]}},ram_rdata_i[7 :0]},
+				             6'b000100,{32'b0,ram_rdata_i[31:0]},
+				             6'b000010,{48'b0,ram_rdata_i[15:0]},
+				             6'b000001,{56'b0,ram_rdata_i[7 :0]}
                     }),        
   .out         (mem_r_data)  
 );
 
 //mem_w_wdth_mux
 wire [7:0] mem_w_mask;
-wire [63:0]strb_wdata = result[2] ? {ram_wdata_i[31: 0],ram_wdata_i[63:32]} << {result[1:0],3'b0} : ram_wdata_i[63:0] << {result[1:0],3'b0} ;
 ysyx_22050019_mux #( .NR_KEY(4), .KEY_LEN(4), .DATA_LEN(8)) mem_w_wdth_mux             //basic-64---8---16---32--
 (
   .key         (mem_w_wdth),
   .default_out (8'b11111111),
   .lut         ({		 4'b1000,8'b11111111,
-                     4'b0100,result[2] ? 8'b00010000 << result[1:0] : 8'b00000001 << result[1:0],
-                 		 4'b0010,result[2] ? 8'b00110000 << result[1:0] : 8'b00000011 << result[1:0],
-				             4'b0001,result[2] ? 8'b11110000 << result[1:0] : 8'b00001111 << result[1:0]
+                     4'b0100,8'b00000001,
+                 		 4'b0010,8'b00000011,
+				             4'b0001,8'b00001111
                     }),        
   .out         (mem_w_mask)  
 );
-
 //=============================================================
 //==========================写通道==============================
 localparam WS_IDLE = 2'd1;
@@ -136,7 +133,7 @@ always@(posedge clk)begin
     case(wstate)
       WS_IDLE:
       if(next_wstate==WS_WHS)begin
-        ram_wdata      <= strb_wdata;
+        ram_wdata      <= ram_wdata_i;
         wmask          <= mem_w_mask;
         m_axi_w_valid  <= 1'b1;
       end
@@ -157,22 +154,12 @@ always@(posedge clk)begin
   end
 end
 
-reg [31:0] aw_addr ;
-always@(posedge clk) begin
-  if(rst) 
-    aw_addr <= 0;
-  else if(ram_we_i)
-    aw_addr <= result[31:0];
-  else if (m_axi_b_valid&&m_axi_b_ready)
-    aw_addr <= 0;
-  else aw_addr <= aw_addr;
-end
-
-assign ram_waddr      = ram_we_i ? result[31:0] : 32'b0|aw_addr;
+assign ram_waddr      = ram_we_i ? result : 64'b0;
 assign m_axi_aw_valid = ram_we_i;
 
 //=============================================================
 //==========================读通道==============================
+import "DPI-C" function void balance_exec();
 localparam RS_IDLE = 2'd1;
 localparam RS_RHS  = 2'd2;
 
@@ -194,6 +181,7 @@ always@(*) begin
   if(rst) next_rstate = RS_IDLE;
   else case(rstate)
     RS_IDLE :if(m_axi_ar_ready&&m_axi_ar_valid) begin
+             balance_exec()                ;//多跑3个周期平衡
              next_rstate = RS_RHS;
     end
       else next_rstate = RS_IDLE;
@@ -267,28 +255,28 @@ assign wdata_reg_o  = m_axi_r_valid ? mem_r_data : 64'b0;
 
 //ram的读地址发送端信号控制
 reg ar_valid;
-reg [31:0] ar_addr ;
+reg [63:0] ar_addr ;
 always@(posedge clk) begin
   if(rst) 
     ar_valid <= 1'b0;
-  else if (m_axi_ar_ready&&m_axi_ar_valid)
-    ar_valid <= 1'b0;
   else if(ram_re_i)
     ar_valid <= 1'1;
+  else if (m_axi_ar_ready&&m_axi_ar_valid)
+    ar_valid <= 1'b0;
   else ar_valid <= ar_valid;
 end
 
 always@(posedge clk) begin
   if(rst) 
-    ar_addr <= 0;
+    ar_addr <= 64'b0;
   else if(ram_re_i)
-    ar_addr <= result[31:0];
-  else if (m_axi_r_ready&&m_axi_r_valid)
-    ar_addr <= 0;
+    ar_addr <= result;
+  else if (m_axi_ar_ready&&m_axi_ar_valid)
+    ar_addr <= 64'b0;
   else ar_addr <= ar_addr;
 end
 
-assign ram_raddr      = ram_re_i ? result[31:0] : 32'b0 | ar_addr;
+assign ram_raddr      = ram_re_i ? result : 64'b0 | ar_addr;
 assign m_axi_ar_valid = ram_re_i | ar_valid;
 
 //=============================================================

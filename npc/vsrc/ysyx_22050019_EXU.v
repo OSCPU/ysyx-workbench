@@ -3,9 +3,14 @@ module ysyx_22050019_EXU(
 
   input [63:0]    op1,
   input [63:0]    op2,
+
+  input           reg_we_i,
+  input  [4:0]    reg_waddr_i,
   
   output [63:0]   result,
-  output [63:0]   wdata
+  output [63:0]   wdata,
+  output          reg_we,
+  output [4:0]    waddr
 );
 
 ysyx_22050019_alu alu(
@@ -17,6 +22,9 @@ ysyx_22050019_alu alu(
 );
 
 //reg_control
-assign wdata  =  result ;
+assign wdata  = reg_we_i ? result : 64'b0;
+assign reg_we = reg_we_i ;
+assign waddr  = reg_waddr_i ;
+
 endmodule
 
