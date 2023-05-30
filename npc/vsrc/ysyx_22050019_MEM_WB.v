@@ -17,12 +17,12 @@ module ysyx_22050019_MEM_WB (
     input            mem_wb_stall_i      ,
 
     output reg       commite_o           ,
-    output reg[63:0]pc_o                 ,
-    output reg[31:0]inst_o               ,
-    output reg      reg_we_wbu_o         ,
-    output reg[4:0] reg_waddr_wbu_o      ,
-    output reg[63:0]reg_wdata_wbu_o      ,
-    output    [63:0]csr_regs_diff_o[3:0] 
+    output reg[63:0] pc_o                ,
+    output reg[31:0] inst_o              ,
+    output reg       reg_we_wbu_o        ,
+    output reg[4:0]  reg_waddr_wbu_o     ,
+    output reg[63:0] reg_wdata_wbu_o     ,
+    output    [63:0] csr_regs_diff_o[3:0] 
 );
 
   always @(posedge clk) begin
