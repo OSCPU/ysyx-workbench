@@ -327,7 +327,7 @@ int main(int argc, char** argv, char** env) {
     debug_time++;
 #endif
 #ifdef CONFIG_DIFFTEST
-        if(cpu_gpr[32] == (uint64_t)0x0000000080004f60) debug_exit(1);
+        if(cpu_gpr[32] == (uint64_t)0x0000000080004f64) debug_exit(1);
         difftest_exec_once();
 #endif
     }
