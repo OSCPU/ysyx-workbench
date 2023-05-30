@@ -183,12 +183,12 @@ void difftest_exec_once()
     }
     
     ref_difftest_regcpy(cpu_gpr, DIFFTEST_TO_REF);
-    //printf("time-last-is_skip_ref= %d\n",is_skip_ref);
+    printf("time-last-is_skip_ref= %d\n",is_skip_ref);
     //printf("%lx\n",cpu_gpr[32]);
     return;
   }
   else{
-  printf("nemu-is_skip_ref= %d\n",is_skip_ref);
+  //printf("nemu-is_skip_ref= %d\n",is_skip_ref);
   ref_difftest_exec(1);
   ref_difftest_regcpy(ref_regs, DIFFTEST_TO_DUT);
   //printf("is_skip_ref= %d\n",is_skip_ref);
