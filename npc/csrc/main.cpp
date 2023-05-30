@@ -164,7 +164,7 @@ void exec_once();
 void difftest_exec_once()
 {
   if (is_skip_ref) {
-    //printf("is_skip_ref= %d\n",is_skip_ref);
+    printf("is_skip_ref= %d\n",is_skip_ref);
     //防止递归失败的false设置，放在后面会被覆盖
     //is_skip_ref = false;
     //exec_once();
@@ -194,11 +194,11 @@ void difftest_exec_once()
   checkregs(ref_regs);
 
   }
-  printf("11--------------\n");
   // 对于五级流水线验证框架打的补丁，因为lsu访问外设后，对比的第一条指令并不是外设这条指令，
   // 而是上一条，考虑这是仿真框架的问题，于是直接在仿真框架内打入如下补丁，延时到下一次对比-外设这一条指令来对比
   if(skip_ref_wait_reg)
   {
+    printf("wait_diff\n");
     skip_ref_wait_reg = false;
     is_skip_ref = true;
   }
