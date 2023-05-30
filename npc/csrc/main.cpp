@@ -312,7 +312,6 @@ int main(int argc, char** argv, char** env) {
   init_difftest();
 #endif
     while (1) {
-
       IFDEF(CONFIG_DEVICE, device_update());
 
       while(difftest_ok == false){
@@ -321,6 +320,7 @@ int main(int argc, char** argv, char** env) {
        difftest_ok = false;
 #ifdef CONFIG_ITRACE
     itrace_record(cpu_gpr[32]);
+    debug_time++;
 #endif
 #ifdef CONFIG_DIFFTEST
         difftest_exec_once();
