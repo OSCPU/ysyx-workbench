@@ -203,10 +203,11 @@ void difftest_exec_once()
 }
 
 #endif
-
+void exec_once();
 void debug_exit(int status)
 {
   printf("仿真周期=%llds\n", (long long)debug_time);
+  exec_once();
 #ifdef CONFIG_GTKWAVE
   m_trace -> close();
 #endif
