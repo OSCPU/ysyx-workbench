@@ -188,7 +188,7 @@ void difftest_exec_once()
     return;
   }
   else{
-  //printf("nemu-is_skip_ref= %d\n",is_skip_ref);
+  printf("nemu-is_skip_ref= %d\n",is_skip_ref);
   ref_difftest_exec(1);
   ref_difftest_regcpy(ref_regs, DIFFTEST_TO_DUT);
   //printf("is_skip_ref= %d\n",is_skip_ref);
