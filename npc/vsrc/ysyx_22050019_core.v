@@ -367,7 +367,7 @@ ysyx_22050019_LSU LSU(
 
  .lsu_stall_req  (lsu_stall_req        ),
 
- .waddr_reg_i    (reg_waddr_id_exu     ),
+ .waddr_reg_i    (reg_waddr_exu_lsu    ),
  .wen_reg_o      (wen_lsu_reg          ),
  .waddr_reg_o    (waddr_lsu_reg        ),
  .wdata_reg_o    (wdata_lsu_wb         )
