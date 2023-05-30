@@ -126,7 +126,7 @@ void init_difftest() {
 
 void checkregs(uint64_t *ref_regs)
 {
-  IFDEF(DEBUG_DIFFTRACE, printf("diff_log: Difftest pc = 0x%016lx inst = 0x%016x\n", cpu_gpr[32],dut->now_inst));
+  IFDEF(DEBUG_DIFFTRACE, printf("diff_log: Difftest pc = 0x%016lx inst = 0x%016x\n", dut->now_addr,dut->now_inst));
   for (int i = 0; i <= 36; ++i) {
     if (ref_regs[i] != cpu_gpr[i]) {
 
@@ -298,30 +298,28 @@ int main(int argc, char** argv, char** env) {
     cpu_reset();
     init_disasm("riscv64-pc-linux-gnu");
 //2流水线择在这里将cpu先跑一次，不可放在‘init_disasm（）’初始前
-    exec_once();
-    exec_once();
-    exec_once();
-    exec_once();
+    //exec_once();
     exec_once();
     exec_once();
     exec_once();
     exec_once();
 //    icache_exec = false;
-    //difftest_ok = false;
+    difftest_ok = false;
 #ifdef CONFIG_DIFFTEST
   init_difftest();
 #endif
     while (1) {
 
       IFDEF(CONFIG_DEVICE, device_update());
-
+#ifdef CONFIG_ITRACE
+    itrace_record(dut->now_addr);
+// 会增加一定的性能负担，且这个类型一旦溢出会导致程序被杀死
+//  debug_time++;
+#endif
       while(difftest_ok == false){
       exec_once();
        }
        difftest_ok = false;
-#ifdef CONFIG_ITRACE
-    itrace_record(cpu_gpr[32]);
-#endif
 #ifdef CONFIG_DIFFTEST
         difftest_exec_once();
 #endif

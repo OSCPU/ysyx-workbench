@@ -5,8 +5,8 @@ module ysyx_22050019_core(
   //output [31:0]inst_i,         //1_inst
   //output[63:0]inst_addr,
   
-  output[63:0]pc, //2_inst(目前查看执行状态的指令)
-  output[31:0]inst      
+  output[63:0]pc_ifu, //2_inst(目前查看执行状态的指令)
+  output[31:0]inst_ifu      
 );
 
 //取出指令的逻辑分离出来
@@ -18,9 +18,6 @@ wire axi_if_sram_rvalid;
 wire [1:0] axi_if_sram_resp  ;
 wire axi_if_sram_arready;
 wire axi_if_sram_arvalid;
-wire ifu_commite;
-wire [63:0]pc_ifu;
-wire [31:0]inst_ifu;
 //fetch模块端口
 ysyx_22050019_IFU IFU
 (
@@ -38,7 +35,6 @@ ysyx_22050019_IFU IFU
     //.inst_addr         (inst_addr),       // 取出的指令地址
     .m_axi_arready     (stll_ar_ready      ),
     .m_axi_arvalid     (axi_if_sram_arvalid),
-    .inst_commite      (ifu_commite        ),
 
     .inst_addr_o       (pc_ifu             ), // 传入下级模块的地址
     .inst_o            (inst_ifu           )
@@ -65,16 +61,13 @@ end
 //==================IF/ID=======================
 wire [63:0] pc_ifu_id  ;
 wire [31:0] inst_ifu_id;
-wire commite_if_id;
 ysyx_22050019_IF_ID IF_ID(
-    .clk      ( clk          ),
-    .rst_n    ( rst_n        ),
-    .commite_i( ifu_commite  ),
-    .pc_i     ( pc_ifu       ),
-    .inst_i   ( inst_ifu     ),
-    .commite_o( commite_if_id),
-    .pc_o     ( pc_ifu_id    ),
-    .inst_o   ( inst_ifu_id  )
+    .clk     ( clk          ),
+    .rst_n   ( rst_n        ),
+    .pc_i    ( pc_ifu       ),
+    .inst_i  ( inst_ifu     ),
+    .pc_o    ( pc_ifu_id    ),
+    .inst_o  ( inst_ifu_id  )
 );
 
 
@@ -176,16 +169,12 @@ wire         reg_we_id_exu   ;
 wire [4:0]   reg_waddr_id_exu;
 wire [`LEN:0]alu_sel_exu     ;
 wire [63:0]  wdate_csr_exu   ;
-wire [63:0]  pc_id_exu       ;
-wire [31:0]  inst_id_ex      ;
+wire [63:0]  pc_id_exu;
 /* verilator lint_off UNUSED */wire [63:0]csr_regs_diff_exu[3:0];//验证用
-wire commite_id_ex;
 ysyx_22050019_ID_EX ID_EX(
     .clk              ( clk              ),
     .rst_n            ( rst_n            ),
     .pc_i             ( pc_ifu_id        ),
-    .inst_i           ( inst_ifu_id      ),
-    .commite_i        ( commite_if_id    ),
     .ram_we_i         ( ram_we_id        ),
     .ram_wdata_i      ( ram_wdata_id     ),
     .mem_w_wdth_i     ( mem_w_wdth       ),
@@ -200,8 +189,6 @@ ysyx_22050019_ID_EX ID_EX(
     .csr_regs_diff_i  ( csr_regs_diff    ),
 
     .pc_o             ( pc_id_exu        ),
-    .inst_o           ( inst_id_ex       ),
-    .commite_o        ( commite_id_ex    ),
     .ram_we_o         ( ram_we_id_exu    ),
     .ram_wdata_o      ( ram_wdata_id_exu ),
     .mem_w_wdth_o     ( mem_w_wdth_exu   ),
@@ -244,14 +231,10 @@ wire [63:0]  wdate_csr_lsu    ;
 wire [63:0]  wdata_reg_exu_lsu;
 /* verilator lint_off UNUSED */wire [63:0]csr_regs_diff_lsu[3:0];//验证用
 wire [63:0]  pc_exu_mem       ;
-wire [31:0]  inst_exu_mem     ;
-wire commite_ex_mem;
 ysyx_22050019_EX_MEM EX_MEM(
     .clk              ( clk              ),
     .rst_n            ( rst_n            ),
     .pc_i             ( pc_id_exu        ),
-    .inst_i           ( inst_id_ex       ),
-    .commite_i        ( commite_id_ex    ),
     .result_i         ( result_exu       ),
     .wdata_exu_reg_i  ( wdata_ex_reg     ),
     .ram_we_i         ( ram_we_id_exu    ),
@@ -264,9 +247,7 @@ ysyx_22050019_EX_MEM EX_MEM(
     .wdate_csr_reg_i  ( wdate_csr_exu    ),
     .csr_regs_diff_i  ( csr_regs_diff_exu),
 
-    .pc_o             ( pc_exu_mem       ),
-    .inst_o           ( inst_exu_mem     ), 
-    .commite_o        ( commite_ex_mem   ),
+    .pc_o             ( pc_exu_mem       ), 
     .result_o         ( result_exu_lsu   ),
     .wdata_exu_reg_o  ( wdata_reg_exu_lsu),
     .ram_we_o         ( ram_we_exu_lsu   ),
@@ -376,8 +357,8 @@ ysyx_22050019_icache I_CACHE(
 // dcache的信号处理模块，包含uncache和的cache的分流处理
 //***********************************************************************
 //uncache的控制逻辑
-//wire uncache=(((ram_waddr_lsu_mem|ram_raddr_lsu_mem)<32'h80000000)||(ram_waddr_lsu_mem|ram_raddr_lsu_mem)>32'h88000000);
-wire uncache=1;
+//wire uncache = ~(ram_waddr_lsu_mem[31]|ram_raddr_lsu_mem[31]);
+wire uncache=(((ram_waddr_lsu_mem|ram_raddr_lsu_mem)<32'h80000000)&&(ram_waddr_lsu_mem|ram_raddr_lsu_mem)>32'h88000000)? 0:1;
 //=======================================================================
 //dcache与uncache信号的生成与选择控制
 wire        axi_lsu_dcache_aw_ready ;
@@ -606,13 +587,11 @@ wire         reg_we_wbu   ;
 wire [4:0]   reg_waddr_wbu;
 wire [63:0]  reg_wdata_wbu;
 /* verilator lint_off UNUSED */wire [63:0]csr_regs_diff_wbu[3:0];//验证用
-wire commite_mem_wb;
+wire [63:0]  pc_mem_wbu;
 ysyx_22050019_MEM_WB MEM_WB(
     .clk              ( clk              ),
     .rst_n            ( rst_n            ),
     .pc_i             ( pc_exu_mem       ),
-    .inst_i           ( inst_exu_mem     ),
-    .commite_i        ( commite_ex_mem    ),
     .reg_we_exu_lsu_i ( reg_we_exu_lsu   ),
     .reg_we_lsu_i     ( wen_lsu_reg      ),
     .reg_waddr_exu_i  ( reg_waddr_exu_lsu),
@@ -622,9 +601,7 @@ ysyx_22050019_MEM_WB MEM_WB(
     .reg_wdata_exu_i  ( wdata_reg_exu_lsu),
     .csr_regs_diff_i  ( csr_regs_diff_lsu),
 
-    .pc_o             ( pc               ),
-    .inst_o           ( inst             ),
-    .commite_o        ( commite_mem_wb   ), 
+    .pc_o             ( pc_mem_wbu       ),
     .reg_we_wbu_o     ( reg_we_wbu       ),
     .reg_waddr_wbu_o  ( reg_waddr_wbu    ),
     .reg_wdata_wbu_o  ( reg_wdata_wbu    ),
@@ -634,7 +611,7 @@ ysyx_22050019_MEM_WB MEM_WB(
 //寄存器组端口
 ysyx_22050019_regs REGS(
  .clk        (clk                      ),
- .now_pc     (pc                       ),         
+ .now_pc     (pc_mem_wbu               ),         
  .wdata      (reg_wdata_wbu            ),
  .waddr      (reg_waddr_wbu            ),
  .wen        (reg_we_wbu               ),
