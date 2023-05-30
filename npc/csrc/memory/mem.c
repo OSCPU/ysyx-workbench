@@ -22,6 +22,7 @@ static void out_of_bound(ll addr) {
 */
 
 void difftest_skip_ref() {
+  printf("1/n");
   skip_ref_wait_reg = true;
 }
 
