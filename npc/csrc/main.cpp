@@ -195,7 +195,7 @@ void difftest_exec_once()
   checkregs(ref_regs);
   return;
   }
-
+printf("11\n");
   // 对于五级流水线验证框架打的补丁，因为lsu访问外设后，对比的第一条指令并不是外设这条指令，
   // 而是上一条，考虑这是仿真框架的问题，于是直接在仿真框架内打入如下补丁，延时到下一次对比-外设这一条指令来对比
   if(skip_ref_wait_reg)
