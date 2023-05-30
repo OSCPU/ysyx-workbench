@@ -9,7 +9,7 @@ module ysyx_22050019_IDU(
   output         inst_j,
 
   output         ram_we,
-  output[63:0]   ram_wdata,
+  output[63:0]   ram_waddr,
   output         ram_re,
 
   output[4:0]    raddr1,
@@ -270,14 +270,14 @@ SLLIW、SRLIW、SRAIW是RV64I仅有的指令，与其定义相类似，但是它
 //=====================================================================
 //对于reg和mem的控制信号的信号配置处理
 //reg_control
-assign reg_we_o    =  op_i||inst_auipc||inst_lui||inst_jal||inst_jalr||op_r||(addiw|slliw|sraiw|srliw)||(inst_w)||(csrrw||csrrs);//使能
-assign reg_waddr_o =  rd;
+assign reg_we_o    =  op_i||inst_auipc||inst_lui||inst_jal||inst_jalr||op_r||inst_l||(addiw|slliw|sraiw|srliw)||(inst_w)||(csrrw||csrrs);//使能
+assign reg_waddr_o =  reg_we_o?rd:5'b0;
 assign raddr1      =  (op_i||inst_jalr||op_s||op_r||inst_l||inst_addiw||(inst_w)||op_b)||(csrrw||csrrs)?rs1:5'b0;//数据
 assign raddr2      =  (op_b||op_s||op_r||(inst_w))?rs2:5'b0;
 
 //mem_control
 assign ram_we      = op_s;
-assign ram_wdata   = op_s ? rdata2 : 64'b0;//write
+assign ram_waddr   = op_s?rdata2:64'b0;//write
 assign ram_re      = inst_l;
 //mem_r_wdth
 assign mem_r_wdth = {lw,lh,lb,lwu,lhu,lbu};               //of32,16,8  || 32,16,8   

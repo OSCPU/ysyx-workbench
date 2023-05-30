@@ -3,7 +3,7 @@
 #define MAX_SIM_TIME 15000000
 uint64_t sim_time = 0;
 unsigned long long debug_time = 0;
-#define DEBUG_SKIP 0
+#define DEBUG_SKIP 10
 // 一些导入的接口
 void init_device();
 
@@ -20,14 +20,8 @@ extern "C" void get_regs(const svOpenArrayHandle r)
 void debug_exit(int status);
 void ebreak()
 {
-  printf("%lx,%lx\n",cpu_gpr[10],dut->now_addr) ;
+  printf("%lx,%lx\n",cpu_gpr[10],dut->inst_addr_o) ;
   debug_exit(cpu_gpr[10]);
-}
-// 同步总线访问
-bool flow_exec = false;
-void balance_exec(){
-  //printf("1\n");
-  flow_exec = true;
 }
 // =========================== Debug ===========================
 // =============== Itrace ===============
@@ -119,7 +113,7 @@ void checkregs(uint64_t *ref_regs)
 //仅在二周期时是完全适用的，依赖于取指令先于目前执行的指令取出上一级的指令
       printf("=============== error inst ========================\n");
       printf("注:错误在跳转指令后时,无法获得正确的错误pc,需要以itrace为参考\n");
-      itrace_record(dut->now_addr - 4);
+      itrace_record(dut->inst_addr_o);
       printf("%s\n", ringbuf[0]);
 #endif
 
@@ -152,23 +146,7 @@ void difftest_exec_once()
     //printf("is_skip_ref= %d\n",is_skip_ref);
     //防止递归失败的false设置，放在后面会被覆盖
     is_skip_ref = false;
-    //exec_once();
-//一个冒险的开关当开启这里时，会跳过连续访问外设的diff写reg覆盖，但会将访问后一条指令的结果直接写入参考模型，这是一个对正确性的隐患。（提升效果2~3倍）
-    while(is_skip_ref){
-    is_skip_ref = false;
-#ifdef CONFIG_ITRACE
-  itrace_record(dut->now_addr);
-#endif
     exec_once();
-    exec_once();
-    exec_once();
-    if(flow_exec){
-    flow_exec = false;
-    exec_once();
-    exec_once();
-    exec_once();
-    }
-    }
     
     ref_difftest_regcpy(cpu_gpr, DIFFTEST_TO_REF);
     //printf("time-last-is_skip_ref= %d\n",is_skip_ref);
@@ -249,6 +227,9 @@ void cpu_reset()
 //cpu运行一次
 void exec_once()
 {
+#ifdef CONFIG_ITRACE
+  itrace_record(dut->now_addr);
+#endif
   dut->clk = 0;
   dut -> eval();
 #ifdef CONFIG_DIFFTEST
@@ -290,26 +271,13 @@ int main(int argc, char** argv, char** env) {
     cpu_reset();
     init_disasm("riscv64-pc-linux-gnu");
 //2流水线择在这里将cpu先跑一次，不可放在‘init_disasm（）’初始前
-    //exec_once();
-    exec_once();
     exec_once();
 #ifdef CONFIG_DIFFTEST
   init_difftest();
 #endif
     while (1) {
       IFDEF(CONFIG_DEVICE, device_update());
-#ifdef CONFIG_ITRACE
-  itrace_record(dut->now_addr);
-#endif
       exec_once();
-      exec_once();
-      exec_once();
-      if(flow_exec){
-      flow_exec = false;
-      exec_once();
-      exec_once();
-      exec_once();
-      }
 #ifdef CONFIG_DIFFTEST
       difftest_exec_once();
 #endif
