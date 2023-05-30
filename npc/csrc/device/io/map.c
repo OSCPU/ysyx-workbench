@@ -67,7 +67,7 @@ void init_map() {
 word_t map_read(paddr_t addr, int len, IOMap *map) {
   assert(len >= 1 && len <= 8);
   if(!check_bound(map, addr)){
-    printf("[map_write]地址越界%016lx pc=0x%016lx\n",addr,cpu_gpr[32]);
+    printf("[map_read ]地址越界%016lx pc=0x%016lx\n",addr,cpu_gpr[32]);
   }
   //printf("timer-0x%016lx\n",addr);
   paddr_t offset = addr - map->low;

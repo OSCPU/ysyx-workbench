@@ -9,7 +9,7 @@ module ysyx_22050019_IDU(
   output         inst_j,
 
   output         ram_we,
-  output[63:0]   ram_waddr,
+  output[63:0]   ram_wdata,
   output         ram_re,
 
   output[4:0]    raddr1,
@@ -161,7 +161,7 @@ wire mulw = inst_w&&rv32_funct3_000&&rv32_funct7_000_0001;
 // 加载指令，从内存中获取相应的数据
 wire lb   = inst_l&&rv32_funct3_000;
 wire lbu  = inst_l&&rv32_funct3_100;
-/* verilator lint_off UNUSED */wire ld   = inst_l&&rv32_funct3_011;//读双字就已经默认了全读，exu在default中个设定控制
+/* verilator lint_off UNUSED */wire ld   = inst_l&&rv32_funct3_011;//读双字就已经默认了全读，exu在default中个设定控制,方便调试用的
 wire lh   = inst_l&&rv32_funct3_001;
 wire lhu  = inst_l&&rv32_funct3_101;
 wire lw   = inst_l&&rv32_funct3_010;
@@ -270,14 +270,14 @@ SLLIW、SRLIW、SRAIW是RV64I仅有的指令，与其定义相类似，但是它
 //=====================================================================
 //对于reg和mem的控制信号的信号配置处理
 //reg_control
-assign reg_we_o    =  op_i||inst_auipc||inst_lui||inst_jal||inst_jalr||op_r||inst_l||(addiw|slliw|sraiw|srliw)||(inst_w)||(csrrw||csrrs);//使能
-assign reg_waddr_o =  reg_we_o?rd:5'b0;
+assign reg_we_o    =  op_i||inst_auipc||inst_lui||inst_jal||inst_jalr||op_r||(addiw|slliw|sraiw|srliw)||(inst_w)||(csrrw||csrrs);//使能
+assign reg_waddr_o =  rd;
 assign raddr1      =  (op_i||inst_jalr||op_s||op_r||inst_l||inst_addiw||(inst_w)||op_b)||(csrrw||csrrs)?rs1:5'b0;//数据
 assign raddr2      =  (op_b||op_s||op_r||(inst_w))?rs2:5'b0;
 
 //mem_control
 assign ram_we      = op_s;
-assign ram_waddr   = op_s?rdata2:64'b0;//write
+assign ram_wdata   = op_s ? rdata2 : 64'b0;//write
 assign ram_re      = inst_l;
 //mem_r_wdth
 assign mem_r_wdth = {lw,lh,lb,lwu,lhu,lbu};               //of32,16,8  || 32,16,8   
@@ -338,12 +338,7 @@ wire b_ab_1_u      = ( ( ( rdata1[63] == 1'b0 ) && ( rdata2[63] == 1'b1 ) )
                         | ( (rdata1[63] == rdata2[63] ) && ( b_ab_s[63] == 1'b1 ) ) );//无符号小于<
 
 
-//=====================================================================
-//inst_control，设置了捕捉没实现的csr指令
-always @(*) begin
-  if (inst_i == 32'b00000000000100000000000001110011||op_csr&~csrrw&~ecall&~csrrs&~mret)
-    ebreak();
-end
+
 
 
 endmodule
