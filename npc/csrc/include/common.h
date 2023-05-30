@@ -45,7 +45,6 @@ typedef long long ll;
 static long long img_size = 0;
 
 extern bool is_skip_ref;
-extern bool skip_ref_wait_reg;
 extern uint64_t *cpu_gpr;
 // ========================= Environment =========================
 static Vtop *dut = new Vtop;   //将top设置为全局变量
