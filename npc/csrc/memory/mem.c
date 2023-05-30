@@ -23,7 +23,7 @@ static void out_of_bound(ll addr) {
 
 void difftest_skip_ref() {
   is_skip_ref = true;
-  printf("difftest_skip_ref");
+  printf("difftest_skip_ref =");
 }
 //读mem
 extern "C" void pmem_read(ll raddr, ll *rdata)
