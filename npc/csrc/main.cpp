@@ -207,7 +207,7 @@ void difftest_exec_once()
 void exec_once();
 void debug_exit(int status)
 {
-printf("仿真时钟周期约为=%.3f k 有效指令=%lld k ipc=%.3f\n", (double)sim_cycle/1000000, debug_inst/1000, (double)debug_inst/sim_cycle);
+printf("仿真时钟周期约为=%.3f m 有效指令=%lld k ipc=%.3f\n", (double)sim_cycle/1000000, debug_inst/1000, (double)debug_inst/sim_cycle);
   exec_once();
 #ifdef CONFIG_GTKWAVE
   m_trace -> close();
