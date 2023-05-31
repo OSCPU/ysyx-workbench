@@ -2,7 +2,8 @@
 // ============ verilator sim ===========
 #define MAX_SIM_TIME 15000000
 uint64_t sim_time = 0;
-unsigned long long debug_time = 0;
+uint64_t sim_cycle= 0;
+unsigned long long debug_inst = 0;
 #define DEBUG_SKIP 0
 //361307
 // 一些导入的接口
@@ -176,7 +177,7 @@ void difftest_exec_once()
     #ifdef CONFIG_ITRACE
     itrace_record(dut->now_addr);
 // 会增加一定的性能负担，且这个类型一旦溢出会导致程序被杀死
-//  debug_time++;
+//  debug_inst++;
 #endif
       while(difftest_ok == false){
       exec_once();
@@ -206,7 +207,7 @@ void difftest_exec_once()
 void exec_once();
 void debug_exit(int status)
 {
-  printf("仿真周期=%llds\n", (long long)debug_time);
+  printf("仿真时钟周期=%llds 仿真时钟数=%llds cpi=%llds\n", (long long)sim_cycle,(long long)debug_inst,(long long)(sim_cycle/debug_inst));
   exec_once();
 #ifdef CONFIG_GTKWAVE
   m_trace -> close();
@@ -250,7 +251,7 @@ void cpu_reset()
   dut -> rst_n = 1;
   dut -> eval();
 #ifdef CONFIG_GTKWAVE
-  if(debug_time >= DEBUG_SKIP){
+  if(debug_inst >= DEBUG_SKIP){
   m_trace -> dump(sim_time++);
   }
 #endif
@@ -258,7 +259,7 @@ void cpu_reset()
   dut -> rst_n = 1;
   dut -> eval();
 #ifdef CONFIG_GTKWAVE
-  if(debug_time >= DEBUG_SKIP){
+  if(debug_inst >= DEBUG_SKIP){
   m_trace -> dump(sim_time++);
   }
 #endif
@@ -267,17 +268,19 @@ void cpu_reset()
 //cpu运行一次
 void exec_once()
 {
+  sim_cycle++;
+
   dut->clk = 0;
   dut -> eval();
 #ifdef CONFIG_GTKWAVE
-  if(debug_time >= DEBUG_SKIP){
+  if(debug_inst >= DEBUG_SKIP){
   m_trace -> dump(sim_time++);
   }
 #endif
   dut->clk = 1;
   dut -> eval();
 #ifdef CONFIG_GTKWAVE
-  if(debug_time >= DEBUG_SKIP){
+  if(debug_inst >= DEBUG_SKIP){
   m_trace -> dump(sim_time++);
   }
 #endif
@@ -326,9 +329,10 @@ int main(int argc, char** argv, char** env) {
        difftest_ok = false;
 #ifdef CONFIG_ITRACE
     itrace_record(cpu_gpr[32]);
-    debug_time++;
+    debug_inst++;
 #endif
 #ifdef CONFIG_DIFFTEST
+        // 遇到越界时候可以在这里打断点，对于错误的pc+4（适配仿真环境+保持尽可能多的数据）
         //if(cpu_gpr[32] == (uint64_t)0x0000000080004f64) debug_exit(1);
         difftest_exec_once();
 #endif
