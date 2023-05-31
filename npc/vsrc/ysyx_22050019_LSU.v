@@ -294,7 +294,7 @@ assign m_axi_ar_valid = ram_re_i | ar_valid;
 
 //流水线control
 //在流水段暂停时，如果下方模块不暂停，会清空该流水段寄存器的数据，这会让流水段寄存器不在发出重复数据请求，但同事，这也会丢失
-assign lsu_stall_req = (m_axi_aw_valid||m_axi_w_valid)||(next_rstate == RS_RHS);
+assign lsu_stall_req = (m_axi_aw_valid||m_axi_w_valid)||(m_axi_ar_valid | next_rstate == RS_RHS);
 //=============================================================
 endmodule
 
