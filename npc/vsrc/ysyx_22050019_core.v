@@ -407,7 +407,7 @@ ysyx_22050019_icache I_CACHE(
 //***********************************************************************
 //uncache的控制逻辑
 //wire uncache=(((ram_waddr_lsu_mem|ram_raddr_lsu_mem)<32'h80000000)||(ram_waddr_lsu_mem|ram_raddr_lsu_mem)>32'h88000000);
-wire uncache=(((ram_waddr_lsu_mem|ram_raddr_lsu_mem)<32'h80000000)||(ram_waddr_lsu_mem|ram_raddr_lsu_mem)>32'h88000000)? 0:1;
+wire uncache=(((ram_waddr_lsu_mem|ram_raddr_lsu_mem)<32'h80000000)||(ram_waddr_lsu_mem|ram_raddr_lsu_mem)>32'h88000000);
 //=======================================================================
 //dcache与uncache信号的生成与选择控制
 wire        axi_lsu_dcache_aw_ready ;
