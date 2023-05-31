@@ -2,7 +2,7 @@
 // ============ verilator sim ===========
 #define MAX_SIM_TIME 15000000
 uint64_t sim_time = 0;
-uint64_t sim_cycle= 0;
+unsigned long long sim_cycle= 0;
 unsigned long long debug_inst = 0;
 #define DEBUG_SKIP 0
 //361307
