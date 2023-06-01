@@ -268,7 +268,6 @@ void cpu_reset()
 //cpu运行一次
 void exec_once()
 {
-  sim_cycle++;
 #ifdef COUNT_IPC
   sim_cycle++;
 #endif
