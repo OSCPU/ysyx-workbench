@@ -6,7 +6,7 @@
 #define CONFIG_DIFFTEST 1
 //#define DEBUG_DIFFTRACE 1
 //#define CONFIG_MTRACE 1
-
+//#define COUNT_IPC 1
 
 // device 设备
 #define CONFIG_DEVICE 1

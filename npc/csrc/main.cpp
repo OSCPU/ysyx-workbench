@@ -269,6 +269,9 @@ void cpu_reset()
 void exec_once()
 {
   sim_cycle++;
+#ifdef COUNT_IPC
+  sim_cycle++;
+#endif
 
   dut->clk = 0;
   dut -> eval();
