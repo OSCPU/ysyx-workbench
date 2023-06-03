@@ -6,38 +6,46 @@ import "DPI-C" function void pmem_write(
 module ysyx_22050019_AXI_LSU_SRAM # (
     parameter AXI_DATA_WIDTH    = 64,
     parameter AXI_ADDR_WIDTH    = 32
-    //parameter AXI_ID_WIDTH      = 4,
-    //parameter AXI_USER_WIDTH    = 1
 )(  // LSU&MEM输入信号
-    input                               clk,
-    input                               rst,
+    input                               clk            ,
+    input                               rst            ,
 
     // 写地址通道
-    output reg                          axi_aw_ready_o,       
-    input                               axi_aw_valid_i,
-    input [AXI_ADDR_WIDTH-1:0]          axi_aw_addr_i ,
+    output reg                          axi_aw_ready_o ,       
+    input                               axi_aw_valid_i ,
+    input [AXI_ADDR_WIDTH-1:0]          axi_aw_addr_i  ,
+    input [2:0]                         axi_aw_prot_i  ,
+    input [7:0]                         axi_aw_len_i   ,
+    input [2:0]                         axi_aw_size_i  ,
+    input [1:0]                         axi_aw_burst_i ,
 
     // 写数据通道
-    output reg                          axi_w_ready_o,        
-    input                               axi_w_valid_i,
-    input [AXI_DATA_WIDTH-1:0]          axi_w_data_i ,
-    input [AXI_DATA_WIDTH/8-1:0]        axi_w_strb_i ,
+    output reg                          axi_w_ready_o  ,        
+    input                               axi_w_valid_i  ,
+    input [AXI_DATA_WIDTH-1:0]          axi_w_data_i   ,
+    input [AXI_DATA_WIDTH/8-1:0]        axi_w_strb_i   ,
+    input                               axi_w_last_i   ,
     
     // 写回复通道
-    input                               axi_b_ready_i,      
-    output reg                          axi_b_valid_o,
-    output reg  [1:0]                   axi_b_resp_o,          
+    input                               axi_b_ready_i  ,      
+    output reg                          axi_b_valid_o  ,
+    output reg  [1:0]                   axi_b_resp_o   ,          
 
     // 读地址通道
-    output reg                          axi_ar_ready_o,       
-    input                               axi_ar_valid_i,
-    input [AXI_ADDR_WIDTH-1:0]          axi_ar_addr_i,
+    output reg                          axi_ar_ready_o ,       
+    input                               axi_ar_valid_i ,
+    input [AXI_ADDR_WIDTH-1:0]          axi_ar_addr_i  ,
+    input [2:0]                         axi_ar_prot_i  ,
+    input [7:0]                         axi_ar_len_i   ,
+    input [2:0]                         axi_ar_size_i  ,
+    input [1:0]                         axi_ar_burst_i ,
     
     // 读数据通道
-    input                               axi_r_ready_i,            
-    output reg                          axi_r_valid_o,        
-    output reg  [1:0]                   axi_r_resp_o,
-    output reg  [AXI_DATA_WIDTH-1:0]    axi_r_data_o
+    input                               axi_r_ready_i  ,            
+    output reg                          axi_r_valid_o  ,        
+    output reg  [1:0]                   axi_r_resp_o   ,
+    output reg  [AXI_DATA_WIDTH-1:0]    axi_r_data_o   ,
+    output reg                          axi_r_last_o
 );
 
 localparam RS_IDLE = 2'd1;
@@ -97,7 +105,7 @@ always@(posedge clk)begin
       if(next_wstate==WS_WHS)begin
         axi_aw_ready_o <= 0;
         aw_addr        <= axi_aw_addr_i;
-        aw_len         <= 0;
+        aw_len         <= axi_aw_len_i;
         axi_w_ready_o  <= 1;
       end
       else begin
@@ -168,7 +176,7 @@ always@(posedge clk)begin
       RS_IDLE:
       if(next_rstate==RS_RHS)begin
         ar_addr       <= axi_ar_addr_i+8;
-        ar_len        <= 0;
+        ar_len        <= axi_ar_len_i;
         axi_ar_ready_o<= 0;
         axi_r_valid_o <= 1;
         pmem_read({32'h0,axi_ar_addr_i[31:3],3'b0},din);
