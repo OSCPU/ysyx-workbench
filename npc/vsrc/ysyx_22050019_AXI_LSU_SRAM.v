@@ -166,7 +166,7 @@ wire [63:0] din;
 always@(posedge clk)begin
   if(rst)begin
     ar_addr       <= 0;
-    axi_ar_ready_o<= 1;
+    axi_ar_ready_o<= 0;
     axi_r_valid_o <= 0;
     axi_r_resp_o  <= 0;
     axi_r_data_o  <= 0;
