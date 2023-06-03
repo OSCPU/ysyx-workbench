@@ -607,27 +607,39 @@ wire [31:0] axi_arbitr_sram_ar_addr  ;
 wire        axi_arbitr_sram_r_ready  ;
 wire        axi_arbitr_sram_r_valid  ;
 wire [1:0]  axi_arbitr_sram_r_resp   ;    
-wire [63:0] axi_arbitr_sram_r_data   ;   
+wire [63:0] axi_arbitr_sram_r_data   ;
+wire        axi_arbitr_sram_r_last   ;   
+
 ysyx_22050019_AXI_LSU_SRAM lsu_sram(
- .clk            (clk                      ),
- .rst            (rst_n                    ),
- .axi_aw_ready_o (axi_arbitr_sram_aw_ready ),       
- .axi_aw_valid_i (axi_arbitr_sram_aw_valid ),
- .axi_aw_addr_i  (axi_arbitr_sram_aw_addr  ),
- .axi_w_ready_o  (axi_arbitr_sram_w_ready  ),        
- .axi_w_valid_i  (axi_arbitr_sram_w_valid  ),
- .axi_w_data_i   (axi_arbitr_sram_w_data   ),
- .axi_w_strb_i   (axi_arbitr_sram_w_strb   ),
- .axi_b_ready_i  (axi_arbitr_sram_b_ready  ),      
- .axi_b_valid_o  (axi_arbitr_sram_b_valid  ),
- .axi_b_resp_o   (axi_arbitr_sram_b_resp   ),          
- .axi_ar_ready_o (axi_arbitr_sram_ar_ready ),       
- .axi_ar_valid_i (axi_arbitr_sram_ar_valid ),
- .axi_ar_addr_i  (axi_arbitr_sram_ar_addr  ),
- .axi_r_ready_i  (axi_arbitr_sram_r_ready  ),            
- .axi_r_valid_o  (axi_arbitr_sram_r_valid  ),        
- .axi_r_resp_o   (axi_arbitr_sram_r_resp   ),
- .axi_r_data_o   (axi_arbitr_sram_r_data   )
+ .clk            ( clk                     ),
+ .rst            ( rst_n                   ),
+ .axi_aw_ready_o ( axi_arbitr_sram_aw_ready),
+ .axi_aw_valid_i ( axi_arbitr_sram_aw_valid),
+ .axi_aw_addr_i  ( axi_arbitr_sram_aw_addr ),
+ .axi_aw_prot_i  ( 0                       ),
+ .axi_aw_len_i   ( 0                       ),
+ .axi_aw_size_i  ( 0                       ),
+ .axi_aw_burst_i ( 0                       ),
+ .axi_w_ready_o  ( axi_arbitr_sram_w_ready ),
+ .axi_w_valid_i  ( axi_arbitr_sram_w_valid ),
+ .axi_w_data_i   ( axi_arbitr_sram_w_data  ),
+ .axi_w_strb_i   ( axi_arbitr_sram_w_strb  ),
+ .axi_w_last_i   ( 0                       ),
+ .axi_b_ready_i  ( axi_arbitr_sram_b_ready ),
+ .axi_b_valid_o  ( axi_arbitr_sram_b_valid ),
+ .axi_b_resp_o   ( axi_arbitr_sram_b_resp  ),
+ .axi_ar_ready_o ( axi_arbitr_sram_ar_ready),
+ .axi_ar_valid_i ( axi_arbitr_sram_ar_valid),
+ .axi_ar_addr_i  ( axi_arbitr_sram_ar_addr ),
+ .axi_ar_prot_i  ( 0                       ),
+ .axi_ar_len_i   ( 0                       ),
+ .axi_ar_size_i  ( 0                       ),
+ .axi_ar_burst_i ( 0                       ),
+ .axi_r_ready_i  ( axi_arbitr_sram_r_ready ),
+ .axi_r_valid_o  ( axi_arbitr_sram_r_valid ),
+ .axi_r_resp_o   ( axi_arbitr_sram_r_resp  ),
+ .axi_r_data_o   ( axi_arbitr_sram_r_data  ),
+ .axi_r_last_o   ( axi_arbitr_sram_r_last  )
 );
 
 //==================MEM/WBU=====================
