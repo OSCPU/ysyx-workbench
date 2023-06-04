@@ -215,7 +215,7 @@ always@(posedge clk)begin
           end
 
       S_R:if(cache_r_valid_i&cache_r_ready_o)begin
-              cache_ar_len_o <= cache_ar_len_o -1;
+              cache_ar_len_o <= 0;
               r_data_o       <= cache_r_data_i;
           end
           else if(next_state==S_HIT)begin

@@ -197,8 +197,11 @@ always@(posedge clk)begin
         axi_r_data_o  <= din;
       end
       else if(next_rstate==RS_IDLE)begin
-        axi_ar_ready_o<=1;
-        axi_r_valid_o<=0;
+        axi_ar_ready_o<= 1;
+        axi_r_valid_o <= 0;
+        axi_r_data_o  <= 0;
+        ar_len        <= 0;
+        ar_addr       <= 0;
       end
       default:begin
       end
