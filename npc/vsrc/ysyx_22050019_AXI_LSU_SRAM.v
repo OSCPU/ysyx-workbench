@@ -36,7 +36,7 @@ module ysyx_22050019_AXI_LSU_SRAM # (
     input                               axi_ar_valid_i ,
     input [AXI_ADDR_WIDTH-1:0]          axi_ar_addr_i  ,
     input [2:0]                         axi_ar_prot_i  ,
-    input [7:0]                         axi_ar_len_i   ,
+    input                               axi_ar_len_i   ,
     input [2:0]                         axi_ar_size_i  ,
     input [1:0]                         axi_ar_burst_i ,
     
@@ -56,10 +56,10 @@ localparam WS_WHS  = 2'd2;
 localparam WS_BHS  = 2'd3;
 
 reg  [AXI_ADDR_WIDTH-1:0]   ar_addr ;         //cache输入保存信号
-reg  [7:0]                  ar_len  ;         //cache输入保存信号    
+reg                         ar_len  ;         //cache输入保存信号    
 
 reg  [AXI_ADDR_WIDTH-1:0]   aw_addr ;          //cache输入保存信号
-reg  [7:0]                  aw_len  ;          //cache输入保存信号
+reg                         aw_len  ;          //cache输入保存信号
 
 reg[1:0] rstate;
 reg[1:0] next_rstate;

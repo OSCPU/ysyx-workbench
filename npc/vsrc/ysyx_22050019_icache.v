@@ -88,10 +88,10 @@ wire [127:0]           RAM_Q [WAY_DEPTH-1:0]                                    
 wire                   RAM_CEN = 0                                                 ;//为0有效，为1是无效（2个使能信号需要同时满足不然会读出随机数）使能信号控制
 wire                   RAM_WEN[WAY_DEPTH-1:0]                                      ;//为0是写使能1是读使能，读写控制hit是读数据
 wire [R_DATA_WIDTH-1:0]maskn   = 64'hffffffffffffffff                              ;//写掩码，目前是全位写，掩码在发送端处理了
-wire [6:0]             shift   = {addr[3],5'd0}                                    ;//写使能的地址偏移
+wire [5:0]             shift   = {addr[3],5'd0}                                    ;//写使能的地址偏移
 wire [127:0]           RAM_BWEN= ~({64'd0,maskn} << shift)                         ;//ram写掩码目前一样不用过多处理
 wire [INDEX_WIDTH-1:0] RAM_A   = (next_state == S_HIT) ? index_in : addr[RAML:RAMR];//ram地址索引
-wire [INDEX_DEPTH-1:0] RAM_D   = cache_r_data_i                                    ;//更新ram数据
+wire [127:0]           RAM_D   = {64'd0,cache_r_data_i} << shift;                  ;//更新ram数据
 
 wire write_enable = (state == S_R)&(cache_r_valid_i&cache_r_ready_o) ? 0 : 1 ;
 assign  RAM_WEN[0] = waynum ? 1 :write_enable;
@@ -166,16 +166,16 @@ always@(posedge clk)begin
   else begin
     case(state)
       S_IDLE:if(next_state==S_HIT)begin
-					ar_ready_o              <= 0           ;
-          r_data_valid_o          <= 0           ; 
-          waynum                  <= hit_waynum_i;
-          addr                    <= ar_addr_i   ;
+					ar_ready_o              <= 0                     ;
+          r_data_valid_o          <= 0                     ; 
+          waynum                  <= hit_waynum_i          ;
+          addr                    <= ar_addr_i[TAGL : 0]   ;
         end
         else if(next_state==S_AR)begin
 //          icache_wait()               ;//多跑2个周期平衡
 					ar_ready_o              <= 0;
           waynum                  <= random;
-          addr                    <= ar_addr_i;
+          addr                    <= ar_addr_i[TAGL : 0]   ;
           cache_ar_len_o          <= 1;
           valid[random][index_in] <= 0;
           tag[random][index_in]   <= ar_addr_i[TAGL:TAGR];
