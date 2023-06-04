@@ -131,13 +131,14 @@ always@(posedge clk)begin
   else rstate<=next_rstate;
 end
 
+reg len;
 always@(*) begin
   if(rst)next_rstate=RS_IDLE;
   else case(rstate)
     RS_IDLE:if(s1_axi_ar_valid_i)next_rstate=RS_S1;
 		  else if(s2_axi_ar_valid_i)next_rstate=RS_S2;
       else next_rstate=RS_IDLE;
-		RS_S1:if(s1_axi_r_ready_i&axi_r_valid_i)next_rstate= s2_axi_ar_valid_i ? RS_S2 :RS_IDLE;
+		RS_S1:if(s1_axi_r_ready_i&axi_r_valid_i&(len == 0))next_rstate= s2_axi_ar_valid_i ? RS_S2 :RS_IDLE;
 	    else next_rstate=RS_S1;
 		RS_S2:if(s2_axi_r_ready_i&axi_r_valid_i)next_rstate=RS_IDLE;
     else next_rstate=RS_S2;
@@ -147,11 +148,15 @@ end
 always@(posedge clk)begin
   if(rst)begin
         r_channel<=0;
+        len      <=0;
   end
   else begin
     case(rstate)
       RS_IDLE:
-      if(next_rstate==RS_S2)begin
+      if (next_rstate==RS_S1)begin
+        len <= axi_ar_len_o;
+      end
+      else if(next_rstate==RS_S2)begin
 //        arbiter_wait();//多跑3个周期平衡
         r_channel<=1;
       end
@@ -159,7 +164,10 @@ always@(posedge clk)begin
         r_channel<=0;
       end
       RS_S1:
-      if(next_rstate==RS_IDLE)begin
+      if(s1_axi_r_ready_i&axi_r_valid_i&len!=0)begin 
+        len <= len-1;
+      end
+      else if(next_rstate==RS_IDLE)begin
         r_channel<=0;
       end
       else if(next_rstate==RS_S2)begin
