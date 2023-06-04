@@ -187,6 +187,7 @@ always@(posedge clk)begin
 					r_data_valid_o          <= 0;
 					cache_r_ready_o         <= 0;
         end
+
       S_HIT:if(next_state==S_IDLE)begin
 					ar_ready_o          <= 1;
 					r_data_valid_o      <= 0;
@@ -202,13 +203,14 @@ always@(posedge clk)begin
           r_data_valid_o          <= 1            ; 
           r_data_o                <= addr[3] ? RAM_Q[waynum][127:64] : RAM_Q[waynum][63:0];
       end
+
       S_AR:if(next_state==S_R)begin
           cache_ar_valid_o  <= 0;
           cache_r_ready_o  <= 1;
           end
 
       S_R:if(cache_r_valid_i&cache_r_ready_o)begin
-              cache_ar_len_o <= 0;
+              cache_ar_len_o <= cache_ar_len_o -1;
               r_data_o       <= cache_r_data_i;
           end
           else if(next_state==S_HIT)begin
@@ -217,6 +219,7 @@ always@(posedge clk)begin
               r_data_o            <= addr[3] ? cache_r_data_i : r_data_o;  
               r_data_valid_o      <= 1                                  ;
             end
+            
       default:begin
       end
     endcase
