@@ -177,7 +177,7 @@ void difftest_exec_once()
     #ifdef CONFIG_ITRACE
     itrace_record(dut->now_addr);
 // 会增加一定的性能负担，且这个类型一旦溢出会导致程序被杀死
-//  debug_inst++;
+    debug_inst++;
 #endif
       while(difftest_ok == false){
       exec_once();
