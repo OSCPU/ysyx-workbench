@@ -377,10 +377,13 @@ ysyx_22050019_LSU LSU(
 wire        axi_icache_sram_ar_valid ;
 wire        axi_icache_sram_ar_ready ;
 wire [31:0] axi_icache_sram_ar_addr  ;
+wire        axi_icache_sram_ar_len   ;
 wire        axi_icache_sram_r_ready  ;
 wire        axi_icache_sram_r_valid  ;
 wire [1:0]  axi_icache_sram_r_resp   ;
 wire [63:0] axi_icache_sram_r_data   ;
+
+
 ysyx_22050019_icache I_CACHE(
     .clk               ( clk                      ),
     .rst               ( rst_n                    ),
@@ -396,6 +399,7 @@ ysyx_22050019_icache I_CACHE(
     .cache_ar_valid_o  ( axi_icache_sram_ar_valid ),
     .cache_ar_ready_i  ( axi_icache_sram_ar_ready ),
     .cache_ar_addr_o   ( axi_icache_sram_ar_addr  ),
+    .cache_ar_len_o    ( axi_icache_sram_ar_len   ),
     .cache_r_ready_o   ( axi_icache_sram_r_ready  ),
     .cache_r_valid_i   ( axi_icache_sram_r_valid  ),
     .cache_r_resp_i    ( axi_icache_sram_r_resp   ),
@@ -534,6 +538,7 @@ ysyx_22050133_axi_arbiter ARBITER(
     .s1_axi_ar_valid_i ( axi_icache_sram_ar_valid    ),
     .s1_axi_ar_ready_o ( axi_icache_sram_ar_ready    ),
     .s1_axi_ar_addr_i  ( axi_icache_sram_ar_addr     ),
+    .s1_axi_ar_len_i   ( axi_icache_sram_ar_len      ),
 
     .s1_axi_r_valid_o  ( axi_icache_sram_r_valid     ),
     .s1_axi_r_ready_i  ( axi_icache_sram_r_ready     ),
@@ -582,6 +587,7 @@ ysyx_22050133_axi_arbiter ARBITER(
     .axi_ar_ready_i    ( axi_arbitr_sram_ar_ready    ),
     .axi_ar_valid_o    ( axi_arbitr_sram_ar_valid    ),
     .axi_ar_addr_o     ( axi_arbitr_sram_ar_addr     ),
+    .axi_ar_len_o      ( axi_arbitr_sram_ar_len      ),
     
     .axi_r_ready_o     ( axi_arbitr_sram_r_ready     ),
     .axi_r_valid_i     ( axi_arbitr_sram_r_valid     ),
@@ -604,6 +610,7 @@ wire [1:0]  axi_arbitr_sram_b_resp   ;
 wire        axi_arbitr_sram_ar_ready ; 
 wire        axi_arbitr_sram_ar_valid ; 
 wire [31:0] axi_arbitr_sram_ar_addr  ;
+wire        axi_arbitr_sram_ar_len   ;
 wire        axi_arbitr_sram_r_ready  ;
 wire        axi_arbitr_sram_r_valid  ;
 wire [1:0]  axi_arbitr_sram_r_resp   ;    
@@ -632,7 +639,7 @@ ysyx_22050019_AXI_LSU_SRAM lsu_sram(
  .axi_ar_valid_i ( axi_arbitr_sram_ar_valid),
  .axi_ar_addr_i  ( axi_arbitr_sram_ar_addr ),
  .axi_ar_prot_i  ( 0                       ),
- .axi_ar_len_i   ( 0                       ),
+ .axi_ar_len_i   ( axi_arbitr_sram_ar_len  ),
  .axi_ar_size_i  ( 0                       ),
  .axi_ar_burst_i ( 0                       ),
  .axi_r_ready_i  ( axi_arbitr_sram_r_ready ),
