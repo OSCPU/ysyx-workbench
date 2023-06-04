@@ -292,7 +292,7 @@ always@(posedge clk)begin
 
       S_W:if(cache_w_ready_i&cache_w_valid_o&(cache_rw_len_o != 0))begin
               cache_rw_len_o <= cache_rw_len_o -1;
-              cache_w_data_o <= RAM_Q[waynum][127:0]                    ;
+              cache_w_data_o <= RAM_Q[waynum][127:64]                      ;
           end
           else if(next_state==S_B)begin
           cache_w_valid_o         <= 0                                     ;
