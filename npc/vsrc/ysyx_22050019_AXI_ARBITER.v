@@ -37,6 +37,7 @@ module ysyx_22050133_axi_arbiter # (
     output                              s2_axi_aw_ready_o,       
     input                               s2_axi_aw_valid_i,
     input [AXI_ADDR_WIDTH-1:0]          s2_axi_aw_addr_i,
+    input                               s2_axi_rw_len_i,
 
     output                              s2_axi_w_ready_o,        
     input                               s2_axi_w_valid_i,
@@ -61,6 +62,7 @@ module ysyx_22050133_axi_arbiter # (
     input                               axi_aw_ready_i,             
     output                              axi_aw_valid_o,
     output     [AXI_ADDR_WIDTH-1:0]     axi_aw_addr_o,
+    output                              axi_aw_len_o,
 
     input                               axi_w_ready_i,              
     output                              axi_w_valid_o,
@@ -82,36 +84,37 @@ module ysyx_22050133_axi_arbiter # (
     input  [AXI_DATA_WIDTH-1:0]         axi_r_data_i  
 );
 
-assign s2_axi_aw_ready_o= w_channel?axi_aw_ready_i:0;
-assign s1_axi_aw_ready_o= ~w_channel?axi_aw_ready_i:0;
-assign axi_aw_valid_o   = w_channel?  s2_axi_aw_valid_i  :s1_axi_aw_valid_i;
-assign axi_aw_addr_o    = w_channel?   s2_axi_aw_addr_i   :s1_axi_aw_addr_i;
+assign s2_axi_aw_ready_o= w_channel ? axi_aw_ready_i    : 0;
+assign s1_axi_aw_ready_o= ~w_channel? axi_aw_ready_i    : 0;
+assign axi_aw_valid_o   = w_channel ? s2_axi_aw_valid_i : s1_axi_aw_valid_i;
+assign axi_aw_addr_o    = w_channel ? s2_axi_aw_addr_i  : s1_axi_aw_addr_i;
+assign axi_aw_len_o     = r_channel ? s2_axi_rw_len_i   : 0;
 
-assign s2_axi_w_ready_o = w_channel?axi_w_ready_i:0;
-assign s1_axi_w_ready_o = ~w_channel?axi_w_ready_i:0; 
-assign axi_w_valid_o    = w_channel?   s2_axi_w_valid_i   :s1_axi_w_valid_i;
-assign axi_w_data_o     = w_channel?    s2_axi_w_data_i    :s1_axi_w_data_i;
-assign axi_w_strb_o     = w_channel?    s2_axi_w_strb_i    :s1_axi_w_strb_i;
+assign s2_axi_w_ready_o = w_channel ? axi_w_ready_i     : 0;
+assign s1_axi_w_ready_o = ~w_channel? axi_w_ready_i     : 0; 
+assign axi_w_valid_o    = w_channel ? s2_axi_w_valid_i  : s1_axi_w_valid_i;
+assign axi_w_data_o     = w_channel ? s2_axi_w_data_i   : s1_axi_w_data_i;
+assign axi_w_strb_o     = w_channel ? s2_axi_w_strb_i   : s1_axi_w_strb_i;
 
-assign axi_b_ready_o    = w_channel?   s2_axi_b_ready_i   :s1_axi_b_ready_i;    
-assign s2_axi_b_valid_o = w_channel?axi_b_valid_i:0;
-assign s2_axi_b_resp_o  = w_channel?axi_b_resp_i:0;
-assign s1_axi_b_valid_o = ~w_channel?axi_b_valid_i:0;
-assign s1_axi_b_resp_o  = ~w_channel?axi_b_resp_i:0;
+assign axi_b_ready_o    = w_channel ? s2_axi_b_ready_i  : s1_axi_b_ready_i;    
+assign s2_axi_b_valid_o = w_channel ? axi_b_valid_i     : 0;
+assign s2_axi_b_resp_o  = w_channel ? axi_b_resp_i      : 0;
+assign s1_axi_b_valid_o = ~w_channel? axi_b_valid_i     : 0;
+assign s1_axi_b_resp_o  = ~w_channel? axi_b_resp_i      : 0;
 
-assign s2_axi_ar_ready_o= r_channel?axi_ar_ready_i:0;
-assign s1_axi_ar_ready_o= ~r_channel?axi_ar_ready_i:0;
-assign axi_ar_valid_o   = r_channel?  s2_axi_ar_valid_i  :s1_axi_ar_valid_i;
-assign axi_ar_addr_o    = r_channel?  s2_axi_ar_addr_i   :s1_axi_ar_addr_i;
-assign axi_ar_len_o     = r_channel? 0 : s1_axi_ar_len_i;
+assign s2_axi_ar_ready_o= r_channel ? axi_ar_ready_i    : 0;
+assign s1_axi_ar_ready_o= ~r_channel? axi_ar_ready_i    : 0;
+assign axi_ar_valid_o   = r_channel ? s2_axi_ar_valid_i : s1_axi_ar_valid_i;
+assign axi_ar_addr_o    = r_channel ? s2_axi_ar_addr_i  : s1_axi_ar_addr_i;
+assign axi_ar_len_o     = r_channel ? s2_axi_rw_len_i   : s1_axi_ar_len_i;
 
-assign axi_r_ready_o=r_channel?   s2_axi_r_ready_i   :s1_axi_r_ready_i;    
-assign s2_axi_r_valid_o=r_channel?axi_r_valid_i:0;
-assign s2_axi_r_resp_o=r_channel?axi_r_resp_i:0;
-assign s2_axi_r_data_o=r_channel?axi_r_data_i:0;
-assign s1_axi_r_valid_o=~r_channel?axi_r_valid_i:0;
-assign s1_axi_r_resp_o=~r_channel?axi_r_resp_i:0;
-assign s1_axi_r_data_o=~r_channel?axi_r_data_i:0;
+assign axi_r_ready_o    = r_channel ? s2_axi_r_ready_i  : s1_axi_r_ready_i;    
+assign s2_axi_r_valid_o = r_channel ? axi_r_valid_i     : 0;
+assign s2_axi_r_resp_o  = r_channel ? axi_r_resp_i      : 0;
+assign s2_axi_r_data_o  = r_channel ? axi_r_data_i      : 0;
+assign s1_axi_r_valid_o = ~r_channel? axi_r_valid_i     : 0;
+assign s1_axi_r_resp_o  = ~r_channel? axi_r_resp_i      : 0;
+assign s1_axi_r_data_o  = ~r_channel? axi_r_data_i      : 0;
 
 parameter RS_IDLE = 1;
 parameter RS_S1 = 2;
@@ -140,7 +143,7 @@ always@(*) begin
       else next_rstate=RS_IDLE;
 		RS_S1:if(s1_axi_r_ready_i&axi_r_valid_i&(len == 0))next_rstate= s2_axi_ar_valid_i ? RS_S2 :RS_IDLE;
 	    else next_rstate=RS_S1;
-		RS_S2:if(s2_axi_r_ready_i&axi_r_valid_i)next_rstate=RS_IDLE;
+		RS_S2:if(s2_axi_r_ready_i&axi_r_valid_i&(len == 0))next_rstate=RS_IDLE;
     else next_rstate=RS_S2;
     default:next_rstate=RS_IDLE;
   endcase
@@ -158,11 +161,13 @@ always@(posedge clk)begin
       end
       else if(next_rstate==RS_S2)begin
 //        arbiter_wait();//多跑3个周期平衡
+        len <= s2_axi_rw_len_i;
         r_channel<=1;
       end
       else begin
         r_channel<=0;
       end
+
       RS_S1:
       if(s1_axi_r_ready_i&axi_r_valid_i&len!=0)begin 
         len <= len-1;
@@ -173,10 +178,15 @@ always@(posedge clk)begin
       else if(next_rstate==RS_S2)begin
         r_channel<=1;
       end
+
       RS_S2:
-      if(next_rstate==RS_IDLE)begin
+      if(s2_axi_r_ready_i&axi_r_valid_i&len!=0)begin 
+        len <= len-1;
+      end
+      else if(next_rstate==RS_IDLE)begin
         r_channel<=0;
       end
+
       default:begin
       end
     endcase

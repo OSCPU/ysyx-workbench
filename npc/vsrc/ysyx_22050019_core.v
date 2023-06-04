@@ -435,6 +435,7 @@ wire [63:0] axi_lsu_dcache_r_data   ;
 wire        axi_dcache_aw_ready    = uncache ? 0 : axi_dcache_arbiter_aw_ready  ; 
 wire        axi_dcache_aw_valid    ;
 wire [31:0] axi_dcache_aw_addr     ;
+wire        axi_dcache_rw_len      ;
 wire        axi_dcache_w_ready     = uncache ? 0 : axi_dcache_arbiter_w_ready   ; 
 wire        axi_dcache_w_valid     ;
 wire [63:0] axi_dcache_w_data      ;
@@ -453,6 +454,7 @@ wire [63:0] axi_dcache_r_data      = uncache ? 0 : axi_dcache_arbiter_r_data    
 wire        axi_dcache_arbiter_aw_ready ;
 wire        axi_dcache_arbiter_aw_valid = uncache ? axi_lsu_sram_aw_valid  : axi_dcache_aw_valid ;
 wire [31:0] axi_dcache_arbiter_aw_addr  = uncache ? ram_waddr_lsu_mem[31:0]: axi_dcache_aw_addr  ;
+wire        axi_dcache_arbiter_rw_len   = uncache ? 0                     : axi_dcache_rw_len   ;
 wire        axi_dcache_arbiter_w_ready  ;
 wire        axi_dcache_arbiter_w_valid  = uncache ? axi_lsu_sram_w_valid  : axi_dcache_w_valid  ;
 wire [63:0] axi_dcache_arbiter_w_data   = uncache ? ram_wdata_lsu_mem     : axi_dcache_w_data   ;
@@ -492,6 +494,7 @@ ysyx_22050019_dcache D_CACHE(
     .cache_aw_valid_o  ( axi_dcache_aw_valid  ),
     .cache_aw_ready_i  ( axi_dcache_aw_ready  ),
     .cache_aw_addr_o   ( axi_dcache_aw_addr   ),
+    .cache_rw_len_o    ( axi_dcache_rw_len    ),
     .cache_w_ready_i   ( axi_dcache_w_ready   ),
     .cache_w_valid_o   ( axi_dcache_w_valid   ),
     .cache_w_data_o    ( axi_dcache_w_data    ),
@@ -550,6 +553,7 @@ ysyx_22050133_axi_arbiter ARBITER(
     .s2_axi_aw_ready_o ( axi_dcache_arbiter_aw_ready ),
     .s2_axi_aw_valid_i ( axi_dcache_arbiter_aw_valid ),
     .s2_axi_aw_addr_i  ( axi_dcache_arbiter_aw_addr  ),
+    .s2_axi_rw_len_i   ( axi_dcache_arbiter_rw_len   ),
 
     .s2_axi_w_ready_o  ( axi_dcache_arbiter_w_ready  ),
     .s2_axi_w_valid_i  ( axi_dcache_arbiter_w_valid  ),
@@ -574,7 +578,8 @@ ysyx_22050133_axi_arbiter ARBITER(
     .axi_aw_ready_i    ( axi_arbitr_sram_aw_ready    ),
     .axi_aw_valid_o    ( axi_arbitr_sram_aw_valid    ),
     .axi_aw_addr_o     ( axi_arbitr_sram_aw_addr     ),
-    
+    .axi_aw_len_o      ( axi_arbitr_sram_aw_len      ),
+
     .axi_w_ready_i     ( axi_arbitr_sram_w_ready     ),
     .axi_w_valid_o     ( axi_arbitr_sram_w_valid     ),
     .axi_w_data_o      ( axi_arbitr_sram_w_data      ),
@@ -600,6 +605,7 @@ ysyx_22050133_axi_arbiter ARBITER(
 wire        axi_arbitr_sram_aw_ready ;
 wire        axi_arbitr_sram_aw_valid ;
 wire [31:0] axi_arbitr_sram_aw_addr  ;
+wire        axi_arbitr_sram_aw_len   ;
 wire        axi_arbitr_sram_w_ready  ;
 wire        axi_arbitr_sram_w_valid  ;
 wire [63:0] axi_arbitr_sram_w_data   ;
@@ -624,7 +630,7 @@ ysyx_22050019_AXI_LSU_SRAM lsu_sram(
  .axi_aw_valid_i ( axi_arbitr_sram_aw_valid),
  .axi_aw_addr_i  ( axi_arbitr_sram_aw_addr ),
  .axi_aw_prot_i  ( 0                       ),
- .axi_aw_len_i   ( 0                       ),
+ .axi_aw_len_i   ( axi_arbitr_sram_aw_len  ),
  .axi_aw_size_i  ( 0                       ),
  .axi_aw_burst_i ( 0                       ),
  .axi_w_ready_o  ( axi_arbitr_sram_w_ready ),
