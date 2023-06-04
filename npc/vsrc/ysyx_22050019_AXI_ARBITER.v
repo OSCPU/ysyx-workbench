@@ -157,12 +157,12 @@ always@(posedge clk)begin
     case(rstate)
       RS_IDLE:
       if (next_rstate==RS_S1)begin
-        len <= axi_ar_len_o;
+        len      <= axi_ar_len_o;
       end
       else if(next_rstate==RS_S2)begin
 //        arbiter_wait();//多跑3个周期平衡
-        len <= s2_axi_rw_len_i;
-        r_channel<=1;
+        len      <= 1;
+        r_channel<= 1;
       end
       else begin
         r_channel<=0;
