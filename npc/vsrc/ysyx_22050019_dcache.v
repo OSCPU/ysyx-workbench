@@ -112,7 +112,7 @@ wire [DATA_WIDTH-1:0]  maskn   = (state == S_HIT) ? {{8{w_w_strb_i[7]}},{8{w_w_s
 wire                   shift   = (state == S_HIT)&addr[3] ? 0 : ~cache_rw_len_o                         ;//写使能的地址偏移shift为1代表高64位
 wire [127:0]           RAM_BWEN= ~(shift ? {maskn,64'd0}  : {64'd0,maskn})                              ;//ram写掩码目前一样不用过多处理
 wire [INDEX_WIDTH-1:0] RAM_A   = (next_state == S_HIT)|(next_state == S_AW) ? index_in : addr[RAML:RAMR];//ram地址索引
-wire [127:0]           wdata   = cache_r_valid_i&&cache_r_ready_o ? cache_r_data_i : w_data_i           ;
+wire [DATA_WIDTH-1:0]  wdata   = cache_r_valid_i&&cache_r_ready_o ? cache_r_data_i : w_data_i           ;
 wire [127:0]           RAM_D   = shift ? {wdata,64'd0} : {64'd0,wdata}                                  ;//更新ram数据
 
 wire write_enable = (state == S_R)&(cache_r_valid_i&cache_r_ready_o)|(state == S_HIT)&w_data_valid_i ? 0 : 1 ;
@@ -272,7 +272,7 @@ always@(posedge clk)begin
       end
       else if(~rw_control) begin
           r_data_valid_o          <= 1                                     ; 
-          r_data_o                <= RAM_Q[waynum]                         ;
+          r_data_o                <= addr[3] ? RAM_Q[waynum][127:64] : RAM_Q[waynum][63:0];
       end
 
       S_AW:if(next_state==S_W)begin
