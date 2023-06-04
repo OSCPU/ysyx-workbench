@@ -15,7 +15,7 @@ module ysyx_22050019_AXI_LSU_SRAM # (
     input                               axi_aw_valid_i ,
     input [AXI_ADDR_WIDTH-1:0]          axi_aw_addr_i  ,
     input [2:0]                         axi_aw_prot_i  ,
-    input [7:0]                         axi_aw_len_i   ,
+    input                               axi_aw_len_i   ,
     input [2:0]                         axi_aw_size_i  ,
     input [1:0]                         axi_aw_burst_i ,
 
