@@ -25,6 +25,7 @@ module ysyx_22050133_axi_arbiter # (
     output                              s1_axi_ar_ready_o,       
     input                               s1_axi_ar_valid_i,
     input [AXI_ADDR_WIDTH-1:0]          s1_axi_ar_addr_i,
+    input                               s1_axi_ar_len_i,
     
     input                               s1_axi_r_ready_i,            
     output                              s1_axi_r_valid_o,        
@@ -73,6 +74,7 @@ module ysyx_22050133_axi_arbiter # (
     input                               axi_ar_ready_i,             
     output                              axi_ar_valid_o,
     output     [AXI_ADDR_WIDTH-1:0]     axi_ar_addr_o,
+    output                              axi_ar_len_o,
     
     output                              axi_r_ready_o,          
     input                               axi_r_valid_i,             
@@ -80,27 +82,28 @@ module ysyx_22050133_axi_arbiter # (
     input  [AXI_DATA_WIDTH-1:0]         axi_r_data_i  
 );
 
-assign s2_axi_aw_ready_o=w_channel?axi_aw_ready_i:0;
-assign s1_axi_aw_ready_o=~w_channel?axi_aw_ready_i:0;
-assign axi_aw_valid_o=w_channel?  s2_axi_aw_valid_i  :s1_axi_aw_valid_i;
-assign axi_aw_addr_o=w_channel?   s2_axi_aw_addr_i   :s1_axi_aw_addr_i;
+assign s2_axi_aw_ready_o= w_channel?axi_aw_ready_i:0;
+assign s1_axi_aw_ready_o= ~w_channel?axi_aw_ready_i:0;
+assign axi_aw_valid_o   = w_channel?  s2_axi_aw_valid_i  :s1_axi_aw_valid_i;
+assign axi_aw_addr_o    = w_channel?   s2_axi_aw_addr_i   :s1_axi_aw_addr_i;
 
-assign s2_axi_w_ready_o=w_channel?axi_w_ready_i:0;
-assign s1_axi_w_ready_o=~w_channel?axi_w_ready_i:0; 
-assign axi_w_valid_o=w_channel?   s2_axi_w_valid_i   :s1_axi_w_valid_i;
-assign axi_w_data_o=w_channel?    s2_axi_w_data_i    :s1_axi_w_data_i;
-assign axi_w_strb_o=w_channel?    s2_axi_w_strb_i    :s1_axi_w_strb_i;
+assign s2_axi_w_ready_o = w_channel?axi_w_ready_i:0;
+assign s1_axi_w_ready_o = ~w_channel?axi_w_ready_i:0; 
+assign axi_w_valid_o    = w_channel?   s2_axi_w_valid_i   :s1_axi_w_valid_i;
+assign axi_w_data_o     = w_channel?    s2_axi_w_data_i    :s1_axi_w_data_i;
+assign axi_w_strb_o     = w_channel?    s2_axi_w_strb_i    :s1_axi_w_strb_i;
 
-assign axi_b_ready_o=w_channel?   s2_axi_b_ready_i   :s1_axi_b_ready_i;    
-assign s2_axi_b_valid_o=w_channel?axi_b_valid_i:0;
-assign s2_axi_b_resp_o=w_channel?axi_b_resp_i:0;
-assign s1_axi_b_valid_o=~w_channel?axi_b_valid_i:0;
-assign s1_axi_b_resp_o=~w_channel?axi_b_resp_i:0;
+assign axi_b_ready_o    = w_channel?   s2_axi_b_ready_i   :s1_axi_b_ready_i;    
+assign s2_axi_b_valid_o = w_channel?axi_b_valid_i:0;
+assign s2_axi_b_resp_o  = w_channel?axi_b_resp_i:0;
+assign s1_axi_b_valid_o = ~w_channel?axi_b_valid_i:0;
+assign s1_axi_b_resp_o  = ~w_channel?axi_b_resp_i:0;
 
-assign s2_axi_ar_ready_o=r_channel?axi_ar_ready_i:0;
-assign s1_axi_ar_ready_o=~r_channel?axi_ar_ready_i:0;
-assign axi_ar_valid_o=r_channel?  s2_axi_ar_valid_i  :s1_axi_ar_valid_i;
-assign axi_ar_addr_o=r_channel?   s2_axi_ar_addr_i   :s1_axi_ar_addr_i;
+assign s2_axi_ar_ready_o= r_channel?axi_ar_ready_i:0;
+assign s1_axi_ar_ready_o= ~r_channel?axi_ar_ready_i:0;
+assign axi_ar_valid_o   = r_channel?  s2_axi_ar_valid_i  :s1_axi_ar_valid_i;
+assign axi_ar_addr_o    = r_channel?  s2_axi_ar_addr_i   :s1_axi_ar_addr_i;
+assign axi_ar_len_o     = r_channel? 0 : s1_axi_ar_len_i;
 
 assign axi_r_ready_o=r_channel?   s2_axi_r_ready_i   :s1_axi_r_ready_i;    
 assign s2_axi_r_valid_o=r_channel?axi_r_valid_i:0;
