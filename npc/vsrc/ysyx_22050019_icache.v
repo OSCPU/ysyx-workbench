@@ -84,14 +84,14 @@ always@(posedge clk)begin//随机替换的替换策略
 end
 
 // ram的一些配置信息
-wire [127:0]           RAM_Q [WAY_DEPTH-1:0]                                       ;//读出的cache数据
-wire                   RAM_CEN = 0                                                 ;//为0有效，为1是无效（2个使能信号需要同时满足不然会读出随机数）使能信号控制
-wire                   RAM_WEN[WAY_DEPTH-1:0]                                      ;//为0是写使能1是读使能，读写控制hit是读数据
-wire [R_DATA_WIDTH-1:0]maskn   = 64'hffffffffffffffff                              ;//写掩码，目前是全位写，掩码在发送端处理了
-wire [5:0]             shift   = {~cache_ar_len_o,5'd0}                                    ;//写使能的地址偏移
-wire [127:0]           RAM_BWEN= ~({64'd0,maskn} << shift)                         ;//ram写掩码目前一样不用过多处理
-wire [INDEX_WIDTH-1:0] RAM_A   = (next_state == S_HIT) ? index_in : addr[RAML:RAMR];//ram地址索引
-wire [127:0]           RAM_D   = {64'd0,cache_r_data_i} << shift;                  ;//更新ram数据
+wire [127:0]           RAM_Q [WAY_DEPTH-1:0]                                            ;//读出的cache数据
+wire                   RAM_CEN = 0                                                      ;//为0有效，为1是无效（2个使能信号需要同时满足不然会读出随机数）使能信号控制
+wire                   RAM_WEN[WAY_DEPTH-1:0]                                           ;//为0是写使能1是读使能，读写控制hit是读数据
+wire [R_DATA_WIDTH-1:0]maskn   = 64'hffffffffffffffff                                   ;//写掩码，目前是全位写，掩码在发送端处理了
+wire                   shift   = ~cache_ar_len_o                                        ;//写使能的地址偏移shift为1代表高64位
+wire [127:0]           RAM_BWEN= ~(shift ? {maskn,64'd0}  : {64'd0,maskn})              ;//ram写掩码目前一样不用过多处理
+wire [INDEX_WIDTH-1:0] RAM_A   = (next_state == S_HIT) ? index_in : addr[RAML:RAMR]     ;//ram地址索引
+wire [127:0]           RAM_D   = shift ? {cache_r_data_i,64'd0} : {64'd0,cache_r_data_i};//更新ram数据
 
 wire write_enable = (state == S_R)&(cache_r_valid_i&cache_r_ready_o) ? 0 : 1 ;
 assign  RAM_WEN[0] = waynum ? 1 :write_enable;
