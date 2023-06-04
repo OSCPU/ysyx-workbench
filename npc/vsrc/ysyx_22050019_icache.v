@@ -209,7 +209,7 @@ always@(posedge clk)begin
           cache_r_ready_o  <= 1;
           end
 
-      S_R:if(cache_r_valid_i&cache_r_ready_o)begin
+      S_R:if(cache_r_valid_i&cache_r_ready_o&(cache_ar_len_o != 0))begin
               cache_ar_len_o <= cache_ar_len_o -1;
               r_data_o       <= cache_r_data_i;
           end
@@ -219,7 +219,7 @@ always@(posedge clk)begin
               r_data_o            <= addr[3] ? cache_r_data_i : r_data_o;  
               r_data_valid_o      <= 1                                  ;
             end
-            
+
       default:begin
       end
     endcase
