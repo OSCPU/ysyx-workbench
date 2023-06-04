@@ -206,13 +206,6 @@ always@(posedge clk)begin
           cache_ar_valid_o  <= 0;
           cache_r_ready_o  <= 1;
           end
-      S_R:if(next_state==S_HIT)begin
-          //difftest_valid();
-          cache_r_ready_o     <= 0             ;
-          valid[waynum][index]<= 1             ;
-          r_data_o            <= cache_r_data_i;
-          r_data_valid_o      <= 1             ;
-          end
 
       S_R:if(cache_r_valid_i&cache_r_ready_o)begin
               cache_ar_len_o <= 0;
