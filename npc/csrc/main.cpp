@@ -316,6 +316,7 @@ int main(int argc, char** argv, char** env) {
     exec_once();
     exec_once();
     exec_once();
+    //这一段的作用是将cpu的初始状态对齐到nemu中，所以在改进icache后，需要注意difftest肯也需要改进
 //    icache_exec = false;
     //difftest_ok = false;
 #ifdef CONFIG_DIFFTEST
