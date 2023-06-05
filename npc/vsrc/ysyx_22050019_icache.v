@@ -102,7 +102,7 @@ generate
   genvar i;
   for(i=0;i<WAY_DEPTH;i=i+1)begin
   assign hit_wayflag[i]=((tag[i][index_in]==tag_in)&&valid[i][index_in]);
-      SO128 SO128
+      S011HD1P_X32Y2D128_BW S011HD1P_X32Y2D128_BW
       (
         .Q(RAM_Q[i]),
         .CLK(clk),
