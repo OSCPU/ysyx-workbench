@@ -31,10 +31,10 @@ module ysyx_22050019_icache#(
   input                              ar_valid_i          ,         
   output reg                         ar_ready_o          ,     
   input     [R_ADDR_WIDTH-1:0]       ar_addr_i           ,             
-  output reg                         r_data_valid_o      ,     
+  output                             r_data_valid_o      ,     
   input                              r_data_ready_i      ,
   input     [1:0]                    r_resp_i            ,     
-  output reg[R_DATA_WIDTH-1:0]       r_data_o            ,  
+  output    [R_DATA_WIDTH-1:0]       r_data_o            ,  
 
   output                             cache_ar_valid_o    ,       
   input                              cache_ar_ready_i    ,     
@@ -127,11 +127,14 @@ always@(posedge clk) begin
   if(rst)state<=S_IDLE;
   else state<=next_state;
 end
+// 与ifu边通信的加速信号
+reg [R_DATA_WIDTH-1:0]r_data;
+reg                   r_data_valid;
 
 // 一些总线接口的输出信号中间态定义
-reg                 cache_ar_valid; 
-reg [ADDR_WIDTH-1:0]cache_ar_addr;
-reg                 cache_ar_len;
+reg                   cache_ar_valid; 
+reg [ADDR_WIDTH-1:0]  cache_ar_addr;
+reg                   cache_ar_len;
 always@(*) begin
   if(rst)next_state=S_IDLE;
   else case(state)
@@ -148,7 +151,10 @@ always@(*) begin
     S_AR:if(cache_ar_valid&cache_ar_ready_i)next_state=S_R;
       else next_state=S_AR;
 
-    S_R:if(cache_r_ready_o&cache_r_valid_i&(cache_ar_len == 0))next_state=S_HIT;
+    S_R:if(cache_r_ready_o&cache_r_valid_i&(cache_ar_len == 0))begin
+      if(r_data_valid_o&r_data_ready_i) next_state=S_IDLE;//这里视乎可以改变判断信号实现2周期读如果aready就说明已经读出去了
+      else next_state=S_HIT;
+    end
       else next_state=S_R;
 
     default:next_state=S_IDLE;
@@ -159,8 +165,8 @@ import "DPI-C" function void difftest_valid();
 always@(posedge clk)begin
   if(rst)begin
 		ar_ready_o          <= 0;
-		r_data_valid_o      <= 0;
-		r_data_o            <= 0;
+		r_data_valid        <= 0;
+		r_data              <= 0;
     cache_ar_valid      <= 0;
     cache_ar_addr       <= 0;
     cache_ar_len        <= 0;
@@ -172,7 +178,7 @@ always@(posedge clk)begin
     case(state)
       S_IDLE:if(next_state==S_HIT)begin
 					ar_ready_o              <= 0                     ;
-          r_data_valid_o          <= 0                     ; 
+          r_data_valid            <= 0                     ; 
           waynum                  <= hit_waynum_i          ;
           addr                    <= ar_addr_i[TAGL : 0]   ;
         end
@@ -198,24 +204,24 @@ always@(posedge clk)begin
         end
         else begin
 					ar_ready_o              <= 1;
-					r_data_valid_o          <= 0;
+					r_data_valid            <= 0;
 					cache_r_ready_o         <= 0;
         end
 
       S_HIT:if(next_state==S_IDLE)begin
 					ar_ready_o          <= 1;
-					r_data_valid_o      <= 0;
+					r_data_valid        <= 0;
           waynum              <= 0;
-          r_data_o            <= 0;
+          r_data              <= 0;
       end
-      else if(r_data_valid_o)begin
+      else if(r_data_valid)begin
         //避免没写入缓存的数据短暂污染输出数据-这个原因是取出数据后接收方没准备好造成的切换的漏洞
-          r_data_valid_o          <= 1            ; 
+          r_data_valid            <= 1            ; 
       end
       else begin
           //difftest_valid();
-          r_data_valid_o          <= 1            ; 
-          r_data_o                <= addr[3] ? RAM_Q[waynum][127:64] : RAM_Q[waynum][63:0];
+          r_data_valid            <= 1            ; 
+          r_data                  <= addr[3] ? RAM_Q[waynum][127:64] : RAM_Q[waynum][63:0];
       end
 
       S_AR:if(next_state==S_R)begin
@@ -225,13 +231,22 @@ always@(posedge clk)begin
 
       S_R:if(cache_r_valid_i&cache_r_ready_o&(cache_ar_len != 0))begin
               cache_ar_len   <= cache_ar_len -1;
-              r_data_o       <= cache_r_data_i;
+              r_data         <= cache_r_data_i;
+          end
+          else if(next_state==S_IDLE)begin
+              cache_r_ready_o     <= 0                                  ;
+              valid[waynum][index]<= 1                                  ;
+              r_data              <= addr[3] ? cache_r_data_i : r_data  ;
+              ar_ready_o          <= 1                                  ;   
+					    r_data_valid        <= 0                                  ;
+              waynum              <= 0                                  ;
+              r_data              <= 0                                  ;
           end
           else if(next_state==S_HIT)begin
               cache_r_ready_o     <= 0                                  ;
               valid[waynum][index]<= 1                                  ;
-              r_data_o            <= addr[3] ? cache_r_data_i : r_data_o;  
-              r_data_valid_o      <= 1                                  ;
+              r_data              <= addr[3] ? cache_r_data_i : r_data;  
+              r_data_valid        <= 1                                  ;
             end
 
       default:begin
@@ -239,6 +254,11 @@ always@(posedge clk)begin
     endcase
   end
 end
+
+//与内部ifu访问的改善信号
+assign r_data_valid_o   = cache_r_ready_o&cache_r_valid_i&(cache_ar_len == 0)&r_data_ready_i | r_data_valid;
+assign r_data_o         = cache_r_ready_o&cache_r_valid_i&(cache_ar_len == 0)&r_data_ready_i ? 
+                          addr[3] ? cache_r_data_i : r_data : addr[3] ? RAM_Q[waynum][127:64]: RAM_Q[waynum][63:0];
 
 //与外部axi访问的改善信号
 assign cache_ar_valid_o = cache_ar_valid | ar_valid_i&ar_ready_o&(&hit_wayflag);//用选择器也行，但这里的逻辑这么写视乎能省一点地方
