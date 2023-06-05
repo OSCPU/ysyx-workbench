@@ -137,7 +137,7 @@ always@(*) begin
   else case(state)
     S_IDLE:if(ar_valid_i&ar_ready_o)begin
             if(|hit_wayflag)next_state=S_HIT;
-            else if(cache_ar_valid_o & cache_ar_ready_i) next_state=S_R;
+            else if(cache_ar_ready_i) next_state=S_R;
             else next_state=S_AR;
           end
         else next_state=S_IDLE;
@@ -241,7 +241,7 @@ always@(posedge clk)begin
 end
 
 //与外部axi访问的改善信号
-assign cache_ar_valid_o = cache_ar_valid | ar_valid_i&ar_ready_o& ~(|hit_wayflag);//用选择器也行，但这里的逻辑这么写视乎能省一点地方
-assign cache_ar_addr_o  = ar_valid_i&ar_ready_o& ~(|hit_wayflag) ? {ar_addr_i[TAGL:INDEXR],OFFSET0} : cache_ar_addr;
-assign cache_ar_len_o   = ar_valid_i&ar_ready_o& ~(|hit_wayflag) ? 1 : cache_ar_len;
+assign cache_ar_valid_o = cache_ar_valid | next_state==S_R;//用选择器也行，但这里的逻辑这么写视乎能省一点地方
+assign cache_ar_addr_o  = next_state==S_R ? {ar_addr_i[TAGL:INDEXR],OFFSET0} : cache_ar_addr;
+assign cache_ar_len_o   = next_state==S_R ? 1 : cache_ar_len;
 endmodule
