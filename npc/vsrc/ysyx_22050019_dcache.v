@@ -109,7 +109,7 @@ wire                   RAM_CEN = 0                                              
 wire                   RAM_WEN[WAY_DEPTH-1:0]                                                           ;//为0是写使能1是读使能，读写控制hit是读数据
 wire [DATA_WIDTH-1:0]  maskn   = (state == S_HIT) ? {{8{w_w_strb_i[7]}},{8{w_w_strb_i[6]}},{8{w_w_strb_i[5]}},{8{w_w_strb_i[4]}},{8{w_w_strb_i[3]}},{8{w_w_strb_i[2]}},{8{w_w_strb_i[1]}},{8{w_w_strb_i[0]}}}
                                                                : 64'hffffffffffffffff                   ;//写掩码，目前是全位写，掩码在发送端处理了                                                               
-wire                   shift   = (state == S_HIT) ? addr[3] : ~cache_rw_len_o                         ;//写使能的地址偏移shift为1代表高64位
+wire                   shift   = (state == S_HIT)&addr[3] ? 1 : ~cache_rw_len_o                         ;//写使能的地址偏移shift为1代表高64位
 wire [127:0]           RAM_BWEN= ~(shift ? {maskn,64'd0}  : {64'd0,maskn})                              ;//ram写掩码目前一样不用过多处理
 wire [INDEX_WIDTH-1:0] RAM_A   = (next_state == S_HIT)|(next_state == S_AW) ? index_in : addr[RAML:RAMR];//ram地址索引
 wire [DATA_WIDTH-1:0]  wdata   = cache_r_valid_i&&cache_r_ready_o ? cache_r_data_i : w_data_i           ;
