@@ -39,7 +39,7 @@ module ysyx_22050019_icache#(
   output                             cache_ar_valid_o    ,       
   input                              cache_ar_ready_i    ,     
   output    [ADDR_WIDTH-1:0]         cache_ar_addr_o     ,
-  output reg                         cache_ar_len_o      ,          
+  output                             cache_ar_len_o      ,          
   output reg                         cache_r_ready_o     ,     
   input                              cache_r_valid_i     ,
   input     [1:0]                    cache_r_resp_i      ,      
@@ -241,7 +241,7 @@ always@(posedge clk)begin
 end
 
 //与外部axi访问的改善信号
-assign cache_ar_valid_o = cache_ar_valid | next_state==S_R;//用选择器也行，但这里的逻辑这么写视乎能省一点地方
-assign cache_ar_addr_o  = next_state==S_R ? {ar_addr_i[TAGL:INDEXR],OFFSET0} : cache_ar_addr;
-assign cache_ar_len_o   = next_state==S_R ? 1 : cache_ar_len;
+assign cache_ar_valid_o = state == S_IDLE & next_state==S_R | cache_ar_valid  ;//用选择器也行，但这里的逻辑这么写视乎能省一点地方
+assign cache_ar_addr_o  = state == S_IDLE & next_state==S_R ? {ar_addr_i[TAGL:INDEXR],OFFSET0} : cache_ar_addr;
+assign cache_ar_len_o   = state == S_IDLE & next_state==S_R ? 1 : cache_ar_len;
 endmodule
