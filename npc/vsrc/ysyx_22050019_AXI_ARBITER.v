@@ -88,7 +88,7 @@ assign s2_axi_aw_ready_o= w_channel ? axi_aw_ready_i    : 0;
 assign s1_axi_aw_ready_o= ~w_channel? axi_aw_ready_i    : 0;
 assign axi_aw_valid_o   = w_channel ? s2_axi_aw_valid_i : s1_axi_aw_valid_i;
 assign axi_aw_addr_o    = w_channel ? s2_axi_aw_addr_i  : s1_axi_aw_addr_i;
-assign axi_aw_len_o     = r_channel ? s2_axi_rw_len_i   : 0;
+assign axi_aw_len_o     = w_channel ? s2_axi_rw_len_i   : 0;
 
 assign s2_axi_w_ready_o = w_channel ? axi_w_ready_i     : 0;
 assign s1_axi_w_ready_o = ~w_channel? axi_w_ready_i     : 0; 
