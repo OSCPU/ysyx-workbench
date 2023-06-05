@@ -49,7 +49,7 @@ module ysyx_22050019_dcache#(
   output reg                         cache_aw_valid_o    ,       
   input                              cache_aw_ready_i    ,     
   output reg[ADDR_WIDTH-1:0]         cache_aw_addr_o     ,
-  output                             cache_rw_len_o      ,           
+  output reg                         cache_rw_len_o      ,           
   input                              cache_w_ready_i     ,     
   output reg                         cache_w_valid_o     ,     
   output reg[DATA_WIDTH-1:0]         cache_w_data_o      ,
