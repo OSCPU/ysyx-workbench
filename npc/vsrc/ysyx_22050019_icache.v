@@ -152,7 +152,7 @@ always@(*) begin
       else next_state=S_AR;
 
     S_R:if(cache_r_ready_o&cache_r_valid_i&(cache_ar_len == 0))begin
-      if(r_data_ready_i) next_state=S_IDLE;
+      if(r_data_ready_i&r_data_valid_o) next_state=S_IDLE;
       else next_state=S_HIT;
     end
       else next_state=S_R;
