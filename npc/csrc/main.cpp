@@ -309,6 +309,9 @@ int main(int argc, char** argv, char** env) {
     cpu_reset();
     init_disasm("riscv64-pc-linux-gnu");
 //2流水线择在这里将cpu先跑一次，不可放在‘init_disasm（）’初始前
+#ifdef CONFIG_DIFFTEST
+  init_difftest();
+#endif
     exec_once();
     exec_once();
     exec_once();
@@ -319,9 +322,7 @@ int main(int argc, char** argv, char** env) {
     exec_once();
 //    icache_exec = false;
     //difftest_ok = false;
-#ifdef CONFIG_DIFFTEST
-  init_difftest();
-#endif
+
     while (1) {
       IFDEF(CONFIG_DEVICE, device_update());
 
