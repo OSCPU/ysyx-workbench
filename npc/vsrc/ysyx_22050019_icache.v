@@ -158,7 +158,7 @@ end
 import "DPI-C" function void difftest_valid();
 always@(posedge clk)begin
   if(rst)begin
-		ar_ready_o          <= 1;
+		ar_ready_o          <= 0;
 		r_data_valid_o      <= 0;
 		r_data_o            <= 0;
     cache_ar_valid      <= 0;
@@ -177,7 +177,6 @@ always@(posedge clk)begin
           addr                    <= ar_addr_i[TAGL : 0]   ;
         end
         else if(next_state==S_R)begin
-//          icache_wait()               ;//多跑2个周期平衡
 					ar_ready_o              <= 0;
           waynum                  <= random;
           addr                    <= ar_addr_i[TAGL : 0]   ;

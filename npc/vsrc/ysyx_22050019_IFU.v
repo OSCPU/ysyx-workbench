@@ -63,8 +63,8 @@ reg rready;
   // 读的状态机
 always@(posedge clk)begin
   if(rst_n)begin
-        m_axi_arvalid   <= 1'b1;
-        rready    <= 1'b0;
+        m_axi_arvalid   <= 1'b0;
+        rready          <= 1'b0;
         rresp           <= 2'b0;
   end
   else begin
