@@ -161,7 +161,7 @@ always@(posedge clk)begin
       end
       else if(next_rstate==RS_S2)begin
 //        arbiter_wait();//多跑3个周期平衡
-        len      <= 1;
+        len      <= s2_axi_rw_len_i;
         r_channel<= 1;
       end
       else begin
@@ -176,7 +176,8 @@ always@(posedge clk)begin
         r_channel<=0;
       end
       else if(next_rstate==RS_S2)begin
-        r_channel<=1;
+        len      <= s2_axi_rw_len_i;
+        r_channel<= 1;
       end
 
       RS_S2:
