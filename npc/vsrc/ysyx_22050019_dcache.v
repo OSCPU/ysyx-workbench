@@ -31,10 +31,10 @@ module ysyx_22050019_dcache#(
   input                              ar_valid_i          ,         
   output reg                         ar_ready_o          ,     
   input     [ADDR_WIDTH-1:0]         ar_addr_i           ,             
-  output reg                         r_data_valid_o      ,     
+  output                             r_data_valid_o      ,     
   input                              r_data_ready_i      ,
   input     [1:0]                    r_resp_i            ,     
-  output reg[DATA_WIDTH-1:0]         r_data_o            ,
+  output    [DATA_WIDTH-1:0]         r_data_o            ,
   input                              aw_valid_i          ,         
   output reg                         aw_ready_o          ,     
   input     [ADDR_WIDTH-1:0]         aw_addr_i           ,             
@@ -153,6 +153,10 @@ always@(posedge clk) begin
   else state<=next_state;
 end
 
+// 一些ifu接口的输出信号中间态定义
+reg                   r_data_valid;
+reg [DATA_WIDTH-1:0]  r_data;
+
 always@(*) begin
   if(rst)next_state=S_IDLE;
   else case(state)
@@ -178,7 +182,10 @@ always@(*) begin
     S_AR:if(cache_ar_valid&cache_ar_ready_i)next_state=S_R;
       else next_state=S_AR;
 
-    S_R:if(cache_r_ready_o&cache_r_valid_i&(cache_rw_len_o == 0))next_state=S_HIT;
+    S_R:if(cache_r_ready_o&cache_r_valid_i&(cache_rw_len_o == 0))begin
+      if(~rw_control&r_data_ready_i) next_state = S_IDLE;
+      else next_state=S_HIT;
+    end
       else next_state=S_R;
 
     default:next_state=S_IDLE;
@@ -190,8 +197,8 @@ always@(posedge clk)begin
     rw_control                    <= 0                                     ;
 		ar_ready_o                    <= 1                                     ;
     aw_ready_o                    <= 1                                     ;
-		r_data_valid_o                <= 0                                     ;
-		r_data_o                      <= 0                                     ;
+		r_data_valid                  <= 0                                     ;
+		r_data                        <= 0                                     ;
     w_data_ready_o                <= 0                                     ;
     b_valid_o                     <= 0                                     ;
     b_resp_o                      <= 0                                     ;
@@ -207,7 +214,7 @@ always@(posedge clk)begin
       S_IDLE:if(next_state==S_HIT)begin
 					ar_ready_o              <= 0                                     ;
           aw_ready_o              <= 0                                     ;
-          r_data_valid_o          <= 0                                     ; 
+          r_data_valid            <= 0                                     ; 
           waynum                  <= hit_waynum_i                          ;
           addr                    <= rw_addr_i[TAGL:0]                     ;
           if(aw_valid_i&aw_ready_o) begin
@@ -249,7 +256,7 @@ always@(posedge clk)begin
         else begin
 					ar_ready_o              <= 1                                     ;
           aw_ready_o              <= 1                                     ;
-					r_data_valid_o          <= 0                                     ;
+					r_data_valid            <= 0                                     ;
 					cache_r_ready_o         <= 0                                     ;
         end
 
@@ -257,9 +264,9 @@ always@(posedge clk)begin
           rw_control              <= 0                                     ;
 					ar_ready_o              <= 1                                     ;
           aw_ready_o              <= 1                                     ;
-					r_data_valid_o          <= 0                                     ;
+					r_data_valid            <= 0                                     ;
           waynum                  <= 0                                     ;
-          r_data_o                <= 0                                     ;
+          r_data                  <= 0                                     ;
           b_valid_o               <= 0                                     ;
       end
       else if(rw_control) begin
@@ -271,8 +278,8 @@ always@(posedge clk)begin
          end
       end
       else if(~rw_control) begin
-          r_data_valid_o          <= 1                                     ; 
-          r_data_o                <= addr[3] ? RAM_Q[waynum][127:64] : RAM_Q[waynum][63:0];
+          r_data_valid            <= 1                                     ; 
+          r_data                  <= addr[3] ? RAM_Q[waynum][127:64] : RAM_Q[waynum][63:0];
       end
 
       S_AW:if(next_state==S_W)begin
@@ -308,13 +315,21 @@ always@(posedge clk)begin
 
       S_R:if(cache_r_valid_i&cache_r_ready_o&(cache_rw_len_o != 0))begin
               cache_rw_len_o <= cache_rw_len_o -1;
-              r_data_o       <= cache_r_data_i;
+              r_data         <= cache_r_data_i;
           end
+          else if(next_state==S_IDLE)begin
+					    ar_ready_o          <= 1                                  ;
+					    r_data_valid        <= 0                                  ;
+              waynum              <= 0                                  ;
+              r_data              <= 0                                  ;
+              cache_r_ready_o     <= 0                                  ;
+              valid[waynum][index]<= 1                                  ; 
+            end
           else if(next_state==S_HIT)begin
               cache_r_ready_o     <= 0                                  ;
               valid[waynum][index]<= 1                                  ;
-              r_data_o            <= addr[3] ? cache_r_data_i : r_data_o;  
-              r_data_valid_o      <= 1                                  ;
+              r_data              <= addr[3] ? cache_r_data_i : r_data  ;  
+              r_data_valid        <= 1                                  ;
               if(rw_control) begin
               w_data_ready_o      <= 1                                  ;
               end
@@ -329,6 +344,9 @@ end
 reg cache_ar_valid;
 assign cache_ar_valid_o = cache_ar_valid|next_state==S_AR;
 
+//与外部ifu访问的改善信号
+assign r_data_valid_o  = cache_r_ready_o&cache_r_valid_i&(cache_rw_len_o == 0)& ~rw_control ? 1 : r_data_valid;
+assign r_data_o        = cache_r_ready_o&cache_r_valid_i&(cache_rw_len_o == 0)& ~rw_control ? (addr[3] ? cache_r_data_i : r_data) : r_data;
 //仿真程序接入
 /*
 always@(posedge clk) begin
