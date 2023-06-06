@@ -309,13 +309,11 @@ int main(int argc, char** argv, char** env) {
     cpu_reset();
     init_disasm("riscv64-pc-linux-gnu");
 //2流水线择在这里将cpu先跑一次，不可放在‘init_disasm（）’初始前
-    exec_once();
-    exec_once();
-    exec_once();
-    exec_once();
-    exec_once();
-    exec_once();
-    exec_once();
+      while(difftest_ok == false){
+      exec_once();
+       }
+       difftest_ok = false;
+       
     //这一段的作用是将cpu的初始状态对齐到nemu中，所以在改进icache后，需要注意difftest肯也需要改进
 //    icache_exec = false;
     //difftest_ok = false;
