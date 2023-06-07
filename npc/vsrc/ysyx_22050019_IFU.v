@@ -13,11 +13,11 @@ module ysyx_22050019_IFU#(
     
     input  [63:0]         inst_i            ,
     input  [1:0]          m_axi_r_resp_i    ,
-    output reg            m_axi_rready      ,
+    output                m_axi_rready      ,
     input                 m_axi_rvalid      ,
 
     input                 m_axi_arready     ,
-    output reg            m_axi_arvalid     ,
+    output                m_axi_arvalid     ,
     output                inst_commite      ,
 
     //五级流水的适配控制信号的输入和输出
@@ -60,10 +60,11 @@ module ysyx_22050019_IFU#(
   endcase
 end
 reg rready;
+reg rrvalid;
   // 读的状态机
 always@(posedge clk)begin
   if(rst_n)begin
-        m_axi_arvalid   <= 1'b0;
+        rrvalid         <= 1'b0;
         rready          <= 1'b0;
         rresp           <= 2'b0;
   end
@@ -71,22 +72,22 @@ always@(posedge clk)begin
     case(state_reg)
       IDLE:
       if(next_state==WAIT_READY) begin
-        m_axi_arvalid   <= 1'b0;
+        rrvalid         <= 1'b0;
         rready          <= 1;
       end
       else begin
         rresp           <= 2'b0;
-        m_axi_arvalid   <= 1'b1;
+        rrvalid         <= 1'b1;
         rready          <= 1'b0;
       end
 
       WAIT_READY:if(next_state==IDLE)begin
-        m_axi_arvalid   <= 1'b1;
+        rrvalid         <= 1'b1;
         rready          <= 1'b0;
         rresp           <= m_axi_r_resp_i;
       end
       else begin
-        m_axi_arvalid   <= 1'b0;
+        rrvalid         <= 1'b0;
         rready          <= 1;
       end
       default:begin
@@ -94,7 +95,8 @@ always@(posedge clk)begin
     endcase
   end
 end
-assign m_axi_rready = (~pc_stall_i) ? rready : 0;
+assign m_axi_rready =  rready;
+assign m_axi_rready = (~pc_stall_i) ? rrvalid : 0;
 //=========================
 //=========================
 
@@ -106,11 +108,11 @@ always @ (posedge clk) begin
     if (rst_n) begin
         inst_addr <= RESET_VAL;
     // 跳转
-    end else if (~pc_wen) begin
-        inst_addr <= inst_addr;
-    // 暂停
     end else if (inst_j) begin
         inst_addr <= snpc;
+    // 暂停
+    end else if (~pc_wen) begin
+        inst_addr <= inst_addr;
     // 地址加4
     end else begin
         inst_addr <= inst_addr + 64'h4;
