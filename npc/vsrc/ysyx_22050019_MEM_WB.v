@@ -3,13 +3,9 @@ module ysyx_22050019_MEM_WB (
     input            rst_n               ,
     input     [63:0] pc_i                ,
     input     [31:0] inst_i              ,
-    input            reg_we_exu_lsu_i    ,
-    input            reg_we_lsu_i        ,
-    input     [4:0]  reg_waddr_exu_i     ,
-    input     [4:0]  reg_waddr_lsu_i     ,
-    input     [63:0] reg_wdata_lsu_i     ,
-    input     [63:0] reg_wdata_csr_i     ,
-    input     [63:0] reg_wdata_exu_i     ,
+    input            reg_we_wbu_i        ,
+    input     [4:0]  reg_waddr_wbu_i     ,
+    input     [63:0] reg_wdata_wbu_i     ,
     input     [63:0] csr_regs_diff_i[3:0],
     input            commite_i           ,
 
@@ -32,9 +28,9 @@ module ysyx_22050019_MEM_WB (
         reg_wdata_wbu_o      <= 0;
     end
     else if(~mem_wb_stall_i)begin
-        reg_we_wbu_o         <= reg_we_exu_lsu_i|reg_we_lsu_i  ;
-        reg_waddr_wbu_o      <= reg_waddr_exu_i|reg_waddr_lsu_i;
-        reg_wdata_wbu_o      <= reg_we_exu_lsu_i ? reg_wdata_exu_i|reg_wdata_csr_i : reg_we_lsu_i ? reg_wdata_lsu_i : 64'b0;
+        reg_we_wbu_o         <= reg_we_wbu_i ;
+        reg_waddr_wbu_o      <= reg_waddr_wbu_i;
+        reg_wdata_wbu_o      <= reg_wdata_wbu_i;
     end
 
   end
