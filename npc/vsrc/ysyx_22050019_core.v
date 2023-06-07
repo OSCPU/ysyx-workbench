@@ -718,7 +718,7 @@ ysyx_22050019_pipeline_Control pipe_control(
 wire [63:0] rdata1_forwardimg;
 wire [63:0] rdata2_forwardimg;
 
-ysyx_22050019_forwarding u_ysyx_22050019_forwarding(
+ysyx_22050019_forwarding forwarding(
     .reg_raddr_1_id      ( raddr1_id_regs      ),
     .reg_raddr_2_id      ( raddr2_id_regs      ),
     .reg_waddr_exu       ( reg_waddr_id_exu       ),
