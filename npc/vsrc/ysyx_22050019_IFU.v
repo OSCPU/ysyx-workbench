@@ -109,7 +109,7 @@ always @ (posedge clk) begin
         inst_addr <= RESET_VAL;
     // 跳转
     end else if (inst_j) begin
-        inst_addr <= m_axi_rready ? inst_addr + 64'h4 : snpc;
+        inst_addr <= snpc;
     // 暂停
     end else if (~pc_wen) begin
         inst_addr <= inst_addr;
