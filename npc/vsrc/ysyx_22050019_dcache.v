@@ -327,11 +327,13 @@ always@(posedge clk)begin
             end
           else if(next_state==S_HIT)begin
               cache_r_ready_o     <= 0                                  ;
-              valid[waynum][index]<= 1                                  ;
-              r_data              <= addr[3] ? cache_r_data_i : r_data  ;  
-              r_data_valid        <= 1                                  ;
+              valid[waynum][index]<= 1                                  ; 
               if(rw_control) begin
               w_data_ready_o      <= 1                                  ;
+              end
+              else begin
+              r_data              <= addr[3] ? cache_r_data_i : r_data  ; 
+              r_data_valid        <= 1                                  ;
               end
             end
 
