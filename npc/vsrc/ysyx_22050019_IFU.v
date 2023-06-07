@@ -100,7 +100,7 @@ assign m_axi_arvalid = rrvalid;
 //=========================
 //=========================
 
-  wire pc_wen = rready && m_axi_rvalid && (~pc_stall_i) & (~inst_j); //暂停指示信号，目前用这个代替，后面需要参考优秀设计
+  wire pc_wen = rready && m_axi_rvalid && (~pc_stall_i); //暂停指示信号，目前用这个代替，后面需要参考优秀设计
   reg [63:0]     inst_addr; 
 // pc 计数器
 always @ (posedge clk) begin
@@ -120,7 +120,7 @@ always @ (posedge clk) begin
 end
 //=========================
 //IFU第一级取指令流水操作
-assign inst_addr_o = inst_j& ~m_axi_rready ? snpc : inst_addr;
+assign inst_addr_o = inst_j ? snpc : inst_addr;
 assign inst_o      = inst_addr [2] ? inst_i[63:32] : inst_i[31:0];
 assign inst_commite= pc_wen;
 assign ifu_ok_o    = pc_wen;
