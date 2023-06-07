@@ -96,7 +96,7 @@ always@(posedge clk)begin
   end
 end
 assign m_axi_rready = (~pc_stall_i) ? rready : 0;
-assign m_axi_rready = rrvalid;
+assign m_axi_arvalid = rrvalid;
 //=========================
 //=========================
 
