@@ -255,7 +255,7 @@ always@(posedge clk)begin
 end
 //与外部ifu访问的改善信号
 assign r_data_valid_o  = cache_r_ready_o&cache_r_valid_i&(cache_ar_len == 0)|(state == S_HIT) ? 1 : r_data_valid;
-assign r_data_o        = cache_r_ready_o&cache_r_valid_i&(cache_ar_len == 0)|(state == S_HIT) ? ((state == S_HIT) ? addr[3] ? RAM_Q[waynum][127:64] : RAM_Q[waynum][63:0] : (addr[3] ? cache_r_data_i : r_data)) : r_data;
+assign r_data_o        = cache_r_ready_o&cache_r_valid_i&(cache_ar_len == 0)|(state == S_HIT) ? ((state == S_HIT) ? (r_data_valid ? r_data : addr[3] ? RAM_Q[waynum][127:64] : RAM_Q[waynum][63:0]) : (addr[3] ? cache_r_data_i : r_data)) : r_data;
 //与外部axi访问的改善信号
 assign cache_ar_valid_o = state == S_IDLE & next_state==S_R | cache_ar_valid  ;//用选择器也行，但这里的逻辑这么写视乎能省一点地方
 assign cache_ar_addr_o  = state == S_IDLE & next_state==S_R ? {ar_addr_i[TAGL:INDEXR],OFFSET0} : cache_ar_addr;
