@@ -15,5 +15,5 @@ module ysyx_22050019_WBU(
 );
 assign reg_we_wbu_o         = reg_we_exu_lsu_i|reg_we_lsu_i  ;
 assign reg_waddr_wbu_o      = reg_waddr_exu_i|reg_waddr_lsu_i;
-assign reg_wdata_wbu_o      = reg_we_exu_lsu_i ? (reg_wdata_exu_i|reg_wdata_csr_i) : (reg_we_lsu_i ? reg_wdata_lsu_i : 64'b00);
+assign reg_wdata_wbu_o      = reg_we_lsu_i ? (reg_we_lsu_i ? reg_wdata_lsu_i : 64'b00) : (reg_wdata_exu_i|reg_wdata_csr_i);
 endmodule
