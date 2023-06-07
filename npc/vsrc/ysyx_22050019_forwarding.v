@@ -1,35 +1,55 @@
 module ysyx_22050019_forwarding (
-  input  wire  [4:0] reg_raddr_1_id,
-  input  wire  [4:0] reg_raddr_2_id,
-  input  wire  [4:0] reg_waddr_exu,
-  input  wire  [4:0] reg_waddr_lsu,
-  input  wire        reg_wen_exu,
-  input  wire        reg_wen_lsu,
-  input  wire  [4:0] reg_raddr_2_mem,
-  input  wire        ram_store_en_mem,
-  input  wire        ram_load_en_wb,
+  input  wire  [4:0] reg_raddr_1_id     ,
+  input  wire  [4:0] reg_raddr_2_id     ,
+  input  wire  [4:0] reg_waddr_exu      ,
+  input  wire  [4:0] reg_waddr_lsu      ,
+  input  wire        reg_wen_exu        ,
+  input  wire        reg_wen_lsu        ,
+  input  wire  [63:0]reg_wen_wdata_exu_i,
+  input  wire  [63:0]reg_wen_wdata_lsu_i,
+  input  wire  [63:0]reg_r_data1_id_i   ,
+  input  wire  [63:0]reg_r_data2_id_i   ,
 
-  output wire  [1:0] ForwardA,
-  output wire  [1:0] ForwardB,
-  output wire        ForwardC
+  input  wire  [63:0]reg_r_data1_id__o  ,
+  input  wire  [63:0]reg_r_data2_id__o  
 );
 
   /* 对于将lsu写wb的写寄存器通路与来自exu写的进行了合并，这样如果exu拉下的数据的前递，在lsu阶段有机会补上 */
+  /* rs1 exu前推 */
+  wire ForwardA_exu = reg_wen_exu && (reg_waddr_exu != 0) && (reg_waddr_exu == reg_raddr_1_id);
+  /* rs1 lsu前推 */
+  wire ForwardA_lsu = reg_wen_lsu && (reg_waddr_lsu != 0) && (!(reg_wen_exu && (reg_waddr_exu != 0) && (reg_waddr_exu == reg_raddr_1_id))) && (reg_waddr_lsu == reg_raddr_1_id);
 
-  /* rs1 MEM前推 */
-  assign ForwardA[1] = reg_wen_mem && (reg_waddr_mem != 0) && (reg_waddr_mem == reg_raddr_1_ex);
-  /* rs1 WB前推 */
-  assign ForwardA[0] = reg_wen_wb && (reg_waddr_wb != 0) && (!(reg_wen_mem && (reg_waddr_mem != 0) && (reg_waddr_mem == reg_raddr_1_ex))) && (reg_waddr_wb == reg_raddr_1_ex);
+  /* rs2 exu前推 */
+  wire ForwardB_exu = reg_wen_exu && (reg_waddr_exu != 0) && (reg_waddr_exu == reg_raddr_2_id);
+  /* rs2 lsu前推 */
+  wire ForwardBlsu = reg_wen_lsu && (reg_waddr_lsu != 0) && (!(reg_wen_exu && (reg_waddr_exu != 0) && (reg_waddr_exu == reg_raddr_2_id))) && (reg_waddr_lsu == reg_raddr_2_id);
 
-  /* rs2 MEM前推 */
-  assign ForwardB[1] = reg_wen_mem && (reg_waddr_mem != 0) && (reg_waddr_mem == reg_raddr_2_ex);
-  /* rs2 WB前推 */
-  assign ForwardB[0] = reg_wen_wb && (reg_waddr_wb != 0) && (!(reg_wen_mem && (reg_waddr_mem != 0) && (reg_waddr_mem == reg_raddr_2_ex))) && (reg_waddr_wb == reg_raddr_2_ex);
+// 10-exu前递出、01-lsu前递，00-原来值，11-在上面的逻辑中不会出现因为两个使能是互斥的
+wire [1:0]raddr1_sel   = {ForwardA_exu ,ForwardA_lsu};
+ysyx_22050019_mux #( .NR_KEY(2), .KEY_LEN(2), .DATA_LEN(64) ) mux_op1
+(
+  .key         (raddr1_sel), //键
+  .default_out (64'b0),
+  .lut         ({2'b10,reg_wen_wdata_exu_i,
+                 2'b01,reg_wen_wdata_lsu_i,
+                 2'b00,reg_r_data1_id_i 
+                 }), //键和输出的表           
+  .out         (reg_r_data1_id__o)  //输出
+);
 
-  /* 专门解决load-store数据冒险
-   * load取出要存入寄存器的值，而store的rs2也需要那个值，则传递
-   * mem执行store && wb执行load && 写入存储器的不为0寄存器 && load到寄存器地址 == mem需要的rs2
-   */
-  assign ForwardC = ram_store_en_mem && ram_load_en_wb && (reg_raddr_2_mem != 0) && (reg_waddr_wb == reg_raddr_2_mem);
-  
+//op2_sel
+wire [1:0]raddr2_sel   = {ForwardB_exu ,ForwardBlsu};
+ysyx_22050019_mux #( .NR_KEY(2), .KEY_LEN(2), .DATA_LEN(64)) mux_op2
+(
+  .key         (raddr2_sel), //键
+  .default_out (64'b0),
+  .lut         ({
+                 2'b10,reg_wen_wdata_exu_i,
+                 2'b01,reg_wen_wdata_lsu_i,
+                 2'b00,reg_r_data2_id_i 
+                 }),         
+  .out         (reg_r_data2_id__o)  //输出
+);
+
 endmodule
