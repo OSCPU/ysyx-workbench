@@ -10,8 +10,8 @@ module ysyx_22050019_forwarding (
   input  wire  [63:0]reg_r_data1_id_i   ,
   input  wire  [63:0]reg_r_data2_id_i   ,
 
-  input  wire  [63:0]reg_r_data1_id__o  ,
-  input  wire  [63:0]reg_r_data2_id__o  
+  output  wire  [63:0]reg_r_data1_id__o  ,
+  output  wire  [63:0]reg_r_data2_id__o  
 );
 
   /* 对于将lsu写wb的写寄存器通路与来自exu写的进行了合并，这样如果exu拉下的数据的前递，在lsu阶段有机会补上 */
