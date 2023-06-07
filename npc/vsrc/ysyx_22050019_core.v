@@ -87,6 +87,7 @@ ysyx_22050019_IF_ID IF_ID(
     .commite_o    ( commite_if_id),
     .if_id_stall_i( if_id_stall  ),
     .id_ex_stall_i( id_ex_stall  ),
+    .id_j_flush   ( inst_j       ),
     .pc_o         ( pc_ifu_id    ),
     .inst_o       ( inst_ifu_id  )
 );
