@@ -109,7 +109,7 @@ always @ (posedge clk) begin
         inst_addr <= RESET_VAL;
     // 跳转
     end else if (inst_j) begin
-        inst_addr <= snpc;
+        inst_addr <= m_axi_rready ? inst_addr + 64'h4 : snpc;
     // 暂停
     end else if (~pc_wen) begin
         inst_addr <= inst_addr;
@@ -120,7 +120,7 @@ always @ (posedge clk) begin
 end
 //=========================
 //IFU第一级取指令流水操作
-assign inst_addr_o = inst_j ? snpc : inst_addr;
+assign inst_addr_o = inst_j& ~m_axi_rready ? snpc : inst_addr;
 assign inst_o      = inst_addr [2] ? inst_i[63:32] : inst_i[31:0];
 assign inst_commite= pc_wen;
 assign ifu_ok_o    = pc_wen;
