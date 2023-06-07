@@ -27,7 +27,7 @@ module ysyx_22050019_forwarding (
 
 // 10-exu前递出、01-lsu前递，00-原来值，11-在上面的逻辑中不会出现因为两个使能是互斥的
 wire [1:0]raddr1_sel   = {ForwardA_exu ,ForwardA_lsu};
-ysyx_22050019_mux #( .NR_KEY(2), .KEY_LEN(2), .DATA_LEN(64) ) mux_op1
+ysyx_22050019_mux #( .NR_KEY(3), .KEY_LEN(2), .DATA_LEN(64) ) mux_op1
 (
   .key         (raddr1_sel), //键
   .default_out (64'b0),
@@ -40,7 +40,7 @@ ysyx_22050019_mux #( .NR_KEY(2), .KEY_LEN(2), .DATA_LEN(64) ) mux_op1
 
 //op2_sel
 wire [1:0]raddr2_sel   = {ForwardB_exu ,ForwardBlsu};
-ysyx_22050019_mux #( .NR_KEY(2), .KEY_LEN(2), .DATA_LEN(64)) mux_op2
+ysyx_22050019_mux #( .NR_KEY(3), .KEY_LEN(2), .DATA_LEN(64)) mux_op2
 (
   .key         (raddr2_sel), //键
   .default_out (64'b0),
