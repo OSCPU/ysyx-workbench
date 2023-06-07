@@ -15,6 +15,7 @@ module ysyx_22050019_forwarding (
 );
 
   /* 对于将lsu写wb的写寄存器通路与来自exu写的进行了合并，这样如果exu拉下的数据的前递，在lsu阶段有机会补上 */
+  //reg_wen_lsu && 这里的删除是因为两周期流水线会出现exu遗漏前递的情况发生，删除了这个可以让exu遗漏的在lsu补上，前提条件是对于waddr和wdata在发出时进行使能控制，减少乱传可能性
   /* rs1 exu前推 */
   wire ForwardA_exu = reg_wen_exu && (reg_waddr_exu != 0) && (reg_waddr_exu == reg_raddr_1_id);
   /* rs1 lsu前推 */
@@ -23,7 +24,7 @@ module ysyx_22050019_forwarding (
   /* rs2 exu前推 */
   wire ForwardB_exu = reg_wen_exu && (reg_waddr_exu != 0) && (reg_waddr_exu == reg_raddr_2_id);
   /* rs2 lsu前推 */
-  wire ForwardBlsu = reg_wen_lsu && (reg_waddr_lsu != 0) && (!(reg_wen_exu && (reg_waddr_exu != 0) && (reg_waddr_exu == reg_raddr_2_id))) && (reg_waddr_lsu == reg_raddr_2_id);
+  wire ForwardB_lsu = reg_wen_lsu  && (reg_waddr_lsu != 0) && (!(reg_wen_exu && (reg_waddr_exu != 0) && (reg_waddr_exu == reg_raddr_2_id))) && (reg_waddr_lsu == reg_raddr_2_id);
 
 // 10-exu前递出、01-lsu前递，00-原来值，11-在上面的逻辑中不会出现因为两个使能是互斥的
 wire [1:0]raddr1_sel   = {ForwardA_exu ,ForwardA_lsu};
@@ -39,7 +40,7 @@ ysyx_22050019_mux #( .NR_KEY(3), .KEY_LEN(2), .DATA_LEN(64) ) mux_op1
 );
 
 //op2_sel
-wire [1:0]raddr2_sel   = {ForwardB_exu ,ForwardBlsu};
+wire [1:0]raddr2_sel   = {ForwardB_exu ,ForwardB_lsu};
 ysyx_22050019_mux #( .NR_KEY(3), .KEY_LEN(2), .DATA_LEN(64)) mux_op2
 (
   .key         (raddr2_sel), //键
