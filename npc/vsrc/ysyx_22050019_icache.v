@@ -214,7 +214,7 @@ always@(posedge clk)begin
           waynum              <= 0;
           r_data              <= 0;
       end
-      else if(r_data_valid_o)begin
+      else if(r_data_valid)begin
         //避免没写入缓存的数据短暂污染输出数据-这个原因是取出数据后接收方没准备好造成的切换的漏洞
           r_data_valid           <= 1            ; 
       end

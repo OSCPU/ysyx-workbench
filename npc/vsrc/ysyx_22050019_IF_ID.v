@@ -17,7 +17,8 @@ module ysyx_22050019_IF_ID (
     output reg[63:0] pc_o         ,
     output reg[31:0] inst_o 
 );
-
+//跳转的时刻ifu是不能向下发送commite的确认的，跳转后需要重新取一条对应指令的数据，因为暂停期间跳转送进来的地址只有在结束时刻才能确认是对的。
+// 对于跳转进行了两个保险，其实现在来看ifu哪一个就够了，主要起作用的是在ifu，跳转后会进行一个nop操作，把这个commite_i的输出反压位0作为nop吧
 //id阶段暂停时如果是跳转指令，在跳转同时把上一级别寄存器状态刷新了，否则一直跳转阻塞
   always @(posedge clk) begin
     if (rst_n) begin
