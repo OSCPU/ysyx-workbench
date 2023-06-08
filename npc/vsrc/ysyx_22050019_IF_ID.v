@@ -17,6 +17,7 @@ module ysyx_22050019_IF_ID (
     output reg[63:0] pc_o         ,
     output reg[31:0] inst_o 
 );
+
 //id阶段暂停时如果是跳转指令，在跳转同时把上一级别寄存器状态刷新了，否则一直跳转阻塞
   always @(posedge clk) begin
     if (rst_n) begin
@@ -24,8 +25,8 @@ module ysyx_22050019_IF_ID (
         inst_o   <= 0;
         commite_o<= 0;
     end
-    else if (if_id_stall_i && (~id_ex_stall_i)) begin
-        pc_o     <= 0;
+    else if (commite_i && id_j_flush) begin
+        pc_o     <= pc_i;
         inst_o   <= 0;
         commite_o<= 0;
     end
