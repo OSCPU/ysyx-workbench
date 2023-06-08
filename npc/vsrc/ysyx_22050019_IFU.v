@@ -108,7 +108,7 @@ always @ (posedge clk) begin
     if (rst_n) begin
         inst_addr <= RESET_VAL;
     // 跳转
-    end else if (inst_j) begin
+    end else if (inst_j&(~pc_stall_i)) begin
         inst_addr <= snpc;
     // 暂停
     end else if (~pc_wen) begin
