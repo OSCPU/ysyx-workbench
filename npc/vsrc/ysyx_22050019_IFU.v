@@ -120,7 +120,7 @@ always @ (posedge clk) begin
     end else if (inst_j&(~pc_stall_i)) begin
         inst_addr <= snpc;
     // 暂停
-    end else if (~pc_wen) begin
+    end else if (~pc_wen | jmp_flage) begin
         inst_addr <= inst_addr;
     // 地址加4
     end else begin
