@@ -120,7 +120,7 @@ always @ (posedge clk) begin
 end
 //=========================
 //IFU第一级取指令流水操作
-assign inst_addr_o = inst_j&(~pc_stall_i) ? snpc : inst_addr;
+assign inst_addr_o = inst_j ? snpc : inst_addr;
 assign inst_o      = inst_addr [2] ? inst_i[63:32] : inst_i[31:0];
 assign inst_commite= pc_wen & ~inst_j;
 assign ifu_ok_o    = pc_wen;
