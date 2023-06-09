@@ -708,6 +708,7 @@ ysyx_22050019_MEM_WB MEM_WB(
 //pipeline 总控制器模块
 ysyx_22050019_pipeline_Control pipe_control(
     .lsu_stall_req ( lsu_stall_req             ),
+    .forwarding_req( forwarding_stall          ),
     .pc_stall_o    ( pc_stall                  ),
     .if_id_stall_o ( if_id_stall               ),
     .id_ex_stall_o ( id_ex_stall               ),
@@ -718,20 +719,21 @@ ysyx_22050019_pipeline_Control pipe_control(
 // 解决流水线数据冒险加入的前递单元
 wire [63:0] rdata1_forwardimg;
 wire [63:0] rdata2_forwardimg;
-
+wire        forwarding_stall;
 ysyx_22050019_forwarding forwarding(
-    .reg_raddr_1_id      ( raddr1_id_regs      ),
-    .reg_raddr_2_id      ( raddr2_id_regs      ),
-    .reg_waddr_exu       ( reg_waddr_id_exu       ),
-    .reg_waddr_lsu       ( reg_waddr_wb       ),
-    .reg_wen_exu         ( reg_we_id_exu         ),
-    .reg_wen_lsu         ( reg_we_wb         ),
+    .reg_raddr_1_id      ( raddr1_id_regs             ),
+    .reg_raddr_2_id      ( raddr2_id_regs             ),
+    .reg_waddr_exu       ( reg_waddr_id_exu           ),
+    .reg_waddr_lsu       ( reg_waddr_wb               ),
+    .reg_wen_exu         ( reg_we_id_exu              ),
+    .reg_wen_lsu         ( reg_we_wb                  ),
     .reg_wen_wdata_exu_i ( wdata_ex_reg|wdate_csr_exu ),
-    .reg_wen_wdata_lsu_i ( reg_wdata_wb ),
-    .reg_r_data1_id_i    ( rdata1_id_regs    ),
-    .reg_r_data2_id_i    ( rdata2_id_regs    ),
-    .reg_r_data1_id__o   ( rdata1_forwardimg   ),
-    .reg_r_data2_id__o   ( rdata2_forwardimg   )
+    .reg_wen_wdata_lsu_i ( reg_wdata_wb               ),
+    .reg_r_data1_id_i    ( rdata1_id_regs             ),
+    .reg_r_data2_id_i    ( rdata2_id_regs             ),
+    .forwarding_stall_o  ( forwarding_stall           ),
+    .reg_r_data1_id__o   ( rdata1_forwardimg          ),
+    .reg_r_data2_id__o   ( rdata2_forwardimg          )
 );
 
 

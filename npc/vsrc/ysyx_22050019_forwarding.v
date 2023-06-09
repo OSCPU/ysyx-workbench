@@ -1,17 +1,18 @@
 module ysyx_22050019_forwarding (
-  input  wire  [4:0] reg_raddr_1_id     ,
-  input  wire  [4:0] reg_raddr_2_id     ,
-  input  wire  [4:0] reg_waddr_exu      ,
-  input  wire  [4:0] reg_waddr_lsu      ,
-  input  wire        reg_wen_exu        ,
-  input  wire        reg_wen_lsu        ,
-  input  wire  [63:0]reg_wen_wdata_exu_i,
-  input  wire  [63:0]reg_wen_wdata_lsu_i,
-  input  wire  [63:0]reg_r_data1_id_i   ,
-  input  wire  [63:0]reg_r_data2_id_i   ,
+  input    [4:0] reg_raddr_1_id     ,
+  input    [4:0] reg_raddr_2_id     ,
+  input    [4:0] reg_waddr_exu      ,
+  input    [4:0] reg_waddr_lsu      ,
+  input          reg_wen_exu        ,
+  input          reg_wen_lsu        ,
+  input    [63:0]reg_wen_wdata_exu_i,
+  input    [63:0]reg_wen_wdata_lsu_i,
+  input    [63:0]reg_r_data1_id_i   ,
+  input    [63:0]reg_r_data2_id_i   ,
 
-  output  wire  [63:0]reg_r_data1_id__o  ,
-  output  wire  [63:0]reg_r_data2_id__o  
+  output         forwarding_stall_o ,
+  output   [63:0]reg_r_data1_id__o  ,
+  output   [63:0]reg_r_data2_id__o  
 );
 
   /* 对于将lsu写wb的写寄存器通路与来自exu写的进行了合并，这样如果exu拉下的数据的前递，在lsu阶段有机会补上 */
@@ -24,11 +25,11 @@ module ysyx_22050019_forwarding (
   /* rs2 exu前推 */
   wire ForwardB_exu = reg_wen_exu && (reg_waddr_exu != 0) && (reg_waddr_exu == reg_raddr_2_id);
   /* rs2 lsu前推 */
-  wire ForwardB_lsu = reg_wen_lsu  && (reg_waddr_lsu != 0) && (!(reg_wen_exu && (reg_waddr_exu != 0) && (reg_waddr_exu == reg_raddr_2_id))) && (reg_waddr_lsu == reg_raddr_2_id);
+  wire ForwardB_lsu = reg_wen_lsu && (reg_waddr_lsu != 0) && (!(reg_wen_exu && (reg_waddr_exu != 0) && (reg_waddr_exu == reg_raddr_2_id))) && (reg_waddr_lsu == reg_raddr_2_id);
 
 // 10-exu前递出、01-lsu前递，00-原来值，11-在上面的逻辑中不会出现因为两个使能是互斥的
 wire [1:0]raddr1_sel   = {ForwardA_exu ,ForwardA_lsu};
-ysyx_22050019_mux #( .NR_KEY(3), .KEY_LEN(2), .DATA_LEN(64) ) mux_op1
+ysyx_22050019_mux #( .NR_KEY(3), .KEY_LEN(2), .DATA_LEN(64) ) mux_r_data1
 (
   .key         (raddr1_sel), //键
   .default_out (64'b0),
@@ -41,7 +42,7 @@ ysyx_22050019_mux #( .NR_KEY(3), .KEY_LEN(2), .DATA_LEN(64) ) mux_op1
 
 //op2_sel
 wire [1:0]raddr2_sel   = {ForwardB_exu ,ForwardB_lsu};
-ysyx_22050019_mux #( .NR_KEY(3), .KEY_LEN(2), .DATA_LEN(64)) mux_op2
+ysyx_22050019_mux #( .NR_KEY(3), .KEY_LEN(2), .DATA_LEN(64)) mux_r_data2
 (
   .key         (raddr2_sel), //键
   .default_out (64'b0),
@@ -53,4 +54,6 @@ ysyx_22050019_mux #( .NR_KEY(3), .KEY_LEN(2), .DATA_LEN(64)) mux_op2
   .out         (reg_r_data2_id__o)  //输出
 );
 
+// lsu对于idu的暂停（插入nop）这里的操作是提前阻塞if_id然后把l指令传下去给lsu执行（传递过后这个信号就拉低了类似一个补充信号）
+assign forwarding_stall_o = ~reg_wen_exu & (reg_waddr_exu != 0) && ((reg_waddr_exu == reg_raddr_1_id) || (reg_waddr_exu == reg_raddr_2_id));
 endmodule
