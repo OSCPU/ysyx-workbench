@@ -23,7 +23,6 @@ wire [63:0]pc_ifu;
 wire [31:0]inst_ifu;
 
 wire pc_stall;
-wire ifu_ok;
 //fetch模块端口
 ysyx_22050019_IFU IFU
 (
@@ -44,7 +43,6 @@ ysyx_22050019_IFU IFU
     .inst_commite      (ifu_commite        ),
 // control
     .pc_stall_i        (pc_stall           ),
-    .ifu_ok_o          (ifu_ok             ),
 
     .inst_addr_o       (pc_ifu             ), // 传入下级模块的地址
     .inst_o            (inst_ifu           )
@@ -81,7 +79,6 @@ ysyx_22050019_IF_ID IF_ID(
     .clk          ( clk          ),
     .rst_n        ( rst_n        ),
     .commite_i    ( ifu_commite  ),
-    .ifu_ok_i     ( ifu_ok       ),
     .pc_i         ( pc_ifu       ),
     .inst_i       ( inst_ifu     ),
     .commite_o    ( commite_if_id),

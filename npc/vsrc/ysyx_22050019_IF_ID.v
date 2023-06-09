@@ -4,7 +4,6 @@ module ysyx_22050019_IF_ID (
     input     [63:0] pc_i         ,
     input     [31:0] inst_i       ,
 
-    input            ifu_ok_i     ,
     /* valid */
     input            commite_i    ,
     output reg       commite_o    ,

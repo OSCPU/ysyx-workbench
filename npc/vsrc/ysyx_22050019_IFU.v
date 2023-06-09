@@ -24,7 +24,6 @@ module ysyx_22050019_IFU#(
     input                 pc_stall_i        ,
     
     // 送出指令和对于pc的接口（打了一拍）
-    output                ifu_ok_o          ,
     output  [63:0]        inst_addr_o       , //到指令寄存器中取指令的地址
     output  [31:0]        inst_o
 );
@@ -61,12 +60,15 @@ module ysyx_22050019_IFU#(
 end
 reg rready;
 reg rrvalid;
+//跳转在传输过程中改变pc，为1说明pc改变的和访问的不一样需要重新传
+reg jmp_flage;
   // 读的状态机
 always@(posedge clk)begin
   if(rst_n)begin
         rrvalid         <= 1'b0;
         rready          <= 1'b0;
         rresp           <= 2'b0;
+        jmp_flage       <= 1'b0;
   end
   else begin
     case(state_reg)
@@ -76,12 +78,18 @@ always@(posedge clk)begin
         rready          <= 1;
       end
       else begin
+        jmp_flage       <= 1'b0;
         rresp           <= 2'b0;
         rrvalid         <= 1'b1;
         rready          <= 1'b0;
       end
 
-      WAIT_READY:if(next_state==IDLE)begin
+      WAIT_READY:begin
+      if(inst_j&(~pc_stall_i)) begin
+          jmp_flage     <= 1'b1;
+        end
+      if(next_state==IDLE)begin
+        jmp_flage       <= 1'b0;
         rrvalid         <= 1'b1;
         rready          <= 1'b0;
         rresp           <= m_axi_r_resp_i;
@@ -89,6 +97,7 @@ always@(posedge clk)begin
       else begin
         rrvalid         <= 1'b0;
         rready          <= 1;
+      end
       end
       default:begin
       end
@@ -122,6 +131,5 @@ end
 //IFU第一级取指令流水操作
 assign inst_addr_o = inst_j&(~pc_stall_i) ? snpc : inst_addr;
 assign inst_o      = inst_addr [2] ? inst_i[63:32] : inst_i[31:0];
-assign inst_commite= pc_wen & ~inst_j;
-assign ifu_ok_o    = pc_wen;
+assign inst_commite= pc_wen & ~inst_j & ~jmp_flage;
 endmodule
