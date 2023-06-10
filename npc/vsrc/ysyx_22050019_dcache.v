@@ -195,8 +195,8 @@ end
 always@(posedge clk)begin
   if(rst)begin
     rw_control                    <= 0                                     ;
-		ar_ready_o                    <= 1                                     ;
-    aw_ready_o                    <= 1                                     ;
+		ar_ready_o                    <= 0                                     ;
+    aw_ready_o                    <= 10                                     ;
 		r_data_valid                  <= 0                                     ;
 		r_data                        <= 0                                     ;
     w_data_ready_o                <= 0                                     ;
@@ -319,6 +319,7 @@ always@(posedge clk)begin
           end
           else if(next_state==S_IDLE)begin
 					    ar_ready_o          <= 1                                  ;
+              aw_ready_o          <= 1                                  ;
 					    r_data_valid        <= 0                                  ;
               waynum              <= 0                                  ;
               r_data              <= 0                                  ;

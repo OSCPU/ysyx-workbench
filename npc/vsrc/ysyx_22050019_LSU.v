@@ -169,8 +169,20 @@ always@(posedge clk) begin
   else aw_addr <= aw_addr;
 end
 
+//ram的写地址发送端信号控制
+reg aw_valid;
+always@(posedge clk) begin
+  if(rst) 
+    aw_valid <= 1'b0;
+  else if (m_axi_aw_ready&&m_axi_aw_valid)
+    aw_valid <= 1'b0;
+  else if(ram_we_i)
+    aw_valid <= 1'1;
+  else aw_valid <= aw_valid;
+end
+
 assign ram_waddr      = ram_we_i ? result[31:0] : 32'b0|aw_addr;
-assign m_axi_aw_valid = ram_we_i;
+assign m_axi_aw_valid = ram_we_i | aw_valid;
 
 //=============================================================
 //==========================读通道==============================
