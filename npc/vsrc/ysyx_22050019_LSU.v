@@ -177,7 +177,7 @@ always@(posedge clk) begin
   else if (m_axi_aw_ready&&m_axi_aw_valid)
     aw_valid <= 1'b0;
   else if(ram_we_i)
-    aw_valid <= 1'1;
+    aw_valid <= 1'b1;
   else aw_valid <= aw_valid;
 end
 
