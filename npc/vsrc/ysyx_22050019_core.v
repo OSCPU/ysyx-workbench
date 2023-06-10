@@ -159,19 +159,19 @@ wire [63:0]wdate_csr;
 
 wire [63:0]snpc_csr_id;
 ysyx_22050019_CSR CSR(
-    .clk            (clk                 ),
-    .rst_n          (rst_n               ),
-    .pc             (pc_ifu_id           ),
+    .clk             (clk                 ),
+    .rst_n           (rst_n               ),
+    .pc              (pc_ifu_id           ),
   
-    .csr_inst_type  (csr_inst_type_id_csr),
-    .csr_addr       (csr_addr_id_csr     ),
-    .csr_wen        (csr_wen_id_csr      ),
-    .rdata1_reg_csr (rdata1_id_regs      ),//从reg读到的数据
+    .csr_inst_type   (csr_inst_type_id_csr),
+    .csr_addr        (csr_addr_id_csr     ),
+    .csr_wen         (csr_wen_id_csr      ),
+    .rdata1_reg_csr  (rdata1_forwardimg   ),//从reg读到的数据
 
-    .snpc           (snpc_csr_id         ),
+    .snpc            (snpc_csr_id         ),
 
-    .csr_regs_diff  (csr_regs_diff       ),//csr to reg for diff
-    .wdate_csr_reg  (wdate_csr           )//向reg写的数据
+    .csr_regs_diff   (csr_regs_diff       ),//csr to reg for diff
+    .wdate_csr_reg   (wdate_csr           )//向reg写的数据
     
 
 );
