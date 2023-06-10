@@ -196,7 +196,7 @@ always@(posedge clk)begin
   if(rst)begin
     rw_control                    <= 0                                     ;
 		ar_ready_o                    <= 0                                     ;
-    aw_ready_o                    <= 10                                     ;
+    aw_ready_o                    <= 0                                     ;
 		r_data_valid                  <= 0                                     ;
 		r_data                        <= 0                                     ;
     w_data_ready_o                <= 0                                     ;
