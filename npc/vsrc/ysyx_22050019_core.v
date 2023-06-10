@@ -10,7 +10,7 @@ module ysyx_22050019_core(
 );
 
 //取出指令的逻辑分离出来
-wire [63:0]        inst_i ;
+wire [127:0]        inst_i ;
 
 // 虚拟sram_axi握手模拟
 wire axi_if_sram_rready;

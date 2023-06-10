@@ -11,7 +11,7 @@ module ysyx_22050019_IFU#(
     input                 inst_j            ,
     input   [63:0]        snpc              ,  
     
-    input  [63:0]         inst_i            ,
+    input  [127:0]        inst_i            ,
     input  [1:0]          m_axi_r_resp_i    ,
     output                m_axi_rready      ,
     input                 m_axi_rvalid      ,
@@ -130,6 +130,6 @@ end
 //=========================
 //IFU第一级取指令流水操作
 assign inst_addr_o = inst_j&(~pc_stall_i) ? snpc : inst_addr;
-assign inst_o      = inst_addr [2] ? inst_i[63:32] : inst_i[31:0];
+assign inst_o      = inst_addr[3] ? inst_addr [2] ? inst_i[127:96] : inst_i[95:64] : inst_addr [2] ? inst_i[63:32] : inst_i[31:0];
 assign inst_commite= pc_wen & ~inst_j & ~jmp_flage;
 endmodule

@@ -34,7 +34,7 @@ module ysyx_22050019_icache#(
   output                             r_data_valid_o      ,     
   input                              r_data_ready_i      ,
   input     [1:0]                    r_resp_i            ,     
-  output    [R_DATA_WIDTH-1:0]       r_data_o            ,  
+  output    [127:0]                  r_data_o            ,  
 
   output                             cache_ar_valid_o    ,       
   input                              cache_ar_ready_i    ,     
@@ -130,7 +130,7 @@ end
 
 // 一些ifu接口的输出信号中间态定义
 reg                   r_data_valid;
-reg [R_DATA_WIDTH-1:0]r_data;
+reg [127:0]           r_data;
 // 一些总线接口的输出信号中间态定义
 reg                   cache_ar_valid; 
 reg [ADDR_WIDTH-1:0]  cache_ar_addr;
@@ -221,7 +221,7 @@ always@(posedge clk)begin
       else begin
           //difftest_valid();
           r_data_valid            <= 1            ; 
-          r_data                  <= addr[3] ? RAM_Q[waynum][127:64] : RAM_Q[waynum][63:0];
+          r_data                  <= RAM_Q[waynum];
       end
 
       S_AR:if(next_state==S_R)begin
@@ -231,7 +231,7 @@ always@(posedge clk)begin
 
       S_R:if(cache_r_valid_i&cache_r_ready_o&(cache_ar_len != 0))begin
               cache_ar_len   <= cache_ar_len -1;
-              r_data         <= cache_r_data_i;
+              r_data         <= {64'b0,cache_r_data_i};
           end
           else if(next_state==S_IDLE)begin
 					    ar_ready_o          <= 1                                  ;
@@ -244,7 +244,7 @@ always@(posedge clk)begin
           else if(next_state==S_HIT)begin
               cache_r_ready_o     <= 0                                  ;
               valid[waynum][index]<= 1                                  ;
-              r_data              <= addr[3] ? cache_r_data_i : r_data  ;  
+              r_data              <= {cache_r_data_i,r_data[63:0]}    ;  
               r_data_valid        <= 1                                  ;
             end
 
@@ -255,7 +255,7 @@ always@(posedge clk)begin
 end
 //与外部ifu访问的改善信号
 assign r_data_valid_o  = cache_r_ready_o&cache_r_valid_i&(cache_ar_len == 0)|(state == S_HIT) ? 1 : r_data_valid;
-assign r_data_o        = cache_r_ready_o&cache_r_valid_i&(cache_ar_len == 0)|(state == S_HIT) ? ((state == S_HIT) ? (r_data_valid ? r_data : addr[3] ? RAM_Q[waynum][127:64] : RAM_Q[waynum][63:0]) : (addr[3] ? cache_r_data_i : r_data)) : r_data;
+assign r_data_o        = cache_r_ready_o&cache_r_valid_i&(cache_ar_len == 0)|(state == S_HIT) ? ((state == S_HIT) ? (r_data_valid ? r_data : RAM_Q[waynum]) : {cache_r_data_i,r_data[63:0]}) : r_data;
 //与外部axi访问的改善信号
 assign cache_ar_valid_o = state == S_IDLE & next_state==S_R | cache_ar_valid  ;//用选择器也行，但这里的逻辑这么写视乎能省一点地方
 assign cache_ar_addr_o  = state == S_IDLE & next_state==S_R ? {ar_addr_i[TAGL:INDEXR],OFFSET0} : cache_ar_addr;
