@@ -69,10 +69,10 @@ module inst_buffer #(
 (
   input                     clk  , 
   input                     wenc ,
-  input [DEPTH-1:0] waddr,  //深度对2取对数，得到地址的位宽。
+  input [DEPTH-1:0]         waddr,  //深度对2取对数，得到地址的位宽。
   input [WIDTH-1:0]         wdata,  //数据写入
-  input [DEPTH-1:0] raddr,  //深度对2取对数，得到地址的位宽。
-  output[WIDTH-1:0]         rdata,  //数据输出
+  input [DEPTH-1:0]         raddr,  //深度对2取对数，得到地址的位宽。
+  output[WIDTH-1:0]         rdata   //数据输出
 );
 
 reg [WIDTH-1:0] RAM_MEM [0:DEPTH-1];
