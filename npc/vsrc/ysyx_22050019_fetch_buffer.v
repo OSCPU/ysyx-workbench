@@ -22,7 +22,7 @@ module ysyx_22050019_fetch_buffer#(
 
 
   output                  inst_valid_o,
-  output [32:0]           inst_o          
+  output [31:0]           inst_o          
 );
 //=========================  
 // 判断输入pc是否相等的逻辑
