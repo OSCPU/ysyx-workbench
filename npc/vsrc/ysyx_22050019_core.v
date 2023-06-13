@@ -10,63 +10,55 @@ module ysyx_22050019_core(
 );
 
 //取出指令的逻辑分离出来
-wire [127:0]        inst_i ;
 
 // 虚拟sram_axi握手模拟
 wire axi_if_sram_rready;
 wire axi_if_sram_rvalid;
+wire [127:0]axi_if_sram_rdata;
 wire [1:0] axi_if_sram_resp  ;
 wire axi_if_sram_arready;
 wire axi_if_sram_arvalid;
+wire [31:0]axi_if_sram_araddr;
 wire ifu_commite;
 wire [63:0]pc_ifu;
 wire [31:0]inst_ifu;
 
 wire pc_stall;
 //fetch模块端口
-ysyx_22050019_IFU IFU
-(
-    .clk               (clk                ),
-    .rst_n             (rst_n              ),
-    // pc
-    .inst_j            (inst_j             ),
-    .snpc              (snpc|snpc_csr_id   ),
-
-    .inst_i            (inst_i             ),
-    .m_axi_rready      (axi_if_sram_rready ),
-    .m_axi_rvalid      (axi_if_sram_rvalid ),
-    .m_axi_r_resp_i    (axi_if_sram_resp   ),
-
-    //.inst_addr         (inst_addr),       // 取出的指令地址
-    .m_axi_arready     (stll_ar_ready      ),
-    .m_axi_arvalid     (axi_if_sram_arvalid),
-    .inst_commite      (ifu_commite        ),
-// control
-    .pc_stall_i        (pc_stall           ),
-
-    .inst_addr_o       (pc_ifu             ), // 传入下级模块的地址
-    .inst_o            (inst_ifu           )
+ysyx_22050019_IFU IFU(
+    .clk           ( clk           ),
+    .rst_n         ( rst_n         ),
+    .inst_j        ( inst_j        ),
+    .snpc          ( snpc|snpc_csr_id            ),
+    .inst_i        ( fb_inst        ),
+    .inst_valid_i  ( fb_inst_valid ),
+    .inst_commite  ( ifu_commite  ),
+    .pc_stall_i    ( pc_stall_i    ),
+    .inst_addr_o   ( pc_ifu   ),
+    .inst_o        ( inst_ifu        )
 );
 
-//拉出来一个控制器来解决读hit与读总线的冲突,这是一个临时的方案
-/*
-reg stll_ar_ready ;
-reg stll_ar_rvalid;
-always@(*) begin
-  if(rst_n) begin
-  stll_ar_ready = 0;
-  stll_ar_rvalid= 0;
-  end
-  else if(axi_dcache_arbiter_ar_ready|axi_dcache_arbiter_r_ready|axi_dcache_aw_valid&axi_dcache_aw_ready|axi_dcache_w_ready|axi_dcache_b_ready&axi_dcache_b_ready) begin
-    stll_ar_rvalid = 0 ;
-    stll_ar_ready  = 0 ;
-  end
-  else begin
-    stll_ar_rvalid = axi_if_sram_arvalid;
-    stll_ar_ready  = axi_if_sram_arready;
-  end 
-end
-*/
+
+// fetch_buffer
+wire fb_inst_valid;
+wire [31:0]fb_inst;
+ysyx_22050019_fetch_buffer fetch_buffer(
+    .clk          ( clk          ),
+    .rst_n        ( rst_n        ),
+    .ar_ready_i   ( stll_ar_ready   ),
+    .ar_valid_o   ( axi_if_sram_arvalid   ),
+    .ar_addr_o    ( axi_if_sram_araddr    ),
+    .r_valid_i    ( axi_if_sram_rvalid    ),
+    .r_data_i     ( axi_if_sram_rdata     ),
+    .r_resp_i     ( axi_if_sram_resp     ),
+    .r_ready_o    ( axi_if_sram_rready    ),
+    .jmp_flush_i  ( inst_j  ),
+    .pc_i         ( pc_ifu       ),
+    .inst_valid_o ( fb_inst_valid ),
+    .inst_o       ( fb_inst  )
+);
+
+
 wire stll_ar_rvalid = axi_if_sram_arvalid;
 wire stll_ar_ready  = axi_if_sram_arready;
 //==================IF/ID=======================
@@ -388,11 +380,11 @@ ysyx_22050019_icache I_CACHE(
 
     .ar_valid_i        ( stll_ar_rvalid           ),
     .ar_ready_o        ( axi_if_sram_arready      ),
-    .ar_addr_i         ( pc_ifu                   ),
+    .ar_addr_i         ( axi_if_sram_araddr       ),
     .r_data_valid_o    ( axi_if_sram_rvalid       ),
     .r_data_ready_i    ( axi_if_sram_rready       ),
     .r_resp_i          ( axi_if_sram_resp         ),
-    .r_data_o          ( inst_i                   ),
+    .r_data_o          ( axi_if_sram_rdata        ),
 
     .cache_ar_valid_o  ( axi_icache_sram_ar_valid ),
     .cache_ar_ready_i  ( axi_icache_sram_ar_ready ),

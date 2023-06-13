@@ -1,5 +1,6 @@
 module ysyx_22050019_fetch_buffer#(
   parameter   WIDTH = 128,
+  parameter   RESET_VAL = 64'h80000000,
   parameter   DEPTH = 4
 )(
   input                   clk         , 
@@ -18,7 +19,6 @@ module ysyx_22050019_fetch_buffer#(
   // control
   input                   jmp_flush_i ,
 
-  input                   pc_valid_i  ,
   input  [31:0]           pc_i        ,
 
 
@@ -31,7 +31,7 @@ module ysyx_22050019_fetch_buffer#(
 reg [27:0]buffer_pc; //只保存pc在cache line的块映射，也就是说对于低4位偏移拉0来对比
 always @ (posedge clk) begin
     if(rst_n)begin
-        buffer_pc <= RESET_VAL;
+        buffer_pc <= RESET_VAL[31:4];
     end
     else if(pc_equal) begin
         buffer_pc <= buffer_pc;
@@ -69,7 +69,7 @@ end
 assign rinc = ~rempty && pc_changed;
 
 // 根据buffer状态和pc输出指令和指令有效使能
-assign inst_valid_o = pc_equal | rempty & r_valid_i & r_ready_o;
+assign inst_valid_o = pc_equal & ~rempty| rempty & r_valid_i & r_ready_o;
 
 assign inst_o       = pc_i[3] ? pc_i [2] ? rdata[127:96] : rdata[95:64] : pc_i [2] ? rdata[63:32] : rdata[31:0];
 //=========================  
@@ -139,7 +139,7 @@ always@(posedge clk)begin
       end
 
       WAIT_READY:begin
-      if(inst_j) begin
+      if(jmp_flush_i) begin
           jmp_flage     <= 1'b1;
         end
       if(next_state==IDLE)begin
@@ -248,5 +248,5 @@ always @(posedge clk) begin
     RAM_MEM[waddr] <= wdata;
 end 
 
-assign rdata = wenc & (waddr == rdaar) ? wdata : RAM_MEM[raddr];
+assign rdata = wenc & (waddr == raddr) ? wdata : RAM_MEM[raddr];
 endmodule
