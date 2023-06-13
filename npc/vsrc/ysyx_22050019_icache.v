@@ -16,7 +16,7 @@
  */
 module ysyx_22050019_icache#(
   parameter R_DATA_WIDTH      = 64,
-  parameter R_ADDR_WIDTH      = 64,
+  parameter R_ADDR_WIDTH      = 32,
   parameter ADDR_WIDTH        = 32,
   parameter TAG_WIDTH         = 22,
   parameter INDEX_WIDTH       = 6 ,

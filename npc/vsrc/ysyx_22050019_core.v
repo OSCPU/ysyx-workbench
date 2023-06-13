@@ -53,7 +53,7 @@ ysyx_22050019_fetch_buffer fetch_buffer(
     .r_resp_i     ( axi_if_sram_resp     ),
     .r_ready_o    ( axi_if_sram_rready    ),
     .jmp_flush_i  ( inst_j  ),
-    .pc_i         ( pc_ifu       ),
+    .pc_i         ( pc_ifu[31:0]       ),
     .inst_valid_o ( fb_inst_valid ),
     .inst_o       ( fb_inst  )
 );
