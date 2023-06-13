@@ -177,7 +177,7 @@ wire               wfull ;
 wire               rempty;
 wire [WIDTH-1:0]   rdata ;
   // 用localparam定义一个参数，可以在文件内使用
-    localparam ADDR_WIDTH = 1;
+    localparam ADDR_WIDTH = 2;
 
     reg [ADDR_WIDTH:0] waddr;
     reg [ADDR_WIDTH:0] raddr;
@@ -218,9 +218,9 @@ inst_buffer  buffer_regs
     (
     .clk  ( clk                   ),
     .wenc ( winc                  ),
-    .waddr( waddr[ADDR_WIDTH:0] ), 
+    .waddr( waddr[ADDR_WIDTH-1:0] ), 
     .wdata( wdata                 ),        
-    .raddr( raddr[ADDR_WIDTH:0] ), 
+    .raddr( raddr[ADDR_WIDTH-1:0] ), 
     .rdata( rdata                 )     
 );
 //=========================    
