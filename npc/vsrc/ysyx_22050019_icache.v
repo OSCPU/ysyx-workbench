@@ -69,7 +69,7 @@ reg                 valid[WAY_DEPTH-1:0][INDEX_DEPTH-1:0];
 // wire类型传入的地址解析
 wire[TAG_WIDTH-1:0]    tag_in  = ar_addr_i[TAGL:TAGR]    ;
 wire[INDEX_WIDTH-1:0]  index_in= ar_addr_i[INDEXL:INDEXR];
-wire[OFFSET_WIDTH-1:0] OFFSET0 = 0                       ;//3'b0对于这里是持有怀疑态度的
+wire[OFFSET_WIDTH-1:0] OFFSET0 = 0                       ;//4'b0对于这里是持有怀疑态度的
 
 // 命中路的判断逻辑      0-1 两路
 wire[WAY_DEPTH-1:0]hit_wayflag;
