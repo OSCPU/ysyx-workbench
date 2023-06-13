@@ -219,9 +219,9 @@ inst_buffer  buffer_regs
     (
     .clk  ( clk                   ),
     .wenc ( winc                  ),
-    .waddr( waddr[ADDR_WIDTH-1:0] ), 
+    .waddr( waddr[ADDR_WIDTH-2:0] ), 
     .wdata( wdata                 ),        
-    .raddr( raddr[ADDR_WIDTH-1:0] ), 
+    .raddr( raddr[ADDR_WIDTH-2:0] ), 
     .rdata( rdata                 )     
 );
 //=========================    
@@ -235,9 +235,9 @@ module inst_buffer #(
 (
   input                     clk  , 
   input                     wenc ,
-  input [DEPTH-1:0]         waddr,  //深度对2取对数，得到地址的位宽。
+  input [DEPTH-2:0]         waddr,  //深度对2取对数，得到地址的位宽。
   input [WIDTH-1:0]         wdata,  //数据写入
-  input [DEPTH-1:0]         raddr,  //深度对2取对数，得到地址的位宽。
+  input [DEPTH-2:0]         raddr,  //深度对2取对数，得到地址的位宽。
   output[WIDTH-1:0]         rdata   //数据输出
 );
 
