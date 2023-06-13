@@ -26,16 +26,16 @@ wire [31:0]inst_ifu;
 wire pc_stall;
 //fetch模块端口
 ysyx_22050019_IFU IFU(
-    .clk           ( clk           ),
-    .rst_n         ( rst_n         ),
-    .inst_j        ( inst_j        ),
-    .snpc          ( snpc|snpc_csr_id            ),
-    .inst_i        ( fb_inst        ),
-    .inst_valid_i  ( fb_inst_valid ),
-    .inst_commite  ( ifu_commite  ),
-    .pc_stall_i    ( pc_stall    ),
-    .inst_addr_o   ( pc_ifu   ),
-    .inst_o        ( inst_ifu        )
+    .clk           ( clk              ),
+    .rst_n         ( rst_n            ),
+    .inst_j        ( inst_j           ),
+    .snpc          ( snpc|snpc_csr_id ),
+    .inst_i        ( fb_inst          ),
+    .inst_valid_i  ( fb_inst_valid    ),
+    .inst_commite  ( ifu_commite      ),
+    .pc_stall_i    ( pc_stall         ),
+    .inst_addr_o   ( pc_ifu           ),
+    .inst_o        ( inst_ifu         )
 );
 
 
@@ -43,19 +43,19 @@ ysyx_22050019_IFU IFU(
 wire fb_inst_valid;
 wire [31:0]fb_inst;
 ysyx_22050019_fetch_buffer fetch_buffer(
-    .clk          ( clk          ),
-    .rst_n        ( rst_n        ),
-    .ar_ready_i   ( stll_ar_ready   ),
+    .clk          ( clk                   ),
+    .rst_n        ( rst_n                 ),
+    .ar_ready_i   ( stll_ar_ready         ),
     .ar_valid_o   ( axi_if_sram_arvalid   ),
     .ar_addr_o    ( axi_if_sram_araddr    ),
     .r_valid_i    ( axi_if_sram_rvalid    ),
     .r_data_i     ( axi_if_sram_rdata     ),
-    .r_resp_i     ( axi_if_sram_resp     ),
+    .r_resp_i     ( axi_if_sram_resp      ),
     .r_ready_o    ( axi_if_sram_rready    ),
-    .jmp_flush_i  ( inst_j  ),
-    .pc_i         ( pc_ifu[31:0]       ),
-    .inst_valid_o ( fb_inst_valid ),
-    .inst_o       ( fb_inst  )
+    .jmp_flush_i  ( inst_j                ),
+    .pc_i         ( pc_ifu[31:0]          ),
+    .inst_valid_o ( fb_inst_valid         ),
+    .inst_o       ( fb_inst               )
 );
 
 
@@ -113,9 +113,9 @@ ysyx_22050019_IDU IDU(
  .ram_re       (ram_re_id            ),
 
  .raddr1       (raddr1_id_regs       ),
- .rdata1       (rdata1_forwardimg       ),
+ .rdata1       (rdata1_forwardimg    ),
  .raddr2       (raddr2_id_regs       ),
- .rdata2       (rdata2_forwardimg       ),
+ .rdata2       (rdata2_forwardimg    ),
  .op1          (op1_id               ),
  .op2          (op2_id               ),
  .reg_we_o     (reg_we_id            ),
