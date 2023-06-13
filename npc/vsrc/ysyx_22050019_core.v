@@ -33,7 +33,7 @@ ysyx_22050019_IFU IFU(
     .inst_i        ( fb_inst        ),
     .inst_valid_i  ( fb_inst_valid ),
     .inst_commite  ( ifu_commite  ),
-    .pc_stall_i    ( pc_stall_i    ),
+    .pc_stall_i    ( pc_stall    ),
     .inst_addr_o   ( pc_ifu   ),
     .inst_o        ( inst_ifu        )
 );
