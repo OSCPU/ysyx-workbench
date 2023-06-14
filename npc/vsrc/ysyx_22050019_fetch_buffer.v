@@ -187,7 +187,7 @@ wire [WIDTH-1:0]   rdata ;
             waddr <= 'b0;
         end 
         else if( winc && ~wfull ) begin
-                waddr <= waddr + 1'b1;
+                waddr <= waddr + 1;
         end 
         else begin
                 waddr <= waddr;    
@@ -199,7 +199,7 @@ wire [WIDTH-1:0]   rdata ;
             raddr <= 'b0;
         end 
         else if( rinc && ~rempty ) begin
-                raddr <= raddr + 1'b1;
+                raddr <= raddr + 1;
         end 
         else begin
                 raddr <= raddr;    
