@@ -141,11 +141,8 @@ always@(posedge clk)begin
       end
 
       WAIT_READY:begin
-      if(jmp_flush_i) begin
-          jmp_flage     <= 1'b1;
-        end
       if(next_state==IDLE)begin
-        jmp_flage       <= 1'b0;
+        jmp_flage       <= jmp_flush_i;
         ar_valid        <= 1'b1;
         rready          <= 1'b0;
         rresp           <= r_resp_i;
@@ -168,7 +165,7 @@ assign ar_addr_o    = jmp_flush_i & (state_reg == IDLE) ? pc_i : {(buffer_pc + {
 assign r_ready_o    = rready;
 
 // write_fifo_control
-wire winc         = r_valid_i & r_ready_o;
+wire winc         = r_valid_i & r_ready_o & ~jmp_flush_i;
 wire [WIDTH-1:0] wdata        = r_data_i;
 //========================= 
 //=========================  
