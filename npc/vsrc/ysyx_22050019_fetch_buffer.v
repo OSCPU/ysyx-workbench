@@ -166,7 +166,7 @@ assign r_ready_o    = rready;
 
 // write_fifo_control
 wire winc         = r_valid_i & r_ready_o;
-wire wdata        = r_data_i;
+wire [WIDTH-1:0] wdata        = r_data_i;
 //========================= 
 //=========================  
   // 同步fifo的读写逻辑逻辑
