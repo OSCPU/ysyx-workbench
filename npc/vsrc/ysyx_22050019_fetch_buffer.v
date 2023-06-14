@@ -182,18 +182,15 @@ wire [WIDTH-1:0]   rdata ;
     reg [ADDR_WIDTH:0] waddr;
     reg [ADDR_WIDTH:0] raddr;
   
-wire fifo_wen = winc && ~wfull ;
     always @ (posedge clk) begin
         if(~rst_n) begin
             waddr <= 'b0;
         end 
-        else begin
-            if( fifo_wen ) begin
+        else if( winc && ~wfull ) begin
                 waddr <= waddr + 1'b1;
-            end 
-            else begin
+        end 
+        else begin
                 waddr <= waddr;    
-            end 
         end 
     end 
 
@@ -201,17 +198,14 @@ wire fifo_wen = winc && ~wfull ;
         if(~rst_n) begin
             raddr <= 'b0;
         end 
-        else begin
-            if( rinc && ~rempty ) begin
+        else if( rinc && ~rempty ) begin
                 raddr <= raddr + 1'b1;
-            end 
-            else begin
+        end 
+        else begin
                 raddr <= raddr;    
-            end 
         end 
     end 
-
-
+    
 assign wfull  = (raddr == {~waddr[ADDR_WIDTH], waddr[ADDR_WIDTH-1:0]});
 assign rempty = (raddr == waddr);
 
