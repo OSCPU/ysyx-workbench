@@ -181,12 +181,14 @@ wire [WIDTH-1:0]   rdata ;
 
     reg [ADDR_WIDTH:0] waddr;
     reg [ADDR_WIDTH:0] raddr;
+  
+wire fifo_wen = winc && ~wfull ;
     always @ (posedge clk) begin
         if(~rst_n) begin
             waddr <= 'b0;
         end 
         else begin
-            if( winc && ~wfull ) begin
+            if( fifo_wen ) begin
                 waddr <= waddr + 1'b1;
             end 
             else begin
