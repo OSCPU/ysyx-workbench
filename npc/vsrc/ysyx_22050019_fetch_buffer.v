@@ -53,10 +53,10 @@ always @ (posedge clk) begin
         rw_cnt <= rw_cnt;
     end
     else if(winc) begin
-        rw_cnt <= rw_cnt - 2'b1;
+        rw_cnt <= rw_cnt + 2'b1;
     end
     else if(rinc) begin
-        rw_cnt <= rw_cnt + 2'b1;
+        rw_cnt <= rw_cnt - 2'b1;
     end
     else begin
         rw_cnt <= rw_cnt;
