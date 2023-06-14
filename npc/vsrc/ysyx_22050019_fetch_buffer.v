@@ -73,7 +73,7 @@ wire rinc = ~rempty && pc_changed;
 // 根据buffer状态和pc输出指令和指令有效使能
 assign inst_valid_o = pc_equal & ~rempty| rempty & r_valid_i & r_ready_o;
 
-assign inst_o       = pc_i[3] ? pc_i [2] ? rdata[127:96] : rdata[95:64] : pc_i [2] ? rdata[63:32] : rdata[31:0];
+assign inst_o       = inst_valid_o ? (pc_i[3] ? pc_i [2] ? rdata[127:96] : rdata[95:64] : pc_i [2] ? rdata[63:32] : rdata[31:0]) : 0;//仿真调试bug用，后期删除
 //=========================  
 //=========================  
 // AXI buffer <=> icache交流接口逻辑
