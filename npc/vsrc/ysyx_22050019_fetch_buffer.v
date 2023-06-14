@@ -160,7 +160,7 @@ end
 
 // axi_interface
 assign ar_valid_o   = (state_reg == IDLE) ? ~wfull :0;
-assign ar_addr_o    = jmp_flush_i & (state_reg == IDLE) ? {pc_i[27:0],4'b0} : {(buffer_pc + {26'b0,rw_cnt}), 4'b0} ;
+assign ar_addr_o    = jmp_flush_i & (state_reg == IDLE) ? pc_i : {(buffer_pc + {26'b0,rw_cnt}), 4'b0} ;
 
 assign r_ready_o    = rready;
 
