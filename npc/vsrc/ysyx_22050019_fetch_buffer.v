@@ -49,6 +49,9 @@ always @ (posedge clk) begin
     if(rst_n) begin
         rw_cnt <= 0;
     end
+    else if(jmp_flush_i) begin
+        rw_cnt <= 0     ;
+    end
     else if(rinc & winc) begin
         rw_cnt <= rw_cnt;
     end
@@ -160,7 +163,7 @@ end
 
 // axi_interface
 assign ar_valid_o   = (state_reg == IDLE) ? ~wfull :0;
-assign ar_addr_o    = {(buffer_pc + {26'b0,rw_cnt}), 4'b0};
+assign ar_addr_o    = jmp_flush_i & (state_reg == IDLE) ? pc_i : {(buffer_pc + {26'b0,rw_cnt}), 4'b0} ;
 
 assign r_ready_o    = rready;
 
@@ -198,6 +201,9 @@ wire [WIDTH-1:0]   rdata ;
     always @ (posedge clk) begin
         if(rst_n) begin
             raddr <= 0;
+        end 
+        else if(jmp_flush_i) begin
+                raddr <= waddr;
         end 
         else if( rinc && ~rempty ) begin
                 raddr <= raddr + 1;
