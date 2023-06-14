@@ -184,7 +184,7 @@ wire [WIDTH-1:0]   rdata ;
     reg [2:0] raddr;
   
     always @ (posedge clk) begin
-        if(~rst_n) begin
+        if(rst_n) begin
             waddr <= 0;
         end 
         else if( winc && ~wfull ) begin
@@ -196,7 +196,7 @@ wire [WIDTH-1:0]   rdata ;
     end 
 
     always @ (posedge clk) begin
-        if(~rst_n) begin
+        if(rst_n) begin
             raddr <= 0;
         end 
         else if( rinc && ~rempty ) begin
