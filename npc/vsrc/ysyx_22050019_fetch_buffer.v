@@ -177,14 +177,13 @@ wire               wfull ;
 wire               rempty;
 wire [WIDTH-1:0]   rdata ;
   // 用localparam定义一个参数，可以在文件内使用
-    localparam ADDR_WIDTH = 2;
 
-    reg [ADDR_WIDTH:0] waddr;
-    reg [ADDR_WIDTH:0] raddr;
+    reg [2:0] waddr;
+    reg [2:0] raddr;
   
     always @ (posedge clk) begin
         if(~rst_n) begin
-            waddr <= 'b0;
+            waddr <= 0;
         end 
         else if( winc && ~wfull ) begin
                 waddr <= waddr + 1;
@@ -196,7 +195,7 @@ wire [WIDTH-1:0]   rdata ;
 
     always @ (posedge clk) begin
         if(~rst_n) begin
-            raddr <= 'b0;
+            raddr <= 0;
         end 
         else if( rinc && ~rempty ) begin
                 raddr <= raddr + 1;
@@ -206,7 +205,7 @@ wire [WIDTH-1:0]   rdata ;
         end 
     end 
     
-assign wfull  = (raddr == {~waddr[ADDR_WIDTH], waddr[ADDR_WIDTH-1:0]});
+assign wfull  = (raddr == {~waddr[2], waddr[1:0]});
 assign rempty = (raddr == waddr);
 
 // 带有 parameter 参数的例化格式    
@@ -214,9 +213,9 @@ inst_buffer  buffer_regs
     (
     .clk  ( clk                   ),
     .wenc ( winc                  ),
-    .waddr( waddr[ADDR_WIDTH-1:0] ), 
+    .waddr( waddr[1:0] ), 
     .wdata( wdata                 ),        
-    .raddr( raddr[ADDR_WIDTH-1:0] ), 
+    .raddr( raddr[1:0] ), 
     .rdata( rdata                 )     
 );
 //=========================    
