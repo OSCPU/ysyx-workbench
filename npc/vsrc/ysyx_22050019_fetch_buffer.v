@@ -140,14 +140,17 @@ always@(posedge clk)begin
         rready          <= 1'b0;
       end
 
-      WAIT_READY:begin
+      WAIT_READY:begin  
       if(next_state==IDLE)begin
-        jmp_flage       <= jmp_flush_i;
+        jmp_flage       <= 0;
         ar_valid        <= 1'b1;
         rready          <= 1'b0;
         rresp           <= r_resp_i;
       end
-      else begin
+      else begin 
+      if(jmp_flush_i) begin
+        jmp_flage       <= 1;
+      end 
         ar_valid        <= 1'b0;
         rready          <= 1;
       end
@@ -165,7 +168,7 @@ assign ar_addr_o    = jmp_flush_i & (state_reg == IDLE) ? {pc_i[31:4],4'b0} : {(
 assign r_ready_o    = rready;
 
 // write_fifo_control
-wire winc         = r_valid_i & r_ready_o & ~jmp_flush_i;
+wire winc         = r_valid_i & r_ready_o & ~jmp_flush_i & ~jmp_flage;//检测是否跳转，跳转的话本次cache访问无效
 wire [WIDTH-1:0] wdata        = r_data_i;
 //========================= 
 //=========================  
