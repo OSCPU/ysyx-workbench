@@ -220,7 +220,7 @@ inst_buffer  buffer_regs
     .wenc ( winc                  ),
     .waddr( waddr[1:0] ), 
     .wdata( wdata                 ),        
-    .raddr( raddr[1:0] ), 
+    .raddr( (pc_changed & ~jmp_flush_i) ? raddr[1:0] + 2'b1 : raddr[1:0] ), 
     .rdata( rdata                 )     
 );
 //=========================    
