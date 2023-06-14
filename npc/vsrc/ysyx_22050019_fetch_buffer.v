@@ -65,7 +65,7 @@ end
 
 // 根据pc_changed进行读地址使能变化的模块
 // read_fifo_control
-assign rinc = ~rempty && pc_changed;
+wire rinc = ~rempty && pc_changed;
 
 // 根据buffer状态和pc输出指令和指令有效使能
 assign inst_valid_o = pc_equal & ~rempty| rempty & r_valid_i & r_ready_o;
@@ -165,16 +165,18 @@ assign ar_addr_o    = {(buffer_pc + {26'b0,rw_cnt}), 4'b0};
 assign r_ready_o    = rready;
 
 // write_fifo_control
-assign winc         = r_valid_i & r_ready_o;
-assign wdata        = r_data_i;
+wire winc         = r_valid_i & r_ready_o;
+wire wdata        = r_data_i;
 //========================= 
 //=========================  
   // 同步fifo的读写逻辑逻辑
+/*
 wire               rinc  ;
 wire               winc  ; 
 wire [WIDTH-1:0]   wdata ;
 wire               wfull ;
 wire               rempty;
+*/
 wire [WIDTH-1:0]   rdata ;
   // 用localparam定义一个参数，可以在文件内使用
 
@@ -205,8 +207,8 @@ wire [WIDTH-1:0]   rdata ;
         end 
     end 
     
-assign wfull  = (raddr == {~waddr[2], waddr[1:0]});
-assign rempty = (raddr == waddr);
+wire wfull  = (raddr == {~waddr[2], waddr[1:0]});
+wire rempty = (raddr == waddr);
 
 // 带有 parameter 参数的例化格式    
 inst_buffer  buffer_regs 
