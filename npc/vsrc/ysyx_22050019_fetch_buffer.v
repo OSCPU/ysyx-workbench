@@ -49,7 +49,7 @@ always @ (posedge clk) begin
     if(rst_n) begin
         rw_cnt <= 0;
     end
-    else if(jmp_flush_i & pc_changed) begin
+    else if(jmp_flush_i) begin
         rw_cnt <= 0     ;
     end
     else if(rinc & winc) begin
@@ -71,7 +71,7 @@ end
 wire rinc = ~rempty && pc_changed;
 
 // 根据buffer状态和pc输出指令和指令有效使能
-assign inst_valid_o = pc_equal & ~rempty | ((pc_changed & ~jmp_flush_i & pc_changed) & rw_cnt != 1'b1)| rempty & r_valid_i & r_ready_o & ~jmp_flage & ~jmp_flush_i & pc_changed;
+assign inst_valid_o = pc_equal & ~rempty | ((pc_changed & ~jmp_flush_i) & rw_cnt != 1'b1)| rempty & r_valid_i & r_ready_o & ~jmp_flage & ~jmp_flush_i;
 
 assign inst_o       = inst_valid_o ? (pc_i[3] ? pc_i [2] ? rdata[127:96] : rdata[95:64] : pc_i [2] ? rdata[63:32] : rdata[31:0]) : 0;//仿真调试bug用，后期删除
 //=========================  
@@ -148,7 +148,7 @@ always@(posedge clk)begin
         rresp           <= r_resp_i;
       end
       else begin 
-      if(jmp_flush_i & pc_changed) begin
+      if(jmp_flush_i) begin
         jmp_flage       <= 1;
       end 
         ar_valid        <= 1'b0;
@@ -163,12 +163,12 @@ end
 
 // axi_interface
 assign ar_valid_o   = (state_reg == IDLE) ? ~wfull :0;
-assign ar_addr_o    = jmp_flush_i & pc_changed & (state_reg == IDLE) ? {pc_i[31:4],4'b0} : {(buffer_pc + {26'b0,rw_cnt}), 4'b0} ;
+assign ar_addr_o    = jmp_flush_i & (state_reg == IDLE) ? {pc_i[31:4],4'b0} : {(buffer_pc + {26'b0,rw_cnt}), 4'b0} ;
 
 assign r_ready_o    = rready;
 
 // write_fifo_control
-wire winc         = r_valid_i & r_ready_o & ~jmp_flush_i & pc_changed & ~jmp_flage;//检测是否跳转，跳转的话本次cache访问无效
+wire winc         = r_valid_i & r_ready_o & ~jmp_flush_i & ~jmp_flage;//检测是否跳转，跳转的话本次cache访问无效
 wire [WIDTH-1:0] wdata        = r_data_i;
 //========================= 
 //=========================  
@@ -202,7 +202,7 @@ wire [WIDTH-1:0]   rdata ;
         if(rst_n) begin
             raddr <= 0;
         end 
-        else if(jmp_flush_i & pc_changed) begin
+        else if(jmp_flush_i) begin
                 raddr <= waddr;
         end 
         else if( rinc && ~rempty ) begin
@@ -223,7 +223,7 @@ inst_buffer  buffer_regs
     .wenc ( winc                  ),
     .waddr( waddr[0] ), 
     .wdata( wdata                 ),        
-    .raddr( (pc_changed & ~jmp_flush_i ) ? raddr[0] + 1'b1 : raddr[0] ), 
+    .raddr( (pc_changed & ~jmp_flush_i) ? raddr[0] + 1'b1 : raddr[0] ), 
     .rdata( rdata                 )     
 );
 //=========================    
