@@ -49,7 +49,7 @@ always @ (posedge clk) begin
     if(rst_n) begin
         rw_cnt <= 0;
     end
-    else if(jmp_flush_i & pc_changed) begin
+    else if(jmp_flush_i) begin
         rw_cnt <= 0     ;
     end
     else if(rinc & winc) begin
@@ -148,7 +148,7 @@ always@(posedge clk)begin
         rresp           <= r_resp_i;
       end
       else begin 
-      if(jmp_flush_i & pc_changed) begin
+      if(jmp_flush_i) begin
         jmp_flage       <= 1;
       end 
         ar_valid        <= 1'b0;
@@ -202,7 +202,7 @@ wire [WIDTH-1:0]   rdata ;
         if(rst_n) begin
             raddr <= 0;
         end 
-        else if(jmp_flush_i & pc_changed) begin
+        else if(jmp_flush_i) begin
                 raddr <= waddr;
         end 
         else if( rinc && ~rempty ) begin
