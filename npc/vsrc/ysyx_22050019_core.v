@@ -157,7 +157,7 @@ ysyx_22050019_CSR CSR(
   
     .csr_inst_type   (csr_inst_type_id_csr),
     .csr_addr        (csr_addr_id_csr     ),
-    .csr_wen         (csr_wen_id_csr      ),
+    .csr_wen         (id_ex_stall_i ? 1'b0: csr_wen_id_csr ),
     .rdata1_reg_csr  (rdata1_forwardimg   ),//从reg读到的数据
 
     .snpc            (snpc_csr_id         ),
