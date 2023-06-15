@@ -42,7 +42,7 @@ ysyx_22050019_IFU IFU(
 // fetch_buffer
 wire fb_inst_valid;
 wire [31:0]fb_inst;
-ysyx_22050019_fetch_buffer fetch_buffer(
+ysyx_22050019_fetch_buffer IB(
     .clk          ( clk                   ),
     .rst_n        ( rst_n                 ),
     .ar_ready_i   ( stll_ar_ready         ),
