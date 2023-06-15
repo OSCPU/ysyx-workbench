@@ -4,7 +4,7 @@
 uint64_t sim_time = 0;
 unsigned long long sim_cycle= 0;
 unsigned long long debug_inst = 0;
-#define DEBUG_SKIP 2600000
+#define DEBUG_SKIP 710500
 //361307
 // 一些导入的接口
 void init_device();
