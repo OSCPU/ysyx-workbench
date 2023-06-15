@@ -28,7 +28,7 @@ wire pc_stall;
 ysyx_22050019_IFU IFU(
     .clk           ( clk              ),
     .rst_n         ( rst_n            ),
-    .inst_j        ( id_ex_stall ? 0 : inst_j),
+    .inst_j        ( inst_j           ),
     .snpc          ( snpc|snpc_csr_id ),
     .inst_i        ( fb_inst          ),
     .inst_valid_i  ( fb_inst_valid    ),
@@ -52,7 +52,7 @@ ysyx_22050019_fetch_buffer IB(
     .r_data_i     ( axi_if_sram_rdata     ),
     .r_resp_i     ( axi_if_sram_resp      ),
     .r_ready_o    ( axi_if_sram_rready    ),
-    .jmp_flush_i  ( id_ex_stall ? 0 : inst_j ),
+    .jmp_flush_i  ( inst_j                ),
     .pc_i         ( pc_ifu[31:0]          ),
     .inst_valid_o ( fb_inst_valid         ),
     .inst_o       ( fb_inst               )
