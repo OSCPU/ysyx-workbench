@@ -49,7 +49,7 @@ always @ (posedge clk) begin
     if(rst_n) begin
         rw_cnt <= 0;
     end
-    else if(jmp_flush_i & pc_changed) begin
+    else if(jmp_flush_i) begin
         rw_cnt <= 0     ;
     end
     else if(rinc & winc) begin
@@ -68,10 +68,10 @@ end
 
 // 根据pc_changed进行读地址使能变化的模块
 // read_fifo_control
-wire rinc = ~rempty && pc_changed ;
+wire rinc = ~rempty && pc_changed;
 
 // 根据buffer状态和pc输出指令和指令有效使能
-assign inst_valid_o = pc_equal & ~rempty | ((pc_changed & ~jmp_flush_i) & rw_cnt != 1'b1)| rempty & r_valid_i & r_ready_o & ~jmp_flage & ~jmp_flush_i;
+assign inst_valid_o = pc_equal & ~rempty | ((pc_changed & ~jmp_flush_i) & rw_cnt != 1'b1)| rempty & r_valid_i & r_ready_o & ~jmp_flage;
 
 assign inst_o       = inst_valid_o ? (pc_i[3] ? pc_i [2] ? rdata[127:96] : rdata[95:64] : pc_i [2] ? rdata[63:32] : rdata[31:0]) : 0;//仿真调试bug用，后期删除
 //=========================  
@@ -148,7 +148,7 @@ always@(posedge clk)begin
         rresp           <= r_resp_i;
       end
       else begin 
-      if(jmp_flush_i & pc_changed) begin
+      if(jmp_flush_i) begin
         jmp_flage       <= 1;
       end 
         ar_valid        <= 1'b0;
@@ -163,7 +163,7 @@ end
 
 // axi_interface
 assign ar_valid_o   = (state_reg == IDLE) ? ~wfull :0;
-assign ar_addr_o    = jmp_flush_i & pc_changed & (state_reg == IDLE) ? {pc_i[31:4],4'b0} : {(buffer_pc + {26'b0,rw_cnt}), 4'b0} ;
+assign ar_addr_o    = jmp_flush_i & (state_reg == IDLE) ? {pc_i[31:4],4'b0} : {(buffer_pc + {26'b0,rw_cnt}), 4'b0} ;
 
 assign r_ready_o    = rready;
 
@@ -202,7 +202,7 @@ wire [WIDTH-1:0]   rdata ;
         if(rst_n) begin
             raddr <= 0;
         end 
-        else if(jmp_flush_i & pc_changed) begin
+        else if(jmp_flush_i) begin
                 raddr <= waddr;
         end 
         else if( rinc && ~rempty ) begin
