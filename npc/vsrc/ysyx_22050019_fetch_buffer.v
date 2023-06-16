@@ -140,7 +140,7 @@ always@(posedge clk)begin
 end
 
 // axi_interface
-assign ar_valid_o   = (state_reg == IDLE) & pc_changed ? 1 :0;
+assign ar_valid_o   = (state_reg == IDLE) & pc_changed ? 1 :0 | ar_valid;
 assign ar_addr_o    = jmp_flush_i & (state_reg == IDLE) ? {pc_i[31:4],4'b0} : {buffer_pc , 4'b0} ;
 
 assign r_ready_o    = rready;
