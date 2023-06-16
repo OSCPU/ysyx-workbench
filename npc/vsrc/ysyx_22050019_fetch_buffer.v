@@ -44,7 +44,7 @@ wire pc_equal   = (buffer_pc == pc_i[31:4]);
 wire pc_changed = (buffer_pc != pc_i[31:4]);
 
 // 根据buffer状态和pc输出指令和指令有效使能
-assign inst_valid_o = valid & pc_equal;
+assign inst_valid_o = valid & pc_equal | r_valid_i & r_ready_o & valid;
 
 assign inst_o       = inst_valid_o ? (pc_i[3] ? pc_i [2] ? rdata[127:96] : rdata[95:64] : pc_i [2] ? rdata[63:32] : rdata[31:0]) : 0;//仿真调试bug用，后期删除
 //=========================  
