@@ -157,7 +157,7 @@ ysyx_22050019_mux #( .NR_KEY(5), .KEY_LEN(5), .DATA_LEN(64)) ysyx_22050019_mux
 				          5'b00010,result[127:64],
 				          5'b00100,result[127:64],
 				          5'b01000,result[127:64],
-				          5'b10000,{{33{result[31]}}, result[31:0]}
+				          5'b10000,{{32{result[31]}}, result[31:0]}
                     }), //键和输出的表           
   .out         (mult_out)  //输出
 );
