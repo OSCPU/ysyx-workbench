@@ -25,8 +25,8 @@ ysyx_22050019_alu alu(
   .lsu_stall(lsu_stall),
   
   .alu_stall(alu_stall),
-  .alu_ok(exu_wen),
-  .result(wen)
+  .alu_ok(wen),
+  .result(result)
 );
 wire wen;
 //reg_control
