@@ -148,17 +148,17 @@ always @(posedge clk) begin
     
 end
 
-ysyx_22050019_mux #( .NR_KEY(5), .KEY_LEN(5), .DATA_LEN(64)) mul_out
+ysyx_22050019_mux #( .NR_KEY(5), .KEY_LEN(5), .DATA_LEN(64)) ysyx_22050019_mux
 (
   .key         (mul_type), //键
-  .default_out (64'b0),
-  .lut         ({		
-                 	5'b00001,result[63:0],
+  .default_out (64'd0),
+  .lut         ({
+                 	5'b00001,result[63:0]  ,
 				          5'b00010,result[127:64],
 				          5'b00100,result[127:64],
 				          5'b01000,result[127:64],
 				          5'b10000,{{32{result[31]}}, result[31:0]}
-                    }), //键和输出的表           
+                 }),           
   .out         (mult_out)  //输出
 );
 
