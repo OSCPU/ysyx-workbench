@@ -1,6 +1,7 @@
 module ysyx_22050019_EXU(
   input           clk,
   input           rst_n,
+  input           wen_i,
   input [4:0]     waddr_i,
   input [`LEN:0]  alu_sel,
 
@@ -25,12 +26,13 @@ ysyx_22050019_alu alu(
   
   .alu_stall(alu_stall),
   .alu_ok(exu_wen),
-  .result(result)
+  .result(wen)
 );
-
+wire wen;
 //reg_control
 assign wdata    = result ;
-assign exu_waddr= exu_wen ? waddr : 0;
+assign exu_waddr= alu_stall ? 0 : (exu_wen ? waddr : 0) | waddr_i;
+assign exu_wen  = alu_stall ? 0 : wen_i | wen;
 
 reg[4:0] waddr;
 always @(posedge clk)begin
