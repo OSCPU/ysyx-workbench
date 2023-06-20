@@ -31,7 +31,7 @@ ysyx_22050019_alu alu(
 wire wen;
 //reg_control
 assign wdata    = result ;
-assign exu_waddr= alu_stall ? 0 : (exu_wen ? waddr : 0) | waddr_i;
+assign exu_waddr= alu_stall ? 0 : (wen ? waddr : 0) | waddr_i;
 assign exu_wen  = alu_stall ? 0 : wen_i | wen;
 
 reg[4:0] waddr;
