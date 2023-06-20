@@ -1,6 +1,7 @@
 module ysyx_22050019_pipeline_Control (
 
   input              lsu_stall_req  ,
+  input              alu_stall_req  ,
   input              forwarding_req ,
 
   output wire        pc_stall_o     ,
@@ -16,7 +17,7 @@ module ysyx_22050019_pipeline_Control (
 
   assign pc_stall_o     = if_id_stall_o;
   assign if_id_stall_o  = id_ex_stall_o;
-  assign id_ex_stall_o  = ex_mem_stall_o | forwarding_req;
+  assign id_ex_stall_o  = ex_mem_stall_o | forwarding_req | alu_stall_req;
   assign ex_mem_stall_o = mem_wb_stall_o | lsu_stall_req;
   assign mem_wb_stall_o = 0;
 

@@ -1,4 +1,4 @@
-`define LEN 30 
+`define LEN 33 
 
 // opcode
 // I type inst

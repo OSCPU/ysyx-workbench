@@ -1,8 +1,13 @@
 module ysyx_22050019_alu(
+ input        clk,
+ input        rst_n,
  input [63:0] op_1,
  input [63:0] op_2,
  input [`LEN:0] alu_sel,
- 
+ input        lsu_stall,
+
+ output       alu_stall,
+ output       alu_ok   ,
  output[63:0] result
 );
 
@@ -72,8 +77,11 @@ wire  op_rem_32   = alu_sel [24];
 wire  op_div_64   = alu_sel [25];
 wire  op_div_32   = alu_sel [28];
 
-wire  op_mul_64   = alu_sel [29];
-wire  op_mul_64   = alu_sel [30];
+wire  op_mul      = alu_sel [29];
+wire  op_mulh     = alu_sel [30];
+wire  op_mulhsu   = alu_sel [31];
+wire  op_mulh u   = alu_sel [32];
+wire  op_mul_64   = alu_sel [33];
 */
 
 //加减判断，add 结果有op_suber控制为加或者减
@@ -110,8 +118,23 @@ wire [63:0] or64       = op_1 | op_2 ;
 wire [63:0] xor64      = op_1 ^ op_2 ;
 
 //乘法器
-wire [63:0] mul        = op_1 * op_2 ;
-wire [63:0] mul_32     = {{32{mul[31]}},mul[31:0]};
+wire mult_valid  = alu_sel [29] | alu_sel [30] | alu_sel [31] | alu_sel [32] | alu_sel [33]; 
+wire result_ready= ~lsu_stall;
+wire [63:0]mult_out;
+wire mult_stall;
+wire result_ok;
+ysyx_22050019_multiplier_cycle multiplier_cycle(
+    .clk            ( clk            ),
+    .rst_n          ( rst_n          ),
+    .mult_valid     ( mult_valid     ),
+    .mult_type      ( alu_sel[33:29] ),
+    .multiplicand_i ( op_1           ),
+    .multiplier_i   ( op_2           ),
+    .result_ready   ( result_ready   ),
+    .mult_out       ( mult_out       ),
+    .mult_stall     ( mult_stall     ),
+    .result_ok      ( result_ok      )
+);
 
 //除法器
 wire [63:0] div         = dat1_64 / dat2_64;
@@ -123,14 +146,21 @@ wire [63:0] rem         = dat1_64 % dat2_64 ;
 wire [31:0] rem_32      = op1_32 % op2_32 ;
 wire [31:0] rem_32_s    = sign_op1_32 % sign_op2_32;
 
+//========================================
+// alu的控制信号
+assign alu_stall = mult_stall;
+assign alu_ok    = result_ok ;
 // alu的控制信号译码（用宏定义方便添加）
 ysyx_22050019_mux #( .NR_KEY(`LEN+1'b1), .KEY_LEN(`LEN+1'b1), .DATA_LEN(64) ) mux_alu_result
 (
   .key         (alu_sel), 
   .default_out (64'b0),
   .lut         ({
-                 31'b1000000000000000000000000000000,mul_32,
-                 31'b0100000000000000000000000000000,mul,
+                 31'b1000000000000000000000000000000,mult_out,
+                 31'b1000000000000000000000000000000,mult_out,
+                 31'b1000000000000000000000000000000,mult_out,
+                 31'b1000000000000000000000000000000,mult_out,           
+                 31'b0100000000000000000000000000000,mult_out,
                  31'b0010000000000000000000000000000,{{32{div_32_s[31]}},div_32_s[31:0]},
                  31'b0001000000000000000000000000000,{{32{div_32[31]}},div_32[31:0]},
                  31'b0000100000000000000000000000000,div,

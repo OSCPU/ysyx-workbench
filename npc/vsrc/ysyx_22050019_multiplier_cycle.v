@@ -33,11 +33,11 @@ mulhu  : x[rd] = (x[rs1]𝑢 × x[rs2]𝑢)[127:64]
 mulhsu : x[rd] = (x[rs1]𝑠 × x[rs2]𝑢)[127:64]
 mulw   : x[rd] = sext((x[rs1] × x[rs2])[31: 0])
 */
-parameter MUL    = 5'b01110; // 乘
-parameter MULH   = 5'b10011; // 高位乘
-parameter MULHSU = 5'b10100; // 高位有符号-无符号乘
-parameter MULHU  = 5'b10101; // 高位无符号乘
-parameter MULW   = 5'b10110; // 乘字
+parameter MUL    = 5'b00001; // 乘
+parameter MULH   = 5'b00010; // 高位乘
+parameter MULHSU = 5'b00100; // 高位有符号-无符号乘
+parameter MULHU  = 5'b01000; // 高位无符号乘
+parameter MULW   = 5'b10000; // 乘字
 
 // 状态机定义
 parameter IDLE   = 2'b00;
@@ -50,8 +50,8 @@ wire [129:0]multiplicand_trans;
 reg  [129:0]multiplicand;
 
 // 乘数信号声明
-wire [129:0]multiplier_trans;
-reg  [129:0]multiplier;
+wire [64:0]multiplier_trans;
+reg  [66:0]multiplier;
 
 // 结果
 reg [129:0] result;
@@ -74,7 +74,7 @@ assign multiplier_sext            = {multiplier_trans[64], multiplier_trans[64:0
 reg [1:0] state, next_state;
 reg [4:0] mul_type;
 wire [129:0] partial_product;
-ysyx_22050019_booth_code booth_code(
+ysyx_22050019_booth_code #(130)booth_code(
     .multiplicand     ( multiplicand     ),
     .code             ( multiplier[2:0]  ),
     .partial_product  ( partial_product  )
@@ -82,7 +82,7 @@ ysyx_22050019_booth_code booth_code(
 
 // 3段式状态机构建乘法逻辑模块 
 always@(posedge clk) begin
-  if(rst)state<=S_IDLE;
+  if(rst_n)state<=IDLE;
   else   state<=next_state;
 end
 
@@ -96,7 +96,7 @@ always @(*) begin
                   else next_state = MULTI  ;
           FINISH: if(result_ready)next_state = IDLE ;
                   else next_state = FINISH ;
-        default : next_state=S_IDLE ;
+        default : next_state=IDLE ;
         endcase
 end
 
@@ -129,7 +129,7 @@ always @(posedge clk) begin
             multiplier   <= multiplier   >> 2 ;
             result       <= result + partial_product;
             end
-          FINISH:if(next_state == S_IDLE) begin
+          FINISH:if(next_state == IDLE) begin
             mul_type     <= 0                 ;
             multiplicand <= 0                 ;
             multiplier   <= 0                 ;
@@ -151,13 +151,13 @@ end
 ysyx_22050019_mux #( .NR_KEY(5), .KEY_LEN(5), .DATA_LEN(64)) mul_out
 (
   .key         (mul_type), //键
-  .default_out (1'b0),
+  .default_out (64'b0),
   .lut         ({		
-                 	5'b01110,result[63:0],
-				    5'b10011,result[127:64],
-				    5'b10100,result[127:64],
-				    5'b10101,result[127:64],
-				    5'b10110,{{32{result[31]}}, result[31:0]}
+                 	5'b00001,result[63:0],
+				          5'b00010,result[127:64],
+				          5'b00100,result[127:64],
+				          5'b01000,result[127:64],
+				          5'b10000,{{32{result[31]}}, result[31:0]}
                     }), //键和输出的表           
   .out         (mult_out)  //输出
 );
@@ -198,13 +198,13 @@ ysyx_22050019_mux #( .NR_KEY(8), .KEY_LEN(3), .DATA_LEN(DATA_WIDTH + 1)) op1_sel
   .default_out ({ (DATA_WIDTH + 1){1'b0}}),
   .lut         ({		
                  	3'b000,{ (DATA_WIDTH + 1){1'b0}},
-				    3'b001,{ sign, multiplicand    },
-				    3'b010,{ sign, multiplicand    },
+				          3'b001,{ sign, multiplicand    },
+				          3'b010,{ sign, multiplicand    },
                  	3'b011,{ multiplicand, 1'b0    },
-				    3'b100,{~multiplicand, 1'b1    },
-				    3'b101,{~sign, ~multiplicand   },
-				    3'b110,{~sign, ~multiplicand   },
-				    3'b111,{ (DATA_WIDTH + 1){1'b0}}
+				          3'b100,{~multiplicand, 1'b1    },
+				          3'b101,{~sign, ~multiplicand   },
+				          3'b110,{~sign, ~multiplicand   },
+				          3'b111,{ (DATA_WIDTH + 1){1'b0}}
                     }), //键和输出的表           
   .out         (op1)  //输出
 );
@@ -215,15 +215,15 @@ ysyx_22050019_mux #( .NR_KEY(8), .KEY_LEN(3), .DATA_LEN(1)) op2_sel
   .default_out (1'b0),
   .lut         ({		
                  	3'b000,1'b0,
-				    3'b001,1'b0,
-				    3'b010,1'b0,
+				          3'b001,1'b0,
+				          3'b010,1'b0,
                  	3'b011,1'b0,
-				    3'b100,1'b1,
-				    3'b101,1'b1,
-				    3'b110,1'b1,
-				    3'b111,1'b0
+				          3'b100,1'b1,
+				          3'b101,1'b1,
+				          3'b110,1'b1,
+				          3'b111,1'b0
                     }), //键和输出的表           
   .out         (op2)  //输出
 );
-assign partial_product = op1[129:0] + {129'b0, op2};//加法这里可以把结果扔寄存器里中继一下再加，如果这里延时太大的话可以砍一刀
+assign partial_product = op1[DATA_WIDTH-1:0] + {{(DATA_WIDTH-1){1'b0}},op2};//加法这里可以把结果扔寄存器里中继一下再加，如果这里延时太大的话可以砍一刀
 endmodule

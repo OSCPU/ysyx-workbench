@@ -231,12 +231,21 @@ wire [63:0]  wdata_ex_reg  ;
 //wire         reg_we_id_exu ;
 //wire [4:0]   reg_waddr_id_exu  ;
 wire [63:0] result_exu;
+wire alu_stall;
+wire exu_wen;
+wire [4:0]exu_waddr;
 ysyx_22050019_EXU EXU(
+ .clk         (clk         ),
+ .rst_n       (rst_n       ),
  .alu_sel     (alu_sel_exu ),
-
+ .waddr_i     (reg_waddr_id_exu),
+ .lsu_stall   (lsu_stall_req),
  .op1         (op1_id_exu  ),
  .op2         (op2_id_exu  ),
 
+ .alu_stall   (alu_stall   ),
+ .exu_wen     (exu_wen     ),
+ .exu_waddr   (exu_waddr   ),
  .result      (result_exu  ),
  .wdata       (wdata_ex_reg)
 );
@@ -263,7 +272,7 @@ ysyx_22050019_EX_MEM EX_MEM(
     .rst_n            ( rst_n            ),
     .pc_i             ( pc_id_exu        ),
     .inst_i           ( inst_id_ex       ),
-    .commite_i        ( commite_id_ex    ),
+    .commite_i        ( commite_id_ex | exu_wen   ),
     .result_i         ( result_exu       ),
     .wdata_exu_reg_i  ( wdata_ex_reg     ),
     .ram_we_i         ( ram_we_id_exu    ),
@@ -271,8 +280,8 @@ ysyx_22050019_EX_MEM EX_MEM(
     .mem_w_wdth_i     ( mem_w_wdth_exu   ),
     .ram_re_i         ( ram_re_id_exu    ),
     .mem_r_wdth_i     ( mem_r_wdth_exu   ),
-    .reg_we_i         ( reg_we_id_exu    ),
-    .reg_waddr_i      ( reg_waddr_id_exu ),
+    .reg_we_i         ( reg_we_id_exu |exu_wen   ),
+    .reg_waddr_i      ( reg_waddr_id_exu | exu_waddr),
     .wdate_csr_reg_i  ( wdate_csr_exu    ),
     .csr_regs_diff_i  ( csr_regs_diff_exu),
 
@@ -697,6 +706,7 @@ ysyx_22050019_MEM_WB MEM_WB(
 //pipeline 总控制器模块
 ysyx_22050019_pipeline_Control pipe_control(
     .lsu_stall_req ( lsu_stall_req             ),
+    .alu_stall_req ( alu_stall                 ),
     .forwarding_req( forwarding_stall          ),
     .pc_stall_o    ( pc_stall                  ),
     .if_id_stall_o ( if_id_stall               ),

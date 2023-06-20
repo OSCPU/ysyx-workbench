@@ -155,9 +155,11 @@ wire remuw= inst_w&&rv32_funct3_111&&rv32_funct7_000_0001;
 wire remw = inst_w&&rv32_funct3_110&&rv32_funct7_000_0001;
 
 // 乘法指令，使用乘法器进行运算
-wire mul  = op_r&&rv32_funct3_000&&rv32_funct7_000_0001;
-wire mulw = inst_w&&rv32_funct3_000&&rv32_funct7_000_0001;
-
+wire mul   = op_r&&rv32_funct3_000&&rv32_funct7_000_0001;
+wire mulh  = op_r&&rv32_funct3_001&&rv32_funct7_000_0001;
+wire mulhsu= op_r&&rv32_funct3_010&&rv32_funct7_000_0001;
+wire mulhu = op_r&&rv32_funct3_011&&rv32_funct7_000_0001;
+wire mulw  = inst_w&&rv32_funct3_000&&rv32_funct7_000_0001;
 // 加载指令，从内存中获取相应的数据
 wire lb   = inst_l&&rv32_funct3_000;
 wire lbu  = inst_l&&rv32_funct3_100;
@@ -247,16 +249,13 @@ wire alu_div_32 = divw;
 // =====================
 // 一些alu乘法器指令控制信号
 // =====================
-wire alu_mul    = mul;
-wire alu_mul_32 = mulw;
 
 
 
 
 
 
-
-assign alu_sel  =  {alu_mul_32,alu_mul,alu_div_32,alu_divu_32,alu_divu_64,alu_div_64,alu_rem_32,alu_remu_32,alu_remu_64,alu_rem_64,alu_sra_32,alu_srai_32,alu_srai_64,alu_sra_64,alu_srl_32,alu_srli_32,alu_srli_64,alu_srl_64,alu_sll_32,alu_slli_32,alu_slli_64,alu_sll_64,alu_xor,alu_or,alu_and,alu_sltu,alu_slt,alu_sub_32,alu_sub,alu_add_32,alu_add};
+assign alu_sel  =  {mulw,mulhu,mulhsu,mulh,mul,alu_div_32,alu_divu_32,alu_divu_64,alu_div_64,alu_rem_32,alu_remu_32,alu_remu_64,alu_rem_64,alu_sra_32,alu_srai_32,alu_srai_64,alu_sra_64,alu_srl_32,alu_srli_32,alu_srli_64,alu_srl_64,alu_sll_32,alu_slli_32,alu_slli_64,alu_sll_64,alu_xor,alu_or,alu_and,alu_sltu,alu_slt,alu_sub_32,alu_sub,alu_add_32,alu_add};
 
 
 //=====================================================================
