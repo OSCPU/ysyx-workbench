@@ -723,9 +723,9 @@ wire        forwarding_stall;
 ysyx_22050019_forwarding forwarding(
     .reg_raddr_1_id      ( raddr1_id_regs             ),
     .reg_raddr_2_id      ( raddr2_id_regs             ),
-    .reg_waddr_exu       ( reg_waddr_id_exu           ),
+    .reg_waddr_exu       ( exu_waddr                  ),
     .reg_waddr_lsu       ( reg_waddr_wb               ),
-    .reg_wen_exu         ( exu_waddr              ),
+    .reg_wen_exu         ( exu_wen                    ),
     .reg_wen_lsu         ( reg_we_wb                  ),
     .reg_wen_wdata_exu_i ( wdata_ex_reg|wdate_csr_exu ),
     .reg_wen_wdata_lsu_i ( reg_wdata_wb               ),
