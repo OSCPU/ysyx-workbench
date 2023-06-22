@@ -174,7 +174,7 @@ parameter FINISH  = 2'b10;
 
 reg [1:0] state, next_state;
 reg [7:0] div_type;
-reg [5:0] cnt;
+reg [6:0] cnt;
 reg quotient_sign, rem_sign;
 reg [127:0] quotient;
 reg [63:0]  divisor;
@@ -277,7 +277,7 @@ always @(posedge clk) begin
 
           DO_DIV: if(next_state == DO_DIV) begin
                     cnt     <= cnt -1 ;
-                    quotient<= dividend_iter[64] ? quotient_shift: {dividend_iter[63:0], quotient_shift[63:1], 1} ;
+                    quotient<= dividend_iter[64] ? quotient_shift: {dividend_iter[63:0], quotient_shift[63:1], 1};
                   end
                   else if(next_state == FINISH) begin
                     cnt     <= 0 ;
