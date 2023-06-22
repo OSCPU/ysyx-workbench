@@ -85,9 +85,6 @@ wire [127:0] quotient_shift = quotient << 1;
 //========================================
 // 对溢出以及除零做检测
 always @(*) begin
-  result_exception = 0;
-  div_zero         = 0;
-  div_of           = 0;
     case (div_type_i) 
       REM: begin
         if (~|divisor_i) begin
@@ -162,6 +159,9 @@ always @(*) begin
       end
 
       default:begin
+          result_exception = 0;
+          div_zero         = 0;
+          div_of           = 0;
       end
     endcase
 end
