@@ -88,7 +88,7 @@ always @(*) begin
   result_exception = 0;
   div_zero         = 0;
   div_of           = 0;
-    case (div_type_i)
+    case (div_type_i) 
       REM: begin
         if (~|divisor_i) begin
           div_zero = 1;
@@ -123,6 +123,7 @@ always @(*) begin
           div_of = 1;
           result_exception = 0;
         end
+      end
 
       DIV: begin
         if (~|divisor_i) begin
@@ -160,9 +161,8 @@ always @(*) begin
         end
       end
 
+      default:begin
       end
-      default:
-      ;
     endcase
 end
 
@@ -197,7 +197,7 @@ always @(*) begin
           DO_DIV: if(~|cnt) begin
                       next_state = FINISH ;
                   end
-                  else next_state = MULTI  ;
+                  else next_state = DO_DIV  ;
           FINISH: if(result_ready)next_state = IDLE ;
                   else next_state = FINISH ;
         default : next_state=IDLE ;
@@ -211,7 +211,7 @@ always @(posedge clk) begin
         quotient_sign<= 0;
         rem_sign     <= 0; 
         divisor      <= 0;
-        result       <= 0;
+        quotient     <= 0;
     end
     else begin
         case(state)
@@ -320,6 +320,6 @@ ysyx_22050019_mux #( .NR_KEY(8), .KEY_LEN(8), .DATA_LEN(64)) mux_out
 //========================================
 // 输出控制
 assign result_ok  = (state == FINISH);
-assign mult_stall = (state == IDLE && next_state == DO_DIV) | (state == DO_DIV);
+assign div_stall  = (state == IDLE && next_state == DO_DIV) | (state == DO_DIV);
 
 endmodule
