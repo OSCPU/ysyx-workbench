@@ -168,9 +168,9 @@ wire [31:0] rem_32_s    = sign_op1_32 % sign_op2_32;
 assign alu_stall = mult_stall    | div_stall;
 assign alu_ok    = result_ok_mul | result_ok_div;
 // alu的控制信号译码（用宏定义方便添加）
-ysyx_22050019_mux #( .NR_KEY(`LEN+1'b1-13), .KEY_LEN(`LEN+1'b1-13), .DATA_LEN(64) ) mux_alu_result
+ysyx_22050019_mux #( .NR_KEY(`LEN+1-13), .KEY_LEN(`LEN+1-13), .DATA_LEN(64) ) mux_alu_result
 (
-  .key         (alu_sel[28:0]), 
+  .key         (alu_sel[20:0]), 
   .default_out (mult_out | div_out),
   .lut         ({
                  21'b100000000000000000000,{{32{sra[31]}},sra[31:0]},
