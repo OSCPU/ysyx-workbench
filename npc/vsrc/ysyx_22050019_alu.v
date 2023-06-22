@@ -141,6 +141,7 @@ wire [63:0] div         = dat1_64 / dat2_64;
 wire [31:0] div_32      = op1_32 / op2_32;
 wire [31:0] div_32_s    = sign_op1_32 / sign_op2_32;
 
+
 //取余数
 wire [63:0] rem         = dat1_64 % dat2_64 ;
 wire [31:0] rem_32      = op1_32 % op2_32 ;

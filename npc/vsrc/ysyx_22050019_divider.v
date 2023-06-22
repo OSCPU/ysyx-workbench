@@ -41,14 +41,14 @@ rem   : x[rd] = x[rs1] %𝑠 x[rs2]
 remuw : x[rd] = sext(x[rs1][31: 0] %𝑢 x[rs2][31: 0])
 remw  : x[rd] = sext(x[rs1][31: 0] %𝑠 x[rs2][31: 0])
 */
-parameter DIV   = 8'b10000000; // 除法一 有符号 64位
-parameter DIVU  = 8'b01000000; // 除法一 无符号 64位
-parameter DIVUW = 8'b00100000; // 除法一 无符号 32位
-parameter DIVW  = 8'b00010000; // 除法一 有符号 32位
-parameter REM   = 8'b00001000; // 取余数 无符号 64位
-parameter REMU  = 8'b00000100; // 取余数 有符号 64位
-parameter REMUW = 8'b00000010; // 取余数 无符号 32位
-parameter REMW  = 8'b00000001; // 取余数 有符号 32位
+parameter REM   = 8'b10000000; // 取余数 有符号 64位 
+parameter REMU  = 8'b01000000; // 取余数 无符号 64位 
+parameter REMUW = 8'b00100000; // 取余数 无符号 32位 
+parameter REMW  = 8'b00010000; // 取余数 有符号 32位 
+parameter DIV   = 8'b00001000; // 除法一 有符号 64位
+parameter DIVU  = 8'b00000100; // 除法一 无符号 64位
+parameter DIVUW = 8'b00000010; // 除法一 无符号 32位
+parameter DIVW  = 8'b00000001; // 除法一 有符号 32位
 parameter ERROR = 8'b00000000; // 遇到了除0或溢出
 
 // 使用信号声明与准备
@@ -89,6 +89,41 @@ always @(*) begin
   div_zero         = 0;
   div_of           = 0;
     case (div_type_i)
+      REM: begin
+        if (~|divisor_i) begin
+          div_zero = 1;
+          result_exception = dividend_i;
+        end
+        else if (dividend_i == {1'b1, 63'b0} && &divisor_i) begin
+          div_of = 1;
+          result_exception = 0;
+        end
+      end
+
+      REMU: begin
+        if (~|divisor_i) begin
+          div_zero = 1;
+          result_exception = dividend_i;
+        end
+      end
+
+      REMUW: begin
+        if (~|(divisor_i[31:0])) begin
+          div_zero = 1;
+          result_exception = dividend_sext32;
+        end
+      end
+
+      REMW: begin
+        if (~|(divisor_i[31:0])) begin
+          div_zero = 1;
+          result_exception = dividend_sext32;
+        end
+        else if (dividend_i[31:0] == {1'b1, 31'b0} && &(divisor_i[31:0])) begin
+          div_of = 1;
+          result_exception = 0;
+        end
+
       DIV: begin
         if (~|divisor_i) begin
           div_zero = 1;
@@ -124,41 +159,6 @@ always @(*) begin
           result_exception = dividend_sext32;
         end
       end
-
-      REM: begin
-        if (~|divisor_i) begin
-          div_zero = 1;
-          result_exception = dividend_i;
-        end
-        else if (dividend_i == {1'b1, 63'b0} && &divisor_i) begin
-          div_of = 1;
-          result_exception = 0;
-        end
-      end
-
-      REMU: begin
-        if (~|divisor_i) begin
-          div_zero = 1;
-          result_exception = dividend_i;
-        end
-      end
-
-      REMUW: begin
-        if (~|(divisor_i[31:0])) begin
-          div_zero = 1;
-          result_exception = dividend_sext32;
-        end
-      end
-
-      REMW: begin
-        if (~|(divisor_i[31:0])) begin
-          div_zero = 1;
-          result_exception = dividend_sext32;
-        end
-        else if (dividend_i[31:0] == {1'b1, 31'b0} && &(divisor_i[31:0])) begin
-          div_of = 1;
-          result_exception = 0;
-        end
 
       end
       default:
@@ -305,14 +305,14 @@ ysyx_22050019_mux #( .NR_KEY(8), .KEY_LEN(8), .DATA_LEN(64)) mux_out
   .key         (div_type), 
   .default_out (quotient[63:0]),
   .lut         ({		
-                    8'b10000000,dividend_positive,
-                    8'b01000000,quotient[63:0],
-                    8'b00100000,{{32{quotient[31]}},quotient[31:0]},
-                    8'b00010000,{{32{dividend_positive[31]}}, dividend_positive[31:0]},
-                    8'b00001000,divisor_positive,
-                    8'b00000100,quotient[127:64],
-                    8'b00000010,{{32{quotient[95]}},quotient[95:64]},
-                    8'b00000001,{{32{divisor_positive[31]}}, divisor_positive[31:0]}
+                    8'b10000000,divisor_positive,
+                    8'b01000000,quotient[127:64],
+                    8'b00100000,{{32{quotient[95]}},quotient[95:64]},
+                    8'b00010000,{{32{divisor_positive[31]}}, divisor_positive[31:0]},
+                    8'b00001000,dividend_positive,
+                    8'b00000100,quotient[63:0],
+                    8'b00000010,{{32{quotient[31]}},quotient[31:0]},
+                    8'b00000001,{{32{dividend_positive[31]}}, dividend_positive[31:0]}
                     }),          
   .out         (div_out)  
 );
