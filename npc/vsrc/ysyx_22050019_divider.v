@@ -63,8 +63,8 @@ assign divisor_sext32       = {{32{divisor_i[31]}} , divisor_i [31:0]};
 
 // 负数处理
 wire [63:0] dividend_positive, divisor_positive;
-assign dividend_positive    = ~(quotient_sign ? quotient[63:0] : dividend_i) + 1;
-assign divisor_positive     = ~(rem_sign      ? quotient[127:0]: divisor_i ) + 1;
+assign dividend_positive    = ~(quotient_sign ? quotient[63:0]  : dividend_i) + 1;
+assign divisor_positive     = ~(rem_sign      ? quotient[127:64]: divisor_i ) + 1;
 
 wire [63:0] dividend_positive_32, divisor_positive_32;
 assign dividend_positive_32 = ~dividend_sext32 + 1;
