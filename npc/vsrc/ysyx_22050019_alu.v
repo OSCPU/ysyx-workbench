@@ -149,7 +149,7 @@ ysyx_22050019_divider divider(
     .clk           ( clk            ),
     .rst_n         ( rst_n          ),
     .div_valid     ( div_valid      ),
-    .div_type      ( alu_sel[28:21] ),
+    .div_type_i    ( alu_sel[28:21] ),
     .dividend_i    ( op_1           ),
     .divisor_i     ( op_2           ),
     .result_ready  ( result_ready   ),

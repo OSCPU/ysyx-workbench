@@ -1,25 +1,46 @@
+/*
+ * 一位恢复余数绝对值迭代 64/64 除法器
+ *
+ * 初始化：
+ * 被除数寄存器为被除数的初始值，商寄存器为0，余数寄存器为0
+ * 
+ * 迭代计算：
+ * 将余数寄存器与商寄存器相连接，被除数存在该寄存器低64位
+ * 如果带符号的被除数-除数的一半，将商寄存器的最低位设为1，被除数为带符号被除数减去除数
+ * 如果带符号的除被数-除数的一半，将商寄存器的最低位设为0，被除数不变
+ * 
+ * 结束判断：
+ * 检查是否已经完成对所有商位的计算
+ * 如果还没有完成，返回到步骤2进行下一次迭代
+ * 如果已经完成，余数除法计算结束
+ * 
+ * 完成阶段：
+ * 当余数除法计算结束时，商寄存器中存储的值即为最终的商，余数寄存器中存储的值即为最终的余数
+ */
 module ysyx_22050019_divider (
-  input clk,
-  input rst_n,
-  input div_valid, /* 除法器开始信号 */
-  input [7:0] div_type,
-  input [63:0] dividend_i,
-  input [63:0] divisor_i,
-
-  input         result_ready , // 是否准备接收
-  output [63:0] result_o,
-  output        div_stall    , // 计算暂停 
-  output result_ok /* 计算ok */
+  input         clk         ,
+  input         rst_n       ,
+  input         div_valid   , // 除法器开始信号 
+  input [7:0]   div_type_i  , // 除法类型
+  input [63:0]  dividend_i  , // 被除数
+  input [63:0]  divisor_i   , // 除数
+  input         result_ready, // 是否准备接收
+  output [63:0] result_o    , // 计算结果 
+  output        div_stall   , // 计算暂停 
+  output        result_ok     // 计算ok 
 );
-
-  //div   : x[rd] = x[rs1] ÷𝑠 x[rs2]
-  //divu  : x[rd] = x[rs1] ÷𝑢 x[rs2]
-  //divuw : x[rd] = sext(x[rs1][31:0] ÷𝑢 x[rs2][31:0])
-  //divw  : x[rd] = sext(x[rs1][31:0] ÷𝑠 x[rs2][31:0])
-  //remu  : x[rd] = x[rs1] %𝑢 x[rs2]
-  //rem   : x[rd] = x[rs1] %𝑠 x[rs2]
-  //remuw : x[rd] = sext(x[rs1][31: 0] %𝑢 x[rs2][31: 0])
-  //remw  : x[rd] = sext(x[rs1][31: 0] %𝑠 x[rs2][31: 0])
+//========================================
+// 除法类型判断
+/*
+div   : x[rd] = x[rs1] ÷𝑠 x[rs2]
+divu  : x[rd] = x[rs1] ÷𝑢 x[rs2]
+divuw : x[rd] = sext(x[rs1][31:0] ÷𝑢 x[rs2][31:0])
+divw  : x[rd] = sext(x[rs1][31:0] ÷𝑠 x[rs2][31:0])
+remu  : x[rd] = x[rs1] %𝑢 x[rs2]
+rem   : x[rd] = x[rs1] %𝑠 x[rs2]
+remuw : x[rd] = sext(x[rs1][31: 0] %𝑢 x[rs2][31: 0])
+remw  : x[rd] = sext(x[rs1][31: 0] %𝑠 x[rs2][31: 0])
+*/
 parameter REM   = 8'b10000000; // 取余数 有符号 64位 
 parameter REMU  = 8'b01000000; // 取余数 无符号 64位 
 parameter REMUW = 8'b00100000; // 取余数 无符号 32位 
@@ -29,12 +50,6 @@ parameter DIVU  = 8'b00000100; // 除法一 无符号 64位
 parameter DIVUW = 8'b00000010; // 除法一 无符号 32位
 parameter DIVW  = 8'b00000001; // 除法一 有符号 32位
 
-//------------------------------------------------------------------------
-// Pre-Processing
-//------------------------------------------------------------------------
-  //reg div_sign_d;
-  //reg div_sign;
-  //reg [63:0] dividend;
   reg [63:0] divisor, divisor_d;
   reg div_zero; // divide by zero
   reg div_of; // signed overflow
@@ -69,8 +84,8 @@ parameter DIVW  = 8'b00000001; // 除法一 有符号 32位
     result_sp = 0;
     div_zero = 0;
     div_of = 0;
-      case (div_type)
-        DIV: begin
+      case (div_type_i)
+      DIV: begin
           if (~|divisor_i) begin
             div_zero = 1;
             result_sp = {64{1'b1}};
@@ -198,8 +213,8 @@ parameter DIVW  = 8'b00000001; // 除法一 有符号 32位
               //neg_s_d = ;
               //res_d = ;
               //divisor_d = ;
-              case (div_type)
-                DIV: begin
+              case (div_type_i)
+              DIV: begin
                   cnt_d = {1'b1, 6'b0};
                   neg_q_d = dividend_i[63] ^ divisor_i[63];
                   neg_s_d = dividend_i[63];
@@ -301,8 +316,8 @@ parameter DIVW  = 8'b00000001; // 除法一 有符号 32位
 
         FINISH: begin
           if(result_ready) state_d = IDLE;
-          case (div_type)
-            DIV: begin
+          case (div_type_i)
+          DIV: begin
               result_d = q_positive;
             end
             DIVU: begin
