@@ -365,7 +365,7 @@ parameter DIVW  = 8'b00000001; // 除法一 有符号 32位
 	  end
 	  else begin
 	  state <= state_d;
-      div_type <= state_d == DIVIDE ? div_type_i : div_type;
+      div_type <= (state == IDLE && state_d == DIVIDE) ? div_type_i : div_type;
       cnt <= cnt_d;
       neg_q <= neg_q_d;
       neg_s <= neg_s_d;
