@@ -61,8 +61,8 @@ assign divisor_sext32       = {{32{divisor_i[31]}} , divisor_i [31:0]};
 
 // 负数处理
 wire [63:0] dividend_positive, divisor_positive;
-assign dividend_positive = ~dividend_i + 'h1;
-assign divisor_positive = ~divisor_i + 'h1;
+assign dividend_positive    = ~(quotient_sign ? quotient[63:0]  : dividend_i) + 1;
+assign divisor_positive     = ~(rem_sign      ? quotient[127:64]: divisor_i ) + 1;
 
 wire [63:0] dividend_positive_32, divisor_positive_32;
 assign dividend_positive_32 = ~dividend_sext32 + 1;
@@ -179,10 +179,6 @@ wire [127:0] quotient_shift; // {s[63:0], q[63:0]}
 wire [64:0] dividend_iter;
 assign dividend_iter = quotient_shift[127:64] - divisor;
 assign quotient_shift = quotient << 1;
-
-wire [63:0] q_positive, s_positive;
-assign q_positive = quotient_sign ? (~quotient[63:0] + 'h1) : quotient[63:0];
-assign s_positive = rem_sign ? (~quotient[127:64] + 'h1) : quotient[127:64];
 
   always @(*) begin
     next_state  = state ; 
@@ -307,7 +303,7 @@ assign s_positive = rem_sign ? (~quotient[127:64] + 'h1) : quotient[127:64];
           if(result_ready) next_state = IDLE;
           case (div_type)
           DIV: begin
-              result_next = q_positive;
+              result_next = dividend_positive;
             end
             DIVU: begin
               result_next = quotient[63:0];
@@ -316,19 +312,19 @@ assign s_positive = rem_sign ? (~quotient[127:64] + 'h1) : quotient[127:64];
               result_next = {{32{quotient[31]}}, quotient[31:0]};
             end
             DIVW: begin
-              result_next = {{32{q_positive[31]}}, q_positive[31:0]};
+              result_next = {{32{dividend_positive[31]}}, dividend_positive[31:0]};
             end
             REMU: begin
               result_next = quotient[127:64];
             end
             REM: begin
-              result_next = s_positive;
+              result_next = divisor_positive;
             end
             REMUW: begin
               result_next = {{32{quotient[95]}}, quotient[95:64]};
             end
             REMW: begin
-              result_next = {{32{s_positive[31]}}, s_positive[31:0]};
+              result_next = {{32{divisor_positive[31]}}, divisor_positive[31:0]};
             end
             default: begin
               result_next = 0;
