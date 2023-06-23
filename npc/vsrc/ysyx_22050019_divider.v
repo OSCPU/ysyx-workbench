@@ -77,6 +77,29 @@ assign divisor_abs          = divisor_i[63]  ? divisor_positive  : divisor_i;
 wire [63:0] dividend_abs_32, divisor_abs_32;
 assign dividend_abs_32      = dividend_sext32[63] ? dividend_positive_32 : dividend_sext32;
 assign divisor_abs_32       = divisor_sext32[63]  ? divisor_positive_32  : divisor_sext32;
+
+// 除法状态机的实现
+parameter IDLE    = 2'b00;
+parameter DO_DIV  = 2'b01;
+parameter FINISH  = 2'b10;
+
+reg [1:0]  state, next_state;
+
+reg [6:0]  cnt, cnt_next;
+wire [63:0] result_next;
+reg quotient_sign, quotient_sign_next, rem_sign, rem_sign_next;
+
+reg [127:0] quotient, quotient_next;
+reg [63:0] divisor, divisor_next;
+reg [7:0]  div_type;
+wire [127:0] quotient_shift; 
+wire [64:0] dividend_iter;
+assign dividend_iter  = quotient_shift[127:64] - divisor;
+assign quotient_shift = quotient << 1;
+
+wire [63:0] quotient_abs, rem_abs;
+assign quotient_abs   = quotient_sign ? (~quotient[63:0] + 1)   : quotient[63:0];
+assign rem_abs        = rem_sign      ? (~quotient[127:64] + 1) : quotient[127:64];
 //========================================
 // 对溢出以及除零做检测
 always @(*) begin
@@ -162,29 +185,6 @@ always @(*) begin
 end
 
 //========================================
-// 除法状态机的实现
-parameter IDLE    = 2'b00;
-parameter DO_DIV  = 2'b01;
-parameter FINISH  = 2'b10;
-
-reg [1:0]  state, next_state;
-
-reg [6:0]  cnt, cnt_next;
-wire [63:0] result_next;
-reg quotient_sign, quotient_sign_next, rem_sign, rem_sign_next;
-
-reg [127:0] quotient, quotient_next;
-reg [63:0] divisor, divisor_next;
-reg [7:0]  div_type;
-wire [127:0] quotient_shift; 
-wire [64:0] dividend_iter;
-assign dividend_iter = quotient_shift[127:64] - divisor;
-assign quotient_shift = quotient << 1;
-
-wire [63:0] quotient_abs, rem_abs;
-assign quotient_abs = quotient_sign ? (~quotient[63:0] + 1) : quotient[63:0];
-assign rem_abs = rem_sign ? (~quotient[127:64] + 1) : quotient[127:64];
-
 always @(*) begin
   next_state         = state         ; 
   cnt_next           = cnt           ;
@@ -281,16 +281,10 @@ always @(*) begin
           next_state = FINISH;
         end
         else begin
-          cnt_next = cnt - 1;
+          cnt_next   = cnt - 1;
           next_state = DO_DIV;
-          if (dividend_iter[64]) begin
-            quotient_next[127:64] = quotient_shift[127:64];
-            quotient_next[63:0] = {quotient_shift[63:1], 1'b0};
-          end
-          else begin
-            quotient_next[127:64] = dividend_iter[63:0];
-            quotient_next[63:0] = {quotient_shift[63:1], 1'b1};
-          end
+          quotient_next[127:64] = dividend_iter[64] ? quotient_shift[127:64]       : dividend_iter[63:0];//迭代核心，相减为负，更新被除法
+          quotient_next[63:0]   = dividend_iter[64] ? {quotient_shift[63:1], 1'b0} : {quotient_shift[63:1], 1'b1};
         end
       end
       FINISH: begin
