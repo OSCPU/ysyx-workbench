@@ -73,9 +73,9 @@ wire [63:0] dividend_abs, divisor_abs;
 assign dividend_abs = dividend_i[63] ? dividend_positive : dividend_i;
 assign divisor_abs  = divisor_i[63] ? divisor_positive : divisor_i;
 
-wire [63:0] dividend_sext32_abs, divisor_sext32_abs;
-assign dividend_sext32_abs = dividend_sext32[63] ? dividend_positive_32 : dividend_sext32;
-assign divisor_sext32_abs = divisor_sext32[63] ? divisor_positive_32 : divisor_sext32;
+wire [63:0] dividend_abs_32, divisor_abs_32;
+assign dividend_abs_32 = dividend_sext32[63] ? dividend_positive_32 : dividend_sext32;
+assign divisor_abs_32 = divisor_sext32[63] ? divisor_positive_32 : divisor_sext32;
 //========================================
 // 对溢出以及除零做检测
 always @(*) begin
@@ -241,8 +241,8 @@ assign s_positive = neg_s ? (~res[127:64] + 'h1) : res[127:64];
                   neg_q_d = dividend_i[31] ^ divisor_i[31];
                   neg_s_d = dividend_i[31];
                   res_d[127:64] = 0;
-                  res_d[63:0] = {dividend_sext32_abs[31:0], 32'b0};
-                  divisor_d = divisor_sext32_abs;
+                  res_d[63:0] = {dividend_abs_32[31:0], 32'b0};
+                  divisor_d = divisor_abs_32;
                 end
 
                 REMU: begin
@@ -277,8 +277,8 @@ assign s_positive = neg_s ? (~res[127:64] + 'h1) : res[127:64];
                   neg_q_d = dividend_i[31] ^ divisor_i[31];
                   neg_s_d = dividend_i[31];
                   res_d[127:64] = 0;
-                  res_d[63:0] = {dividend_sext32_abs[31:0], 32'b0};
-                  divisor_d = divisor_sext32_abs;
+                  res_d[63:0] = {dividend_abs_32[31:0], 32'b0};
+                  divisor_d = divisor_abs_32;
                 end
 
                 default:;
