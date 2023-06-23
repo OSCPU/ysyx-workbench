@@ -84,50 +84,22 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
 }
 
 // 向指定位置写颜色，32和8需要分别讨论因为32位颜色直接写入8位dst->pixels中与实际的8位颜色不一样（这里主要影响能量条和部分字体）
-void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
-  assert(dst);
-  uint32_t *pixels_32 = (uint32_t *)dst->pixels;
-  uint8_t  *pixels_8 = (uint8_t *)dst->pixels;
-
-  // 在x,y处绘制w*h的矩形
-  int x, y, w, h;
-
-  // 如果为NULL则全屏幕覆盖
-  if (dstrect == NULL) {
-    x = 0;      y = 0;
-    w = dst->w; h = dst->h;
-  }
-  // 存在限制向限制大小写颜色
-  else {
-    x = dstrect->x; y = dstrect->y;
-    w = dstrect->w; h = dstrect->h;
-  }
-  if (dst->format->BitsPerPixel == 32) {
-    uint32_t* dst_pixels = (uint32_t*)dst->pixels;
-    size_t dst_pitch = dst->pitch / sizeof(uint32_t);  // 目标图像每行的像素个数
-  
-    size_t dst_offset = (y * dst_pitch + x);
-    size_t num_pixels = w * h;
-  
-    // 使用 memset 将目标位置的像素数据设置为 color
-    memset(dst_pixels + dst_offset, color, num_pixels * sizeof(uint32_t));
-  }
-
-  else if (dst->format->BitsPerPixel == 8) {
-    uint8_t* dst_pixels = (uint8_t*)dst->pixels;
-    size_t dst_pitch = dst->pitch;  // 目标图像每行的字节数
-  
-    size_t dst_offset = (y * dst_pitch + x);
-    size_t num_pixels = w * h;
-  
-    // 使用 memset 将目标位置的像素数据设置为 color
-    memset(dst_pixels + dst_offset, color, num_pixels * sizeof(uint8_t));
-  }
-
-  else{
-     printf("[SDL_FillRect] 使用的像素格式%d未实现\n",dst->format->BitsPerPixel);
-     assert(0);
-  }
+void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) 
+{
+    int x = (dstrect == NULL ? 0      : dstrect->x);
+    int y = (dstrect == NULL ? 0      : dstrect->y);
+    int w = (dstrect == NULL ? dst->w : dstrect->w);
+    int h = (dstrect == NULL ? dst->h : dstrect->h);
+    if(dst->format->BitsPerPixel == 8)
+    {
+        for(int i = 0; i < h; i++)
+            memset(dst->pixels + dst->format->BytesPerPixel * ((i+y)*dst->w + x), (uint8_t)color, dst->format->BytesPerPixel * w);
+    }
+    else
+    {
+        for(int i = 0; i < h; i++)
+            memset(dst->pixels + dst->format->BytesPerPixel * ((i+y)*dst->w + x), color, dst->format->BytesPerPixel * w);
+    }
 }
 
 void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) 
