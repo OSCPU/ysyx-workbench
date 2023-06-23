@@ -182,9 +182,9 @@ always@(posedge clk)begin
     //初始化对比项
     for( m=0;m<WAY_DEPTH;m=m+1)begin
       for( p=0;p<INDEX_DEPTH;p=p+1)begin
-          tag[m][p]<=0;
-	  			dirty[m][p]<=0;
-	  			valid[m][p]<=0;
+          tag[m][p]  <= 22'b0;
+	  			dirty[m][p]<= 1'b0;
+	  			valid[m][p]<= 1'b0;
       end
     end
     rw_control                    <= 0                                     ;
