@@ -113,12 +113,17 @@ void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
     memset(dst_pixels + dst_offset, color, num_pixels * sizeof(uint32_t));
   }
 
-  else if(dst->format->BitsPerPixel == 8)
-  for (int i = 0; i < h; ++ i){
-    for (int j = 0; j < w; ++ j){
-      pixels_8[(y + i) * dst->w + (x + j)] = color;
-    }
+  else if (dst->format->BitsPerPixel == 8) {
+    uint8_t* dst_pixels = (uint8_t*)dst->pixels;
+    size_t dst_pitch = dst->pitch;  // 目标图像每行的字节数
+  
+    size_t dst_offset = (y * dst_pitch + x);
+    size_t num_pixels = w * h;
+  
+    // 使用 memset 将目标位置的像素数据设置为 color
+    memset(dst_pixels + dst_offset, color, num_pixels * sizeof(uint8_t));
   }
+
   else{
      printf("[SDL_FillRect] 使用的像素格式%d未实现\n",dst->format->BitsPerPixel);
      assert(0);
