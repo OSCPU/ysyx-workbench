@@ -34,21 +34,18 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
   }
 
   // 对于像素开始粘贴
-  if (src->format->BitsPerPixel == 32) {
-    uint32_t* pixels_src = (uint32_t*)src->pixels;
-    uint32_t* pixels_dst = (uint32_t*)dst->pixels;
-    size_t src_pitch = src->pitch / sizeof(uint32_t);  // 源图像每行的像素个数
-    size_t dst_pitch = dst->pitch / sizeof(uint32_t);  // 目标图像每行的像素个数
-  
-    size_t src_offset = y_src * src_pitch + x_src;
-    size_t dst_offset = y_dst * dst_pitch + x_dst;
-  
-    size_t row_size = screen_w * sizeof(uint32_t);  // 每行的字节数
-  
-    // 使用 memcpy 函数一次性复制整个图像的像素数据
-    memcpy(pixels_dst + dst_offset, pixels_src + src_offset, row_size * screen_h);
+  if(src->format->BitsPerPixel == 32){
+    uint32_t *pixels_src = (uint32_t *)src->pixels;
+    uint32_t *pixels_dst = (uint32_t *)dst->pixels;
+    size_t src_pixels = screen_h * src->w;
+      for (int i = 0; i < screen_h; ++i)
+      {
+        for (int j = 0; j < screen_w; ++j)
+        {
+          pixels_dst[(y_dst + i) * dst->w + x_dst + j] = pixels_src[(y_src + i) * src->w + x_src + j];
+        }
+      }
   }
-
   // 只有8位的可以在pal可以，在bird中不行，可能是源和目标图像的像素格式不同导致的。若这个也错就可以改成与上面一样
   else if(src->format->BitsPerPixel == 8){
     uint8_t* pixels_src = (uint8_t*)src->pixels;
