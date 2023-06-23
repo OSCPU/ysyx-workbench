@@ -62,8 +62,8 @@ assign divisor_sext32       = {{32{divisor_i[31]}} , divisor_i [31:0]};
 
 // 负数处理
 wire [63:0] dividend_positive, divisor_positive;
-assign dividend_positive = ~dividend_i + 'h1;
-assign divisor_positive = ~divisor_i + 'h1;
+assign dividend_positive    = ~dividend_i + 1;
+assign divisor_positive     = ~divisor_i + 1;
 
 wire [63:0] dividend_positive_32, divisor_positive_32;
 assign dividend_positive_32 = ~dividend_sext32 + 1;
@@ -182,164 +182,151 @@ assign dividend_iter = quotient_shift[127:64] - divisor;
 assign quotient_shift = quotient << 1;
 
 wire [63:0] quotient_abs, rem_sign_abs;
-assign quotient_abs = quotient_sign ? (~quotient[63:0] + 'h1) : quotient[63:0];
-assign rem_sign_abs = rem_sign ? (~quotient[127:64] + 'h1) : quotient[127:64];
+assign quotient_abs = quotient_sign ? (~quotient[63:0] + 1) : quotient[63:0];
+assign rem_sign_abs = rem_sign ? (~quotient[127:64] + 1) : quotient[127:64];
 
-  always @(*) begin
-    next_state  = state ; 
-    result_next = result;
-    cnt_next    = cnt   ;
-    quotient_sign_next     = quotient_sign ;
-    rem_sign_next     = rem_sign ;
-    quotient_next       = quotient   ;
-    divisor_next = divisor ;
-	    case(state)
-        IDLE: begin
-          if (div_valid) begin
-            /* 如果是除0或溢出则IDLE态 */
-            if (div_zero | div_of) begin
-              result_next = result_exception;
-              next_state  = FINISH;
-            end
-            else begin
-              next_state = DO_DIV;
-              case (div_type_i)
-              DIV: begin
-                  cnt_next= 64;
-                  quotient_sign_next = dividend_i[63] ^ divisor_i[63];
-                  rem_sign_next = dividend_i[63];
-                  quotient_next[127:64] = 0;
-                  quotient_next[63:0] = dividend_abs;
-                  divisor_next = divisor_abs;
-                end
-
-                DIVU: begin
-                  cnt_next= 64;
-                  quotient_sign_next = 0;
-                  rem_sign_next = 0;
-                  quotient_next[127:64] = 0;
-                  quotient_next[63:0] = dividend_i;
-                  divisor_next = divisor_i;
-                end
-
-                DIVUW: begin
-                  cnt_next= 32;
-                  quotient_sign_next = 0;
-                  rem_sign_next = 0;
-                  quotient_next[127:64] = 0;
-                  quotient_next[63:0] = {dividend_i[31:0], {32{1'b0}}};
-                  divisor_next = {{32{1'b0}}, divisor_i[31:0]};
-                end
-
-                DIVW: begin
-                  cnt_next= 32;
-                  quotient_sign_next = dividend_i[31] ^ divisor_i[31];
-                  rem_sign_next = dividend_i[31];
-                  quotient_next[127:64] = 0;
-                  quotient_next[63:0] = {dividend_abs_32[31:0], 32'b0};
-                  divisor_next = divisor_abs_32;
-                end
-
-                REMU: begin
-                  cnt_next= 64;
-                  quotient_sign_next = 0;
-                  rem_sign_next = 0;
-                  quotient_next[127:64] = 0;
-                  quotient_next[63:0] = dividend_i;
-                  divisor_next = divisor_i;
-                end
-
-                REM: begin
-                  cnt_next = 64;
-                  quotient_sign_next = dividend_i[63] ^ divisor_i[63];
-                  rem_sign_next = dividend_i[63];
-                  quotient_next[127:64] = 0;
-                  quotient_next[63:0] = dividend_abs;
-                  divisor_next = divisor_abs;
-                end
-
-                REMUW: begin
-                  cnt_next= 32;
-                  quotient_sign_next = 0;
-                  rem_sign_next = 0;
-                  quotient_next[127:64] = 0;
-                  quotient_next[63:0] = {dividend_i[31:0], {32{1'b0}}};
-                  divisor_next = {{32{1'b0}}, divisor_i[31:0]};
-                end
-
-                REMW: begin
-                  cnt_next= 32;
-                  quotient_sign_next = dividend_i[31] ^ divisor_i[31];
-                  rem_sign_next = dividend_i[31];
-                  quotient_next[127:64] = 0;
-                  quotient_next[63:0] = {dividend_abs_32[31:0], 32'b0};
-                  divisor_next = divisor_abs_32;
-                end
-
-                default:;
-              endcase
-            end
-          end
-          /* 否则就是IDLE */
-          else begin
-            next_state = IDLE;
-          end
+always @(*) begin
+  next_state         = state         ; 
+  result_next        = result        ;
+  cnt_next           = cnt           ;
+  quotient_sign_next = quotient_sign ;
+  rem_sign_next      = rem_sign      ;
+  quotient_next      = quotient      ;
+  divisor_next       = divisor       ;
+  case(state)
+    IDLE: begin
+      if (div_valid) begin
+        /* 如果是除0或溢出则IDLE态 */
+        if (div_zero | div_of) begin
+          result_next = result_exception;
+          next_state  = FINISH;
         end
-
-        DO_DIV: begin
-          if (~|cnt) begin
-            next_state = FINISH;
-          end
-          else begin
-            cnt_next = cnt - 1;
-            next_state = DO_DIV;
-            if (dividend_iter[64]) begin
-              quotient_next[127:64] = quotient_shift[127:64];
-              quotient_next[63:0] = {quotient_shift[63:1], 1'b0};
-            end
-            else begin
-              quotient_next[127:64] = dividend_iter[63:0];
-              quotient_next[63:0] = {quotient_shift[63:1], 1'b1};
-            end
-          end
-        end
-
-        FINISH: begin
-          if(result_ready) next_state = IDLE;
-          case (div_type)
+        else begin
+          next_state = DO_DIV;
+          case (div_type_i)
           DIV: begin
-              result_next = quotient_abs;
+              cnt_next= 64;
+              quotient_sign_next = dividend_i[63] ^ divisor_i[63];
+              rem_sign_next = dividend_i[63];
+              quotient_next[127:64] = 0;
+              quotient_next[63:0] = dividend_abs;
+              divisor_next = divisor_abs;
             end
-            DIVU: begin
-              result_next = quotient[63:0];
-            end
-            DIVUW: begin
-              result_next = {{32{quotient[31]}}, quotient[31:0]};
-            end
-            DIVW: begin
-              result_next = {{32{quotient_abs[31]}}, quotient_abs[31:0]};
-            end
-            REMU: begin
-              result_next = quotient[127:64];
-            end
-            REM: begin
-              result_next = rem_sign_abs;
-            end
-            REMUW: begin
-              result_next = {{32{quotient[95]}}, quotient[95:64]};
-            end
-            REMW: begin
-              result_next = {{32{rem_sign_abs[31]}}, rem_sign_abs[31:0]};
-            end
-            default: begin
-              result_next = 0;
-            end
-          endcase
+              DIVU: begin
+                cnt_next= 64;
+                quotient_sign_next = 0;
+                rem_sign_next = 0;
+                quotient_next[127:64] = 0;
+                quotient_next[63:0] = dividend_i;
+                divisor_next = divisor_i;
+              end
+              DIVUW: begin
+                cnt_next= 32;
+                quotient_sign_next = 0;
+                rem_sign_next = 0;
+                quotient_next[127:64] = 0;
+                quotient_next[63:0] = {dividend_i[31:0], {32{1'b0}}};
+                divisor_next = {{32{1'b0}}, divisor_i[31:0]};
+              end
+              DIVW: begin
+                cnt_next= 32;
+                quotient_sign_next = dividend_i[31] ^ divisor_i[31];
+                rem_sign_next = dividend_i[31];
+                quotient_next[127:64] = 0;
+                quotient_next[63:0] = {dividend_abs_32[31:0], 32'b0};
+                divisor_next = divisor_abs_32;
+              end
+              REMU: begin
+                cnt_next= 64;
+                quotient_sign_next = 0;
+                rem_sign_next = 0;
+                quotient_next[127:64] = 0;
+                quotient_next[63:0] = dividend_i;
+                divisor_next = divisor_i;
+              end
+              REM: begin
+                cnt_next = 64;
+                quotient_sign_next = dividend_i[63] ^ divisor_i[63];
+                rem_sign_next = dividend_i[63];
+                quotient_next[127:64] = 0;
+                quotient_next[63:0] = dividend_abs;
+                divisor_next = divisor_abs;
+              end
+              REMUW: begin
+                cnt_next= 32;
+                quotient_sign_next = 0;
+                rem_sign_next = 0;
+                quotient_next[127:64] = 0;
+                quotient_next[63:0] = {dividend_i[31:0], {32{1'b0}}};
+                divisor_next = {{32{1'b0}}, divisor_i[31:0]};
+              end
+              REMW: begin
+                cnt_next= 32;
+                quotient_sign_next = dividend_i[31] ^ divisor_i[31];
+                rem_sign_next = dividend_i[31];
+                quotient_next[127:64] = 0;
+                quotient_next[63:0] = {dividend_abs_32[31:0], 32'b0};
+                divisor_next = divisor_abs_32;
+              end
+              default:;
+            endcase
+          end
         end
-
-        default:;
-	    endcase
-  end
+        else begin
+          next_state = IDLE;
+        end
+      end
+      DO_DIV: begin
+        if (~|cnt) begin
+          next_state = FINISH;
+        end
+        else begin
+          cnt_next = cnt - 1;
+          next_state = DO_DIV;
+          if (dividend_iter[64]) begin
+            quotient_next[127:64] = quotient_shift[127:64];
+            quotient_next[63:0] = {quotient_shift[63:1], 1'b0};
+          end
+          else begin
+            quotient_next[127:64] = dividend_iter[63:0];
+            quotient_next[63:0] = {quotient_shift[63:1], 1'b1};
+          end
+        end
+      end
+      FINISH: begin
+        if(result_ready) next_state = IDLE;
+        case (div_type)
+        DIV: begin
+            result_next = quotient_abs;
+          end
+          DIVU: begin
+            result_next = quotient[63:0];
+          end
+          DIVUW: begin
+            result_next = {{32{quotient[31]}}, quotient[31:0]};
+          end
+          DIVW: begin
+            result_next = {{32{quotient_abs[31]}}, quotient_abs[31:0]};
+          end
+          REMU: begin
+            result_next = quotient[127:64];
+          end
+          REM: begin
+            result_next = rem_sign_abs;
+          end
+          REMUW: begin
+            result_next = {{32{quotient[95]}}, quotient[95:64]};
+          end
+          REMW: begin
+            result_next = {{32{rem_sign_abs[31]}}, rem_sign_abs[31:0]};
+          end
+          default: begin
+            result_next = 0;
+          end
+        endcase
+      end
+      default:;	    endcase
+end
 
   always @(posedge clk) begin
     if (rst_n) begin
