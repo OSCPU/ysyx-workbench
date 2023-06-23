@@ -267,7 +267,8 @@ always @(*) begin
                 quotient_next[63:0]   = {dividend_abs_32[31:0], 32'b0};
                 divisor_next          = divisor_abs_32;
               end
-              default:;
+              default:begin
+              end
             endcase
           end
         end
