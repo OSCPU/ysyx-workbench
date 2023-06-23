@@ -70,12 +70,12 @@ assign divisor_positive_32  = ~divisor_sext32  + 1;
 
 //绝对值选择
 wire [63:0] dividend_abs, divisor_abs;
-assign dividend_abs = dividend_i[63] ? dividend_positive : dividend_i;
-assign divisor_abs  = divisor_i[63] ? divisor_positive : divisor_i;
+assign dividend_abs         = dividend_i[63] ? dividend_positive : dividend_i;
+assign divisor_abs          = divisor_i[63]  ? divisor_positive  : divisor_i;
 
 wire [63:0] dividend_abs_32, divisor_abs_32;
-assign dividend_abs_32 = dividend_sext32[63] ? dividend_positive_32 : dividend_sext32;
-assign divisor_abs_32 = divisor_sext32[63] ? divisor_positive_32 : divisor_sext32;
+assign dividend_abs_32      = dividend_sext32[63] ? dividend_positive_32 : dividend_sext32;
+assign divisor_abs_32       = divisor_sext32[63]  ? divisor_positive_32  : divisor_sext32;
 //========================================
 // 对溢出以及除零做检测
 always @(*) begin
@@ -194,12 +194,11 @@ assign s_positive = neg_s ? (~res[127:64] + 'h1) : res[127:64];
     divisor_d = divisor ;
 	    case(state)
         IDLE: begin
-          /* 如果除法允许进行 */
           if (div_valid) begin
             /* 如果是除0或溢出则IDLE态 */
             if (div_zero | div_of) begin
               result_next = result_exception;
-              next_state = IDLE;
+              next_state  = FINISH;
             end
             else begin
               next_state = DO_DIV;
