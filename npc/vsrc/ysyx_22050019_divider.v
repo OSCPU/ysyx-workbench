@@ -51,6 +51,7 @@ parameter DIVUW = 8'b00000010; // 除法一 无符号 32位
 parameter DIVW  = 8'b00000001; // 除法一 有符号 32位
 
   reg [63:0] divisor, divisor_d;
+  reg [7:0]  div_type;
   reg div_zero; // divide by zero
   reg div_of; // signed overflow
 
@@ -316,7 +317,7 @@ parameter DIVW  = 8'b00000001; // 除法一 有符号 32位
 
         FINISH: begin
           if(result_ready) state_d = IDLE;
-          case (div_type_i)
+          case (div_type)
           DIV: begin
               result_d = q_positive;
             end
@@ -353,7 +354,8 @@ parameter DIVW  = 8'b00000001; // 除法一 有符号 32位
 
   always @(posedge clk) begin
     if (rst_n) begin
-	    state <= IDLE;
+	  state <= IDLE;
+      div_type <= 0;
       cnt <= 0;
       neg_q <= 0;
       neg_s <= 0;
@@ -362,7 +364,8 @@ parameter DIVW  = 8'b00000001; // 除法一 有符号 32位
       result <= 0;
 	  end
 	  else begin
-	    state <= state_d;
+	  state <= state_d;
+      div_type <= state_d == DIVIDE ? div_type_i : div_type;
       cnt <= cnt_d;
       neg_q <= neg_q_d;
       neg_s <= neg_s_d;
