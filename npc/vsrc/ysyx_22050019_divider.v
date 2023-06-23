@@ -230,8 +230,8 @@ always @(*) begin
                 quotient_sign_next    = 0;
                 rem_sign_next         = 0;
                 quotient_next[127:64] = 0;
-                quotient_next[63:0]   = {dividend_i[31:0], 32'b0};
-                divisor_next          = {32'b0, divisor_i[31:0]};
+                quotient_next[63:0]   = {dividend_i[31:0], {32{1'b0}}};
+                divisor_next          = {{32{1'b0}}, divisor_i[31:0]};
               end
               DIVW: begin
                 cnt_next              = 32;
@@ -262,8 +262,8 @@ always @(*) begin
                 quotient_sign_next    = 0;
                 rem_sign_next         = 0;
                 quotient_next[127:64] = 0;
-                quotient_next[63:0]   = {dividend_i[31:0], 32'b0};
-                divisor_next          = {32'b0, divisor_i[31:0]};
+                quotient_next[63:0]   = {dividend_i[31:0], {32{1'b0}}};
+                divisor_next          = {{32{1'b0}}, divisor_i[31:0]};
               end
               REMW: begin
                 cnt_next              = 32;
