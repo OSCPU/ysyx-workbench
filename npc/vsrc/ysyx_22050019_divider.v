@@ -279,7 +279,7 @@ always @(posedge clk) begin
           DO_DIV: if(next_state == DO_DIV) begin
                     cnt             <= cnt -1 ;
                   if (dividend_iter[64]) begin
-                    quotient        <= 0;
+                    quotient        <= quotient_shift;
                   end
                   else begin
                     quotient[127:64]<= 0;
