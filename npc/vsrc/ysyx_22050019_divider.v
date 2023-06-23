@@ -236,14 +236,6 @@ always @(*) begin
                 quotient_next[63:0] = {dividend_abs_32[31:0], 32'b0};
                 divisor_next = divisor_abs_32;
               end
-              REMU: begin
-                cnt_next= 64;
-                quotient_sign_next = 0;
-                rem_sign_next = 0;
-                quotient_next[127:64] = 0;
-                quotient_next[63:0] = dividend_i;
-                divisor_next = divisor_i;
-              end
               REMUW: begin
                 cnt_next= 32;
                 quotient_sign_next = 0;
