@@ -178,7 +178,7 @@ reg [63:0] divisor, divisor_next;
 reg [7:0]  div_type;
 wire [127:0] quotient_shift; 
 wire [64:0] dividend_iter;
-assign dividend_iter = quotient_shift[127:64] - divisor;
+assign dividend_iter = quotient[127:63] - {1'b0,divisor};
 assign quotient_shift = quotient << 1;
 
 wire [63:0] quotient_abs, rem_abs;
