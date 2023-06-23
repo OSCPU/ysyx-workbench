@@ -56,21 +56,22 @@ reg div_of  ;// 溢出通知
 
 // 32位符号拓展
 wire [63:0] dividend_sext32, divisor_sext32;
-assign dividend_sext32 = {{32{dividend_i[31]}}, dividend_i[31:0]};
-assign divisor_sext32  = {{32{divisor_i[31]}}, divisor_i[31:0]};
+assign dividend_sext32      = {{32{dividend_i[31]}}, dividend_i[31:0]};
+assign divisor_sext32       = {{32{divisor_i[31]}} , divisor_i [31:0]};
 
 // 负数处理
 wire [63:0] dividend_positive, divisor_positive;
 assign dividend_positive = ~dividend_i + 'h1;
 assign divisor_positive = ~divisor_i + 'h1;
 
-wire [63:0] dividend_i_abs, divisor_i_abs;
-assign dividend_i_abs = dividend_i[63] ? dividend_positive : dividend_i;
-assign divisor_i_abs  = divisor_i[63] ? divisor_positive : divisor_i;
-
 wire [63:0] dividend_positive_32, divisor_positive_32;
-assign dividend_positive_32 = ~dividend_sext32 +'h1;
-assign divisor_positive_32 = ~divisor_sext32 +'h1;
+assign dividend_positive_32 = ~dividend_sext32 + 1;
+assign divisor_positive_32  = ~divisor_sext32  + 1;
+
+//绝对值选择
+wire [63:0] dividend_abs, divisor_abs;
+assign dividend_abs = dividend_i[63] ? dividend_positive : dividend_i;
+assign divisor_abs  = divisor_i[63] ? divisor_positive : divisor_i;
 
 wire [63:0] dividend_sext32_abs, divisor_sext32_abs;
 assign dividend_sext32_abs = dividend_sext32[63] ? dividend_positive_32 : dividend_sext32;
@@ -213,8 +214,8 @@ assign s_positive = neg_s ? (~res[127:64] + 'h1) : res[127:64];
                   neg_q_d = dividend_i[63] ^ divisor_i[63];
                   neg_s_d = dividend_i[63];
                   res_d[127:64] = 0;
-                  res_d[63:0] = dividend_i_abs;
-                  divisor_d = divisor_i_abs;
+                  res_d[63:0] = dividend_abs;
+                  divisor_d = divisor_abs;
                 end
 
                 DIVU: begin
@@ -258,8 +259,8 @@ assign s_positive = neg_s ? (~res[127:64] + 'h1) : res[127:64];
                   neg_q_d = dividend_i[63] ^ divisor_i[63];
                   neg_s_d = dividend_i[63];
                   res_d[127:64] = 0;
-                  res_d[63:0] = dividend_i_abs;
-                  divisor_d = divisor_i_abs;
+                  res_d[63:0] = dividend_abs;
+                  divisor_d = divisor_abs;
                 end
 
                 REMUW: begin
