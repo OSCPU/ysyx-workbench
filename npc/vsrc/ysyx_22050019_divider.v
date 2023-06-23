@@ -284,7 +284,7 @@ always @(posedge clk) begin
                   end
                   else begin
                     quotient[127:64]<= dividend_iter[63:0];
-                    quotient[63:0]  <= {quotient_shift[63:1],1'b1};
+                    quotient[63:0]  <= 0;
                   end
                   end
                   else if(next_state == FINISH) begin
