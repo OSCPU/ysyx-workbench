@@ -230,7 +230,7 @@ always @(posedge clk) begin
                         cnt             <= 64                ;
                         quotient_sign   <= dividend_i[63] ^ divisor_i[63];
                         rem_sign        <= dividend_i[63]    ;
-                        quotient[127:64]<= 0                 ;
+                        quotient[127:64]<= 64'b0             ;
                         quotient[63:0]  <= dividend_abs      ;
                         divisor         <= divisor_abs       ; 
                     end
@@ -240,7 +240,7 @@ always @(posedge clk) begin
                         cnt             <= 64                ;
                         quotient_sign   <= 0                 ;
                         rem_sign        <= 0                 ;
-                        quotient[127:64]<= 0                 ;
+                        quotient[127:64]<= 64'b0             ;
                         quotient[63:0]  <= dividend_i        ;
                         divisor         <= divisor_i         ;  
                     end 
@@ -250,7 +250,7 @@ always @(posedge clk) begin
                         cnt             <= 32                ;
                         quotient_sign   <= 0                 ;
                         rem_sign        <= 0                 ;
-                        quotient[127:64]<= 0                 ;
+                        quotient[127:64]<= 64'b0            ;
                         quotient[63:0]  <= {dividend_i[31:0], 32'b0};
                         divisor         <= {32'b0, divisor_i[31:0]} ;
                     end  
@@ -260,7 +260,7 @@ always @(posedge clk) begin
                         cnt             <= 32                ;
                         quotient_sign   <= dividend_i[31] ^ divisor_i[31];
                         rem_sign        <= dividend_i[31]    ;
-                        quotient[127:64]<= 0                 ;
+                        quotient[127:64]<= 64'b0             ;
                         quotient[63:0]  <= {dividend_abs_32[31:0], 32'b0};
                         divisor         <= divisor_abs_32    ;
                     end  
@@ -274,15 +274,14 @@ always @(posedge clk) begin
                             cnt             <= 0             ;
                             quotient_sign   <= 0             ;
                             rem_sign        <= 0             ;
-                            quotient[127:64]<= 0             ;
-                            quotient[63:0]  <= 0             ;
+                            quotient[127:64]<= 64'b0         ;
+                            quotient[63:0]  <= 64'b0         ;
                             divisor         <= 0             ;
             end
 
           DO_DIV: if(next_state == DO_DIV) begin
                     cnt             <= cnt -1 ;
-                    quotient[127:64]<= udpate_data[127:64];
-                    quotient[63:0]  <= udpate_data[63:0];
+                    quotient        <= udpate_data;
                   end
                   else if(next_state == FINISH) begin
                     cnt     <= 0 ;
@@ -293,8 +292,7 @@ always @(posedge clk) begin
             cnt             <= 0 ;
             quotient_sign   <= 0 ;
             rem_sign        <= 0 ;
-            quotient[127:64]<= 0 ;
-            quotient[63:0]  <= 0 ;
+            quotient        <= 0 ;
             divisor         <= 0 ;
           end
         default : begin
