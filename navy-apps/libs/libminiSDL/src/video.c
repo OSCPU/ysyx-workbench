@@ -50,18 +50,23 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
   }
 
   // 只有8位的可以在pal可以，在bird中不行，可能是源和目标图像的像素格式不同导致的。若这个也错就可以改成与上面一样
-  else if(src->format->BitsPerPixel == 8){
+  if (src->format->BitsPerPixel == 8) {
     uint8_t* pixels_src = (uint8_t*)src->pixels;
     uint8_t* pixels_dst = (uint8_t*)dst->pixels;
-    size_t src_pixels = screen_h * src->w;
-      for (int i = 0; i < screen_h; ++i)
-      {
-        for (int j = 0; j < screen_w; ++j)
-        {
-          pixels_dst[(y_dst + i) * dst->w + x_dst + j] = pixels_src[(y_src + i) * src->w + x_src + j];
-        }
-      }
+    size_t src_pitch = src->pitch;  // 源图像每行的字节数
+    size_t dst_pitch = dst->pitch;  // 目标图像每行的字节数
+  
+    size_t src_offset = y_src * src_pitch + x_src;
+    size_t dst_offset = y_dst * dst_pitch + x_dst;
+  
+    size_t row_size = screen_w * sizeof(uint8_t);  // 每行的字节数
+  
+    // 使用 memcpy 函数一次性复制整个图像的像素数据
+    for (int i = 0; i < screen_h; ++i) {
+      memcpy(pixels_dst + dst_offset + i * dst_pitch, pixels_src + src_offset + i * src_pitch, row_size);
+    }
   }
+
   else{
     printf("[SDL_BlitSurface] 使用的像素格式%d未实现\n",src->format->BitsPerPixel);
     assert(0);
