@@ -170,7 +170,7 @@ reg [1:0]  state, next_state;
 
 reg [6:0]  cnt, cnt_next;
 reg [63:0] result,result_next;
-reg quotient_sign, quotient_sign_next, neg_s, neg_s_d;
+reg quotient_sign, quotient_sign_next, rem_sign, rem_sign_next;
 
 reg [127:0] quotient, quotient_next;
 reg [63:0] divisor, divisor_d;
@@ -182,14 +182,14 @@ assign res_shifted = quotient << 1;
 
 wire [63:0] q_positive, s_positive;
 assign q_positive = quotient_sign ? (~quotient[63:0] + 'h1) : quotient[63:0];
-assign s_positive = neg_s ? (~quotient[127:64] + 'h1) : quotient[127:64];
+assign s_positive = rem_sign ? (~quotient[127:64] + 'h1) : quotient[127:64];
 
   always @(*) begin
     next_state  = state ; 
     result_next = result;
     cnt_next    = cnt   ;
     quotient_sign_next     = quotient_sign ;
-    neg_s_d     = neg_s ;
+    rem_sign_next     = rem_sign ;
     quotient_next       = quotient   ;
     divisor_d = divisor ;
 	    case(state)
@@ -206,7 +206,7 @@ assign s_positive = neg_s ? (~quotient[127:64] + 'h1) : quotient[127:64];
               DIV: begin
                   cnt_next= 64;
                   quotient_sign_next = dividend_i[63] ^ divisor_i[63];
-                  neg_s_d = dividend_i[63];
+                  rem_sign_next = dividend_i[63];
                   quotient_next[127:64] = 0;
                   quotient_next[63:0] = dividend_abs;
                   divisor_d = divisor_abs;
@@ -215,7 +215,7 @@ assign s_positive = neg_s ? (~quotient[127:64] + 'h1) : quotient[127:64];
                 DIVU: begin
                   cnt_next= 64;
                   quotient_sign_next = 0;
-                  neg_s_d = 0;
+                  rem_sign_next = 0;
                   quotient_next[127:64] = 0;
                   quotient_next[63:0] = dividend_i;
                   divisor_d = divisor_i;
@@ -224,7 +224,7 @@ assign s_positive = neg_s ? (~quotient[127:64] + 'h1) : quotient[127:64];
                 DIVUW: begin
                   cnt_next= 32;
                   quotient_sign_next = 0;
-                  neg_s_d = 0;
+                  rem_sign_next = 0;
                   quotient_next[127:64] = 0;
                   quotient_next[63:0] = {dividend_i[31:0], {32{1'b0}}};
                   divisor_d = {{32{1'b0}}, divisor_i[31:0]};
@@ -233,7 +233,7 @@ assign s_positive = neg_s ? (~quotient[127:64] + 'h1) : quotient[127:64];
                 DIVW: begin
                   cnt_next= 32;
                   quotient_sign_next = dividend_i[31] ^ divisor_i[31];
-                  neg_s_d = dividend_i[31];
+                  rem_sign_next = dividend_i[31];
                   quotient_next[127:64] = 0;
                   quotient_next[63:0] = {dividend_abs_32[31:0], 32'b0};
                   divisor_d = divisor_abs_32;
@@ -242,7 +242,7 @@ assign s_positive = neg_s ? (~quotient[127:64] + 'h1) : quotient[127:64];
                 REMU: begin
                   cnt_next= 64;
                   quotient_sign_next = 0;
-                  neg_s_d = 0;
+                  rem_sign_next = 0;
                   quotient_next[127:64] = 0;
                   quotient_next[63:0] = dividend_i;
                   divisor_d = divisor_i;
@@ -251,7 +251,7 @@ assign s_positive = neg_s ? (~quotient[127:64] + 'h1) : quotient[127:64];
                 REM: begin
                   cnt_next = 64;
                   quotient_sign_next = dividend_i[63] ^ divisor_i[63];
-                  neg_s_d = dividend_i[63];
+                  rem_sign_next = dividend_i[63];
                   quotient_next[127:64] = 0;
                   quotient_next[63:0] = dividend_abs;
                   divisor_d = divisor_abs;
@@ -260,7 +260,7 @@ assign s_positive = neg_s ? (~quotient[127:64] + 'h1) : quotient[127:64];
                 REMUW: begin
                   cnt_next= 32;
                   quotient_sign_next = 0;
-                  neg_s_d = 0;
+                  rem_sign_next = 0;
                   quotient_next[127:64] = 0;
                   quotient_next[63:0] = {dividend_i[31:0], {32{1'b0}}};
                   divisor_d = {{32{1'b0}}, divisor_i[31:0]};
@@ -269,7 +269,7 @@ assign s_positive = neg_s ? (~quotient[127:64] + 'h1) : quotient[127:64];
                 REMW: begin
                   cnt_next= 32;
                   quotient_sign_next = dividend_i[31] ^ divisor_i[31];
-                  neg_s_d = dividend_i[31];
+                  rem_sign_next = dividend_i[31];
                   quotient_next[127:64] = 0;
                   quotient_next[63:0] = {dividend_abs_32[31:0], 32'b0};
                   divisor_d = divisor_abs_32;
@@ -346,7 +346,7 @@ assign s_positive = neg_s ? (~quotient[127:64] + 'h1) : quotient[127:64];
       div_type <= 0;
       cnt <= 0;
       quotient_sign <= 0;
-      neg_s <= 0;
+      rem_sign <= 0;
       quotient <= 0;
       divisor <= 0;
       result <= 0;
@@ -356,7 +356,7 @@ assign s_positive = neg_s ? (~quotient[127:64] + 'h1) : quotient[127:64];
       div_type <= (state == IDLE && next_state == DO_DIV) ? div_type_i : div_type;
       cnt <= cnt_next;
       quotient_sign <= quotient_sign_next;
-      neg_s <= neg_s_d;
+      rem_sign <= rem_sign_next;
       quotient <= quotient_next;
       divisor <= divisor_d;
       result <= result_next;
