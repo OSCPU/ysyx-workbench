@@ -255,7 +255,7 @@ wire alu_div_32 = divw;
 
 
 
-assign alu_sel  =  {mulw,mulhu,mulhsu,mulh,mul,alu_div_32,alu_divu_32,alu_divu_64,alu_div_64,alu_rem_32,alu_remu_32,alu_remu_64,alu_rem_64,alu_sra_32,alu_srai_32,alu_srai_64,alu_sra_64,alu_srl_32,alu_srli_32,alu_srli_64,alu_srl_64,alu_sll_32,alu_slli_32,alu_slli_64,alu_sll_64,alu_xor,alu_or,alu_and,alu_sltu,alu_slt,alu_sub_32,alu_sub,alu_add_32,alu_add};
+assign alu_sel  =  {mulw,mulhu,mulhsu,mulh,mul,alu_div_64,alu_divu_64,alu_divu_32,alu_div_32,alu_rem_64,alu_remu_64,alu_remu_32,alu_rem_32,alu_sra_32,alu_srai_32,alu_srai_64,alu_sra_64,alu_srl_32,alu_srli_32,alu_srli_64,alu_srl_64,alu_sll_32,alu_slli_32,alu_slli_64,alu_sll_64,alu_xor,alu_or,alu_and,alu_sltu,alu_slt,alu_sub_32,alu_sub,alu_add_32,alu_add};
 
 
 //=====================================================================
