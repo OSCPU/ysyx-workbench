@@ -325,7 +325,7 @@ parameter REMW  = 8'b00000001; // 除法一 有符号 32位
               result_d = res[63:0];
             end
             DIVUW: begin
-              result_d = {32'b0, res[31:0]};
+              result_d = {{32{res[31]}}, res[31:0]};
             end
             DIVW: begin
               result_d = {{32{q_positive[31]}}, q_positive[31:0]};
@@ -337,7 +337,7 @@ parameter REMW  = 8'b00000001; // 除法一 有符号 32位
               result_d = s_positive;
             end
             REMUW: begin
-              result_d = {32'b0, res[95:64]};
+              result_d = {{32{res[95]}}, res[95:64]};
             end
             REMW: begin
               result_d = {{32{s_positive[31]}}, s_positive[31:0]};
