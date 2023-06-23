@@ -50,37 +50,32 @@ parameter REMU  = 8'b00000100; // 除法一 无符号 64位
 parameter REMUW = 8'b00000010; // 除法一 无符号 32位
 parameter REMW  = 8'b00000001; // 除法一 有符号 32位
 
-  reg [63:0] divisor, divisor_d;
-  reg [7:0]  div_type;
+reg [63:0] divisor, divisor_d;
+reg [7:0]  div_type;
 
-  reg [63:0] result_exception;// 异常结果输出
-  reg div_zero;// 除零通知
-  reg div_of  ;// 溢出通知
+reg [63:0] result_exception;// 异常结果输出
+reg div_zero;// 除零通知
+reg div_of  ;// 溢出通知
 
-  reg [1:0] state, state_d;
-  reg [6:0] cnt, cnt_d;
-  reg [63:0] result,result_d;
-  reg neg_q, neg_q_d, neg_s, neg_s_d;
+wire [63:0] dividend_sext32, divisor_sext32;
+assign dividend_sext32 = {{32{dividend_i[31]}}, dividend_i[31:0]};
+assign divisor_sext32  = {{32{divisor_i[31]}}, divisor_i[31:0]};
 
-  wire [63:0] dividend_sext32, divisor_sext32;
-  assign dividend_sext32 = {{32{dividend_i[31]}}, dividend_i[31:0]};
-  assign divisor_sext32  = {{32{divisor_i[31]}}, divisor_i[31:0]};
+wire [63:0] dividend_i_twos, divisor_i_twos;
+assign dividend_i_twos = ~dividend_i + 'h1;
+assign divisor_i_twos = ~divisor_i + 'h1;
 
-  wire [63:0] dividend_i_twos, divisor_i_twos;
-  assign dividend_i_twos = ~dividend_i + 'h1;
-  assign divisor_i_twos = ~divisor_i + 'h1;
+wire [63:0] dividend_i_abs, divisor_i_abs;
+assign dividend_i_abs = dividend_i[63] ? dividend_i_twos : dividend_i;
+assign divisor_i_abs  = divisor_i[63] ? divisor_i_twos : divisor_i;
 
-  wire [63:0] dividend_i_abs, divisor_i_abs;
-  assign dividend_i_abs = dividend_i[63] ? dividend_i_twos : dividend_i;
-  assign divisor_i_abs  = divisor_i[63] ? divisor_i_twos : divisor_i;
+wire [63:0] dividend_sext32_twos, divisor_sext32_twos;
+assign dividend_sext32_twos = ~dividend_sext32 +'h1;
+assign divisor_sext32_twos = ~divisor_sext32 +'h1;
 
-  wire [63:0] dividend_sext32_twos, divisor_sext32_twos;
-  assign dividend_sext32_twos = ~dividend_sext32 +'h1;
-  assign divisor_sext32_twos = ~divisor_sext32 +'h1;
-
-  wire [63:0] dividend_sext32_abs, divisor_sext32_abs;
-  assign dividend_sext32_abs = dividend_sext32[63] ? dividend_sext32_twos : dividend_sext32;
-  assign divisor_sext32_abs = divisor_sext32[63] ? divisor_sext32_twos : divisor_sext32;
+wire [63:0] dividend_sext32_abs, divisor_sext32_abs;
+assign dividend_sext32_abs = dividend_sext32[63] ? dividend_sext32_twos : dividend_sext32;
+assign divisor_sext32_abs = divisor_sext32[63] ? divisor_sext32_twos : divisor_sext32;
 //========================================
 // 对溢出以及除零做检测
 always @(*) begin
@@ -165,35 +160,30 @@ always @(*) begin
     endcase
 end
 
-//------------------------------------------------------------------------
-// Divider
-// q = z/d + s
-// z: Dividend
-// d: Divisor
-// q: Quotient
-// s: Remainder
-//------------------------------------------------------------------------
-  parameter IDLE = 2'b00;
-  parameter DIVIDE  = 2'b01;
-  parameter FINISH = 2'b10;
+//========================================
+// 除法状态机的实现
+parameter IDLE    = 2'b00;
+parameter DO_DIV  = 2'b01;
+parameter FINISH  = 2'b10;
 
-  assign result_o = (state == FINISH) ? result_d : 0;
+reg [1:0] state, next_state;
+reg [6:0] cnt, cnt_d;
+reg [63:0] result,result_next;
+reg neg_q, neg_q_d, neg_s, neg_s_d;
 
-  assign result_ok = (state == FINISH);
+reg [127:0] res, res_d;
+wire [127:0] res_shifted; // {s[63:0], q[63:0]}
+wire [64:0] s_minus_di;
+assign s_minus_di = res_shifted[127:64] - divisor;
+assign res_shifted = res << 1;
 
-  reg [127:0] res, res_d;
-  wire [127:0] res_shifted; // {s[63:0], q[63:0]}
-  wire [64:0] s_minus_di;
-  assign s_minus_di = res_shifted[127:64] - divisor;
-  assign res_shifted = res << 1;
-
-  wire [63:0] q_positive, s_positive;
-  assign q_positive = neg_q ? (~res[63:0] + 'h1) : res[63:0];
-  assign s_positive = neg_s ? (~res[127:64] + 'h1) : res[127:64];
+wire [63:0] q_positive, s_positive;
+assign q_positive = neg_q ? (~res[63:0] + 'h1) : res[63:0];
+assign s_positive = neg_s ? (~res[127:64] + 'h1) : res[127:64];
 
   always @(*) begin
-    state_d = state;
-    result_d = result;
+    next_state = state;
+    result_next = result;
     cnt_d = cnt;
     neg_q_d = neg_q;
     neg_s_d = neg_s;
@@ -205,12 +195,11 @@ end
           if (div_valid) begin
             /* 如果是除0或溢出则IDLE态 */
             if (div_zero | div_of) begin
-              result_d = result_exception;
-              state_d = IDLE;
+              result_next = result_exception;
+              next_state = IDLE;
             end
-            /* 进入DIVIDE态并设置初始值 */
             else begin
-              state_d = DIVIDE;
+              next_state = DO_DIV;
               //cnt_d = ;
               //neg_q_d = ;
               //neg_s_d = ;
@@ -295,17 +284,17 @@ end
           end
           /* 否则就是IDLE */
           else begin
-            state_d = IDLE;
+            next_state = IDLE;
           end
         end
 
-        DIVIDE: begin
+        DO_DIV: begin
           if (~|cnt) begin
-            state_d = FINISH;
+            next_state = FINISH;
           end
           else begin
             cnt_d = cnt - 1;
-            state_d = DIVIDE;
+            next_state = DO_DIV;
             if (s_minus_di[64]) begin
               res_d[127:64] = res_shifted[127:64];
               res_d[63:0] = {res_shifted[63:1], 1'b0};
@@ -318,34 +307,34 @@ end
         end
 
         FINISH: begin
-          if(result_ready) state_d = IDLE;
+          if(result_ready) next_state = IDLE;
           case (div_type)
           DIV: begin
-              result_d = q_positive;
+              result_next = q_positive;
             end
             DIVU: begin
-              result_d = res[63:0];
+              result_next = res[63:0];
             end
             DIVUW: begin
-              result_d = {{32{res[31]}}, res[31:0]};
+              result_next = {{32{res[31]}}, res[31:0]};
             end
             DIVW: begin
-              result_d = {{32{q_positive[31]}}, q_positive[31:0]};
+              result_next = {{32{q_positive[31]}}, q_positive[31:0]};
             end
             REMU: begin
-              result_d = res[127:64];
+              result_next = res[127:64];
             end
             REM: begin
-              result_d = s_positive;
+              result_next = s_positive;
             end
             REMUW: begin
-              result_d = {{32{res[95]}}, res[95:64]};
+              result_next = {{32{res[95]}}, res[95:64]};
             end
             REMW: begin
-              result_d = {{32{s_positive[31]}}, s_positive[31:0]};
+              result_next = {{32{s_positive[31]}}, s_positive[31:0]};
             end
             default: begin
-              result_d = 0;
+              result_next = 0;
             end
           endcase
         end
@@ -366,19 +355,21 @@ end
       result <= 0;
 	  end
 	  else begin
-	  state <= state_d;
-      div_type <= (state == IDLE && state_d == DIVIDE) ? div_type_i : div_type;
+	  state <= next_state;
+      div_type <= (state == IDLE && next_state == DO_DIV) ? div_type_i : div_type;
       cnt <= cnt_d;
       neg_q <= neg_q_d;
       neg_s <= neg_s_d;
       res <= res_d;
       divisor <= divisor_d;
-      result <= result_d;
+      result <= result_next;
 	  end
   end
 
 //========================================
 // 输出控制
 assign result_ok  = (state == FINISH);
-assign div_stall  = (state == IDLE && state_d == DIVIDE) | (state == DIVIDE);
+assign div_stall  = (state == IDLE && next_state == DO_DIV) | (state == DO_DIV);
+assign result_o = (state == FINISH) ? result_next : 0;
+
 endmodule
