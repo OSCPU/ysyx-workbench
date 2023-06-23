@@ -5,50 +5,67 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-extern void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h);
-void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect) 
+void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect)
 {
-    assert(dst && src);
-    assert(dst->format->BitsPerPixel == src->format->BitsPerPixel);
+  // 判断本体src和被粘贴体dst指针不为空且像素格式相同
+  assert(dst && src);
+  assert(dst->format->BitsPerPixel == src->format->BitsPerPixel);
 
-    if(srcrect)
-    {
-        int d_x = 0; 
-        int d_y = 0;
-        assert((srcrect->w > 0) && (srcrect->h > 0));
+  // 定义初始图像信息
+  int screen_w,screen_h,x_src,y_src,x_dst,y_dst;
 
-        if(dstrect != NULL)
+  // srcrect源画布指定位置指针存在
+  if(srcrect){
+    screen_w = srcrect->w; screen_h = srcrect->h;
+    x_src = srcrect->x; y_src = srcrect->y; 
+  }
+  // 从头复制
+  else{
+    screen_w = src->w; screen_h = src->h;
+    x_src = 0; y_src = 0;
+  }
+  // dstrect目标画布指定位置指针存在
+  if (dstrect) {
+    x_dst = dstrect->x, y_dst = dstrect->y;
+  }
+  // 从头粘贴
+  else {
+    x_dst = 0; y_dst = 0;
+  }
+
+  // 对于像素开始粘贴
+  if (src->format->BitsPerPixel == 32) {
+    uint32_t* pixels_src = (uint32_t*)src->pixels;
+    uint32_t* pixels_dst = (uint32_t*)dst->pixels;
+    size_t src_pitch = src->pitch / sizeof(uint32_t);  // 源图像每行的像素个数
+    size_t dst_pitch = dst->pitch / sizeof(uint32_t);  // 目标图像每行的像素个数
+  
+    size_t src_offset = y_src * src_pitch + x_src;
+    size_t dst_offset = y_dst * dst_pitch + x_dst;
+  
+    size_t row_size = screen_w * sizeof(uint32_t);  // 每行的字节数
+  
+    // 使用 memcpy 函数一次性复制整个图像的像素数据
+    memcpy(pixels_dst + dst_offset, pixels_src + src_offset, row_size * screen_h);
+  }
+
+  // 只有8位的可以在pal可以，在bird中不行，可能是源和目标图像的像素格式不同导致的。若这个也错就可以改成与上面一样
+  else if(src->format->BitsPerPixel == 8){
+    uint8_t* pixels_src = (uint8_t*)src->pixels;
+    uint8_t* pixels_dst = (uint8_t*)dst->pixels;
+    size_t src_pixels = screen_h * src->w;
+      for (int i = 0; i < screen_h; ++i)
+      {
+        for (int j = 0; j < screen_w; ++j)
         {
-            d_x = dstrect->x;
-            d_y = dstrect->y;
+          pixels_dst[(y_dst + i) * dst->w + x_dst + j] = pixels_src[(y_src + i) * src->w + x_src + j];
         }
-        for(int i = 0; i < srcrect->h; i++)
-        {
-            memcpy(dst->pixels + dst->format->BytesPerPixel*((d_y+i)*dst->w+d_x), src->pixels + src->format->BytesPerPixel*((srcrect->y+i)*src->w+srcrect->x), dst->format->BytesPerPixel* srcrect->w);
-        }
-
-    }
-    else
-    {
-        assert((src->w <= dst->w) && (src->h <= dst->h));
-
-        if(dstrect)
-        {
-            for(int i = 0; i < src->h; i++)
-            {
-                memcpy(dst->pixels + dst->format->BytesPerPixel*((dstrect->y+i)*dst->w+dstrect->x), src->pixels+src->format->BytesPerPixel*i*src->w, dst->format->BytesPerPixel* src->w);
-            }
-
-        }
-        else
-        {
-            for(int i = 0; i < src->h; i++)
-            {
-                memcpy(dst->pixels + dst->format->BytesPerPixel*((i)*dst->w), src->pixels+src->format->BytesPerPixel*i*src->w, dst->format->BytesPerPixel* src->w);
-            }
-
-        } 
-    }
+      }
+  }
+  else{
+    printf("[SDL_BlitSurface] 使用的像素格式%d未实现\n",src->format->BitsPerPixel);
+    assert(0);
+  }
 }
 
 void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) 

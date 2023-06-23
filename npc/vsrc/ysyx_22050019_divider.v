@@ -188,7 +188,7 @@ end
 // 3段式状态机构建乘法逻辑模块 
 always@(posedge clk) begin
   if(rst_n)state<=IDLE;
-  else   state<=next_state;
+  else    state<=next_state;
 end
 
 always @(posedge clk) begin
