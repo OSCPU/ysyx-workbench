@@ -175,7 +175,7 @@ parameter REMW  = 8'b00000001; // 除法一 有符号 32位
   parameter DIVIDE  = 2'b01;
   parameter FINISH = 2'b10;
 
-  assign result_o = result_d;
+  assign result_o = (state == FINISH) ? result_d : 0;
 
   assign result_ok = (state == FINISH);
 
