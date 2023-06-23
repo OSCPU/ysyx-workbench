@@ -170,7 +170,7 @@ parameter FINISH  = 2'b10;
 reg [1:0]  state, next_state;
 
 reg [6:0]  cnt, cnt_next;
-reg [63:0] result,result_next;
+wire [63:0] result_next;
 reg quotient_sign, quotient_sign_next, rem_sign, rem_sign_next;
 
 reg [127:0] quotient, quotient_next;
@@ -181,13 +181,12 @@ wire [64:0] dividend_iter;
 assign dividend_iter = quotient_shift[127:64] - divisor;
 assign quotient_shift = quotient << 1;
 
-wire [63:0] quotient_abs, rem_sign_abs;
+wire [63:0] quotient_abs, rem_abs;
 assign quotient_abs = quotient_sign ? (~quotient[63:0] + 1) : quotient[63:0];
-assign rem_sign_abs = rem_sign ? (~quotient[127:64] + 1) : quotient[127:64];
+assign rem_abs      = rem_sign ? (~quotient[127:64] + 1) : quotient[127:64];
 
 always @(*) begin
   next_state         = state         ; 
-  result_next        = result        ;
   cnt_next           = cnt           ;
   quotient_sign_next = quotient_sign ;
   rem_sign_next      = rem_sign      ;
@@ -196,10 +195,10 @@ always @(*) begin
   case(state)
     IDLE: begin
       if (div_valid) begin
-        /* 如果是除0或溢出则IDLE态 */
         if (div_zero | div_of) begin
-          result_next = result_exception;
-          next_state  = FINISH;
+            quotient_next[127:64] = 0;
+          quotient_next[63:0] = result_exception;
+          next_state          = FINISH;
         end
         else begin
           next_state = DO_DIV;
@@ -295,35 +294,6 @@ always @(*) begin
       end
       FINISH: begin
         if(result_ready) next_state = IDLE;
-        case (div_type)
-        DIV: begin
-            result_next = quotient_abs;
-          end
-          DIVU: begin
-            result_next = quotient[63:0];
-          end
-          DIVUW: begin
-            result_next = {{32{quotient[31]}}, quotient[31:0]};
-          end
-          DIVW: begin
-            result_next = {{32{quotient_abs[31]}}, quotient_abs[31:0]};
-          end
-          REMU: begin
-            result_next = quotient[127:64];
-          end
-          REM: begin
-            result_next = rem_sign_abs;
-          end
-          REMUW: begin
-            result_next = {{32{quotient[95]}}, quotient[95:64]};
-          end
-          REMW: begin
-            result_next = {{32{rem_sign_abs[31]}}, rem_sign_abs[31:0]};
-          end
-          default: begin
-            result_next = 0;
-          end
-        endcase
       end
       default:;	    endcase
 end
@@ -337,7 +307,6 @@ end
       rem_sign <= 0;
       quotient <= 0;
       divisor <= 0;
-      result <= 0;
 	  end
 	  else begin
 	  state <= next_state;
@@ -347,9 +316,26 @@ end
       rem_sign <= rem_sign_next;
       quotient <= quotient_next;
       divisor <= divisor_next;
-      result <= result_next;
 	  end
   end
+
+// 根据译码类型输出结果
+ysyx_22050019_mux #( .NR_KEY(8), .KEY_LEN(8), .DATA_LEN(64)) mux_out
+(
+  .key         (div_type), 
+  .default_out (quotient[63:0]),
+  .lut         ({		
+                    8'b10000000,quotient_abs,
+                    8'b01000000,quotient[63:0],
+                    8'b00100000,{{32{quotient[31]}},quotient[31:0]},
+                    8'b00010000,{{32{quotient_abs[31]}}, quotient_abs[31:0]},
+                    8'b00001000,rem_abs,
+                    8'b00000100,quotient[127:64],
+                    8'b00000010,{{32{quotient[95]}},quotient[95:64]},
+                    8'b00000001,{{32{rem_abs[31]}}, rem_abs[31:0]}
+                    }),          
+  .out         (result_next)  
+);
 
 //========================================
 // 输出控制
