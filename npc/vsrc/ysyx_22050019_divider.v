@@ -161,7 +161,7 @@ parameter DIVW  = 8'b00000001; // 除法一 有符号 32位
 
   assign result_o = result_d;
 
-  assign result_ok = (state == IDLE && state_d == IDLE) | (state == FINISH);
+  assign result_ok = (state == FINISH);
 
   reg [127:0] res, res_d;
   wire [127:0] res_shifted; // {s[63:0], q[63:0]}
