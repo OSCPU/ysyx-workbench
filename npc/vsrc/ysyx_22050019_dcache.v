@@ -103,6 +103,20 @@ always@(posedge clk)begin//随机替换的替换策略
   else random<=random+1;
 end
 
+// 状态机信号
+reg[15:0] state;
+reg[15:0] next_state;
+
+parameter S_IDLE =0;
+parameter S_HIT  =1;
+parameter S_AR   =2;
+parameter S_R    =3;
+parameter S_AW   =4;
+parameter S_W    =5;
+parameter S_B    =6;
+
+reg cache_ar_valid;
+
 // ram的一些配置信息
 wire [127:0]           RAM_Q [WAY_DEPTH-1:0]                                                            ;//读出的cache数据
 wire                   RAM_CEN = 0                                                                      ;//为0有效，为1是无效（2个使能信号需要同时满足不然会读出随机数）使能信号控制
@@ -119,16 +133,9 @@ wire write_enable = (state == S_R)&(cache_r_valid_i&cache_r_ready_o)|(state == S
 assign  RAM_WEN[0] = waynum ? 1 :write_enable;
 assign  RAM_WEN[1] = waynum ? write_enable :1;
 
-parameter S_IDLE =0;
-parameter S_HIT  =1;
-parameter S_AR   =2;
-parameter S_R    =3;
-parameter S_AW   =4;
-parameter S_W    =5;
-parameter S_B    =6;
 
-reg[15:0] state;
-reg[15:0] next_state;
+
+
 
 always@(posedge clk) begin
   if(rst)state<=S_IDLE;
@@ -357,7 +364,7 @@ generate
 endgenerate
 
 //axi的一些需要适配仲裁器的信号
-reg cache_ar_valid;
+
 assign cache_ar_valid_o = cache_ar_valid|next_state==S_AR;
 
 //与外部ifu访问的改善信号
