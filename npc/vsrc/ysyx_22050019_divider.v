@@ -155,59 +155,6 @@ always @(posedge clk) begin
         divisor      <= 0;
         quotient     <= 0;
     end
-    else begin
-        case(state)
-          IDLE  : if(next_state == FINISH) begin
-            div_type  <= ERROR                    ;
-            quotient  <= {64'b0,result_div_exception} ;
-            end
-            else if(next_state == DO_DIV) begin
-                case (div_type_i) 
-                    (DIV | REM): begin
-                        div_type        <= div_type_i        ;
-                        cnt             <= 64                ;
-                        quotient_sign   <= dividend_i[63] ^ divisor_i[63];
-                        rem_sign        <= dividend_i[63]    ;
-                        quotient[127:64]<= 0                 ;
-                        quotient[63:0]  <= dividend_64_abs      ;
-                        divisor         <= divisor_64_abs       ; 
-                    end
-                    default :begin
-                    end                
-                endcase
-
-            end
-            else if(next_state == IDLE) begin
-                            div_type        <= 0             ;
-                            cnt             <= 0             ;
-                            quotient_sign   <= 0             ;
-                            rem_sign        <= 0             ;
-                            quotient[127:64]<= 0             ;
-                            quotient[63:0]  <= 0             ;
-                            divisor         <= 0             ;
-            end
-
-          DO_DIV: if(next_state == DO_DIV) begin
-                    cnt     <= cnt -1 ;
-                    quotient<= dividend_iter[64] ? quotient_shift: {dividend_iter[63:0], quotient_shift[63:1], 1'b1};
-                  end
-                  else if(next_state == FINISH) begin
-                    cnt     <= 0 ;
-                  end
-
-          FINISH: if(next_state ==IDLE) begin
-            div_type        <= 0 ;
-            cnt             <= 0 ;
-            quotient_sign   <= 0 ;
-            rem_sign        <= 0 ;
-            quotient[127:64]<= 0 ;
-            quotient[63:0]  <= 0 ;
-            divisor         <= 0 ;
-          end
-            default :begin
-            end
-        endcase
-    end
     
 end
 
