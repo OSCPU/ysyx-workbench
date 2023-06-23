@@ -180,9 +180,9 @@ wire [64:0] dividend_iter;
 assign dividend_iter = quotient_shift[127:64] - divisor;
 assign quotient_shift = quotient << 1;
 
-wire [63:0] q_positive, s_positive;
-assign q_positive = quotient_sign ? (~quotient[63:0] + 'h1) : quotient[63:0];
-assign s_positive = rem_sign ? (~quotient[127:64] + 'h1) : quotient[127:64];
+wire [63:0] quotient_abs, rem_sign_abs;
+assign quotient_abs = quotient_sign ? (~quotient[63:0] + 'h1) : quotient[63:0];
+assign rem_sign_abs = rem_sign ? (~quotient[127:64] + 'h1) : quotient[127:64];
 
   always @(*) begin
     next_state  = state ; 
@@ -307,7 +307,7 @@ assign s_positive = rem_sign ? (~quotient[127:64] + 'h1) : quotient[127:64];
           if(result_ready) next_state = IDLE;
           case (div_type)
           DIV: begin
-              result_next = q_positive;
+              result_next = quotient_abs;
             end
             DIVU: begin
               result_next = quotient[63:0];
@@ -316,19 +316,19 @@ assign s_positive = rem_sign ? (~quotient[127:64] + 'h1) : quotient[127:64];
               result_next = {{32{quotient[31]}}, quotient[31:0]};
             end
             DIVW: begin
-              result_next = {{32{q_positive[31]}}, q_positive[31:0]};
+              result_next = {{32{quotient_abs[31]}}, quotient_abs[31:0]};
             end
             REMU: begin
               result_next = quotient[127:64];
             end
             REM: begin
-              result_next = s_positive;
+              result_next = rem_sign_abs;
             end
             REMUW: begin
               result_next = {{32{quotient[95]}}, quotient[95:64]};
             end
             REMW: begin
-              result_next = {{32{s_positive[31]}}, s_positive[31:0]};
+              result_next = {{32{rem_sign_abs[31]}}, rem_sign_abs[31:0]};
             end
             default: begin
               result_next = 0;
