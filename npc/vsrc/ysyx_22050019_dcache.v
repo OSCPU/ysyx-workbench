@@ -173,8 +173,8 @@ always@(*) begin
   endcase
 end
 
-  integer m;
-  integer p;
+integer m;
+integer p;
 
 //import "DPI-C" function void icache_wait();
 always@(posedge clk)begin

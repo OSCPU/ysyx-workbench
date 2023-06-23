@@ -160,8 +160,10 @@ always@(*) begin
     default:next_state=S_IDLE;
   endcase
 end
+integer m;
+integer p;
 //import "DPI-C" function void icache_wait();
-import "DPI-C" function void difftest_valid();
+//import "DPI-C" function void difftest_valid();
 always@(posedge clk)begin
   if(rst)begin
 		ar_ready_o          <= 0;
@@ -173,6 +175,12 @@ always@(posedge clk)begin
 		cache_r_ready_o     <= 0;
     waynum              <= 0;
     addr                <= 0;
+    for( m=0;m<WAY_DEPTH;m=m+1)begin
+      for( p=0;p<INDEX_DEPTH;p=p+1)begin
+          tag[m][p]<=0;
+	  			valid[m][p]<=0;
+      end
+    end
   end
   else begin
     case(state)
