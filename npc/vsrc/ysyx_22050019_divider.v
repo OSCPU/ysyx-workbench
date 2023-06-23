@@ -204,7 +204,7 @@ always @(*) begin
         else begin
           next_state = DO_DIV;
           case (div_type_i)
-              (DIV | REM): begin
+              DIV : begin
               cnt_next= 64;
               quotient_sign_next = dividend_i[63] ^ divisor_i[63];
               rem_sign_next = dividend_i[63];
@@ -212,7 +212,7 @@ always @(*) begin
               quotient_next[63:0] = dividend_abs;
               divisor_next = divisor_abs;
             end
-              (DIVU | REMU): begin
+              DIVU: begin
                 cnt_next= 64;
                 quotient_sign_next = 0;
                 rem_sign_next = 0;
@@ -235,6 +235,22 @@ always @(*) begin
                 quotient_next[127:64] = 0;
                 quotient_next[63:0] = {dividend_abs_32[31:0], 32'b0};
                 divisor_next = divisor_abs_32;
+              end
+              REMU: begin
+                cnt_next= 64;
+                quotient_sign_next = 0;
+                rem_sign_next = 0;
+                quotient_next[127:64] = 0;
+                quotient_next[63:0] = dividend_i;
+                divisor_next = divisor_i;
+              end
+              REM: begin
+                cnt_next = 64;
+                quotient_sign_next = dividend_i[63] ^ divisor_i[63];
+                rem_sign_next = dividend_i[63];
+                quotient_next[127:64] = 0;
+                quotient_next[63:0] = dividend_abs;
+                divisor_next = divisor_abs;
               end
               REMUW: begin
                 cnt_next= 32;
