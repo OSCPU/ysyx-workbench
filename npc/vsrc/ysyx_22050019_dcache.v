@@ -192,9 +192,9 @@ always@(posedge clk)begin
     //初始化对比项
     for(integer i=0;i<WAY_DEPTH; i = i+1)begin
       for(integer j=0;j<INDEX_DEPTH;j = j+1)begin
-          tag[i][j]<=0;
-	  			dirty[i][j]<=0;
-	  			valid[i][j]<=0;
+          tag [i][j] <= 22'b0;
+	  			dirty[i][j]<= 1'b0;
+	  			valid[i][j]<= 1'b0;
       end
     end
   end
