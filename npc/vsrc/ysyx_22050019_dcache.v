@@ -208,6 +208,14 @@ always@(posedge clk)begin
     waynum                        <= 0                                     ;
     addr                          <= 0                                     ;
     cache_rw_len_o                <= 0                                     ;
+    //初始化对比项
+    for(integer i=0;i<WAY_DEPTH; i = i+1)begin
+      for(integer j=0;j<INDEX_DEPTH;j = j+1)begin
+          tag[i][j]<=0;
+	  			dirty[i][j]<=0;
+	  			valid[i][j]<=0;
+      end
+    end
   end
   else begin
     case(state)
