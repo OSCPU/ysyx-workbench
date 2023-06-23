@@ -172,6 +172,10 @@ always@(*) begin
     default:next_state=S_IDLE;
   endcase
 end
+
+  integer m;
+  integer p;
+
 //import "DPI-C" function void icache_wait();
 always@(posedge clk)begin
   if(rst)begin
@@ -190,8 +194,8 @@ always@(posedge clk)begin
     addr                          <= 0                                     ;
     cache_rw_len_o                <= 0                                     ;
     //初始化对比项
-    for(integer m=0;m<WAY_DEPTH;m=m+1)begin
-      for(integer p=0;p<INDEX_DEPTH;p=p+1)begin
+    for( m=0;m<WAY_DEPTH;m=m+1)begin
+      for( p=0;p<INDEX_DEPTH;p=p+1)begin
           tag[m][p]<=0;
 	  			dirty[m][p]<=0;
 	  			valid[m][p]<=0;
