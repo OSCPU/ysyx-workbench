@@ -221,7 +221,7 @@ always @(posedge clk) begin
             end
             else if(next_state == DO_DIV) begin
                 case (div_type_i) 
-                    DIV | REM: begin
+                    (DIV | REM): begin
                         div_type        <= div_type_i        ;
                         cnt             <= 64                ;
                         quotient_sign   <= dividend_i[63] ^ divisor_i[63];
@@ -231,7 +231,7 @@ always @(posedge clk) begin
                         divisor         <= divisor_64_abs       ; 
                     end
                     
-                    DIVU | REMU: begin
+                    (DIVU | REMU): begin
                         div_type        <= div_type_i        ;
                         cnt             <= 64                ;
                         quotient_sign   <= 0                 ;
@@ -241,7 +241,7 @@ always @(posedge clk) begin
                         divisor         <= divisor_i         ;  
                     end 
                     
-                    DIVUW | REMUW: begin
+                    (DIVUW | REMUW): begin
                         div_type        <= div_type_i        ;
                         cnt             <= 32                ;
                         quotient_sign   <= 0                 ;
@@ -251,7 +251,7 @@ always @(posedge clk) begin
                         divisor         <= {32'b0, divisor_i[31:0]} ;
                     end  
 
-                    DIVW | REMW: begin
+                    (DIVW | REMW): begin
                         div_type        <= div_type_i        ;
                         cnt             <= 32                ;
                         quotient_sign   <= dividend_i[31] ^ divisor_i[31];
