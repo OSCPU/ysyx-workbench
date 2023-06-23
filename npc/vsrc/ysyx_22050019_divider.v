@@ -281,7 +281,7 @@ always @(posedge clk) begin
 
           DO_DIV: if(next_state == DO_DIV) begin
                     cnt             <= cnt -1 ;
-                    quotient        <= udpate_data;
+                    quotient        <= 0;
                   end
                   else if(next_state == FINISH) begin
                     cnt     <= 0 ;
