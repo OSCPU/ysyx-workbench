@@ -82,6 +82,10 @@ assign divisor_abs_32       = divisor_sext32[63]  ? divisor_positive_32  : divis
 // 迭代被除数判断
 wire [64:0] dividend_iter   = quotient[127:63] - {1'b0,divisor};
 wire [127:0] quotient_shift = quotient << 1;
+
+wire [127:0] udpate_data;
+assign udpate_data[127:64]  = dividend_iter[64] ? quotient_shift[127:64] : dividend_iter[63:0];
+assign udpate_data[63:0]    = dividend_iter[64] ? quotient_shift[63:0]   : {quotient_shift[63:0],1'b1};
 //========================================
 // 对溢出以及除零做检测
 always @(*) begin
@@ -277,8 +281,8 @@ always @(posedge clk) begin
 
           DO_DIV: if(next_state == DO_DIV) begin
                     cnt             <= cnt -1 ;
-                    quotient[127:64]<= dividend_iter[64] ? quotient_shift[127:64] : dividend_iter[63:0];
-                    quotient[63:0]  <= dividend_iter[64] ? quotient_shift[63:0] : {quotient_shift[63:1], 1'b1};
+                    quotient[127:64]<= udpate_data[127:64];
+                    quotient[63:0]  <= udpate_data[63:0];
                   end
                   else if(next_state == FINISH) begin
                     cnt     <= 0 ;
