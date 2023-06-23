@@ -212,7 +212,7 @@ always @(*) begin
               quotient_next[63:0] = dividend_abs;
               divisor_next = divisor_abs;
             end
-              DIVU: begin
+              (DIVU | REMU): begin
                 cnt_next= 64;
                 quotient_sign_next = 0;
                 rem_sign_next = 0;
