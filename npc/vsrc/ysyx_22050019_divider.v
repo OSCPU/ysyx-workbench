@@ -49,6 +49,7 @@ parameter REM   = 8'b00001000; // 除法一 有符号 64位
 parameter REMU  = 8'b00000100; // 除法一 无符号 64位
 parameter REMUW = 8'b00000010; // 除法一 无符号 32位
 parameter REMW  = 8'b00000001; // 除法一 有符号 32位
+parameter ERROR = 8'b00000000; // 遇到了除0或溢出
 
 reg [63:0] result_exception;// 异常结果输出
 reg div_zero;// 除零通知
@@ -175,14 +176,14 @@ reg quotient_sign, quotient_sign_next, rem_sign, rem_sign_next;
 reg [127:0] quotient, quotient_next;
 reg [63:0] divisor, divisor_next;
 reg [7:0]  div_type;
-wire [127:0] quotient_shift; // {s[63:0], q[63:0]}
+wire [127:0] quotient_shift; 
 wire [64:0] dividend_iter;
 assign dividend_iter = quotient_shift[127:64] - divisor;
 assign quotient_shift = quotient << 1;
 
-wire [63:0] quotient_abs, rem_sign_abs;
+wire [63:0] quotient_abs, rem_abs;
 assign quotient_abs = quotient_sign ? (~quotient[63:0] + 'h1) : quotient[63:0];
-assign rem_sign_abs = rem_sign ? (~quotient[127:64] + 'h1) : quotient[127:64];
+assign rem_abs = rem_sign ? (~quotient[127:64] + 'h1) : quotient[127:64];
 
   always @(*) begin
     next_state  = state ; 
@@ -322,13 +323,13 @@ assign rem_sign_abs = rem_sign ? (~quotient[127:64] + 'h1) : quotient[127:64];
               result_next = quotient[127:64];
             end
             REM: begin
-              result_next = rem_sign_abs;
+              result_next = rem_abs;
             end
             REMUW: begin
               result_next = {{32{quotient[95]}}, quotient[95:64]};
             end
             REMW: begin
-              result_next = {{32{rem_sign_abs[31]}}, rem_sign_abs[31:0]};
+              result_next = {{32{rem_abs[31]}}, rem_abs[31:0]};
             end
             default: begin
               result_next = 0;
