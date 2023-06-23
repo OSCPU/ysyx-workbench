@@ -52,10 +52,121 @@ parameter DIVW  = 8'b00000001; // 除法一 有符号 32位
 parameter ERROR = 8'b00000000; // 遇到了除0或溢出
 
 // 使用信号声明与准备
-reg [63:0] result_div_exception;// 异常结果输出
+reg [63:0] result_exception;// 异常结果输出
 reg div_zero; // 除零通知
 reg div_of  ; // 溢出通知
 
+// 32位符号拓展
+wire [63:0] dividend_sext32, divisor_sext32;
+assign dividend_sext32      = {{32{dividend_i[31]}}, dividend_i[31:0]};
+assign divisor_sext32       = {{32{divisor_i[31]}} , divisor_i [31:0]};
+
+// 负数处理
+wire [63:0] dividend_positive, divisor_positive;
+assign dividend_positive    = ~(quotient_sign ? quotient[63:0]  : dividend_i) + 1;
+assign divisor_positive     = ~(rem_sign      ? quotient[127:64]: divisor_i ) + 1;
+
+wire [63:0] dividend_positive_32, divisor_positive_32;
+assign dividend_positive_32 = ~dividend_sext32 + 1;
+assign divisor_positive_32  = ~divisor_sext32  + 1;
+
+//绝对值选择
+wire [63:0] dividend_abs, divisor_abs;
+assign dividend_abs         = dividend_i[63] ? dividend_positive : dividend_i;
+assign divisor_abs          = divisor_i[63]  ? divisor_positive  : divisor_i;
+
+wire [63:0] dividend_abs_32, divisor_abs_32;
+assign dividend_abs_32      = dividend_sext32[63] ? dividend_positive_32 : dividend_sext32;
+assign divisor_abs_32       = divisor_sext32[63]  ? divisor_positive_32  : divisor_sext32;
+
+// 迭代被除数判断
+wire [64:0] dividend_iter   = quotient[127:63] - {1'b0,divisor};
+wire [127:0] quotient_shift = quotient << 1;
+//========================================
+// 对溢出以及除零做检测
+always @(*) begin
+    case (div_type_i) 
+      REM: begin
+        if (~|divisor_i) begin
+          div_zero = 1;
+          result_exception = dividend_i;
+        end
+        else if (dividend_i == {1'b1, 63'b0} && &divisor_i) begin
+          div_of = 1;
+          result_exception = 0;
+        end
+      end
+
+      REMU: begin
+        if (~|divisor_i) begin
+          div_zero = 1;
+          result_exception = dividend_i;
+        end
+      end
+
+      REMUW: begin
+        if (~|(divisor_i[31:0])) begin
+          div_zero = 1;
+          result_exception = dividend_sext32;
+        end
+      end
+
+      REMW: begin
+        if (~|(divisor_i[31:0])) begin
+          div_zero = 1;
+          result_exception = dividend_sext32;
+        end
+        else if (dividend_i[31:0] == {1'b1, 31'b0} && &(divisor_i[31:0])) begin
+          div_of = 1;
+          result_exception = 0;
+        end
+      end
+
+      DIV: begin
+        if (~|divisor_i) begin
+          div_zero = 1;
+          result_exception = {64{1'b1}};
+        end
+        else if (dividend_i == {1'b1, 63'b0} && &divisor_i) begin
+          div_of = 1;
+          result_exception = dividend_i;
+        end
+      end
+
+      DIVU: begin
+        if (~|divisor_i) begin
+          div_zero = 1;
+          result_exception = {64{1'b1}};
+        end
+      end
+
+      DIVUW: begin
+        if (~|(divisor_i[31:0])) begin
+          div_zero = 1;
+          result_exception = {64{1'b1}};
+        end
+      end
+
+      DIVW: begin
+        if (~|divisor_i) begin
+          div_zero = 1;
+          result_exception = {64{1'b1}};
+        end
+        else if (dividend_i[31:0] == {1'b1, 31'b0} && &(divisor_i[31:0])) begin
+          div_of = 1;
+          result_exception = dividend_sext32;
+        end
+      end
+
+      default:begin
+          result_exception = 0;
+          div_zero         = 0;
+          div_of           = 0;
+      end
+    endcase
+end
+
+//========================================
 // 除法状态机的实现
 parameter IDLE    = 2'b00;
 parameter DO_DIV  = 2'b01;
@@ -67,59 +178,6 @@ reg [6:0] cnt;
 reg quotient_sign, rem_sign;
 reg [127:0] quotient;
 reg [63:0]  divisor;
-
-// 负数处理
-wire [63:0] dividend_64_positive, divisor_64_positive;
-assign dividend_64_positive    = ~(quotient_sign ? quotient[63:0]  : dividend_i) + 1;
-assign divisor_64_positive     = ~(rem_sign      ? quotient[127:64]: divisor_i ) + 1;
-
-
-//绝对值选择
-wire [63:0] dividend_64_abs, divisor_64_abs;
-assign dividend_64_abs         = dividend_i[63] ? dividend_64_positive : dividend_i;
-assign divisor_64_abs          = divisor_i[63]  ? divisor_64_positive  : divisor_i;
-
-// 迭代被除数判断
-wire [64:0] dividend_iter   = quotient[127:63] - {1'b0,divisor};
-wire [127:0] quotient_shift = quotient << 1;
-//========================================
-// 对溢出以及除零做检测
-always @(*) begin
-    div_zero = 0;
-    div_of = 0;
-    case (div_type_i) 
-      REM: begin
-        if (~|divisor_i) begin
-          div_zero = 1;
-          result_div_exception = dividend_i;
-        end
-        else if (dividend_i == {1'b1, 63'b0} && &divisor_i) begin
-          div_of = 1;
-          result_div_exception = 0;
-        end
-      end
-
-      DIV: begin
-        if (~|divisor_i) begin
-          div_zero = 1;
-          result_div_exception = {64{1'b1}};
-        end
-        else if (dividend_i == {1'b1, 63'b0} && &divisor_i) begin
-          div_of = 1;
-          result_div_exception = dividend_i;
-        end
-      end
-
-      default:begin
-          result_div_exception = 0;
-          div_zero         = 0;
-          div_of           = 0;
-      end
-    endcase
-end
-
-//========================================
-
 // 3段式状态机构建乘法逻辑模块 
 always@(posedge clk) begin
   if(rst_n)state<=IDLE;
@@ -155,6 +213,7 @@ always @(posedge clk) begin
         divisor      <= 0;
         quotient     <= 0;
     end
+
     
 end
 
@@ -164,14 +223,14 @@ ysyx_22050019_mux #( .NR_KEY(8), .KEY_LEN(8), .DATA_LEN(64)) mux_out
   .key         (div_type), 
   .default_out (quotient[63:0]),
   .lut         ({		
-                    8'b10000000,divisor_64_positive,
-                    8'b01000000,64'b0,
-                    8'b00100000,64'b0,
-                    8'b00010000,64'b0,
-                    8'b00001000,dividend_64_positive,
-                    8'b00000100,64'b0,
-                    8'b00000010,64'b0,
-                    8'b00000001,64'b0
+                    8'b10000000,divisor_positive,
+                    8'b01000000,quotient[127:64],
+                    8'b00100000,{{32{quotient[95]}},quotient[95:64]},
+                    8'b00010000,{{32{divisor_positive[31]}}, divisor_positive[31:0]},
+                    8'b00001000,dividend_positive,
+                    8'b00000100,quotient[63:0],
+                    8'b00000010,{{32{quotient[31]}},quotient[31:0]},
+                    8'b00000001,{{32{dividend_positive[31]}}, dividend_positive[31:0]}
                     }),          
   .out         (div_out)  
 );
