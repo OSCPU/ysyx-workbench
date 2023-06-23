@@ -173,7 +173,7 @@ reg [63:0] result,result_next;
 reg quotient_sign, quotient_sign_next, rem_sign, rem_sign_next;
 
 reg [127:0] quotient, quotient_next;
-reg [63:0] divisor, divisor_d;
+reg [63:0] divisor, divisor_next;
 reg [7:0]  div_type;
 wire [127:0] res_shifted; // {s[63:0], q[63:0]}
 wire [64:0] s_minus_di;
@@ -191,7 +191,7 @@ assign s_positive = rem_sign ? (~quotient[127:64] + 'h1) : quotient[127:64];
     quotient_sign_next     = quotient_sign ;
     rem_sign_next     = rem_sign ;
     quotient_next       = quotient   ;
-    divisor_d = divisor ;
+    divisor_next = divisor ;
 	    case(state)
         IDLE: begin
           if (div_valid) begin
@@ -209,7 +209,7 @@ assign s_positive = rem_sign ? (~quotient[127:64] + 'h1) : quotient[127:64];
                   rem_sign_next = dividend_i[63];
                   quotient_next[127:64] = 0;
                   quotient_next[63:0] = dividend_abs;
-                  divisor_d = divisor_abs;
+                  divisor_next = divisor_abs;
                 end
 
                 DIVU: begin
@@ -218,7 +218,7 @@ assign s_positive = rem_sign ? (~quotient[127:64] + 'h1) : quotient[127:64];
                   rem_sign_next = 0;
                   quotient_next[127:64] = 0;
                   quotient_next[63:0] = dividend_i;
-                  divisor_d = divisor_i;
+                  divisor_next = divisor_i;
                 end
 
                 DIVUW: begin
@@ -227,7 +227,7 @@ assign s_positive = rem_sign ? (~quotient[127:64] + 'h1) : quotient[127:64];
                   rem_sign_next = 0;
                   quotient_next[127:64] = 0;
                   quotient_next[63:0] = {dividend_i[31:0], {32{1'b0}}};
-                  divisor_d = {{32{1'b0}}, divisor_i[31:0]};
+                  divisor_next = {{32{1'b0}}, divisor_i[31:0]};
                 end
 
                 DIVW: begin
@@ -236,7 +236,7 @@ assign s_positive = rem_sign ? (~quotient[127:64] + 'h1) : quotient[127:64];
                   rem_sign_next = dividend_i[31];
                   quotient_next[127:64] = 0;
                   quotient_next[63:0] = {dividend_abs_32[31:0], 32'b0};
-                  divisor_d = divisor_abs_32;
+                  divisor_next = divisor_abs_32;
                 end
 
                 REMU: begin
@@ -245,7 +245,7 @@ assign s_positive = rem_sign ? (~quotient[127:64] + 'h1) : quotient[127:64];
                   rem_sign_next = 0;
                   quotient_next[127:64] = 0;
                   quotient_next[63:0] = dividend_i;
-                  divisor_d = divisor_i;
+                  divisor_next = divisor_i;
                 end
 
                 REM: begin
@@ -254,7 +254,7 @@ assign s_positive = rem_sign ? (~quotient[127:64] + 'h1) : quotient[127:64];
                   rem_sign_next = dividend_i[63];
                   quotient_next[127:64] = 0;
                   quotient_next[63:0] = dividend_abs;
-                  divisor_d = divisor_abs;
+                  divisor_next = divisor_abs;
                 end
 
                 REMUW: begin
@@ -263,7 +263,7 @@ assign s_positive = rem_sign ? (~quotient[127:64] + 'h1) : quotient[127:64];
                   rem_sign_next = 0;
                   quotient_next[127:64] = 0;
                   quotient_next[63:0] = {dividend_i[31:0], {32{1'b0}}};
-                  divisor_d = {{32{1'b0}}, divisor_i[31:0]};
+                  divisor_next = {{32{1'b0}}, divisor_i[31:0]};
                 end
 
                 REMW: begin
@@ -272,7 +272,7 @@ assign s_positive = rem_sign ? (~quotient[127:64] + 'h1) : quotient[127:64];
                   rem_sign_next = dividend_i[31];
                   quotient_next[127:64] = 0;
                   quotient_next[63:0] = {dividend_abs_32[31:0], 32'b0};
-                  divisor_d = divisor_abs_32;
+                  divisor_next = divisor_abs_32;
                 end
 
                 default:;
@@ -358,7 +358,7 @@ assign s_positive = rem_sign ? (~quotient[127:64] + 'h1) : quotient[127:64];
       quotient_sign <= quotient_sign_next;
       rem_sign <= rem_sign_next;
       quotient <= quotient_next;
-      divisor <= divisor_d;
+      divisor <= divisor_next;
       result <= result_next;
 	  end
   end
