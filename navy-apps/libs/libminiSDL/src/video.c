@@ -50,7 +50,7 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
   }
 
   // 只有8位的可以在pal可以，在bird中不行，可能是源和目标图像的像素格式不同导致的。若这个也错就可以改成与上面一样
-  if (src->format->BitsPerPixel == 8) {
+  else if (src->format->BitsPerPixel == 8) {
     uint8_t* pixels_src = (uint8_t*)src->pixels;
     uint8_t* pixels_dst = (uint8_t*)dst->pixels;
     size_t src_pitch = src->pitch;  // 源图像每行的字节数
