@@ -185,6 +185,31 @@ always @(*) begin
 end
 
 //========================================
+// 3段式状态机构建乘法逻辑模块 
+always@(posedge clk) begin
+  if(rst_n)state<=IDLE;
+  else   state<=next_state;
+end
+
+always @(posedge clk) begin
+  if (rst_n) begin
+    div_type      <= 0;
+    cnt           <= 0;
+    quotient_sign <= 0;
+    rem_sign      <= 0;
+    quotient      <= 0;
+    divisor       <= 0;
+  end
+  else begin
+    div_type      <= (state == IDLE && next_state == DO_DIV) ? div_type_i : div_type;
+    cnt           <= cnt_next;
+    quotient_sign <= quotient_sign_next;
+    rem_sign      <= rem_sign_next;
+    quotient      <= quotient_next;
+    divisor       <= divisor_next;
+	end
+end
+
 always @(*) begin
   next_state         = state         ; 
   cnt_next           = cnt           ;
@@ -302,27 +327,6 @@ always @(*) begin
       end	    
       endcase
 end
-
-  always @(posedge clk) begin
-    if (rst_n) begin
-	  state         <= IDLE;
-      div_type      <= 0;
-      cnt           <= 0;
-      quotient_sign <= 0;
-      rem_sign      <= 0;
-      quotient      <= 0;
-      divisor       <= 0;
-	  end
-	  else begin
-	  state         <= next_state;
-      div_type      <= (state == IDLE && next_state == DO_DIV) ? div_type_i : div_type;
-      cnt           <= cnt_next;
-      quotient_sign <= quotient_sign_next;
-      rem_sign      <= rem_sign_next;
-      quotient      <= quotient_next;
-      divisor       <= divisor_next;
-	  end
-  end
 
 // 根据译码类型输出结果
 ysyx_22050019_mux #( .NR_KEY(8), .KEY_LEN(8), .DATA_LEN(64)) mux_out
