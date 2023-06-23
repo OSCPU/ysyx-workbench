@@ -166,13 +166,7 @@ end
 parameter IDLE    = 2'b00;
 parameter DO_DIV  = 2'b01;
 parameter FINISH  = 2'b10;
-/*
-被除数 除数 商 余数
-+     +   +  +
-+     -   -  +
--     +   -  -
--     -   +  -
-*/
+
 reg [1:0]  state, next_state;
 
 reg [6:0]  cnt, cnt_next;
@@ -184,12 +178,12 @@ reg [63:0] divisor, divisor_next;
 reg [7:0]  div_type;
 wire [127:0] quotient_shift; 
 wire [64:0] dividend_iter;
-assign dividend_iter = quotient_shift[127:63] - divisor;
+assign dividend_iter = quotient_shift[127:64] - divisor;
 assign quotient_shift = quotient << 1;
 
 wire [63:0] quotient_abs, rem_abs;
 assign quotient_abs = quotient_sign ? (~quotient[63:0] + 1) : quotient[63:0];
-assign rem_abs      = rem_sign ? (~quotient[127:64] + 1) : quotient[127:64];
+assign rem_abs = rem_sign ? (~quotient[127:64] + 1) : quotient[127:64];
 
 always @(*) begin
   next_state         = state         ; 
