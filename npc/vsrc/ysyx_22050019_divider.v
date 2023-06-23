@@ -56,6 +56,18 @@ reg [63:0] result_exception;// 异常结果输出
 reg div_zero; // 除零通知
 reg div_of  ; // 溢出通知
 
+// 除法状态机的实现
+parameter IDLE    = 2'b00;
+parameter DO_DIV  = 2'b01;
+parameter FINISH  = 2'b10;
+
+reg [1:0] state, next_state;
+reg [7:0] div_type;
+reg [6:0] cnt;
+reg quotient_sign, rem_sign;
+reg [127:0] quotient;
+reg [63:0]  divisor;
+
 // 32位符号拓展
 wire [63:0] dividend_sext32, divisor_sext32;
 assign dividend_sext32      = {{32{dividend_i[31]}}, dividend_i[31:0]};
@@ -82,6 +94,8 @@ assign divisor_abs_32       = divisor_sext32[63]  ? divisor_positive_32  : divis
 // 迭代被除数判断
 wire [64:0] dividend_iter   = quotient[127:63] - {1'b0,divisor};
 wire [127:0] quotient_shift = quotient << 1;
+
+
 //========================================
 // 对溢出以及除零做检测
 always @(*) begin
@@ -167,17 +181,7 @@ always @(*) begin
 end
 
 //========================================
-// 除法状态机的实现
-parameter IDLE    = 2'b00;
-parameter DO_DIV  = 2'b01;
-parameter FINISH  = 2'b10;
 
-reg [1:0] state, next_state;
-reg [7:0] div_type;
-reg [6:0] cnt;
-reg quotient_sign, rem_sign;
-reg [127:0] quotient;
-reg [63:0]  divisor;
 // 3段式状态机构建乘法逻辑模块 
 always@(posedge clk) begin
   if(rst_n)state<=IDLE;
