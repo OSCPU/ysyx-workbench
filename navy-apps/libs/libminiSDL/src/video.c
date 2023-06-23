@@ -102,48 +102,66 @@ void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color)
     }
 }
 
-void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) 
-{
-    if((x==0) && (y==0) && (w==0) && (h==0))
-    {
-        if(s->format->BitsPerPixel == 8)
-        {
-            uint32_t *realColor = malloc(4*s->h*s->w);
-            for (int i = 0; i < s->h; i++) 
-            {
-                for (int j = 0; j < s->w; j++) 
-                {
-                    uint8_t index = *(uint8_t *)(s->pixels + j + i * s->w);
-                    SDL_Color *color = &s->format->palette->colors[index];
-                    realColor[j+i*s->w] = ((uint32_t)0) | (color->r << 16) | (color->g << 8) | color->b;
-                }
-            }
-            NDL_DrawRect(realColor, 0, 0, s->w, s->h);
-            free(realColor);
-        }
-        else
-            NDL_DrawRect((uint32_t*)s->pixels, 0, 0, s->w, s->h);
-    }
-    else
-    {
-        if(s->format->BitsPerPixel == 8)
-        {
-            uint32_t *realColor = malloc(4*h*w);
-            for(int i = 0; i < h; i++)
-            {
-                for(int j = 0; j < w; j++)
-                {
-                    uint8_t index = *(uint8_t *)(s->pixels + (x+j) + (i+y) * s->w);
-                    SDL_Color *color = &s->format->palette->colors[index];
-                    realColor[j+i*w] = ((uint32_t)0) | (color->r << 16) | (color->g << 8) | color->b;
-                }
-            }
-            NDL_DrawRect(realColor, x, y, w, h);
-            free(realColor);
-        }
-        else
-            NDL_DrawRect((uint32_t*)s->pixels, x, y, w, h);
-    }
+/*
+ SDL_Surface 实质是一个矩形的像素内存
+ typedef struct {
+   uint32_t flags; // 不用管，用不着
+   SDL_PixelFormat *format; // 存储的像素格式，没那么用得着
+   int w, h; // 图像的宽高
+   uint16_t pitch; // 一行像素的长度（字节）
+   uint8_t *pixels; // 指向数据的指针
+ } SDL_Surface;
+ 
+ typedef struct {
+   SDL_Palette *palette;
+   uint8_t BitsPerPixel;
+   uint8_t BytesPerPixel;
+   uint8_t Rloss, Gloss, Bloss, Aloss;
+   uint8_t Rshift, Gshift, Bshift, Ashift;
+   uint32_t Rmask, Gmask, Bmask, Amask;
+ } SDL_PixelFormat;
+typedef struct{
+    Uint8 r;
+    Uint8 g;
+    Uint8 b;
+    Uint8 a;
+}SDL_Color;
+*/
+
+void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
+  assert(s != NULL);
+  // 全零则更新写入的s中的默认位置
+  if (x == 0 && y == 0 && w == 0 && h == 0) {
+    w = s->w; h = s->h;
+  }
+  // 初始化内存空间用于储存转换后的数据
+  uint32_t *pixels = malloc(w * h * sizeof(uint32_t));
+  assert(pixels);
+
+  // 32位时可以直接将像素送过去因为argb各8bit是默认配置（真彩色数据）。
+  if (s->format->BitsPerPixel == 32) {
+    NDL_DrawRect((uint32_t*)s->pixels + y * s->w + x, x, y, w, h);
+  }
+
+  // 8位时需要调用调色盘来从新索引像素
+  else if (s->format->BitsPerPixel == 8) {
+    uint8_t *index = (uint8_t *)s->pixels;
+    SDL_Color color;
+
+    for (int i = 0; i < h; ++ i) 
+      for (int j = 0; j < w; ++ j) {
+        color = s->format->palette->colors[index[(y + i) * s->w + x + j]];
+        pixels[i * w + j] = ((color.a << 24) | (color.r << 16) | (color.g << 8) | color.b);
+      }
+
+    NDL_DrawRect(pixels, x, y, w, h);
+  }
+  else {
+    printf("[SDL_UpdateRect] 使用的像素格式%d未实现\n",s->format->BitsPerPixel);
+    assert(0);
+  }
+
+  if (pixels) free(pixels);
 }
 
 // APIs below are already implemented.
