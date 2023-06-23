@@ -25,7 +25,7 @@ module ysyx_22050019_divider (
   input [63:0]  dividend_i  , // 被除数
   input [63:0]  divisor_i   , // 除数
   input         result_ready, // 是否准备接收
-  output [63:0] result_o    , // 计算结果 
+  output [63:0] div_out     , // 计算结果 
   output        div_stall   , // 计算暂停 
   output        result_ok     // 计算ok 
 );
@@ -104,42 +104,6 @@ assign rem_abs        = rem_sign      ? (~quotient[127:64] + 1) : quotient[127:6
 // 对溢出以及除零做检测
 always @(*) begin
     case (div_type_i) 
-      REM: begin
-        if (~|divisor_i) begin
-          div_zero = 1;
-          result_exception = dividend_i;
-        end
-        else if (dividend_i == {1'b1, 63'b0} && &divisor_i) begin
-          div_of = 1;
-          result_exception = 0;
-        end
-      end
-
-      REMU: begin
-        if (~|divisor_i) begin
-          div_zero = 1;
-          result_exception = dividend_i;
-        end
-      end
-
-      REMUW: begin
-        if (~|(divisor_i[31:0])) begin
-          div_zero = 1;
-          result_exception = dividend_sext32;
-        end
-      end
-
-      REMW: begin
-        if (~|(divisor_i[31:0])) begin
-          div_zero = 1;
-          result_exception = dividend_sext32;
-        end
-        else if (dividend_i[31:0] == {1'b1, 31'b0} && &(divisor_i[31:0])) begin
-          div_of = 1;
-          result_exception = 0;
-        end
-      end
-
       DIV: begin
         if (~|divisor_i) begin
           div_zero = 1;
@@ -173,6 +137,42 @@ always @(*) begin
         else if (dividend_i[31:0] == {1'b1, 31'b0} && &(divisor_i[31:0])) begin
           div_of = 1;
           result_exception = dividend_sext32;
+        end
+      end
+
+      REM: begin
+        if (~|divisor_i) begin
+          div_zero = 1;
+          result_exception = dividend_i;
+        end
+        else if (dividend_i == {1'b1, 63'b0} && &divisor_i) begin
+          div_of = 1;
+          result_exception = 0;
+        end
+      end
+
+      REMU: begin
+        if (~|divisor_i) begin
+          div_zero = 1;
+          result_exception = dividend_i;
+        end
+      end
+
+      REMUW: begin
+        if (~|(divisor_i[31:0])) begin
+          div_zero = 1;
+          result_exception = dividend_sext32;
+        end
+      end
+
+      REMW: begin
+        if (~|(divisor_i[31:0])) begin
+          div_zero = 1;
+          result_exception = dividend_sext32;
+        end
+        else if (dividend_i[31:0] == {1'b1, 31'b0} && &(divisor_i[31:0])) begin
+          div_of = 1;
+          result_exception = 0;
         end
       end
 
@@ -211,6 +211,7 @@ always @(*) begin
                 quotient_next[63:0]   = dividend_abs;
                 divisor_next          = divisor_abs;
               end
+
               DIVU: begin
                 cnt_next              = 64;
                 quotient_sign_next    = 0;
@@ -219,6 +220,7 @@ always @(*) begin
                 quotient_next[63:0]   = dividend_i;
                 divisor_next          = divisor_i;
               end
+
               DIVUW: begin
                 cnt_next              = 32;
                 quotient_sign_next    = 0;
@@ -227,6 +229,7 @@ always @(*) begin
                 quotient_next[63:0]   = {dividend_i[31:0], 32'b0};
                 divisor_next          = {32'b0, divisor_i[31:0]};
               end
+
               DIVW: begin
                 cnt_next              = 32;
                 quotient_sign_next    = dividend_i[31] ^ divisor_i[31];
@@ -235,6 +238,7 @@ always @(*) begin
                 quotient_next[63:0]   = {dividend_abs_32[31:0], 32'b0};
                 divisor_next          = divisor_abs_32;
               end
+
               REM: begin
                 cnt_next              = 64;
                 quotient_sign_next    = dividend_i[63] ^ divisor_i[63];
@@ -243,6 +247,7 @@ always @(*) begin
                 quotient_next[63:0]   = dividend_abs;
                 divisor_next          = divisor_abs;
               end
+
               REMU: begin
                 cnt_next              = 64;
                 quotient_sign_next    = 0;
@@ -251,6 +256,7 @@ always @(*) begin
                 quotient_next[63:0]   = dividend_i;
                 divisor_next          = divisor_i;
               end
+
               REMUW: begin
                 cnt_next              = 32;
                 quotient_sign_next    = 0;
@@ -259,6 +265,7 @@ always @(*) begin
                 quotient_next[63:0]   = {dividend_i[31:0], 32'b0};
                 divisor_next          = {32'b0, divisor_i[31:0]};
               end
+
               REMW: begin
                 cnt_next              = 32;
                 quotient_sign_next    = dividend_i[31] ^ divisor_i[31];
@@ -267,6 +274,7 @@ always @(*) begin
                 quotient_next[63:0]   = {dividend_abs_32[31:0], 32'b0};
                 divisor_next          = divisor_abs_32;
               end
+
               default:begin
               end
             endcase
@@ -297,22 +305,22 @@ end
 
   always @(posedge clk) begin
     if (rst_n) begin
-	  state <= IDLE;
-      div_type <= 0;
-      cnt <= 0;
+	  state         <= IDLE;
+      div_type      <= 0;
+      cnt           <= 0;
       quotient_sign <= 0;
-      rem_sign <= 0;
-      quotient <= 0;
-      divisor <= 0;
+      rem_sign      <= 0;
+      quotient      <= 0;
+      divisor       <= 0;
 	  end
 	  else begin
-	  state <= next_state;
-      div_type <= (state == IDLE && next_state == DO_DIV) ? div_type_i : div_type;
-      cnt <= cnt_next;
+	  state         <= next_state;
+      div_type      <= (state == IDLE && next_state == DO_DIV) ? div_type_i : div_type;
+      cnt           <= cnt_next;
       quotient_sign <= quotient_sign_next;
-      rem_sign <= rem_sign_next;
-      quotient <= quotient_next;
-      divisor <= divisor_next;
+      rem_sign      <= rem_sign_next;
+      quotient      <= quotient_next;
+      divisor       <= divisor_next;
 	  end
   end
 
@@ -338,6 +346,6 @@ ysyx_22050019_mux #( .NR_KEY(8), .KEY_LEN(8), .DATA_LEN(64)) mux_out
 // 输出控制
 assign result_ok  = (state == FINISH);
 assign div_stall  = (state == IDLE && next_state == DO_DIV) | (state == DO_DIV);
-assign result_o = (state == FINISH) ? result_next : 0;
+assign div_out    = (state == FINISH) ? result_next : 0;
 
 endmodule
