@@ -283,7 +283,7 @@ always @(posedge clk) begin
                     quotient[63:0]  <= quotient_shift[63:0]  ;
                   end
                   else begin
-                    quotient[127:64]<= dividend_iter[63:0];
+                    quotient[127:64]<= 0;
                     quotient[63:0]  <= 0;
                   end
                   end
