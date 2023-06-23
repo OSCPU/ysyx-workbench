@@ -80,7 +80,7 @@ assign dividend_abs_32      = dividend_sext32[63] ? dividend_positive_32 : divid
 assign divisor_abs_32       = divisor_sext32[63]  ? divisor_positive_32  : divisor_sext32;
 
 // 迭代被除数判断
-wire [64:0] dividend_iter   = quotient[127:63] - {1'b0,divisor};
+wire [64:0] dividend_iter   = quotient_shift[127:64] - divisor;
 wire [127:0] quotient_shift = quotient << 1;
 
 //========================================
