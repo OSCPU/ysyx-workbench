@@ -168,7 +168,7 @@ parameter FINISH  = 2'b10;
 
 reg [1:0] state, next_state;
 
-reg [6:0] cnt, cnt_d;
+reg [6:0] cnt, cnt_next;
 reg [63:0] result,result_next;
 reg neg_q, neg_q_d, neg_s, neg_s_d;
 
@@ -187,7 +187,7 @@ assign s_positive = neg_s ? (~res[127:64] + 'h1) : res[127:64];
   always @(*) begin
     next_state  = state ; 
     result_next = result;
-    cnt_d       = cnt   ;
+    cnt_next    = cnt   ;
     neg_q_d     = neg_q ;
     neg_s_d     = neg_s ;
     res_d       = res   ;
@@ -202,14 +202,9 @@ assign s_positive = neg_s ? (~res[127:64] + 'h1) : res[127:64];
             end
             else begin
               next_state = DO_DIV;
-              //cnt_d = ;
-              //neg_q_d = ;
-              //neg_s_d = ;
-              //res_d = ;
-              //divisor_d = ;
               case (div_type_i)
               DIV: begin
-                  cnt_d = {1'b1, 6'b0};
+                  cnt_next= 64;
                   neg_q_d = dividend_i[63] ^ divisor_i[63];
                   neg_s_d = dividend_i[63];
                   res_d[127:64] = 0;
@@ -218,7 +213,7 @@ assign s_positive = neg_s ? (~res[127:64] + 'h1) : res[127:64];
                 end
 
                 DIVU: begin
-                  cnt_d = {1'b1, 6'b0};
+                  cnt_next= 64;
                   neg_q_d = 0;
                   neg_s_d = 0;
                   res_d[127:64] = 0;
@@ -227,7 +222,7 @@ assign s_positive = neg_s ? (~res[127:64] + 'h1) : res[127:64];
                 end
 
                 DIVUW: begin
-                  cnt_d = {1'b0, 1'b1, 5'b0};
+                  cnt_next= 32;
                   neg_q_d = 0;
                   neg_s_d = 0;
                   res_d[127:64] = 0;
@@ -236,7 +231,7 @@ assign s_positive = neg_s ? (~res[127:64] + 'h1) : res[127:64];
                 end
 
                 DIVW: begin
-                  cnt_d = {1'b0, 1'b1, 5'b0};
+                  cnt_next= 32;
                   neg_q_d = dividend_i[31] ^ divisor_i[31];
                   neg_s_d = dividend_i[31];
                   res_d[127:64] = 0;
@@ -245,7 +240,7 @@ assign s_positive = neg_s ? (~res[127:64] + 'h1) : res[127:64];
                 end
 
                 REMU: begin
-                  cnt_d = {1'b1, 6'b0};
+                  cnt_next= 64;
                   neg_q_d = 0;
                   neg_s_d = 0;
                   res_d[127:64] = 0;
@@ -254,7 +249,7 @@ assign s_positive = neg_s ? (~res[127:64] + 'h1) : res[127:64];
                 end
 
                 REM: begin
-                  cnt_d = {1'b1, 6'b0};
+                  cnt_next = 64;
                   neg_q_d = dividend_i[63] ^ divisor_i[63];
                   neg_s_d = dividend_i[63];
                   res_d[127:64] = 0;
@@ -263,7 +258,7 @@ assign s_positive = neg_s ? (~res[127:64] + 'h1) : res[127:64];
                 end
 
                 REMUW: begin
-                  cnt_d = {1'b0, 1'b1, 5'b0};
+                  cnt_next= 32;
                   neg_q_d = 0;
                   neg_s_d = 0;
                   res_d[127:64] = 0;
@@ -272,7 +267,7 @@ assign s_positive = neg_s ? (~res[127:64] + 'h1) : res[127:64];
                 end
 
                 REMW: begin
-                  cnt_d = {1'b0, 1'b1, 5'b0};
+                  cnt_next= 32;
                   neg_q_d = dividend_i[31] ^ divisor_i[31];
                   neg_s_d = dividend_i[31];
                   res_d[127:64] = 0;
@@ -295,7 +290,7 @@ assign s_positive = neg_s ? (~res[127:64] + 'h1) : res[127:64];
             next_state = FINISH;
           end
           else begin
-            cnt_d = cnt - 1;
+            cnt_next = cnt - 1;
             next_state = DO_DIV;
             if (s_minus_di[64]) begin
               res_d[127:64] = res_shifted[127:64];
@@ -359,7 +354,7 @@ assign s_positive = neg_s ? (~res[127:64] + 'h1) : res[127:64];
 	  else begin
 	  state <= next_state;
       div_type <= (state == IDLE && next_state == DO_DIV) ? div_type_i : div_type;
-      cnt <= cnt_d;
+      cnt <= cnt_next;
       neg_q <= neg_q_d;
       neg_s <= neg_s_d;
       res <= res_d;
