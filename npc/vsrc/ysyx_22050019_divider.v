@@ -85,7 +85,7 @@ wire [127:0] quotient_shift = quotient << 1;
 
 wire [127:0] udpate_data;
 assign udpate_data[127:64]  = dividend_iter[64] ? quotient_shift[127:64] : dividend_iter[63:0];
-assign udpate_data[63:0]    = dividend_iter[64] ? quotient_shift[63:0]   : {quotient_shift[63:0],1'b1};
+assign udpate_data[63:0]    = dividend_iter[64] ? quotient_shift[63:0]   : {quotient_shift[63:1],1'b1};
 //========================================
 // 对溢出以及除零做检测
 always @(*) begin
