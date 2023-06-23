@@ -68,13 +68,13 @@ wire [63:0] dividend_i_abs, divisor_i_abs;
 assign dividend_i_abs = dividend_i[63] ? dividend_positive : dividend_i;
 assign divisor_i_abs  = divisor_i[63] ? divisor_positive : divisor_i;
 
-wire [63:0] dividend_sext32_twos, divisor_sext32_twos;
-assign dividend_sext32_twos = ~dividend_sext32 +'h1;
-assign divisor_sext32_twos = ~divisor_sext32 +'h1;
+wire [63:0] dividend_positive_32, divisor_positive_32;
+assign dividend_positive_32 = ~dividend_sext32 +'h1;
+assign divisor_positive_32 = ~divisor_sext32 +'h1;
 
 wire [63:0] dividend_sext32_abs, divisor_sext32_abs;
-assign dividend_sext32_abs = dividend_sext32[63] ? dividend_sext32_twos : dividend_sext32;
-assign divisor_sext32_abs = divisor_sext32[63] ? divisor_sext32_twos : divisor_sext32;
+assign dividend_sext32_abs = dividend_sext32[63] ? dividend_positive_32 : dividend_sext32;
+assign divisor_sext32_abs = divisor_sext32[63] ? divisor_positive_32 : divisor_sext32;
 //========================================
 // 对溢出以及除零做检测
 always @(*) begin
