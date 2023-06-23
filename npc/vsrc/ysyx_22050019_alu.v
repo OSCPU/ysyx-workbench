@@ -118,7 +118,7 @@ wire [63:0] or64       = op_1 | op_2 ;
 wire [63:0] xor64      = op_1 ^ op_2 ;
 
 //乘法器
-wire mult_valid  = alu_sel [29] | alu_sel [30] | alu_sel [31] | alu_sel [32] | alu_sel [33]; 
+wire mult_valid  = |alu_sel [33:29]; 
 wire result_ready= ~lsu_stall;
 wire [63:0]mult_out;
 wire mult_stall;

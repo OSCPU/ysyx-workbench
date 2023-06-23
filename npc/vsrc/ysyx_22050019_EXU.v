@@ -37,7 +37,7 @@ assign exu_wen  = alu_stall ? 0 : wen_i | wen;
 reg[4:0] waddr;
 always @(posedge clk)begin
   if(rst_n) waddr <= 0;
-  else if(alu_sel [29] | alu_sel [30] | alu_sel [31] | alu_sel [32] | alu_sel [33])
+  else if(|alu_sel [33:21])
             waddr <= waddr_i;
   else if(exu_wen)
             waddr <= 0;
