@@ -179,6 +179,14 @@ integer p;
 //import "DPI-C" function void icache_wait();
 always@(posedge clk)begin
   if(rst)begin
+    //初始化对比项
+    for( m=0;m<WAY_DEPTH;m=m+1)begin
+      for( p=0;p<INDEX_DEPTH;p=p+1)begin
+          tag[m][p]<=0;
+	  			dirty[m][p]<=0;
+	  			valid[m][p]<=0;
+      end
+    end
     rw_control                    <= 0                                     ;
 		ar_ready_o                    <= 0                                     ;
     aw_ready_o                    <= 0                                     ;
@@ -193,14 +201,7 @@ always@(posedge clk)begin
     waynum                        <= 0                                     ;
     addr                          <= 0                                     ;
     cache_rw_len_o                <= 0                                     ;
-    //初始化对比项
-    for( m=0;m<WAY_DEPTH;m=m+1)begin
-      for( p=0;p<INDEX_DEPTH;p=p+1)begin
-          tag[m][p]<=0;
-	  			dirty[m][p]<=0;
-	  			valid[m][p]<=0;
-      end
-    end
+
   end
   else begin
     case(state)
