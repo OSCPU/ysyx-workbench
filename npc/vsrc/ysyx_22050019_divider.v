@@ -201,13 +201,52 @@ always @(posedge clk) begin
     divisor       <= 0;
   end
   else begin
-    div_type      <= (state == IDLE && next_state == DO_DIV) ? div_type_i : div_type;
-    cnt           <= cnt_next;
-    quotient_sign <= quotient_sign_next;
-    rem_sign      <= rem_sign_next;
-    quotient      <= quotient_next;
-    divisor       <= divisor_next;
-	end
+    case (state)  
+      IDLE : begin
+        if(next_state == FINISH) begin
+            div_type <= ERROR;
+        end
+        else if(next_state == DO_DIV) begin
+            div_type      <= div_type_i        ;
+            cnt           <= cnt_next          ;
+            quotient_sign <= quotient_sign_next;
+            rem_sign      <= rem_sign_next     ;
+            quotient      <= quotient_next     ;
+            divisor       <= divisor_next      ;  
+        end
+        else if(next_state == IDLE) begin
+            div_type      <= 0                 ;
+            cnt           <= 0                 ;
+            quotient_sign <= 0                 ;
+            rem_sign      <= 0                 ;
+            quotient      <= 0                 ;
+            divisor       <= 0                 ;  
+        end
+      end
+      DO_DIV : begin
+        if(next_state == FINISH) begin
+        end
+        else begin
+            cnt           <= cnt_next          ;
+            quotient      <= quotient_next     ;
+        end
+      end
+      FINISH : begin
+        if(next_state == IDLE) begin
+            div_type      <= 0                 ;
+            cnt           <= 0                 ;
+            quotient_sign <= 0                 ;
+            rem_sign      <= 0                 ;
+            quotient      <= 0                 ;
+            divisor       <= 0                 ; 
+        end
+        else begin
+        end  
+      end
+      default :begin
+      end
+    endcase
+  end
 end
 
 always @(*) begin
