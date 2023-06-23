@@ -299,7 +299,7 @@ always @(*) begin
         end
       end
       FINISH: begin
-        next_state = result_ready ? IDLE : FINISH;
+        if(result_ready) next_state = IDLE;
       end
       default:;	    endcase
 end
