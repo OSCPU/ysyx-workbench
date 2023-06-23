@@ -140,8 +140,7 @@ reg                   r_data_valid;
 reg [DATA_WIDTH-1:0]  r_data;
 
 always@(*) begin
-  if(rst)next_state=S_IDLE;
-  else case(state)
+  case(state)
     S_IDLE:if(ar_valid_i&ar_ready_o|aw_valid_i&aw_ready_o)begin
             if(|hit_wayflag)next_state=S_HIT;
             else if(dirty[random][index_in])next_state=S_AW;
