@@ -134,7 +134,7 @@ ysyx_22050019_divider divider(
     .dividend_i    ( op_1           ),
     .divisor_i     ( op_2           ),
     .result_ready  ( result_ready   ),
-    .result_o       ( div_out        ),
+    .div_out       ( div_out        ),
     .div_stall     ( div_stall      ),
     .result_ok     ( result_ok_div  )
 );
