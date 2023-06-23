@@ -175,10 +175,10 @@ reg quotient_sign, quotient_sign_next, rem_sign, rem_sign_next;
 reg [127:0] quotient, quotient_next;
 reg [63:0] divisor, divisor_next;
 reg [7:0]  div_type;
-wire [127:0] res_shifted; // {s[63:0], q[63:0]}
-wire [64:0] s_minus_di;
-assign s_minus_di = res_shifted[127:64] - divisor;
-assign res_shifted = quotient << 1;
+wire [127:0] quotient_shift; // {s[63:0], q[63:0]}
+wire [64:0] dividend_iter;
+assign dividend_iter = quotient_shift[127:64] - divisor;
+assign quotient_shift = quotient << 1;
 
 wire [63:0] q_positive, s_positive;
 assign q_positive = quotient_sign ? (~quotient[63:0] + 'h1) : quotient[63:0];
@@ -292,13 +292,13 @@ assign s_positive = rem_sign ? (~quotient[127:64] + 'h1) : quotient[127:64];
           else begin
             cnt_next = cnt - 1;
             next_state = DO_DIV;
-            if (s_minus_di[64]) begin
-              quotient_next[127:64] = res_shifted[127:64];
-              quotient_next[63:0] = {res_shifted[63:1], 1'b0};
+            if (dividend_iter[64]) begin
+              quotient_next[127:64] = quotient_shift[127:64];
+              quotient_next[63:0] = {quotient_shift[63:1], 1'b0};
             end
             else begin
-              quotient_next[127:64] = s_minus_di[63:0];
-              quotient_next[63:0] = {res_shifted[63:1], 1'b1};
+              quotient_next[127:64] = dividend_iter[63:0];
+              quotient_next[63:0] = {quotient_shift[63:1], 1'b1};
             end
           end
         end
