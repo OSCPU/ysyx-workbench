@@ -215,7 +215,7 @@ always @(posedge clk) begin
     end
     else begin
         case(state)
-          IDLE  : if(next_state == FINISH) begin
+          IDLE  : begin if(next_state == FINISH) begin
             div_type  <= ERROR                    ;
             quotient  <= {64'b0,result_exception} ;
             end
@@ -263,7 +263,6 @@ always @(posedge clk) begin
                     default :begin
                     end                
                 endcase
-
             end
             else if(next_state == IDLE) begin
                             div_type        <= 0             ;
@@ -274,6 +273,7 @@ always @(posedge clk) begin
                             quotient[63:0]  <= 0             ;
                             divisor         <= 0             ;
             end
+          end
 
           DO_DIV: if(next_state == DO_DIV) begin
                     cnt     <= cnt -1 ;
