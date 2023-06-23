@@ -52,7 +52,7 @@ parameter DIVW  = 8'b00000001; // 除法一 有符号 32位
 parameter ERROR = 8'b00000000; // 遇到了除0或溢出
 
 // 使用信号声明与准备
-reg [63:0] result_exception;// 异常结果输出
+reg [63:0] result_div_exception;// 异常结果输出
 reg div_zero; // 除零通知
 reg div_of  ; // 溢出通知
 
@@ -89,77 +89,77 @@ always @(*) begin
       REM: begin
         if (~|divisor_i) begin
           div_zero = 1;
-          result_exception = dividend_i;
+          result_div_exception = dividend_i;
         end
         else if (dividend_i == {1'b1, 63'b0} && &divisor_i) begin
           div_of = 1;
-          result_exception = 0;
+          result_div_exception = 0;
         end
       end
 
       REMU: begin
         if (~|divisor_i) begin
           div_zero = 1;
-          result_exception = dividend_i;
+          result_div_exception = dividend_i;
         end
       end
 
       REMUW: begin
         if (~|(divisor_i[31:0])) begin
           div_zero = 1;
-          result_exception = dividend_sext32;
+          result_div_exception = dividend_sext32;
         end
       end
 
       REMW: begin
         if (~|(divisor_i[31:0])) begin
           div_zero = 1;
-          result_exception = dividend_sext32;
+          result_div_exception = dividend_sext32;
         end
         else if (dividend_i[31:0] == {1'b1, 31'b0} && &(divisor_i[31:0])) begin
           div_of = 1;
-          result_exception = 0;
+          result_div_exception = 0;
         end
       end
 
       DIV: begin
         if (~|divisor_i) begin
           div_zero = 1;
-          result_exception = {64{1'b1}};
+          result_div_exception = {64{1'b1}};
         end
         else if (dividend_i == {1'b1, 63'b0} && &divisor_i) begin
           div_of = 1;
-          result_exception = dividend_i;
+          result_div_exception = dividend_i;
         end
       end
 
       DIVU: begin
         if (~|divisor_i) begin
           div_zero = 1;
-          result_exception = {64{1'b1}};
+          result_div_exception = {64{1'b1}};
         end
       end
 
       DIVUW: begin
         if (~|(divisor_i[31:0])) begin
           div_zero = 1;
-          result_exception = {64{1'b1}};
+          result_div_exception = {64{1'b1}};
         end
       end
 
       DIVW: begin
         if (~|divisor_i) begin
           div_zero = 1;
-          result_exception = {64{1'b1}};
+          result_div_exception = {64{1'b1}};
         end
         else if (dividend_i[31:0] == {1'b1, 31'b0} && &(divisor_i[31:0])) begin
           div_of = 1;
-          result_exception = dividend_sext32;
+          result_div_exception = dividend_sext32;
         end
       end
 
       default:begin
-          result_exception = 0;
+          result_div_exception = 0;
           div_zero         = 0;
           div_of           = 0;
       end
@@ -217,7 +217,7 @@ always @(posedge clk) begin
         case(state)
           IDLE  : if(next_state == FINISH) begin
             div_type  <= ERROR                    ;
-            quotient  <= {64'b0,result_exception} ;
+            quotient  <= {64'b0,result_div_exception} ;
             end
             else if(next_state == DO_DIV) begin
                 case (div_type_i) 
