@@ -90,20 +90,23 @@ void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color)
     int y = (dstrect == NULL ? 0      : dstrect->y);
     int w = (dstrect == NULL ? dst->w : dstrect->w);
     int h = (dstrect == NULL ? dst->h : dstrect->h);
+    if(dst->format->BitsPerPixel == 8)
+    {
+        for(int i = 0; i < h; i++)
+            memset(dst->pixels + dst->format->BytesPerPixel * ((i+y)*dst->w + x), (uint8_t)color, dst->format->BytesPerPixel * w);
+    }
+    else
+    {
+        uint32_t* dstPixels = (uint32_t*)dst->pixels;
+        size_t dstPitch = dst->pitch / sizeof(uint32_t);
 
-    uint8_t* dstPixels = (uint8_t*)dst->pixels;
-    int bytesPerPixel = dst->format->BytesPerPixel;
-    size_t lineSize = bytesPerPixel * w;
-    uint8_t* fillPtr = (uint8_t*)&color;
-
-    // 计算拷贝的偏移量和长度
-    size_t offset = ((y * dst->pitch) + (x * bytesPerPixel));
-    size_t length = lineSize * h;
-
-    // 进行内存拷贝操作
-    memcpy(dstPixels + offset, fillPtr, length);
+        for (int i = 0; i < h; i++)
+        {
+            uint32_t* dstRow = dstPixels + (i + y) * dstPitch + x;
+            std::fill(dstRow, dstRow + w, color);
+        }
+    }
 }
-
 
 /*
  SDL_Surface 实质是一个矩形的像素内存
