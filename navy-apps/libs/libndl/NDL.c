@@ -101,28 +101,20 @@ void NDL_OpenCanvas(int *w, int *h) {
     xxxxxxxxxxxxxxxx
 */
 void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
-    // 显存只能写，读不出来东西，会assert
-    int fd = open("/dev/fb", O_WRONLY);
+  // 显存只能写，读不出来东西，会assert
+  int fd = open("/dev/fb", O_WRONLY);
 
-    // 向系统申请的画布尺寸和硬件的尺寸不一定一致，相减/2后到达每一行的开头，他是依照中心线对称。
-    x += (screen_w - canvas_w) / 2;
-    y += (screen_h - canvas_h) / 2;
+  // 向系统申请的画布尺寸和硬件的尺寸不一定一致，相减/2后到达每一行的开头，他是依照中心线对称。
+  x += (screen_w - canvas_w) / 2;
+  y += (screen_h - canvas_h) / 2;
 
-    // 计算写入的偏移量
-    off_t offset = ((y * screen_w) + x) * sizeof(uint32_t);
-
-    // 计算写入的数据长度
-    size_t length = w * h * sizeof(uint32_t);
-
-    // 更改偏移量
-    lseek(fd, offset, SEEK_SET);
-
-    // 写入整个矩形区域的像素数据
-    write(fd, pixels, length);
-
-    close(fd);
+  for (int i = 0; i < h; ++ i) {
+    // 更改offset到每一列的开头
+    lseek(fd, ((y + i) * screen_w + x) * sizeof(uint32_t), SEEK_SET);
+    // 写入一行的图像
+    write(fd, pixels + i * w, w * sizeof(uint32_t));
+  }
 }
-
 
 void NDL_OpenAudio(int freq, int channels, int samples) {
 }
