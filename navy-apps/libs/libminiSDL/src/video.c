@@ -97,14 +97,8 @@ void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color)
     }
     else
     {
-        uint32_t* dstPixels = (uint32_t*)dst->pixels;
-        size_t dstPitch = dst->pitch / sizeof(uint32_t);
-
-        for (int i = 0; i < h; i++)
-        {
-            uint32_t* dstRow = dstPixels + (i + y) * dstPitch + x;
-            std::fill(dstRow, dstRow + w, color);
-        }
+        for(int i = 0; i < h; i++)
+            memset(dst->pixels + dst->format->BytesPerPixel * ((i+y)*dst->w + x), color, dst->format->BytesPerPixel * w);
     }
 }
 
