@@ -16,6 +16,7 @@ srcrect 和 dstrect 分别是源图像和目标图像的指定位置矩形。
 如果 dstrect 不为空，则表示将复制的像素粘贴到 dstrect 指定的目标图像区域。如果它们都为空，则表示复制整个源图像到目标图像。
 优化前版本可以跑小程序，优化后跑不了小游戏是正常的，仅仅是图像错误，这里优化后可以加快pal很多
 */
+
 void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect)
 {
   // 判断本体src和被粘贴体dst指针不为空且像素格式相同

@@ -1,0 +1,6 @@
+CONFIG_ISA_riscv64=y
+# CONFIG_TRACE is not set
+# CONFIG_MEM_RANDOM is not set
+CONFIG_DEVICE=y
+# CONFIG_HAS_DISK is not set
+# CONFIG_RT_CHECK is not set
