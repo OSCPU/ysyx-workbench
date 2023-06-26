@@ -11,8 +11,7 @@ const char *regs[] = {
 // 打印寄存器的值
 void isa_reg_display() {
     for (int i = 0; i < 32; i++){
-        printf("%s:%lx", *(regs + i),cpu.gpr[i]);
-        printf((i + 1) % 4 == 0 ?"\n":" ");
+        printf("%s:%lx\n", *(regs + i),cpu.gpr[i]);
     }
 }
 // 通过名字获取寄存器的值
