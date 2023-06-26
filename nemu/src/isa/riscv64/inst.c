@@ -133,7 +133,7 @@ static int decode_exec(Decode *s) {
 
   INSTPAT("??????? ????? ????? 001 ????? 11100 11", csrrw , I, word_t tmp = CSR(BITS(src2,11,0)); CSR(BITS(src2,11,0)) = src1; R(dest) = tmp);//设置mtvec异常入口地址
   INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall , I, s->dnpc = isa_raise_intr(0xb, s->pc)); //mcause
-  INSTPAT("??????? ????? ????? 010 ????? 11100 11", csrrs , I, R(dest) = CSR(BITS(src2,11,0)); CSR(BITS(src2,11,0)) = CSR(BITS(src2,11,0)) | src1;  );
+  INSTPAT("??????? ????? ????? 010 ????? 11100 11", csrrs , I, R(dest) = CSR(BITS(src2,11,0)); CSR(BITS(src2,11,0)) = (CSR(BITS(src2,11,0)) | src1 );  );
   INSTPAT("0011000 00010 00000 000 00000 11100 11", mret  , I, s->dnpc = CSR(0x341));//mepc
 
   INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak , N, NEMUTRAP(s->pc, R(10))); // R(10) is $a0
