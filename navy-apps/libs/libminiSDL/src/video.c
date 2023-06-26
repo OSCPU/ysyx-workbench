@@ -16,49 +16,71 @@ srcrect 和 dstrect 分别是源图像和目标图像的指定位置矩形。
 如果 dstrect 不为空，则表示将复制的像素粘贴到 dstrect 指定的目标图像区域。如果它们都为空，则表示复制整个源图像到目标图像。
 优化前版本可以跑小程序，优化后跑不了小游戏是正常的，仅仅是图像错误，这里优化后可以加快pal很多
 */
-void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect) 
+void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_Rect *dstrect)
 {
-    assert(dst && src);
-    assert(dst->format->BitsPerPixel == src->format->BitsPerPixel);
+  // 判断本体src和被粘贴体dst指针不为空且像素格式相同
+  assert(dst && src);
+  assert(dst->format->BitsPerPixel == src->format->BitsPerPixel);
 
-    if(srcrect)
-    {
-        int d_x = 0; 
-        int d_y = 0;
-        assert((srcrect->w > 0) && (srcrect->h > 0));
+  // 定义初始图像信息
+  int screen_w,screen_h,x_src,y_src,x_dst,y_dst;
 
-        if(dstrect != NULL)
-        {
-            d_x = dstrect->x;
-            d_y = dstrect->y;
-        }
-        for(int i = 0; i < srcrect->h; i++)
-        {
-            memcpy(dst->pixels + dst->format->BytesPerPixel*((d_y+i)*dst->w+d_x), src->pixels + src->format->BytesPerPixel*((srcrect->y+i)*src->w+srcrect->x), dst->format->BytesPerPixel* srcrect->w);
-        }
+  // srcrect源画布指定位置指针存在
+  if(srcrect){
+    screen_w = srcrect->w; screen_h = srcrect->h;
+    x_src = srcrect->x; y_src = srcrect->y; 
+  }
+  // 从头复制
+  else{
+    screen_w = src->w; screen_h = src->h;
+    x_src = 0; y_src = 0;
+  }
+  // dstrect目标画布指定位置指针存在
+  if (dstrect) {
+    x_dst = dstrect->x, y_dst = dstrect->y;
+  }
+  // 从头粘贴
+  else {
+    x_dst = 0; y_dst = 0;
+  }
 
-    }
-    else
-    {
-        assert((src->w <= dst->w) && (src->h <= dst->h));
+  // 对于像素开始粘贴（本版本使用前提）
+  if (src->format->BitsPerPixel == 32) {
+    uint32_t* pixels_src = (uint32_t*)src->pixels;
+    uint32_t* pixels_dst = (uint32_t*)dst->pixels;
+    size_t src_pitch = src->pitch / sizeof(uint32_t);  // 源图像每行的像素个数
+    size_t dst_pitch = dst->pitch / sizeof(uint32_t);  // 目标图像每行的像素个数
+  
+    size_t src_offset = y_src * src_pitch + x_src;
+    size_t dst_offset = y_dst * dst_pitch + x_dst;
+  
+    size_t row_size = screen_w * sizeof(uint32_t);  // 每行的字节数
+  
+    // 使用 memcpy 函数一次性复制整个图像的像素数据
+    memcpy(pixels_dst + dst_offset, pixels_src + src_offset, row_size * screen_h);
+  }
 
-        if(dstrect)
-        {
-            for(int i = 0; i < src->h; i++)
-            {
-                memcpy(dst->pixels + dst->format->BytesPerPixel*((dstrect->y+i)*dst->w+dstrect->x), src->pixels+src->format->BytesPerPixel*i*src->w, dst->format->BytesPerPixel* src->w);
-            }
+  // 只有8位的可以在pal可以，在bird中不行，可能是源和目标图像的像素格式不同导致的。若这个也错就可以改成与上面一样
+else if (src->format->BitsPerPixel == 8) {
+  uint8_t* pixels_src = (uint8_t*)src->pixels;
+  uint8_t* pixels_dst = (uint8_t*)dst->pixels;
+  size_t src_pitch = src->pitch;  // 源图像每行的字节数
+  size_t dst_pitch = dst->pitch;  // 目标图像每行的字节数
 
-        }
-        else
-        {
-            for(int i = 0; i < src->h; i++)
-            {
-                memcpy(dst->pixels + dst->format->BytesPerPixel*((i)*dst->w), src->pixels+src->format->BytesPerPixel*i*src->w, dst->format->BytesPerPixel* src->w);
-            }
+  for (int i = 0; i < screen_h; ++i) {
+    // 计算源和目标图像每行的指针偏移量
+    size_t src_offset = (y_src + i) * src_pitch + x_src;
+    size_t dst_offset = (y_dst + i) * dst_pitch + x_dst;
 
-        } 
-    }
+    // 使用 memcpy 函数一次性复制整行的像素数据
+    memcpy(pixels_dst + dst_offset, pixels_src + src_offset, screen_w);
+  }
+}
+
+  else{
+    printf("[SDL_BlitSurface] 使用的像素格式%d未实现\n",src->format->BitsPerPixel);
+    assert(0);
+  }
 }
 
 // 向指定位置写颜色，32和8需要分别讨论因为32位颜色直接写入8位dst->pixels中与实际的8位颜色不一样（这里主要影响能量条和部分字体）
