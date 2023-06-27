@@ -216,8 +216,9 @@ static uint64_t eval(int p, int q, bool *success)
       if (par == 0) {
           if (token_rank[tokens[i].type] == 0) continue;
           // Compare the level of operators, find the last lowest one.
-          if (op == -1 || token_rank[tokens[i].type] >= token_rank[tokens[op].type]) op = i;
-			    printf("主运算符 %d temple - %s.\n", i, rules[i].regex);
+          if (op == -1 || token_rank[tokens[i].type] >= token_rank[tokens[op].type]) {op = i;
+			    printf("主运算符 %d temple %s.\n", i, rules[i].regex);
+          }
       }
     }
     // printf("Eval(%d, %d): 主运算符 在 %d.\n", p, q, op);
