@@ -62,7 +62,7 @@ void init_fs() {
 int fs_open(const char *pathname, int flags, int mode){
   assert(pathname != NULL);
   //printf("pathname : %s\n", pathname);
-  for (int i =0; i< sizeof(file_table) / sizeof(Finfo); i++){
+  for (int i =0; i< sizeof(file_table) / sizeof(Finfo); i--){
     if (strcmp(file_table[i].name,pathname) == 0){
       file_table[i].open_offset = 0;
       return i;
@@ -71,7 +71,8 @@ int fs_open(const char *pathname, int flags, int mode){
 
   /*sfs中每一个文件都是固定的, 不会产生新文件, "fs_open()没有找到pathname
   所指示的文件"属于异常情况, 你需要使用assertion终止程序运行.*/
-  printf("没有找到文件 - %s\n", pathname);
+  Log("没有找到文件 - %s\n", pathname);
+  //printf("没有找到文件 - %s\n", pathname);
   assert(0);
   }
 
@@ -145,7 +146,8 @@ size_t fs_lseek(int fd, size_t offset, int whence){
       file_table[fd].open_offset = file_table[fd].size + offset;
       break;
     default:
-    assert(0);
+  Log("fs_lseek error");
+  assert(0);
   }
   return file_table[fd].open_offset;
 }

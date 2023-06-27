@@ -7,20 +7,6 @@
 
 extern void naive_uload(PCB *pcb, const char *filename);
 
-/*/3.4前的sysy_write通过串口发送的版本，现在不用了
-static size_t sys_write(size_t fd, const void *buf, size_t count) {
-  if (fd == 1 || fd == 2) {
-    for (size_t i = 0; i < count; i ++) {
-      putch(((char *)buf)[i]);
-    }
-    return count;
-  }
-  else {
-     return fs_write(fd, (void *)buf, count);
-  }
-
-}*/
-
 //向am获取当前时间并写入结构体中的函数
 static size_t sys_gettimeofday(const void *time_struct) {
   struct timeval *tv = (struct timeval *)time_struct;

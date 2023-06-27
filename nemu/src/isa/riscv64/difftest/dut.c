@@ -24,7 +24,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc)
     if (ref_r->gpr[i] != cpu.gpr[i])
     {
       Log("Missing match reg%d\n nemu=%lx, ref=%lx", i, cpu.gpr[i], ref_r->gpr[i]);
-      printf("%lx\n",cpu.csr[2]);
+      //printf("%lx\n",cpu.csr[2]);
       return false;
     }
   }
