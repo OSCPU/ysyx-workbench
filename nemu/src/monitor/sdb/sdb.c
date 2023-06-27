@@ -65,7 +65,7 @@ static int cmd_info(char * args) {
     char *arg = strtok(NULL, " ");
 
     if (arg == NULL)  //this is for securaty
-        printf("error arg for info\n");
+        Log("cmd_info error ");
     else if (arg[0] == 'r')
         isa_reg_display();
     else if (arg[0] == 'w')
@@ -80,10 +80,13 @@ static int cmd_x(char *args){
     paddr_t address;
     sscanf(args,"%d %x",&number,&address);
     if(number && address){
-    for(int i=0;i<number;i++){
-      printf("0x%016X: 0x%08lX\n", address, paddr_read(address, 4));
-      address = address +4;
+      for(int i=0;i<number;i++){
+        printf("0x%016X: 0x%08lX\n", address, paddr_read(address, 4));
+        address = address +4;
+      }
     }
+    else {
+      Log("cmd_x error ");
     }
     return 0;
 }
