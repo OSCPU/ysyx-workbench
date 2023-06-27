@@ -78,14 +78,15 @@ static int cmd_info(char * args) {
 static int cmd_x(char *args){
     int number;
     paddr_t address;
-    if(sscanf(args,"%d %x",&number,&address) !=2){
-      Log("cmd_x error ");
-    }
-    else if(number && address){
+    sscanf(args,"%d %x",&number,&address);
+    if(number && address){
       for(int i=0;i<number;i++){
         printf("0x%016X: 0x%08lX\n", address, paddr_read(address, 4));
         address = address +4;
       }
+    }
+    else {
+      Log("cmd_x error ");
     }
     return 0;
 }
