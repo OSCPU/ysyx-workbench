@@ -26,19 +26,19 @@ static struct rule {
   const char *regex;
   int token_type;
 } rules[] = {
-  {" +", TK_NOTYPE},    // spaces
-  {"\\+", '+'},         // +
-  {"\\-", '-'},         // -
-  {"\\*", '*'},         // *
-  {"\\/", '/'},         // /
-  {"\\(", '('},         // (
-  {"\\)", ')'},         // )
-  {"==", TK_EQ},				// ==
-  {"!=", TK_NOTEQ},			// !=
-  {"&&", TK_LOGAND},		// &&
-  {"0x[0-9a-fA-F]+", TK_HEXNUM},	// 16-based number
-  {"[0-9]+", TK_DECNUM}, 			// 10-based number
-  {"\\$\\S+", TK_REG}			    // register
+  {" +", TK_NOTYPE},            // spaces
+  {"\\+", '+'},                 // +
+  {"\\-", '-'},                 // -
+  {"\\*", '*'},                 // *
+  {"\\/", '/'},                 // /
+  {"\\(", '('},                 // (
+  {"\\)", ')'},                 // )
+  {"==", TK_EQ},				        // ==
+  {"!=", TK_NOTEQ},			        // !=
+  {"&&", TK_LOGAND},		        // &&
+  {"0x[0-9a-fA-F]+", TK_HEXNUM},// 16-based number
+  {"[0-9]+", TK_DECNUM}, 			  // 10-based number
+  {"\\$\\S+", TK_REG}			      // register
 };
 
 #define NR_REGEX ARRLEN(rules)
