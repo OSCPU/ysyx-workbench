@@ -210,7 +210,7 @@ static uint64_t eval(int p, int q, bool *success)
       if (*success == false) return 0;
     int op = -1;
     int par = 0;
-    for (int i = p; i <= q; i++) {
+    for (int i = p; i <= q; ++i) {
       if (tokens[i].type == '(') ++par;
       if (tokens[i].type == ')') --par;
       if (par == 0) {
