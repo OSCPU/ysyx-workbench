@@ -36,36 +36,6 @@ wire  [4:0]	rs1    = inst_i[19:15]  ;
 wire  [4:0]	rs2    = inst_i[24:20]  ;
 wire  [6:0]	funct7 = inst_i[31:25]  ;
 
-//i型指令信号制作
-wire  [11:0] imm_12_I = {funct7,rs2};
-wire  [63:0] imm_12_I_64 = { {52{imm_12_I[11]}}, imm_12_I};
-//u型指令信号制作
-wire  [19:0] imm_20 = {funct7,rs2,rs1,funct3};
-wire  [63:0] imm_20_U_64 = {{32{imm_20[19]}},imm_20, 12'b0}; 
-//j型指令信号制作
-wire  [19:0] imm_20_j = {inst_i[31], inst_i[19:12], inst_i[20], inst_i[30:21]};
-wire  [63:0] imm_20_j_64 ={{43{imm_20_j[19]}},imm_20_j,1'b0};
-//b型指令信号制作
-wire  [11:0] imm_12_b = {inst_i[31], inst_i[7],inst_i[30:25], inst_i[11:8]};
-wire  [63:0] imm_12_b_64 = {{51{imm_12_b[11]}}, imm_12_b, 1'b0};
-//s型指令信号制作
-wire  [11:0] imm_12_s = { inst_i[31:25], inst_i[11:7] } ;
-wire  [63:0] imm_12_s_64 = { {52{imm_12_s[11]}}, imm_12_s } ;
-
-wire  [4:0]  imm_sel ={(inst_auipc||inst_lui),(inst_jal),(op_i||inst_jalr||inst_addiw||inst_l),(op_b),(op_s)};
-wire  [63:0] imm64;
-ysyx_22050019_mux #( .NR_KEY(5), .KEY_LEN(5), .DATA_LEN(64)) mux_imm
-(
-  .key         (imm_sel), //键
-  .default_out ({64{1'b0}}),
-  .lut         ({		 
-                 		 5'b010000,imm_20_U_64,
-				             5'b001000,imm_20_j_64,
-				             5'b000100,imm_12_I_64,
-				             5'b000010,imm_12_b_64,
-				             5'b000001,imm_12_s_64}), //键和输出的表           
-  .out         (imm64)  //输出
-);
 // 根据opcode的值分选指令类型
 wire op_i       = ( opcode == `ysyx_22050019_INST_TYPE_I  )                ;//00100
 wire op_b       = ( opcode == `ysyx_22050019_INST_TYPE_B  )                ;//11000
@@ -94,6 +64,38 @@ wire rv32_funct3_111    = ( funct3 == `ysyx_22050019_RV32_FUNCT3_111 )     ;
 wire rv32_funct7_000_0000 = ( funct7 == `ysyx_22050019_RV32_FUNCT7_0000000) ;
 wire rv32_funct7_000_0001 = ( funct7 == `ysyx_22050019_RV32_FUNCT7_0000001) ;
 wire rv32_funct7_010_0000 = ( funct7 == `ysyx_22050019_RV32_FUNCT7_0100000) ; 
+
+//i型指令信号制作
+wire  [11:0] imm_12_I = {funct7,rs2};
+wire  [63:0] imm_12_I_64 = { {52{imm_12_I[11]}}, imm_12_I};
+//u型指令信号制作
+wire  [19:0] imm_20 = {funct7,rs2,rs1,funct3};
+wire  [63:0] imm_20_U_64 = {{32{imm_20[19]}},imm_20, 12'b0}; 
+//j型指令信号制作
+wire  [19:0] imm_20_j = {inst_i[31], inst_i[19:12], inst_i[20], inst_i[30:21]};
+wire  [63:0] imm_20_j_64 ={{43{imm_20_j[19]}},imm_20_j,1'b0};
+//b型指令信号制作
+wire  [11:0] imm_12_b = {inst_i[31], inst_i[7],inst_i[30:25], inst_i[11:8]};
+wire  [63:0] imm_12_b_64 = {{51{imm_12_b[11]}}, imm_12_b, 1'b0};
+//s型指令信号制作
+wire  [11:0] imm_12_s = { inst_i[31:25], inst_i[11:7] } ;
+wire  [63:0] imm_12_s_64 = { {52{imm_12_s[11]}}, imm_12_s } ;
+
+wire  [4:0]  imm_sel ={(inst_auipc||inst_lui),(inst_jal),(op_i||inst_jalr||inst_addiw||inst_l),(op_b),(op_s)};
+wire  [63:0] imm64;
+ysyx_22050019_mux #( .NR_KEY(5), .KEY_LEN(5), .DATA_LEN(64)) mux_imm
+(
+  .key         (imm_sel), //键
+  .default_out ({64{1'b0}}),
+  .lut         ({		 
+                 		 5'b10000,imm_20_U_64,
+				             5'b01000,imm_20_j_64,
+				             5'b00100,imm_12_I_64,
+				             5'b00010,imm_12_b_64,
+				             5'b00001,imm_12_s_64}), //键和输出的表           
+  .out         (imm64)  //输出
+);
+
 
 
 //识别指令的译码模块，要注意可能多条指令间用为的方式可能会导致不兼容需要注意。
@@ -299,6 +301,10 @@ ysyx_22050019_mux #( .NR_KEY(3), .KEY_LEN(3), .DATA_LEN(64)) mux_op2
 
 
 //=====================================================================
+wire [63:0]b_ab_s  ;
+wire beq_y         ; 
+wire b_ab_1_s       ;
+wire b_ab_1_u;
 //对于要进行pc跳转的指令信号进行控制
 //pc_branch
 assign inst_j      = inst_jal||inst_jalr||beq&&beq_y||bne&&(~beq_y)||bge&&(~b_ab_1_s)||blt&&b_ab_1_s||bltu&&b_ab_1_u||bgeu&&(~b_ab_1_u)||(ecall||mret); //跳转信号制作处
@@ -315,11 +321,11 @@ ysyx_22050019_mux #( .NR_KEY(2), .KEY_LEN(2), .DATA_LEN(64)) mux_branch
 
 //=====================================================================
 //b型指令结果处理
-wire [63:0]b_ab_s = rdata1 + (~rdata2 + 64'b1);//补码-法，进行判断运算
-wire beq_y = b_ab_s == 64'b0;                  //ab->equal
-wire b_ab_1_s       = ( ( ( rdata1[63] == 1'b1 ) && ( rdata2[63] == 1'b0 ) ) 
+assign b_ab_s  = rdata1 + (~rdata2 + 64'b1);//补码-法，进行判断运算
+assign beq_y             = b_ab_s == 64'b0;                  //ab->equal
+assign b_ab_1_s       = ( ( ( rdata1[63] == 1'b1 ) && ( rdata2[63] == 1'b0 ) ) 
                         | ( (rdata1[63] == rdata2[63] ) && ( b_ab_s[63] == 1'b1 ) ) );//有符号小于<
-wire b_ab_1_u      = ( ( ( rdata1[63] == 1'b0 ) && ( rdata2[63] == 1'b1 ) ) 
+assign b_ab_1_u      = ( ( ( rdata1[63] == 1'b0 ) && ( rdata2[63] == 1'b1 ) ) 
                         | ( (rdata1[63] == rdata2[63] ) && ( b_ab_s[63] == 1'b1 ) ) );//无符号小于<
 
 
