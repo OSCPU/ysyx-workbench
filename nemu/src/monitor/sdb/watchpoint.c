@@ -81,7 +81,7 @@ void watchpoints_add(char *e) {
     }
 }
 
-// 添加监视点
+// 删除监视点
 void watchpoints_del(int id) {
     WP *pt = head;
     while (pt != NULL) {
