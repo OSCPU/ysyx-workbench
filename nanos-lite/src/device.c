@@ -33,18 +33,17 @@ size_t events_read(void *buf, size_t offset, size_t len) {
 
   // 无按键默认返回0
   if (ev.keycode == AM_KEY_NONE) return 0;
-  else {
-  // 有按键产生拼接信息给写文件
+
+  // 有案件产生拼接信息给写文件
   // 格式 "kd/ku keyname"
-    switch (ev.keydown){
-      case 0:  snprintf((char *)buf,len,"ku %s\n",keyname[ev.keycode]); break;
-      case 1:  snprintf((char *)buf,len,"kd %s\n",keyname[ev.keycode]); break;
-    }
-  }
-
-  return len;
-
-  printf("[events_read] (kbd): %s (%d) %s\n", keyname[ev.keycode], ev.keycode, ev.keydown ? "DOWN" : "UP");
+  char *event_type = ev.keydown ? "kd" : "ku";
+  strcpy(buf, event_type);
+  strcat(buf, " ");
+  strcat(buf, keyname[ev.keycode]);
+  size_t size = 0;
+  size = strlen(buf);
+  //printf("[events_read] (kbd): %s (%d) %s\n", keyname[ev.keycode], ev.keycode, ev.keydown ? "DOWN" : "UP");
+  return size;
 }
 
 // 将文件的len字节写到buf中(我们认为这个文件不支持lseek, 可忽略offset).
