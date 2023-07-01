@@ -44,6 +44,7 @@ size_t events_read(void *buf, size_t offset, size_t len) {
 
   return len;
 
+  printf("[events_read] (kbd): %s (%d) %s\n", keyname[ev.keycode], ev.keycode, ev.keydown ? "DOWN" : "UP");
 }
 
 // 将文件的len字节写到buf中(我们认为这个文件不支持lseek, 可忽略offset).
