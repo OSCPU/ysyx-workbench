@@ -22,33 +22,28 @@ size_t serial_write(const void *buf, size_t offset, size_t len) {
   return len;
 }
 
+// 读取键盘寄存器
 size_t events_read(void *buf, size_t offset, size_t len) {
-  // 键盘设备必须得是有的，否则直接assert
-  // 实际上ioe里面默认返回true，不实现键盘功能还能继续跑，只是没办法处理真的有物理键盘的输入
-  
-  // 读取键盘寄存器
-  // AM_INPUT_KEYBRD_T 包含以下两个成员
+
+  // AM_INPUT_KEYBRD_T 成员
   // bool keydown, int keycode
   // keycode为按键断码，无按键时默认为AM_KEY_NONE
-  // keydown为按键状态，1为down，20up
+  // keydown为按键状态，1为down，0为up
   AM_INPUT_KEYBRD_T ev = io_read(AM_INPUT_KEYBRD);
 
-  // 无输入默认返回0
+  // 无按键默认返回0
   if (ev.keycode == AM_KEY_NONE) return 0;
+  else {
+  // 有按键产生拼接信息给写文件
+  // 格式 "kd/ku keyname"
+    switch (ev.keydown){
+      case 0:  snprintf((char *)buf,len,"ku %s\n",keyname[ev.keycode]); break;
+      case 1:  snprintf((char *)buf,len,"kd %s\n",keyname[ev.keycode]); break;
+    }
+  }
 
-  // 检测到有输入
-  // 键盘总共有kd和ku两种事件
-  // 下面用于拼接并返回事件log
-  // 学的是am-tests里的那一套输出格式
-  // "kd/ku keyname"
-  char *event_tag = ev.keydown ? "kd" : "ku";
-  strcpy(buf, event_tag);
-  strcat(buf, " ");
-  strcat(buf, keyname[ev.keycode]);
-  size_t size = 0;
-  size = strlen(buf);
-  //printf("[events_read] (kbd): %s (%d) %s\n", keyname[ev.keycode], ev.keycode, ev.keydown ? "DOWN" : "UP");
-  return size;
+  return len;
+
 }
 
 // 将文件的len字节写到buf中(我们认为这个文件不支持lseek, 可忽略offset).
@@ -76,7 +71,7 @@ size_t fb_write(const void *buf, size_t offset, size_t len) {
   int x = offset % width;
   int y = offset / width;
 
-  // buf 转为32bit的指针，毕竟是ARGB（调用IOE来进行绘图）
+  // buf 转为32bit的指针（调用IOE来进行绘图）
   io_write(AM_GPU_FBDRAW, x, y, (uint32_t *)buf, len, 1, true);
 
   return len;
