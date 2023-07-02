@@ -40,10 +40,9 @@ size_t events_read(void *buf, size_t offset, size_t len) {
   strcpy(buf, event_type);
   strcat(buf, " ");
   strcat(buf, keyname[ev.keycode]);
-  size_t size = 0;
-  size = strlen(buf);
+  len = strlen(buf);
   //printf("[events_read] (kbd): %s (%d) %s\n", keyname[ev.keycode], ev.keycode, ev.keydown ? "DOWN" : "UP");
-  return size;
+  return len;
 }
 
 // 将文件的len字节写到buf中(我们认为这个文件不支持lseek, 可忽略offset).

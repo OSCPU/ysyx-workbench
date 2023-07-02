@@ -85,17 +85,23 @@ size_t fs_read(int fd, const void *buf, size_t len){
   size_t len_t = 0;
   // 如果有特殊的读取方式
   // 例如串口、显存、键盘等事件、VGA信息
-  if (file_table[fd].read) {
+  if (file_table[fd].read != NULL) {
     len_t = file_table[fd].read((void *)buf, file_table[fd].open_offset, len);
     file_table[fd].open_offset += len_t;
   }
   else{
-  //如果len的结果超过了文件的总大小，返回实际能读到的值的数量(为了从中间读取的情况)
-  len_t = file_table[fd].open_offset + len <= file_table[fd].size ? len : (file_table[fd].size - file_table[fd].open_offset);
-  
-  // 写入的地址为该文件的地址+offset
-  ramdisk_read((void *) buf, file_table[fd].disk_offset + file_table[fd].open_offset, len_t);
-  file_table[fd].open_offset += len_t;
+    //如果len的结果超过了文件的总大小，返回实际能读到的值的数量(为了从中间读取的情况)
+    if(((file_table[fd].open_offset + len) <= (file_table[fd].size))){
+      len_t = len;
+    }
+    else {
+      assert(0);
+      len_t = (file_table[fd].size - file_table[fd].open_offset);
+    }
+    
+    // 写入的地址为该文件的地址+offset
+    ramdisk_read((void *) buf, file_table[fd].disk_offset + file_table[fd].open_offset, len_t);
+    file_table[fd].open_offset += len_t;
   }
   return len_t;
 }
