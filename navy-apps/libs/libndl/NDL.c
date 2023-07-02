@@ -115,7 +115,7 @@ void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
   y += (screen_h - canvas_h) / 2;
 
     // 更改offset到开头
-    lseek(fd, ( y * screen_w + x) * sizeof(uint32_t), SEEK_SET);
+    lseek(fd, ( y * x) * sizeof(uint32_t), SEEK_SET);
     // 写入一行的图像
     write(fd, pixels, w * y * sizeof(uint32_t));
 }
