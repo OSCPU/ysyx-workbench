@@ -149,10 +149,12 @@ static inline fixedpt fixedpt_div(fixedpt A, fixedpt B) {
 	return (fixedpt)((A / B) << FIXEDPT_FBITS);
 }
 
+// 绝对值
 static inline fixedpt fixedpt_abs(fixedpt A) {
 	return (fixedpt)(A >0 ? A : -A);
 }
 
+// 返回小于或等于该值的最大整数固定点数值（向下取整）
 static inline fixedpt fixedpt_floor(fixedpt A) {
 	fixedpt temp;
 	if(A>0) temp=A & (~FIXEDPT_FMASK);
@@ -163,6 +165,7 @@ static inline fixedpt fixedpt_floor(fixedpt A) {
 	return temp;
 }
 
+// 并返回大于或等于该值的最小整数固定点数值 （向上取整）
 static inline fixedpt fixedpt_ceil(fixedpt A) {
 	fixedpt temp;
 	if(A>0){

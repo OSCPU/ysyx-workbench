@@ -69,7 +69,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
     fs_lseek(fd, phdr.p_offset,SEEK_SET);
     //加载到虚拟内存地址指定的内存中
     fs_read(fd, (void *)phdr.p_vaddr, phdr.p_memsz);
-    // filesz与memsz之间的空间清0，留给.bss之类的使用
+    // 为.bss加载空内存区间
     memset((void *)(phdr.p_vaddr + phdr.p_filesz),0,phdr.p_memsz - phdr.p_filesz);
 
    }
