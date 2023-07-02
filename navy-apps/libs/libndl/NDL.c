@@ -45,11 +45,16 @@ int NDL_PollEvent(char *buf, int len) {
   int fp = 0, ret = 0;
   // 打开事件文件，使用系统函数时候使用只读权限 O_RDONLY
   fp = open("/dev/events", O_RDONLY);
+  if(fp == -1){
+    printf("[NDL_PollEvent] 读取按键事件失败\n");
+    assert(0);
+  }
   //printf("%d",fp);
   //printf("%d",sizeof(char) * len);
   // len表示最多读取的字符数，文本的内容是char型的
   ret = read(fp, buf, sizeof(char) * len);
-  
+  close(fp);
+
   return ret;
 }
 
@@ -57,7 +62,7 @@ int NDL_PollEvent(char *buf, int len) {
 // 如果*w和*h均为0, 则将系统全屏幕作为画布, 并将*w和*h分别设为系统屏幕的大小
 void NDL_OpenCanvas(int *w, int *h) {
   // 申请画布需要小于等于screen，否者会无法正确写入
-  printf("[NDL_OpenCanvas] Require a screen at least %dx%d.\n", *w, *h);
+  printf("[NDL_OpenCanvas] Require screen at least %dx%d.\n", *w, *h);
   assert((*w <= screen_w) || (*h <= screen_h));
 
   if (*w == 0) *w = screen_w;//全屏幕投射
@@ -67,7 +72,7 @@ void NDL_OpenCanvas(int *w, int *h) {
   canvas_w = *w;
   canvas_h = *h;
 
-  // 下面是原本自带的，不用改
+/*
   if (getenv("NWM_APP")) {
     int fbctl = 4;
     fbdev = 5;
@@ -85,6 +90,7 @@ void NDL_OpenCanvas(int *w, int *h) {
     }
     close(fbctl);
   }
+*/
 
   printf("[NDL_OpenCanvas] canvas_w = %d, canvas_h = %d\n", canvas_w, canvas_h);
 }
@@ -108,12 +114,10 @@ void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
   x += (screen_w - canvas_w) / 2;
   y += (screen_h - canvas_h) / 2;
 
-  for (int i = 0; i < h; ++ i) {
-    // 更改offset到每一列的开头
-    lseek(fd, ((y + i) * screen_w + x) * sizeof(uint32_t), SEEK_SET);
+    // 更改offset到开头
+    lseek(fd, ( y * screen_w + x) * sizeof(uint32_t), SEEK_SET);
     // 写入一行的图像
-    write(fd, pixels + i * w, w * sizeof(uint32_t));
-  }
+    write(fd, pixels, w * y * sizeof(uint32_t));
 }
 
 void NDL_OpenAudio(int freq, int channels, int samples) {
@@ -138,16 +142,18 @@ int NDL_Init(uint32_t flags) {
   }
 
   // 读取出屏幕初始化大小，为申请绘图提出方便
-  int fd = open("/proc/dispinfo", 0, 0);
+  int fd = open("/proc/dispinfo",O_RDONLY);
   char buf[128];
-  assert(read(fd,buf,sizeof(buf)));
-  int width=0,height=0;
-  sscanf(buf, "WIDTH:%d\nHEIGHT:%d", &width, &height);
-  close(fd);
 
-  screen_w = width;
-  screen_h = height;
+  if(read(fd,buf,sizeof(buf)) ==-1){
+    printf("[NDL_Init] open /proc/dispinfo  fail\n");
+    assert(0);
+  }
+  else {
+  close(fd);
+  sscanf(buf, "WIDTH:%d\nHEIGHT:%d", &screen_w, &screen_h);
   printf("[NDL_Init] screen_w = %d, screen_h = %d\n", screen_w, screen_h);
+  }
 
   return 0;
 }

@@ -61,9 +61,8 @@ size_t fb_write(const void *buf, size_t offset, size_t len) {
   AM_GPU_CONFIG_T config = io_read(AM_GPU_CONFIG);
   int width = config.width;
 
-  // 由于像素是32bit，所以offset，len（前两个是大小，需要变为像素数和长度），buf都要转换
-  // 数据是按行优先存储的
-  // 因此offset取余可以得到一行的第几个数据，offset整除可以得到是第几行
+  // 由于像素是32bit，所以offset，len（输入是大小，转变为像素数和长度），buf都要转换
+  // 数据按行存储，offset取余得到行位置，offset整除得到列位置
 
   offset /= sizeof(uint32_t);
   len /= sizeof(uint32_t);
