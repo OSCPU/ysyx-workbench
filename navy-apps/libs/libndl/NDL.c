@@ -119,11 +119,11 @@ void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
   y += (screen_h - canvas_h) / 2;
 
   // 更改offset到起始位置
-  off_t offset = ((y * screen_w) + x) * sizeof(uint32_t);
+  off_t offset = (x * y );
   lseek(fd, offset, SEEK_SET);
 
   // 计算需要写入的总字节数
-  size_t size = w * h * sizeof(uint32_t);
+  size_t size = w * h ;
 
   // 将像素数据一次性写入文件
   write(fd, pixels, size);
