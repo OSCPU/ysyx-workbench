@@ -95,7 +95,6 @@ size_t fs_read(int fd, const void *buf, size_t len){
       len_t = len;
     }
     else {
-      assert(0);
       len_t = (file_table[fd].size - file_table[fd].open_offset);
     }
     
