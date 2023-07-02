@@ -48,12 +48,12 @@ module ysyx_22050019_AXI_LSU_SRAM # (
     output reg                          axi_r_last_o
 );
 
-localparam RS_IDLE = 2'd1;
-localparam RS_RHS  = 2'd2;
+localparam R_IDLE  = 2'd1;
+localparam R_DATA  = 2'd2;
 
-localparam WS_IDLE = 2'd1;
-localparam WS_WHS  = 2'd2;
-localparam WS_BHS  = 2'd3;
+localparam W_IDLE  = 2'd1;
+localparam W_DATA  = 2'd2;
+localparam W_RESP  = 2'd3;
 
 reg  [AXI_ADDR_WIDTH-1:0]   ar_addr ;         //cache输入保存信号
 reg                         ar_len  ;         //cache输入保存信号    
@@ -65,28 +65,29 @@ reg[1:0] rstate;
 reg[1:0] next_rstate;
 reg[1:0] wstate;
 reg[1:0] next_wstate;
-    //// ------------------State Machine------------------////
-    
-    // 写通道状态切换
+
+wire [63:0] din;
+//========================================
+// 写状态机
     
 always@(posedge clk)begin
-  if(rst) wstate <= WS_IDLE;
+  if(rst) wstate <= W_IDLE;
   else    wstate <= next_wstate;
 end
 
 always@(*) begin
-  if(rst) next_wstate = WS_IDLE;
+  if(rst) next_wstate = W_IDLE;
   else case(wstate)
-    WS_IDLE :if(axi_aw_ready_o&axi_aw_valid_i)          next_wstate = WS_WHS;
-      else next_wstate = WS_IDLE;
+    W_IDLE :if(axi_aw_ready_o&axi_aw_valid_i)           next_wstate = W_DATA;
+      else next_wstate = W_IDLE;
 
-    WS_WHS : if(axi_w_ready_o&axi_w_valid_i&(aw_len==0))next_wstate = WS_BHS;
-      else next_wstate = WS_WHS;
+    W_DATA : if(axi_w_ready_o&axi_w_valid_i&(aw_len==0))next_wstate = W_RESP;
+      else next_wstate = W_DATA;
 
-    WS_BHS : if(axi_b_valid_o&axi_b_ready_i)            next_wstate = WS_IDLE;
-      else next_wstate = WS_BHS;
+    W_RESP : if(axi_b_valid_o&axi_b_ready_i)            next_wstate = W_IDLE;
+      else next_wstate = W_RESP;
 
-    default : next_wstate = RS_IDLE;
+    default : next_wstate = R_IDLE;
   endcase
 end
 
@@ -101,8 +102,8 @@ always@(posedge clk)begin
   end
   else begin
     case(wstate)
-      WS_IDLE:
-      if(next_wstate==WS_WHS)begin
+      W_IDLE:
+      if(next_wstate==W_DATA)begin
         axi_aw_ready_o <= 0;
         aw_addr        <= axi_aw_addr_i;
         aw_len         <= axi_aw_len_i;
@@ -116,10 +117,10 @@ always@(posedge clk)begin
         axi_b_resp_o   <= 0;
       end
 
-      WS_WHS:if(axi_w_ready_o&axi_w_valid_i)begin
+      W_DATA:if(axi_w_ready_o&axi_w_valid_i)begin
         pmem_write({32'd0,aw_addr[31:3],3'd0}, axi_w_data_i, axi_w_strb_i);
         //if(aw_addr[1:0]!=0) $display("aw_addr = %h\n",aw_addr);
-        if(next_wstate==WS_BHS)begin
+        if(next_wstate==W_RESP)begin
           axi_w_ready_o<=0;
           axi_b_valid_o<=1;
         end
@@ -129,7 +130,7 @@ always@(posedge clk)begin
         end
       end
 
-      WS_BHS:if(next_wstate==WS_IDLE)begin
+      W_RESP:if(next_wstate==W_IDLE)begin
         axi_aw_ready_o<=1;
         axi_b_valid_o<=0;
         axi_b_resp_o<=0;
@@ -141,27 +142,25 @@ always@(posedge clk)begin
   end
 end
 
-    // 读通道状态切换
+// 读状态机
 
 always@(posedge clk)begin
-  if(rst) rstate <= RS_IDLE;
+  if(rst) rstate <= R_IDLE;
   else rstate <= next_rstate;
 end
 
 always@(*) begin
-  if(rst) next_rstate = RS_IDLE;
+  if(rst) next_rstate = R_IDLE;
   else case(rstate)
-    RS_IDLE :if(axi_ar_ready_o&axi_ar_valid_i)          next_rstate = RS_RHS;
-      else next_rstate = RS_IDLE;
+    R_IDLE :if(axi_ar_ready_o&axi_ar_valid_i)          next_rstate = R_DATA;
+      else next_rstate = R_IDLE;
 
-    RS_RHS : if(axi_r_ready_i&axi_r_valid_o&(ar_len==0))next_rstate = RS_IDLE;
-    else next_rstate = RS_RHS;
+    R_DATA : if(axi_r_ready_i&axi_r_valid_o&(ar_len==0))next_rstate = R_IDLE;
+    else next_rstate = R_DATA;
 
-    default : next_rstate = RS_IDLE;
+    default : next_rstate = R_IDLE;
   endcase
 end
-
-wire [63:0] din;
 
 always@(posedge clk)begin
   if(rst)begin
@@ -173,8 +172,8 @@ always@(posedge clk)begin
   end
   else begin
     case(rstate)
-      RS_IDLE:
-      if(next_rstate==RS_RHS)begin
+      R_IDLE:
+      if(next_rstate==R_DATA)begin
         ar_addr       <= axi_ar_addr_i+8;
         ar_len        <= axi_ar_len_i;
         axi_ar_ready_o<= 0;
@@ -190,13 +189,13 @@ always@(posedge clk)begin
         axi_r_data_o  <= 0;
       end
 
-      RS_RHS:if(axi_r_valid_o&axi_r_ready_i&(ar_len!=0))begin
+      R_DATA:if(axi_r_valid_o&axi_r_ready_i&(ar_len!=0))begin
         ar_len        <=ar_len-1;
         ar_addr       <=ar_addr+8;
         pmem_read({32'h0,ar_addr[31:3],3'b0},din);
         axi_r_data_o  <= din;
       end
-      else if(next_rstate==RS_IDLE)begin
+      else if(next_rstate==R_IDLE)begin
         axi_ar_ready_o<= 1;
         axi_r_valid_o <= 0;
         axi_r_data_o  <= 0;

@@ -2,8 +2,6 @@
 module ysyx_22050019_LSU# (
     parameter AXI_DATA_WIDTH    = 64,
     parameter AXI_ADDR_WIDTH    = 64
-    //parameter AXI_ID_WIDTH      = 4,
-    //parameter AXI_USER_WIDTH    = 1
 )(
   input               clk            ,
   input               rst            ,
