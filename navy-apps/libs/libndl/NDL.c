@@ -109,15 +109,24 @@ void NDL_OpenCanvas(int *w, int *h) {
 void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
   // 显存只能写，读不出来东西，会assert
   int fd = open("/dev/fb", O_WRONLY);
+  if (fd == -1) {
+    printf("open /dev/fb error");
+    return;
+  }
 
-  // 向系统申请的画布尺寸和硬件的尺寸不一定一致，相减/2后到达每一行的开头，他是依照中心线对称。
+  // 向系统申请的画布尺寸和硬件的尺寸不一定一致，相减/2后到达每一行的开头，它是依照中心线对称。
   x += (screen_w - canvas_w) / 2;
   y += (screen_h - canvas_h) / 2;
 
-    // 更改offset到开头
-    lseek(fd, ( y * x) * sizeof(uint32_t), SEEK_SET);
-    // 写入一行的图像
-    write(fd, pixels, w * y * sizeof(uint32_t));
+  // 更改offset到起始位置
+  off_t offset = ((y * screen_w) + x) * sizeof(uint32_t);
+  lseek(fd, offset, SEEK_SET);
+
+  // 计算需要写入的总字节数
+  size_t size = w * h * sizeof(uint32_t);
+
+  // 将像素数据一次性写入文件
+  write(fd, pixels, size);
 }
 
 void NDL_OpenAudio(int freq, int channels, int samples) {
