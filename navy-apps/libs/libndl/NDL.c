@@ -62,7 +62,7 @@ int NDL_PollEvent(char *buf, int len) {
 // 如果*w和*h均为0, 则将系统全屏幕作为画布, 并将*w和*h分别设为系统屏幕的大小
 void NDL_OpenCanvas(int *w, int *h) {
   // 申请画布需要小于等于screen，否者会无法正确写入
-  //printf("[NDL_OpenCanvas] Require screen at least %dx%d.\n", *w, *h);
+  printf("[NDL_OpenCanvas] Require screen at least %dx%d.\n", *w, *h);
   assert((*w <= screen_w) || (*h <= screen_h));
 
   if (*w == 0) *w = screen_w;//全屏幕投射
@@ -92,7 +92,7 @@ void NDL_OpenCanvas(int *w, int *h) {
   }
 */
 
-  //printf("[NDL_OpenCanvas] canvas_w = %d, canvas_h = %d\n", canvas_w, canvas_h);
+  printf("[NDL_OpenCanvas] canvas_w = %d, canvas_h = %d\n", canvas_w, canvas_h);
 }
 
 // 向画布`(x, y)`坐标处绘制`w*h`的矩形图像, 并将该绘制区域同步到屏幕上
@@ -138,7 +138,7 @@ int NDL_QueryAudio() {
 
 // 不能用fopen在native环境下会报错找不到
 int NDL_Init(uint32_t flags) {
-  //printf("[NDL_Init] initiating...\n");
+  printf("[NDL_Init] initiating...\n");
   if (getenv("NWM_APP")) {
     evtdev = 3;
   }
@@ -154,7 +154,7 @@ int NDL_Init(uint32_t flags) {
   else {
   close(fd);
   sscanf(buf, "WIDTH:%d\nHEIGHT:%d", &screen_w, &screen_h);
-  //printf("[NDL_Init] screen_w = %d, screen_h = %d\n", screen_w, screen_h);
+  printf("[NDL_Init] screen_w = %d, screen_h = %d\n", screen_w, screen_h);
   }
 
   return 0;
