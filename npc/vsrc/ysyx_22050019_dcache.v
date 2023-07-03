@@ -15,7 +15,7 @@
  * Tag = 32 - 3 - 6  = 22位
  */
 module ysyx_22050019_dcache#(
-  parameter DATA_WIDTH      = 64,
+  parameter DATA_WIDTH        = 64,
   parameter R_ADDR_WIDTH      = 64,
   parameter ADDR_WIDTH        = 32,
   parameter TAG_WIDTH         = 22,
@@ -180,18 +180,18 @@ always@(*) begin
   endcase
 end
 
-integer m;
-integer p;
+integer j;
+integer k;
 
 //import "DPI-C" function void icache_wait();
 always@(posedge clk)begin
   if(rst)begin
     //初始化对比项
-    for( m=0;m<WAY_DEPTH;m=m+1)begin
-      for( p=0;p<INDEX_DEPTH;p=p+1)begin
-          tag[m][p]  <= 22'b0;
-	  			dirty[m][p]<= 1'b0;
-	  			valid[m][p]<= 1'b0;
+    for( j=0;j<WAY_DEPTH;j=j+1)begin
+      for( k=0;k<INDEX_DEPTH;k=k+1)begin
+          tag[j][k]  <= 22'b0;
+	  			dirty[j][k]<= 1'b0;
+	  			valid[j][k]<= 1'b0;
       end
     end
     rw_control                    <= 0                                     ;

@@ -95,10 +95,13 @@ void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color)
         for(int i = 0; i < h; i++)
             memset(dst->pixels + dst->format->BytesPerPixel * ((i+y)*dst->w + x), (uint8_t)color, dst->format->BytesPerPixel * w);
     }
-    else
+    else if(dst->format->BitsPerPixel == 32)
     {
         for(int i = 0; i < h; i++)
             memset(dst->pixels + dst->format->BytesPerPixel * ((i+y)*dst->w + x), color, dst->format->BytesPerPixel * w);
+    }
+    else{
+      printf("[SDL_FillRect] 使用的像素格式%d未实现\n",dst->format->BitsPerPixel);
     }
 }
 
