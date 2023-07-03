@@ -4,7 +4,6 @@ module ysyx_22050019_mux #(NR_KEY = 2, KEY_LEN = 1, DATA_LEN = 1) (
   input [DATA_LEN-1:0] default_out,
   input [NR_KEY*(KEY_LEN + DATA_LEN)-1:0] lut
 );
-/* verilator lint_off DECLFILENAME */
   MuxKeyInternal #(NR_KEY, KEY_LEN, DATA_LEN, 1) i0 (out, key, default_out, lut);
 endmodule
 module MuxKeyInternal #(NR_KEY = 2, KEY_LEN = 1, DATA_LEN = 1, HAS_DEFAULT = 0) (

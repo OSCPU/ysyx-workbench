@@ -34,7 +34,7 @@ wire  [63:0] csr_wdata;
 ysyx_22050019_mux #( .NR_KEY(3), .KEY_LEN(8), .DATA_LEN(64)) mux_csr_wdata
 (
   .key         (csr_inst_type), //键
-  .default_out (64'd0),
+  .default_out ({64{1'b0}}),
   .lut         ({
                 8'b0000_0100,rdata1_reg_csr|rdata,
                 8'b0000_0010,64'd0,

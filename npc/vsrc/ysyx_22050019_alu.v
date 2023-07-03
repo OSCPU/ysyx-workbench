@@ -142,7 +142,7 @@ ysyx_22050019_divider divider(
 // alu的控制信号
 assign alu_stall = mult_stall    | div_stall;
 assign alu_ok    = result_ok_mul | result_ok_div;
-// alu的控制信号译码（用宏定义方便添加）
+// alu的控制信号译码（用宏定义方便添加）---(实际上还是例化，端口不能写表达式，后期要删掉不然dc出网表报error)
 ysyx_22050019_mux #( .NR_KEY(`LEN+1-13), .KEY_LEN(`LEN+1-13), .DATA_LEN(64) ) mux_alu_result
 (
   .key         (alu_sel[20:0]), 
