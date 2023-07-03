@@ -45,7 +45,7 @@ wire [31:0]fb_inst;
 ysyx_22050019_fetch_buffer IB(
     .clk          ( clk                   ),
     .rst_n        ( rst_n                 ),
-    .ar_ready_i   ( stll_ar_ready         ),
+    .ar_ready_i   ( axi_if_sram_arready   ),
     .ar_valid_o   ( axi_if_sram_arvalid   ),
     .ar_addr_o    ( axi_if_sram_araddr    ),
     .r_valid_i    ( axi_if_sram_rvalid    ),
@@ -58,9 +58,6 @@ ysyx_22050019_fetch_buffer IB(
     .inst_o       ( fb_inst               )
 );
 
-
-wire stll_ar_rvalid = axi_if_sram_arvalid;
-wire stll_ar_ready  = axi_if_sram_arready;
 //==================IF/ID=======================
 wire [63:0] pc_ifu_id  ;
 wire [31:0] inst_ifu_id;
@@ -389,7 +386,7 @@ ysyx_22050019_icache I_CACHE(
     .clk               ( clk                      ),
     .rst               ( rst_n                    ),
 
-    .ar_valid_i        ( stll_ar_rvalid           ),
+    .ar_valid_i        ( axi_if_sram_arvalid      ),
     .ar_ready_o        ( axi_if_sram_arready      ),
     .ar_addr_i         ( axi_if_sram_araddr       ),
     .r_data_valid_o    ( axi_if_sram_rvalid       ),
@@ -519,6 +516,28 @@ wire s1_axi_w_ready_o ;
 wire s1_axi_b_valid_o ;
 wire [1:0] s1_axi_b_resp_o;
 // ifu和lsu的仲裁
+
+// arbiter<>sram的连线
+wire        axi_arbitr_sram_aw_ready ;
+wire        axi_arbitr_sram_aw_valid ;
+wire [31:0] axi_arbitr_sram_aw_addr  ;
+wire        axi_arbitr_sram_aw_len   ;
+wire        axi_arbitr_sram_w_ready  ;
+wire        axi_arbitr_sram_w_valid  ;
+wire [63:0] axi_arbitr_sram_w_data   ;
+wire [7:0]  axi_arbitr_sram_w_strb   ;
+wire        axi_arbitr_sram_b_ready  ;
+wire        axi_arbitr_sram_b_valid  ;
+wire [1:0]  axi_arbitr_sram_b_resp   ; 
+wire        axi_arbitr_sram_ar_ready ; 
+wire        axi_arbitr_sram_ar_valid ; 
+wire [31:0] axi_arbitr_sram_ar_addr  ;
+wire        axi_arbitr_sram_ar_len   ;
+wire        axi_arbitr_sram_r_ready  ;
+wire        axi_arbitr_sram_r_valid  ;
+wire [1:0]  axi_arbitr_sram_r_resp   ;    
+wire [63:0] axi_arbitr_sram_r_data   ;
+wire        axi_arbitr_sram_r_last   ; 
 // 目前只做了读通道的仲裁，写通道展示没有需要仲裁的冲突点
 ysyx_22050133_axi_arbiter ARBITER(
     .clk               ( clk                         ),
@@ -602,27 +621,7 @@ ysyx_22050133_axi_arbiter ARBITER(
 );
 
 // 读写取指令接口sram
-// arbiter<>sram的连线
-wire        axi_arbitr_sram_aw_ready ;
-wire        axi_arbitr_sram_aw_valid ;
-wire [31:0] axi_arbitr_sram_aw_addr  ;
-wire        axi_arbitr_sram_aw_len   ;
-wire        axi_arbitr_sram_w_ready  ;
-wire        axi_arbitr_sram_w_valid  ;
-wire [63:0] axi_arbitr_sram_w_data   ;
-wire [7:0]  axi_arbitr_sram_w_strb   ;
-wire        axi_arbitr_sram_b_ready  ;
-wire        axi_arbitr_sram_b_valid  ;
-wire [1:0]  axi_arbitr_sram_b_resp   ; 
-wire        axi_arbitr_sram_ar_ready ; 
-wire        axi_arbitr_sram_ar_valid ; 
-wire [31:0] axi_arbitr_sram_ar_addr  ;
-wire        axi_arbitr_sram_ar_len   ;
-wire        axi_arbitr_sram_r_ready  ;
-wire        axi_arbitr_sram_r_valid  ;
-wire [1:0]  axi_arbitr_sram_r_resp   ;    
-wire [63:0] axi_arbitr_sram_r_data   ;
-wire        axi_arbitr_sram_r_last   ;   
+  
 
 ysyx_22050019_AXI_LSU_SRAM lsu_sram(
  .clk            ( clk                     ),
