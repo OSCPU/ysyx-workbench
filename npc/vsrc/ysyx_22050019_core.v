@@ -268,12 +268,13 @@ wire [31:0]  inst_exu_mem     ;
 wire commite_ex_mem;
 wire ex_mem_stall;
 wire mem_wb_stall;
+wire ex_mem_commit = alu_stall ? 0 : commite_id_ex | exu_wen;
 ysyx_22050019_EX_MEM EX_MEM(
     .clk              ( clk              ),
     .rst_n            ( rst_n            ),
     .pc_i             ( pc_id_exu        ),
     .inst_i           ( inst_id_ex       ),
-    .commite_i        ( alu_stall ? 0 : commite_id_ex | exu_wen   ),
+    .commite_i        ( ex_mem_commit    ),
     .result_i         ( result_exu       ),
     .wdata_exu_reg_i  ( wdata_ex_reg     ),
     .ram_we_i         ( ram_we_id_exu    ),
@@ -680,13 +681,13 @@ ysyx_22050019_WBU WBU(
     .reg_wdata_wbu_o   ( reg_wdata_wb              )
 );
 
-
+wire mem_wb_commit = ex_mem_stall ? 0 : commite_ex_mem|wen_lsu_reg|axi_lsu_sram_b_valid&axi_lsu_sram_b_ready;
 ysyx_22050019_MEM_WB MEM_WB(
     .clk              ( clk                       ),
     .rst_n            ( rst_n                     ),
     .pc_i             ( pc_exu_mem                ),
     .inst_i           ( inst_exu_mem              ),
-    .commite_i        ( ex_mem_stall ? 0 : commite_ex_mem|wen_lsu_reg|axi_lsu_sram_b_valid&axi_lsu_sram_b_ready),
+    .commite_i        ( mem_wb_commit             ),
     .reg_we_wbu_i     ( reg_we_wb                 ),
     .reg_waddr_wbu_i  ( reg_waddr_wb              ),
     .reg_wdata_wbu_i  ( reg_wdata_wb              ),
