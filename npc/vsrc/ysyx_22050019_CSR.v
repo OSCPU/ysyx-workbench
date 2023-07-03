@@ -44,18 +44,6 @@ ysyx_22050019_mux #( .NR_KEY(3), .KEY_LEN(8), .DATA_LEN(64)) mux_csr_wdata
   .out         (csr_wdata)  //输出
 );
 
-// CSR local define 
-`define CSR_MSTATUS       12'h300
-`define CSR_MISA          12'h301
-`define CSR_MEDELEG       12'h302
-`define CSR_MIDELEG       12'h303
-`define CSR_MIE           12'h304
-`define CSR_MTVEC         12'h305
-`define CSR_MSCRATCH      12'h340
-`define CSR_MEPC          12'h341
-`define CSR_MCAUSE        12'h342
-`define CSR_MTVAL         12'h343
-`define CSR_MIP           12'h344
 /*csr寄存器的声明
 csr[0] == mtvec csr[1] == mepc csr[2] == mstatus csr[3] == mcause  csr[4]= mstatus
 */
