@@ -13,6 +13,7 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
+//#include <cstdio>
 #include <isa.h>
 #include "local-include/reg.h"
 
@@ -24,6 +25,11 @@ const char *regs[] = {
 };
 
 void isa_reg_display() {
+  printf("REG\tALIAS\tHEX\n");
+  int i;
+  for(i=0;i < 32 ;i++){
+    printf("r%d\t%s\t0x%x\n",i,regs[i],cpu.gpr[i]);
+  }
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {

@@ -24,7 +24,7 @@ enum {
   TK_NOTYPE = 256, TK_EQ,
 
   /* TODO: Add more token types */
-
+  TK_NUM,
 };
 
 static struct rule {
@@ -37,7 +37,13 @@ static struct rule {
    */
 
   {" +", TK_NOTYPE},    // spaces
+  {"\\d+", TK_NUM},     // number
   {"\\+", '+'},         // plus
+  {"\\-", '-'},         // subtract
+  {"\\*", '*'},         // multiply
+  {"/", '/'},           // divider
+  {"\\(", '('},
+  {"\\)", ')'},
   {"==", TK_EQ},        // equal
 };
 
@@ -95,10 +101,41 @@ static bool make_token(char *e) {
          */
 
         switch (rules[i].token_type) {
+          case TK_NUM:
+            tokens[nr_token].type = TK_NUM;
+            int j;
+            for(j=0;j<substr_len;j++){
+              tokens[nr_token].str[j] = substr_start[j];
+            }
+            tokens[nr_token].str[j] = '\0';
+            break;
+          case '+':
+            tokens[nr_token].type = '+';
+            nr_token++;
+            break;
+          case '-':
+            tokens[nr_token].type = '-';
+            nr_token++;
+            break;
+          case '*':
+            tokens[nr_token].type = '*';
+            nr_token++;
+            break;
+          case '/':
+            tokens[nr_token].type = '/';
+            nr_token++;
+            break;
+          case '(':
+            tokens[nr_token].type = '(';
+            nr_token++;
+            break;
+          case ')':
+            tokens[nr_token].type = ')';
+            nr_token++;
+            break;
           default: TODO();
         }
-
-        break;
+break;
       }
     }
 
