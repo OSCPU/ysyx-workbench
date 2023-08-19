@@ -1,5 +1,5 @@
-Vfile:$(wildcard ./vsrc/*.v)
-Cfile:$(wildcard ./csrc/*.cpp)
+Vfile=$(wildcard ./vsrc/*.v)
+Cfile=$(wildcard ./csrc/*.cpp)
 
 all:
 	@echo "Write this Makefile by your self."
