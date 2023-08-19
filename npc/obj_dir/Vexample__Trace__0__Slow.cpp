@@ -14,7 +14,7 @@ VL_ATTR_COLD void Vexample___024root__trace_init_sub__TOP__0(Vexample___024root*
     tracep->declBit(c+1,"a", false,-1);
     tracep->declBit(c+2,"b", false,-1);
     tracep->declBit(c+3,"f", false,-1);
-    tracep->pushNamePrefix("top ");
+    tracep->pushNamePrefix("example ");
     tracep->declBit(c+1,"a", false,-1);
     tracep->declBit(c+2,"b", false,-1);
     tracep->declBit(c+3,"f", false,-1);
