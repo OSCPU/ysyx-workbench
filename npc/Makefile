@@ -8,7 +8,7 @@ sim:$(Vfile) $(Cfile)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	@echo "Write this Makefile by your self."
 	verilator -Wall --cc --trace --exe --build $^
-	./obj_dir/V$(basename $(Vfile))
+	./obj_dir/V$(basename $(subst ./vsrc/,,$(Vfile)))
 
 
 .PHONY:clean
