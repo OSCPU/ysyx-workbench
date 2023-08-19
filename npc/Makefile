@@ -10,7 +10,8 @@ sim:$(Vfile) $(Cfile)
 	verilator -Wall --cc --trace --exe --build $^
 	./obj_dir/V$(basename $(Vfile))
 
+
 .PHONY:clean
 clean:
-	rm -rf obj_dir
+	rm -rf obj_dir wave.vcd
 include ../Makefile
