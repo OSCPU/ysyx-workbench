@@ -31,8 +31,48 @@ static char *code_format =
 "  return 0; "
 "}";
 
+static int buf_index;
+static uint32_t current_depth;
+
+static void gen_num() {
+  char str[20];
+  uint32_t num;
+  //srand(time(NULL));
+  num = rand()%10;
+  sprintf(str, "%u", num);
+
+  for(int i=0;i<strlen(str);i++){
+    buf[buf_index++] = str[i];
+  }
+  return;
+}
+static void gen(char c){
+  buf[buf_index++] = c;
+  return;
+}
+static void gen_rand_op(){
+  //srand(time(NULL));
+  switch (rand()%4) {
+    case 0: buf[buf_index++] = '+';break;
+    case 1: buf[buf_index++] = '-';break;
+    case 2: buf[buf_index++] = '*';break;
+    case 3: buf[buf_index++] = '/';break;
+  }
+  return;
+}
 static void gen_rand_expr() {
-  buf[0] = '\0';
+  //buf[0] = '\0';
+  //srand(time(NULL));
+  current_depth++;
+  //if(current_depth > 20){
+  //  gen_num();
+  //  return;
+  //}
+  switch (rand()%3) {
+    case 0:gen_num();break;
+    case 1:gen('(');gen_rand_expr();gen(')');break;
+    default:gen_rand_expr();current_depth--;gen_rand_op();gen_rand_expr();current_depth--;
+  }
 }
 
 int main(int argc, char *argv[]) {
@@ -44,6 +84,7 @@ int main(int argc, char *argv[]) {
   }
   int i;
   for (i = 0; i < loop; i ++) {
+    buf_index=0;
     gen_rand_expr();
 
     sprintf(code_buf, code_format, buf);

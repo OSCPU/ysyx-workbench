@@ -14,6 +14,7 @@
 ***************************************************************************************/
 
 #include "sdb.h"
+#include <assert.h>
 
 #define NR_WP 32
 
@@ -22,6 +23,9 @@ typedef struct watchpoint {
   struct watchpoint *next;
 
   /* TODO: Add more members if necessary */
+  uint32_t value;
+  uint32_t last_value;
+  char expr[100];
 
 } WP;
 
@@ -40,4 +44,85 @@ void init_wp_pool() {
 }
 
 /* TODO: Implement the functionality of watchpoint */
+void new_wp(char e[])
+{
+  WP* tmp;
+  uint32_t expr_value;
+  bool success;
+  //所有监测点都被使用，终止程序
+  if(free_ == NULL){
+    assert(0);
+  }
+  //至少一个监测点空闲
+  tmp = free_;
+  free_ = free_->next;
 
+  tmp->next = head;
+  head = tmp;
+  
+  //赋值
+  expr_value = expr(e,&success);
+  tmp->last_value = expr_value;
+  tmp->value = expr_value;
+  strcpy(tmp->expr, e);
+}
+
+void free_wp(WP* wp){
+  WP* tmp;
+
+  //遍历head链表
+  for(tmp=head; tmp!=NULL; tmp=tmp->next){
+    if((tmp == head) && (tmp->next == NULL)){
+      head->next = free_;
+      free_ = head;
+      head = NULL;
+      return;
+    }
+    if(tmp->next == wp){
+      tmp->next = wp->next;
+      wp->next = free_;
+      free_ = free_->next;
+      return;
+    }
+  }
+  //wp不在已使用的监测点中，程序终止
+  assert(0);
+}
+
+int scan_head_list() {
+  WP* tmp;
+  bool success;
+
+  for(tmp=head; tmp!=NULL; tmp=tmp->next){
+    tmp->value = expr(tmp->expr, &success);
+    if(tmp->value!=tmp->last_value){
+      printf("Break:\t%d\t%s\n", tmp->NO,tmp->expr);
+      return 1;
+    }
+  }
+  return 0;
+}
+
+void show_info_wp() {
+  WP* tmp;
+  int start;
+
+  start = 0;
+  for(tmp=head; tmp!=NULL; tmp=tmp->next){
+    if(!start){
+      printf("Num\tWhat\n");
+      start = 1;
+    }
+    printf("%d\t%s\n", tmp->NO,tmp->expr);
+  }
+}
+
+void delete_wp(int NO) {
+  WP *tmp;
+
+  for(tmp=head; tmp!=NULL; tmp=tmp->next){
+    if(tmp->NO == NO){
+      free_wp(tmp);
+    }
+  }
+}

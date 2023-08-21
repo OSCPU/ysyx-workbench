@@ -13,18 +13,21 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
+#include "memory/paddr.h"
+#include <assert.h>
 #include <isa.h>
 
 /* We use the POSIX regex functions to process regular expressions.
  * Type 'man regex' for more information about POSIX regex functions.
  */
 #include <regex.h>
+#include <stdbool.h>
 
 enum {
   TK_NOTYPE = 256, TK_EQ,
 
   /* TODO: Add more token types */
-  TK_NUM,
+  TK_NUM,TK_REG,TK_HEX,TK_NOTEQ,TK_AND,TK_DEREF,
 };
 
 static struct rule {
@@ -37,14 +40,18 @@ static struct rule {
    */
 
   {" +", TK_NOTYPE},    // spaces
-  {"\\d+", TK_NUM},     // number
   {"\\+", '+'},         // plus
   {"\\-", '-'},         // subtract
   {"\\*", '*'},         // multiply
   {"/", '/'},           // divider
-  {"\\(", '('},
-  {"\\)", ')'},
+  {"\\(", '('},         // left parantheses
+  {"\\)", ')'},         // right parantheses
+  {"\\$([0-9]+|pc)", TK_REG},
+  {"(0x|0X)[0-9a-fA-F]+",TK_HEX},
   {"==", TK_EQ},        // equal
+  {"!=", TK_NOTEQ},     // not equal
+  {"&&", TK_AND},
+  {"[0-9]+", TK_NUM},   // number
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -76,6 +83,136 @@ typedef struct token {
 static Token tokens[32] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
+
+bool check_parentheses(int p ,int q){
+  int i;
+  int pstack;
+
+  //init stack pointer
+  pstack = 0;
+  //traverse tokens
+  for(i=p;i<=q;i++){
+    // push
+    if(tokens[i].type == '('){
+      pstack++;
+    }
+    //pop
+    else if(tokens[i].type == ')'){
+      pstack--;
+    }
+  }
+
+  if(pstack != 0)
+    assert(0);
+  if(tokens[p].type == '(') return true;
+  else return false;
+}
+
+int position_of_mainop(int p,int q){
+  int i;
+  int priority[100];
+  int op_index = 0;
+  int op[100];
+  int max;
+  int isInBracket = 0;
+
+  int left_index=99,right_index=0;
+  for(i=p;i<=q;i++){
+    if(tokens[i].type == '(' && left_index>i)
+      left_index = i;
+    else if(tokens[i].type == ')' && right_index < i)
+      right_index = i;
+  }
+  for(i=p;i<=q;i++){
+    // check isInBracket
+    if(i == left_index){
+      isInBracket = 1;
+    }
+    else if(i == right_index){
+      isInBracket = 0;
+    }
+    // show priority
+    if(isInBracket && (tokens[i].type == '+'||tokens[i].type == '-' ||tokens[i].type == '*' ||tokens[i].type == '/'||tokens[i].type == TK_AND||tokens[i].type == TK_EQ||tokens[i].type == TK_NOTEQ)){
+      op[op_index] = i;
+      priority[op_index] = 1;
+      op_index++;
+    }
+    else if(tokens[i].type == '*' || tokens[i].type == '/'){
+      op[op_index] = i;
+      priority[op_index] = 2;
+      op_index++;
+    }
+    else if(tokens[i].type == '+' || tokens[i].type == '-'){
+      op[op_index] = i;
+      priority[op_index] = 3;
+      op_index++;
+    }
+    else if(tokens[i].type == TK_AND){
+      op[op_index] = i;
+      priority[op_index] = 4;
+      op_index++;
+    }
+    else if(tokens[i].type == TK_EQ || tokens[i].type == TK_NOTEQ ){
+      op[op_index] = i;
+      priority[op_index] = 5;
+      op_index++;
+    }
+  }
+  max = 0;
+  for(i=0;i< op_index;i++){
+    if(priority[i] > priority[max]) {
+      max = i;
+    }
+  }
+  return op[max];
+}
+
+uint32_t eval(int p, int q)
+{
+  int op;
+  bool success;
+  uint32_t val1,val2,res;
+
+  if(p > q){
+    assert(0);
+  }
+  else if(p==q){
+    switch (tokens[p].type) {
+      case TK_NUM:
+        res = atoi(tokens[p].str);
+        break;
+      case TK_HEX:
+        sscanf(tokens[p].str, "%x", &res);
+        break; 
+      case TK_REG:
+        res = isa_reg_str2val(tokens[p].str, &success);
+        break;
+      case TK_DEREF:
+        res = atoi(tokens[p].str);
+    }
+    return res;
+  }
+  else if(check_parentheses(p,q) == true){
+    return eval(p+1,q-1);
+  }
+  else{
+    op = position_of_mainop(p,q);
+    val1 = eval(p,op-1);
+    val2 = eval(op+1,q);
+
+    switch (tokens[op].type) {
+      case '+': return val1 + val2;
+      case '-': return val1 - val2;
+      case '*': return val1 * val2;
+      case '/': return val1 / val2;
+      case TK_AND:   return val1 && val2;
+      case TK_EQ:    return val1 == val2;
+      case TK_NOTEQ: return val1 != val2;
+      default:assert(0);
+    }
+  }
+}
+
 static bool make_token(char *e) {
   int position = 0;
   int i;
@@ -100,14 +237,15 @@ static bool make_token(char *e) {
          * of tokens, some extra actions should be performed.
          */
 
+        int j;
         switch (rules[i].token_type) {
           case TK_NUM:
             tokens[nr_token].type = TK_NUM;
-            int j;
             for(j=0;j<substr_len;j++){
               tokens[nr_token].str[j] = substr_start[j];
             }
             tokens[nr_token].str[j] = '\0';
+            nr_token++;
             break;
           case '+':
             tokens[nr_token].type = '+';
@@ -133,9 +271,39 @@ static bool make_token(char *e) {
             tokens[nr_token].type = ')';
             nr_token++;
             break;
+          case TK_HEX:
+            tokens[nr_token].type = TK_HEX;
+            for(j=2;j<substr_len;j++){
+              tokens[nr_token].str[j-2] = substr_start[j];
+            }
+            tokens[nr_token].str[j-2] = '\0';
+            nr_token++;
+            break;
+          case TK_REG:
+            tokens[nr_token].type = TK_REG;
+            for(j=1;j<substr_len;j++){
+              tokens[nr_token].str[j-1] = substr_start[j];
+            }
+            tokens[nr_token].str[j-1] = '\0';
+            nr_token++;
+            break;
+          case TK_EQ:
+            tokens[nr_token].type = TK_EQ;
+            nr_token++;
+            break;
+          case TK_NOTEQ:
+            tokens[nr_token].type = TK_NOTEQ;
+            nr_token++;
+            break;
+          case TK_AND:
+            tokens[nr_token].type = TK_AND;
+            nr_token++;
+            break;
+          case TK_NOTYPE:
+            break;
           default: TODO();
         }
-break;
+        break;
       }
     }
 
@@ -156,7 +324,24 @@ word_t expr(char *e, bool *success) {
   }
 
   /* TODO: Insert codes to evaluate the expression. */
-  TODO();
+  uint32_t mem_addr,mem_value;
 
-  return 0;
+  for (int i = 0; i < nr_token; i ++) {
+    if (tokens[i].type == '*' && (i == 0 || tokens[i - 1].type == '+'|| tokens[i - 1].type == '-'|| tokens[i - 1].type == '*'|| tokens[i - 1].type == '/'|| tokens[i - 1].type == TK_EQ|| tokens[i - 1].type == TK_NOTEQ|| tokens[i-1].type == TK_AND) ) {
+      tokens[i].type = TK_DEREF;
+      mem_addr = (uint32_t)strtol(tokens[i+1].str,NULL,16);
+      mem_value = paddr_read(mem_addr, 4);
+      sprintf(tokens[i].str, "%u", mem_value);
+      for(int j=i+1; j+1 < nr_token; j++){
+        tokens[j] = tokens[j+1];
+      }
+      nr_token--;
+    }
+  }
+  uint32_t res;
+  res = eval(0, nr_token-1);
+  //printf("%u\n",res);
+
+  return res;
 }
+

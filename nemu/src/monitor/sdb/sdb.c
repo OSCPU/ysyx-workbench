@@ -13,25 +13,25 @@
  * See the Mulan PSL v2 for more details.
  ***************************************************************************************/
 
-// #include <cstdint>
 #include "sdb.h"
 #include "memory/paddr.h"
 #include <cpu/cpu.h>
-//#include <cstdio>
-//#include <cstdint>
-//#include <cstdio>
-//#include <cstdlib>
-//#include <cstdlib>
-//#include <cstdint>
 #include <isa.h>
 #include <readline/history.h>
 #include <readline/readline.h>
 #include <stdbool.h>
+#include <sys/types.h>
 
 static int is_batch_mode = false;
 
 void init_regex();
 void init_wp_pool();
+
+typedef struct watchpoint WP;
+void new_wp(char e[]);
+void free_wp(WP* wp);
+void show_info_wp();
+void delete_wp(int NO);
 
 /* We use the `readline' library to provide more flexibility to read from stdin.
  */
@@ -57,7 +57,10 @@ static int cmd_c(char *args) {
   return 0;
 }
 
-static int cmd_q(char *args) { return -1; }
+static int cmd_q(char *args) { 
+  //return -1; 
+  exit(0);
+}
 
 static int cmd_si(char *args) {
   /*extract the first argument */
@@ -80,6 +83,9 @@ static int cmd_info(char *args) {
   else if(*arg == 'r'){
     isa_reg_display();
   }
+  else if(*arg == 'w'){
+    show_info_wp();
+  }
 
   return 0;
 }
@@ -91,12 +97,14 @@ static int cmd_x(char *args) {
   char *arg2 = strtok(NULL, " ");
 
   int n = atoi(arg1);
-  char *endPtr;
-  uint32_t expr = strtol(arg2,&endPtr,16);
+  bool success;
+  uint32_t res = expr(arg2, &success);
+  //char *endPtr;
+  //uint32_t expr = strtol(arg2,&endPtr,16);
 
   printf("Addr\t\tValue\n");
   for(int i=0; i < n; i++){
-    printf("0x%8x:\t0x%08x\n",expr+i*4,paddr_read(expr+i*4, 4));
+    printf("0x%8x:\t0x%08x\n",res+i*4,paddr_read(res+i*4, 4));
   }
 
   return 0;
@@ -104,11 +112,33 @@ static int cmd_x(char *args) {
 
 static int cmd_p(char *args) {
   bool success;
-  expr(args, &success);
+  uint32_t res;
+
+  res = expr(args, &success);
+  if(strcmp(args,"$pc")==0){
+    printf("0x%x\n", res);
+  }
+  else {
+    printf("%u\n", res);
+  }
 
   return 0;
 }
 
+static int cmd_w(char *args){
+  new_wp(args);
+
+  return 0;
+}
+
+static int cmd_d(char *args){
+  int index;
+
+  index = atoi(args);
+  delete_wp(index);
+
+  return 0;
+}
 
 static int cmd_help(char *args);
 
@@ -125,8 +155,9 @@ static struct {
     {"si", "Cpu executes for n cycles", cmd_si},
     {"info", "Show information of regfile values or watchpoint", cmd_info},
     {"x", "Scan memory for n times",cmd_x},
-    {"p", "expressions evaluation",cmd_p},
-  
+    {"p", "Expressions evaluation",cmd_p},
+    {"w", "Add watchpoint",cmd_w},
+    {"d", "Delete watchpoint",cmd_d},
 };
 
 #define NR_CMD ARRLEN(cmd_table)
