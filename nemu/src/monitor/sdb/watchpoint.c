@@ -44,6 +44,25 @@ void init_wp_pool() {
 }
 
 /* TODO: Implement the functionality of watchpoint */
+void check_wp() {
+  WP *tmp;
+  int cnt_head;
+  int cnt_free;
+
+  cnt_head = 0;
+  for(tmp=head;tmp!=NULL;tmp=tmp->next){
+    cnt_head++;
+  }
+
+  cnt_free = 0;
+  for(tmp=free_;tmp!=NULL;tmp=tmp->next){
+    cnt_free++;
+  }
+  printf("cnt_head:%d\tcnt_free:%d\ttotal:%d\n",cnt_head,cnt_free,cnt_free+cnt_head);
+
+  return;
+}
+
 void new_wp(char e[])
 {
   WP* tmp;
@@ -65,6 +84,7 @@ void new_wp(char e[])
   tmp->last_value = expr_value;
   tmp->value = expr_value;
   strcpy(tmp->expr, e);
+
 }
 
 void free_wp(WP* wp){
@@ -72,16 +92,16 @@ void free_wp(WP* wp){
 
   //遍历head链表
   for(tmp=head; tmp!=NULL; tmp=tmp->next){
-    if((tmp == head) && (tmp->next == NULL)){
-      head->next = free_;
-      free_ = head;
-      head = NULL;
+    if(tmp == wp && tmp == head){
+      head = head->next;
+      tmp->next = free_;
+      free_ = wp;
       return;
     }
     if(tmp->next == wp){
       tmp->next = wp->next;
       wp->next = free_;
-      free_ = free_->next;
+      free_ = wp;
       return;
     }
   }
@@ -96,7 +116,7 @@ int scan_head_list() {
   for(tmp=head; tmp!=NULL; tmp=tmp->next){
     tmp->value = expr(tmp->expr, &success);
     if(tmp->value!=tmp->last_value){
-      printf("Break:\t%d\t%s\n", tmp->NO,tmp->expr);
+      printf("Breakpoint:\t%d\t%s\n", tmp->NO,tmp->expr);
       return 1;
     }
   }
@@ -115,6 +135,8 @@ void show_info_wp() {
     }
     printf("%d\t%s\n", tmp->NO,tmp->expr);
   }
+  //debug
+  check_wp();
 }
 
 void delete_wp(int NO) {
@@ -126,3 +148,4 @@ void delete_wp(int NO) {
     }
   }
 }
+

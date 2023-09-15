@@ -58,8 +58,10 @@ static int cmd_c(char *args) {
 }
 
 static int cmd_q(char *args) { 
-  //return -1; 
-  exit(0);
+  nemu_state.state = NEMU_QUIT;
+  cpu_exec(0);
+
+  return -1; 
 }
 
 static int cmd_si(char *args) {
@@ -78,13 +80,14 @@ static int cmd_info(char *args) {
   /*extract the first argument*/
   char *arg = strtok(NULL, " ");
 
-  if (arg == NULL)
-    printf("info arguments error!\nUsage:info r or info w\n");
-  else if(*arg == 'r'){
+  if(*arg == 'r'){
     isa_reg_display();
   }
   else if(*arg == 'w'){
     show_info_wp();
+  }
+  else{
+    printf("info arguments error!\nUsage:info r or info w\n");
   }
 
   return 0;
@@ -99,8 +102,6 @@ static int cmd_x(char *args) {
   int n = atoi(arg1);
   bool success;
   uint32_t res = expr(arg2, &success);
-  //char *endPtr;
-  //uint32_t expr = strtol(arg2,&endPtr,16);
 
   printf("Addr\t\tValue\n");
   for(int i=0; i < n; i++){
@@ -115,6 +116,7 @@ static int cmd_p(char *args) {
   uint32_t res;
 
   res = expr(args, &success);
+
   if(strcmp(args,"$pc")==0){
     printf("0x%x\n", res);
   }

@@ -19,12 +19,14 @@
 #include <time.h>
 #include <assert.h>
 #include <string.h>
+#include <errno.h>
 
 // this should be enough
 static char buf[65536] = {};
-static char code_buf[65536 + 128] = {}; // a little larger than `buf`
+static char code_buf[65536 + 256] = {}; // a little larger than `buf`
 static char *code_format =
 "#include <stdio.h>\n"
+"#pragma GCC diagnostic ignored \"-Wdiv-by-zero\"\n"
 "int main() { "
 "  unsigned result = %s; "
 "  printf(\"%%u\", result); "
@@ -32,46 +34,64 @@ static char *code_format =
 "}";
 
 static int buf_index;
-static uint32_t current_depth;
+static int depth_cnt;
+static int isDiv;
 
 static void gen_num() {
-  char str[20];
+  char str[10];
   uint32_t num;
-  //srand(time(NULL));
-  num = rand()%10;
-  sprintf(str, "%u", num);
 
+  // number range from 1 ~ 9
+  num = rand()%9+1;
+  // trans unsigned to str
+  sprintf(str, "%u", num);
+  //copy to buffer
   for(int i=0;i<strlen(str);i++){
     buf[buf_index++] = str[i];
   }
-  return;
 }
 static void gen(char c){
   buf[buf_index++] = c;
-  return;
+}
+static void gen_nonzero_expr()  {
+  gen('(');
+  gen_num();
+  gen('+');
+  gen_num();
+  gen(')');
+  //gen('1');
 }
 static void gen_rand_op(){
-  //srand(time(NULL));
   switch (rand()%4) {
     case 0: buf[buf_index++] = '+';break;
     case 1: buf[buf_index++] = '-';break;
     case 2: buf[buf_index++] = '*';break;
-    case 3: buf[buf_index++] = '/';break;
+    default: buf[buf_index++] = '/';isDiv = 1;
   }
-  return;
 }
 static void gen_rand_expr() {
-  //buf[0] = '\0';
-  //srand(time(NULL));
-  current_depth++;
-  //if(current_depth > 20){
-  //  gen_num();
-  //  return;
-  //}
+  depth_cnt++;
+  if(depth_cnt > 30){
+    gen_num();
+    return;
+  }
   switch (rand()%3) {
     case 0:gen_num();break;
     case 1:gen('(');gen_rand_expr();gen(')');break;
-    default:gen_rand_expr();current_depth--;gen_rand_op();gen_rand_expr();current_depth--;
+    default:gen_rand_expr();gen_rand_op();
+      if(isDiv){
+        gen_nonzero_expr();
+        isDiv = 0;
+      }
+      else gen_rand_expr();
+  }
+  if(depth_cnt<10) {
+    gen_rand_op();
+    if(isDiv){
+      gen_nonzero_expr();
+      isDiv = 0;
+    }
+    else gen_rand_expr();
   }
 }
 
@@ -85,7 +105,12 @@ int main(int argc, char *argv[]) {
   int i;
   for (i = 0; i < loop; i ++) {
     buf_index=0;
+    memset(buf,'\0',sizeof(buf));
+    depth_cnt = 0;
+
     gen_rand_expr();
+    //debug
+    //strcpy(buf, "-1/2");
 
     sprintf(code_buf, code_format, buf);
 
@@ -94,7 +119,9 @@ int main(int argc, char *argv[]) {
     fputs(code_buf, fp);
     fclose(fp);
 
-    int ret = system("gcc /tmp/.code.c -o /tmp/.expr");
+    int ret = system("gcc -O2 -Wall -Werror /tmp/.code.c -o /tmp/.expr");
+    //printf("%d",ret);
+
     if (ret != 0) continue;
 
     fp = popen("/tmp/.expr", "r");
