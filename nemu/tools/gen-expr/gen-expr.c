@@ -37,6 +37,9 @@ static int buf_index;
 static int depth_cnt;
 static int isDiv;
 
+static void gen(char c){
+  buf[buf_index++] = c;
+}
 static void gen_num() {
   char str[10];
   uint32_t num;
@@ -49,9 +52,8 @@ static void gen_num() {
   for(int i=0;i<strlen(str);i++){
     buf[buf_index++] = str[i];
   }
-}
-static void gen(char c){
-  buf[buf_index++] = c;
+  // trans to unsigned
+  gen('u');
 }
 static void gen_nonzero_expr()  {
   gen('(');

@@ -12,7 +12,7 @@
 *
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
-#define EXPR_TEST 
+//#define EXPR_TEST 
 #include <cpu/cpu.h>
 
 void sdb_mainloop();
@@ -27,7 +27,7 @@ void engine_start() {
   sdb_mainloop();
 #endif
 #ifdef EXPR_TEST
-expr_test();
+  expr_test();
 #endif /* ifdef EXPR_TEST */
 }
 
@@ -56,9 +56,10 @@ void expr_test() {
     res_gcc = atoi(res_str);
     res_func = expr(e,NULL);
 
-
-    if(res_gcc != res_func)
+    if(res_gcc != res_func) {
       printf("%u\t%u\n",res_gcc,res_func);
+      assert(0);
+    }
   }
 
   // 关闭文件
