@@ -58,7 +58,7 @@ void check_wp() {
   for(tmp=free_;tmp!=NULL;tmp=tmp->next){
     cnt_free++;
   }
-  printf("cnt_head:%d\tcnt_free:%d\ttotal:%d\n",cnt_head,cnt_free,cnt_free+cnt_head);
+  printf("cnt_head:%d\tcnt_free:%d\tcnt_total:%d\n",cnt_head,cnt_free,cnt_free+cnt_head);
 
   return;
 }

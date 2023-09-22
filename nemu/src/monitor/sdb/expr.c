@@ -354,6 +354,7 @@ word_t expr(char *e, bool *success) {
 
   /* TODO: Insert codes to evaluate the expression. */
   uint32_t mem_addr,mem_value;
+  int right_parentheses_index = 0;
 
   for (int i = 0; i < nr_token; i ++) {
     if (tokens[i].type == '*' && (i == 0 || tokens[i - 1].type == '+'||\
@@ -364,14 +365,38 @@ word_t expr(char *e, bool *success) {
                                             tokens[i - 1].type == TK_NOTEQ||\
                                             tokens[i - 1].type == TK_AND||\
                                             tokens[i - 1].type == TK_OR)) {
-      tokens[i].type = TK_DEREF;
-      mem_addr = (uint32_t)strtol(tokens[i+1].str,NULL,16);
+      tokens[i].type = TK_DEREF;    
+      // caculate mem_addr
+      switch (tokens[i+1].type) {
+        case TK_REG: mem_addr = isa_reg_str2val(tokens[i+1].str, success); break;
+        case TK_HEX: mem_addr = (uint32_t)strtol(tokens[i+1].str,NULL,16); break;
+        case '(':
+          for(int ii = i+1; ii < nr_token; ii++) {
+            if(tokens[ii].type == ')') right_parentheses_index = ii;
+          }
+          mem_addr = eval(i+1, right_parentheses_index);
+          break;
+        default: assert(0);
+      }
+      // caculate mem_value
       mem_value = paddr_read(mem_addr, 4);
       sprintf(tokens[i].str, "%u", mem_value);
-      for(int j=i+1; j+1 < nr_token; j++){
-        tokens[j] = tokens[j+1];
+      // shift tokens
+      switch (tokens[i+1].type) {
+        case TK_HEX:case TK_REG:
+          for(int j=i+1; j+1 < nr_token; j++){
+            tokens[j] = tokens[j+1];
+          }
+          nr_token--;
+          break;
+        case '(':
+          for(int j=i+1,k=right_parentheses_index; k+1 < nr_token; j++,k++){
+            tokens[j] = tokens[k+1];
+          }
+          nr_token = nr_token - (right_parentheses_index - i);
+          break;
+        default: assert(0);
       }
-      nr_token--;
     }
     if (tokens[i].type == '-' && (i == 0 || tokens[i - 1].type == '+'||\
                                             tokens[i - 1].type == '-'||\

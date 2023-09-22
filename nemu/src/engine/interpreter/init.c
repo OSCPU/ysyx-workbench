@@ -12,7 +12,7 @@
 *
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
-//#define EXPR_TEST 
+#define EXPR_TEST 
 #include <cpu/cpu.h>
 
 void sdb_mainloop();
@@ -34,17 +34,18 @@ void engine_start() {
 void expr_test() {
   uint32_t res_func;
   uint32_t res_gcc;
-  FILE *file;  // 文件指针
-  char line[1024];  // 存储读取的行
+  FILE *file;
+  char line[1024];
 
   // 打开文件
   file = fopen("/home/wophere/ysyx-workbench/nemu/tools/gen-expr/input", "r"); 
-  if (file == NULL) { perror("无法打开文件");
+  if (file == NULL) { 
+    perror("无法打开文件");
   }
 
   // 逐行读取文件内容
   while (fgets(line, sizeof(line), file) != NULL) {
-    printf("读取的行内容：%s", line);
+    //printf("读取的行内容：%s", line);
     char *res_str = strtok(line," ");
     char *e = strtok(NULL," ");
     for(int i=0;i<strlen(e);i++) {
