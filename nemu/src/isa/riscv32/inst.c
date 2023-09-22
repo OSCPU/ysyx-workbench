@@ -37,6 +37,7 @@ enum {
 
 uint32_t highest_bit_mask(uint32_t data);
 uint32_t data_sext(uint32_t addr,int len);
+int64_t sext64(uint32_t data);
 static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_t *imm, int type) {
   uint32_t i = s->isa.inst.val;
   int rs1 = BITS(i, 19, 15);
@@ -114,9 +115,9 @@ static int decode_exec(Decode *s) {
   INSTPAT("??????? ????? ????? 000 ????? 11001 11", jalr   , I, R(rd) = s->pc + 4, s->dnpc = (src1 + imm) & ~1);
   /*******************************************RV32M********************************************************/
   INSTPAT("0000001 ????? ????? 000 ????? 01100 11", mul    , M, R(rd) = (src1 * src2));
-  INSTPAT("0000001 ????? ????? 001 ????? 01100 11", mulh   , M, R(rd) = ((int64_t)src1 * (int64_t)src2) >> 28);
-  INSTPAT("0000001 ????? ????? 010 ????? 01100 11", mulhsu , M, R(rd) = ((int64_t)src1 * src2) >> 28);
-  INSTPAT("0000001 ????? ????? 011 ????? 01100 11", mulhu  , M, R(rd) = (uint64_t)(src1 * src2) >> 28);
+  INSTPAT("0000001 ????? ????? 001 ????? 01100 11", mulh   , M, R(rd) = (sext64(src1) * sext64(src2)) >> 32);
+  INSTPAT("0000001 ????? ????? 010 ????? 01100 11", mulhsu , M, R(rd) = (sext64(src1) * src2) >> 32);
+  INSTPAT("0000001 ????? ????? 011 ????? 01100 11", mulhu  , M, R(rd) = (uint64_t)(src1 * src2) >> 32);
   INSTPAT("0000001 ????? ????? 110 ????? 01100 11", rem    , M, R(rd) = (int32_t)src1 % (int32_t)src2);
   INSTPAT("0000001 ????? ????? 111 ????? 01100 11", remu   , M, R(rd) = src1 % src2);
   INSTPAT("0000001 ????? ????? 100 ????? 01100 11", div    , M, R(rd) = (src2 == 0) ? -1 : ((int32_t)src1 / (int32_t)src2));
@@ -169,4 +170,10 @@ uint32_t data_sext(uint32_t addr,int len) {
   else {
     return 0;
   }
+}
+
+int64_t sext64(uint32_t data) {
+  uint8_t highest_bit = data >> 31 & 1;
+  uint64_t mask = highest_bit ? 0xffffffff00000000LL : 0;
+  return mask | data;
 }
