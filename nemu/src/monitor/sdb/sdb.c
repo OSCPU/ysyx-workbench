@@ -71,8 +71,8 @@ static struct {
 
 static int cmd_help(char *args) {
   /* extract the first argument */
-  char *arg = strtok(NULL, " ");
-  printf("%s",arg);
+ // char *arg = strtok(NULL, " ");
+ char *arg=NULL;
   int i;
 
   if (arg == NULL) {
