@@ -12,7 +12,7 @@
 *
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
-#define EXPR_TEST 
+//#define EXPR_TEST 
 #include <cpu/cpu.h>
 
 void sdb_mainloop();
@@ -65,6 +65,7 @@ void expr_test() {
 
   // 关闭文件
   fclose(file);
+  printf("expr test pass\n");
 }
 
 

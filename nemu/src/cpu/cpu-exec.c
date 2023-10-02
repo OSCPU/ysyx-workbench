@@ -18,6 +18,7 @@
 #include <cpu/decode.h>
 #include <cpu/difftest.h>
 #include <locale.h>
+#include <elf.h>
 
 /* The assembly code of instructions executed is only output to the screen
  * when the number of instructions executed is less than this value.
@@ -35,6 +36,138 @@ void device_update();
 
 int scan_head_list();
 
+// iringbuf
+#define NR_IRINGBUF 32
+#define LEN_IRINGBUF 64
+static char iringbuf[NR_IRINGBUF][LEN_IRINGBUF] = {};
+static int index_iringbuf;
+#define next(index_iringbuf) ((index_iringbuf == NR_IRINGBUF - 1) ? 0 : index_iringbuf+1)
+void init_iringbuf() {
+  int i,j;
+  for(i = 0; i < NR_IRINGBUF; i++) {
+    for(j = 0; j < LEN_IRINGBUF; j++) {
+      iringbuf[i][j] = '\0';
+    }
+  }
+}
+static void scan_iringbuf() {
+  int i;
+  for (i = 0; i < NR_IRINGBUF; i++) {
+    if(strcmp(iringbuf[i],"") == 0) continue;
+    else if(i == index_iringbuf) printf("--->\t%s\n",iringbuf[i]);
+    else printf("\t%s\n",iringbuf[i]);
+  }
+}
+// ftrace
+static Elf32_Sym *symtab;
+static char *strtab;
+static Elf32_Shdr *symtab_shdr;
+static Elf32_Shdr *strtab_shdr;
+
+static char ftrace_stack[1024][128];
+static int stack_indx;
+static int stack_cnt;
+
+void print_symbol_table(Elf32_Shdr *shdr, Elf32_Sym *symtab, char *strtab) {
+  int i;
+  printf("Function Table:\n");
+  printf("Num:\tValue:\t\tSize:\tName:\n");
+  for (i = 0; i < shdr->sh_size / sizeof(Elf32_Sym); i++) {
+    Elf32_Sym *sym = &symtab[i];
+    char *name = &strtab[sym->st_name];
+    if(ELF32_ST_TYPE(sym->st_info) == 2)
+      printf("%3d:\t%x\t%u\t%s\n", i, sym->st_value, sym->st_size, name);
+  }
+}
+void ftrace_init(char *elf_name) {
+  // open elf file
+  char file_name[100] = "/home/wophere/ysyx-workbench/am-kernels/tests/cpu-tests/build/";
+  strcat(file_name,elf_name);
+  FILE *fp = fopen(file_name, "rb");
+  if(fp == NULL) assert(0);
+
+  // read elf header
+  Elf32_Ehdr elf_head;
+  if(fread(&elf_head, sizeof(Elf32_Ehdr), 1, fp) == 0) assert(0);
+
+  //read section table
+  Elf32_Shdr *shdr = (Elf32_Shdr *)malloc(sizeof(Elf32_Shdr) * elf_head.e_shnum);
+  if(shdr == NULL) assert(0);
+
+  if(fseek(fp, elf_head.e_shoff, SEEK_SET) != 0) assert(0);
+
+  if(fread(shdr, sizeof(Elf32_Shdr) * elf_head.e_shnum, 1, fp) == 0) assert(0);
+
+  // find symbol table && string table
+  symtab_shdr = NULL;
+  strtab_shdr = NULL;
+  int i;
+  for(i = 0; i < elf_head.e_shnum; i++) {
+    if(shdr[i].sh_type == SHT_SYMTAB) {
+      symtab_shdr = &shdr[i];
+      strtab_shdr = &shdr[symtab_shdr->sh_link];
+      break;
+    }
+  }
+  if(symtab_shdr == NULL) assert(0);
+
+  // read symbol table && string table
+  symtab = (Elf32_Sym *) malloc(symtab_shdr->sh_size);
+  if(fseek(fp, symtab_shdr->sh_offset, SEEK_SET) != 0) assert(0);
+  if(fread(symtab, symtab_shdr->sh_size, 1, fp) == 0)  assert(0);
+  strtab = (char *) malloc(strtab_shdr->sh_size);
+  if(fseek(fp, strtab_shdr->sh_offset, SEEK_SET) != 0) assert(0);
+  if(fread(strtab, strtab_shdr->sh_size, 1, fp) == 0)  assert(0);
+
+  // debug
+  print_symbol_table(symtab_shdr, symtab, strtab);
+
+  // close elf file
+  fclose(fp);
+
+  // init ftrace_stack
+  memset(ftrace_stack, '\0', sizeof(ftrace_stack));
+}
+void ftrace_once(Decode *s, vaddr_t dnpc) {
+  //sprintf(ftrace_stack[stack_indx++], "0x%x:\tcall[ %s@0x%x ]\n", s->pc, "hello", dnpc);
+  int i;
+  char name_pre[32] = "";
+  for (i = 0; i < symtab_shdr->sh_size / sizeof(Elf32_Sym); i++) {
+    Elf32_Sym *sym = &symtab[i];
+    char *name = &strtab[sym->st_name];
+    if(stack_cnt == 0) stack_indx = 0;
+    if(s->snpc != dnpc && strcmp(name,name_pre) && ELF32_ST_TYPE(sym->st_info) == 2 ) {
+      if( dnpc == sym->st_value ) {
+        stack_cnt++;
+        //sprintf(ftrace_stack[stack_indx++], "0x%x:\tcall[ %s@0x%x ]\n", s->pc, name, dnpc);
+        char *p = ftrace_stack[stack_indx++];
+        p += sprintf(p,"0x%x:",s->pc);
+        for(int j = 0; j < stack_cnt; j++) {
+          p += sprintf(p, "  ");
+        }
+        p += sprintf(p, "call[%s@0x%x]\n", name, dnpc);
+      }
+      else if( dnpc > sym->st_value && dnpc < (sym->st_value + sym->st_size) ) {
+        //sprintf(ftrace_stack[stack_indx++], "0x%x:\treturn[ %s@0x%x ]\n", s->pc, name, dnpc);
+        char *p = ftrace_stack[stack_indx++];
+        p += sprintf(p,"0x%x:",s->pc);
+        for(int j = 0; j < stack_cnt; j++) {
+          p += sprintf(p, "  ");
+        }
+        p += sprintf(p, "return[%s@0x%x]\n", name, dnpc);
+        stack_cnt--;
+      }
+      strcpy(name_pre, name);
+    }
+  }
+}
+void ftrace() {
+  int i;
+  for(i = 0; i < stack_indx; i++) {
+    printf("%s\n",ftrace_stack[i]);
+  }
+}
+
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
   if (ITRACE_COND) { log_write("%s\n", _this->logbuf); }
@@ -42,10 +175,16 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
 
+  //memset(iringbuf[index_iringbuf], '\0', LEN_IRINGBUF);
+  strcpy(iringbuf[index_iringbuf],_this->logbuf);
+  if(nemu_state.state != NEMU_RUNNING)
+    scan_iringbuf();
+  index_iringbuf = next(index_iringbuf);
+
+  ftrace_once(_this, dnpc);
+
 #ifdef CONFIG_WATCHPOINT
-  if(scan_head_list()){
-    nemu_state.state = NEMU_STOP;
-  }
+  if(scan_head_list()){ nemu_state.state = NEMU_STOP; }
 #endif 
 }
 

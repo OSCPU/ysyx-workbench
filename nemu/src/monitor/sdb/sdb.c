@@ -27,11 +27,15 @@ static int is_batch_mode = false;
 void init_regex();
 void init_wp_pool();
 
+//watchpoint
 typedef struct watchpoint WP;
 void new_wp(char e[]);
 void free_wp(WP* wp);
 void show_info_wp();
 void delete_wp(int NO);
+//ftrace
+void ftrace();
+void ftrace_init(char *elf_name);
 
 /* We use the `readline' library to provide more flexibility to read from stdin.
  */
@@ -142,6 +146,18 @@ static int cmd_d(char *args){
   return 0;
 }
 
+static int cmd_ftrace(char *args) {
+  /*extract the first argument*/
+  char *arg1 = strtok(NULL, " ");
+  if(arg1 == NULL) {
+    ftrace();
+  }
+  else {
+    ftrace_init(arg1);
+  }
+  return 0;
+}
+
 static int cmd_help(char *args);
 
 static struct {
@@ -160,6 +176,7 @@ static struct {
     {"p", "Expressions evaluation",cmd_p},
     {"w", "Add watchpoint",cmd_w},
     {"d", "Delete watchpoint",cmd_d},
+    {"ftrace", "function trace",cmd_ftrace},
 };
 
 #define NR_CMD ARRLEN(cmd_table)
