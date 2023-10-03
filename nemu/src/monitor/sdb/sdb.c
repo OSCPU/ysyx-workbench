@@ -81,7 +81,7 @@ static int cmd_x(char *args){
   else
   {
   sscanf(args,"%02d[0-9] %x",&num,&EXPR);
-  printf("%d %#x\n",num,EXPR);
+  printf("%d %x\n",num,EXPR);
  // paddr_read(EXPR,num);
   }
   return 0;
