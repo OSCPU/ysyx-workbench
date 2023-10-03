@@ -75,7 +75,7 @@ static int cmd_info(char *args) {
 }
 static int cmd_x(char *args){
   char  *ch1;
-  char *ch2;
+  char *EXPR;
   int num;
   uint32_t addr;
   if(args==NULL)
@@ -83,9 +83,9 @@ static int cmd_x(char *args){
   else
   {
   ch1=strtok(args," ");
-  ch2=strtok(NULL," ");
+  EXPR=strtok(NULL," ");
   num=atoi(ch1);
-  sscanf(ch2,"%x",&addr);
+  sscanf(EXPR,"%x",&addr);
   int i;
   for(i=0;i<num;i++)
   {
