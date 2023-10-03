@@ -75,12 +75,12 @@ static int cmd_info(char *args) {
 }
 static int cmd_x(char *args){
   int num;
-  uint8_t EXPR;
+  uint32_t EXPR;
   if(args==NULL)
   printf("default\n");
   else
   {
-  sscanf(args,"%d[0-9] %hhu[^0-9]",&num,&EXPR);
+  sscanf(args,"%d[0-9] %u[^0-9]",&num,&EXPR);
   printf("%d %hhu\n",num,EXPR);
   paddr_read(EXPR,num);
   }
