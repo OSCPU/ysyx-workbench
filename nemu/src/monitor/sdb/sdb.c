@@ -80,9 +80,9 @@ static int cmd_x(char *args){
   printf("default\n");
   else
   {
-  sscanf(args,"%d[0-9] %u[^0-9]",&num,&EXPR);
-  printf("%d %u\n",num,EXPR);
-  paddr_read(EXPR,num);
+  sscanf(args,"%02d[0-9] %x[0-9]",&num,&EXPR);
+  printf("%d %#x\n",num,EXPR);
+ // paddr_read(EXPR,num);
   }
   return 0;
 }
