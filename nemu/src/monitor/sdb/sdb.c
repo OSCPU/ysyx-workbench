@@ -65,6 +65,13 @@ static int cmd_si(char *args) {
   cpu_exec(count);
   return 0;
 }
+static int cmd_info(char *args) {
+  if(args==NULL)
+  printf("default");
+  else if(strcmp(args,"r")==0)
+  isa_reg_display();
+  return 0;
+}
 
 static struct {
   const char *name;
@@ -74,7 +81,8 @@ static struct {
   { "help", "Display information about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
-  {"si [N]", "execute N row (default value:1)", cmd_si },
+  {"si", "execute N row (default value:1)", cmd_si },
+  {"info"," [r] print the rg state [w] print the monitoring points", cmd_info},
 
   /* TODO: Add more commands */
 

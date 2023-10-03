@@ -14,6 +14,7 @@
 ***************************************************************************************/
 
 #include <isa.h>
+#include <stdio.h>
 #include "local-include/reg.h"
 
 const char *regs[] = {
@@ -24,6 +25,12 @@ const char *regs[] = {
 };
 
 void isa_reg_display() {
+	int length=sizeof(regs) / sizeof(regs[1]);
+	int i;
+	for(i=0;i<length;i++)
+	{
+	printf("%s\n",regs[i]);
+	}
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
