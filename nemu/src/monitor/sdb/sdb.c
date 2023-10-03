@@ -87,7 +87,7 @@ static int cmd_x(char *args){
   num=atoi(ch1);
   sscanf(ch2,"%x",&EXPR);
   printf("%d %#x\n",num,EXPR);
- // paddr_read(EXPR,num);
+  paddr_read(EXPR,num);
   }
   return 0;
 }
