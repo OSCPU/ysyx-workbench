@@ -77,7 +77,7 @@ static int cmd_x(char *args){
   char  *ch1;
   char *ch2;
   int num;
-  uint32_t EXPR;
+  uint32_t addr;
   if(args==NULL)
   printf("default\n");
   else
@@ -85,9 +85,13 @@ static int cmd_x(char *args){
   ch1=strtok(args," ");
   ch2=strtok(NULL," ");
   num=atoi(ch1);
-  sscanf(ch2,"%x",&EXPR);
-  printf("%d %#x\n",num,EXPR);
-  paddr_read(EXPR,num);
+  sscanf(ch2,"%x",&addr);
+  int i;
+  for(i=0;i<num;i++)
+  {
+	printf("%x\n",paddr_read(addr,4));
+	addr=addr+4;
+  }
   }
   return 0;
 }
