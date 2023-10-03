@@ -86,7 +86,7 @@ static int cmd_x(char *args){
   ch2=strtok(NULL," ");
   num=atoi(ch1);
   sscanf(ch2,"%x",&EXPR);
-  printf("%d %0x\n",num,EXPR);
+  printf("%d %#x\n",num,EXPR);
  // paddr_read(EXPR,num);
   }
   return 0;
