@@ -13,6 +13,8 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
+#include <stdlib.h>
+#include <string.h>
 #include <isa.h>
 #include <cpu/cpu.h>
 #include <readline/readline.h>
@@ -54,6 +56,16 @@ static int cmd_q(char *args) {
 
 static int cmd_help(char *args);
 
+static int cmd_si(char *args) {
+  int count;
+  if(args==NULL)
+  count=1;
+  else
+  count=atoi(args);
+  cpu_exec(count);
+  return 0;
+}
+
 static struct {
   const char *name;
   const char *description;
@@ -62,6 +74,7 @@ static struct {
   { "help", "Display information about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
+  {"si", "execute N row (default value:1)", cmd_si },
 
   /* TODO: Add more commands */
 
@@ -71,8 +84,7 @@ static struct {
 
 static int cmd_help(char *args) {
   /* extract the first argument */
- // char *arg = strtok(NULL, " ");
- char *arg=NULL;
+  char *arg = strtok(NULL, " ");
   int i;
 
   if (arg == NULL) {
