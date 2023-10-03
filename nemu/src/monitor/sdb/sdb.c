@@ -17,6 +17,7 @@
 #include <string.h>
 #include <isa.h>
 #include <cpu/cpu.h>
+#include <memory/paddr.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "sdb.h"
@@ -72,6 +73,18 @@ static int cmd_info(char *args) {
   isa_reg_display();
   return 0;
 }
+static int cmd_x(char *args){
+  int num;
+  uint8_t EXPR;
+  if(args==NULL)
+  printf("default\n");
+  else
+  {
+  sscanf(args,"%d[0-9] %hhu[^0-9]",&num,&EXPR);
+  paddr_read(EXPR,num);
+  }
+  return 0;
+}
 
 static struct {
   const char *name;
@@ -83,6 +96,7 @@ static struct {
   { "q", "Exit NEMU", cmd_q },
   {"si", "execute N row (default value:1)", cmd_si },
   {"info"," [r] print the rg state [w] print the monitoring points", cmd_info},
+  {"x"," format: x [N] [EXPR], [N] print N*4bytes(hexadecimal) [EXPR] get [EXPR] value as the start memory", cmd_x},
 
   /* TODO: Add more commands */
 
