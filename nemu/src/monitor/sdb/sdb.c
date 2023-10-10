@@ -104,7 +104,16 @@ static int cmd_p(char *args)
   }
 
   bool success=true;
-  expr(args,&success);
+  uint32_t num=expr(args,&success);
+  if(success==false){
+  printf("Worng expression\n");
+  }
+  else
+  {
+	printf("%u",num);
+  }
+
+
   return 0;
 }
 
