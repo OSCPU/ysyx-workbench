@@ -121,7 +121,6 @@ static bool make_token(char *e) {
 	  case Num:
 	  	tokens[nr_token].type=rules[i].token_type;
 		strncpy(tokens[nr_token++].str,substr_start,substr_len);
-		tokens[nr_token].str[substr_len] ='\0';
 	  case TK_NOTYPE :break;
 
           default: TODO();
