@@ -264,8 +264,6 @@ uint32_t eval(int p, int q)
 	{
 		return eval(p+1,q-1);
 	}
-
-
 	else
 	{
 		int op,val1,val2;
