@@ -121,6 +121,8 @@ static bool make_token(char *e) {
 	  case Num:
 	  	tokens[nr_token].type=rules[i].token_type;
 		strncpy(tokens[nr_token++].str,substr_start,substr_len);
+		tokens[nr_token].str[substr_len] ='\0';
+		break;
 	  case TK_NOTYPE :break;
 
           default: TODO();
@@ -144,7 +146,7 @@ static bool make_token(char *e) {
 
 
 word_t expr(char *e, bool *success) {
-  if (make_token(e)) {
+  if (!make_token(e)) {
     *success = false;
     return 0;
   }
