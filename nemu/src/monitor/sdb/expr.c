@@ -112,35 +112,16 @@ static bool make_token(char *e) {
          */
 
         switch (rules[i].token_type) {
-	  case '+': tokens[nr_token].type='+';
-	  	    strcpy(tokens[nr_token].str,"+");
-		    nr_token++;
-		    break;
-	  case '-': tokens[nr_token].type='-';
-	  	    strcpy(tokens[nr_token].str,"-");
-		    nr_token++;
-		    break;
-          case '*': tokens[nr_token].type='*';
-	  	    strcpy(tokens[nr_token].str,"*");
-		    nr_token++;
-		    break;
-	  case '/': tokens[nr_token].type='/';
-	  	    strcpy(tokens[nr_token].str,"/");
-		    nr_token++;
-		    break;
-	  case '(': tokens[nr_token].type='(';
-	  	    strcpy(tokens[nr_token].str,"(");
-		    nr_token++;
-		    break;
-  	  case ')': tokens[nr_token].type=')';
-	  	    strcpy(tokens[nr_token].str,")");
-		    nr_token++;
-		    break;
-	  case Num: tokens[nr_token].type=Num;
-	  	    strncpy(tokens[nr_token].str,substr_start,substr_len);
-		    nr_token++;
-		    tokens[nr_token].str[substr_len]='\0';
-		    break;
+	  case '+':
+	  case '-':
+	  case ')':
+	  case '(':
+	  case '/':
+	  case '*':
+	  case Num:
+	  	tokens[nr_token].type=rules[i].token_type;
+		strncpy(tokens[nr_token++].str,substr_start,substr_len);
+		tokens[nr_token].str[substr_len] ='\0';
 	  case TK_NOTYPE :break;
 
           default: TODO();
