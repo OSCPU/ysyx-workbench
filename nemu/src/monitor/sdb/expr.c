@@ -152,9 +152,8 @@ word_t expr(char *e, bool *success) {
   }
 
   /* TODO: Insert codes to evaluate the expression. */
-  int num =eval(0,nr_token-1);
+  int num = eval(0,nr_token-1);
   return num;
-  return 0;
 }
 
 
