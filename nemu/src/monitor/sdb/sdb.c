@@ -103,8 +103,8 @@ static int cmd_p(char *args)
     return 0;
   }
 
-  bool flat=false;
-  expr(args,&flat);
+  bool success=true;
+  expr(args,&success);
   return 0;
 }
 
