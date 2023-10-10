@@ -14,6 +14,10 @@
 ***************************************************************************************/
 
 #include <common.h>
+#include <string.h>
+#include <stdio.h>
+
+static char buf[65536]={};
 
 void init_monitor(int, char *[]);
 void am_init_monitor();
@@ -30,6 +34,14 @@ int main(int argc, char *argv[]) {
 
   /* Start engine. */
   engine_start();
+
+  FILE *fp=fopen("../tools/gen-expr/input","r");
+  assert(fp!=NULL);
+  unsigned result;
+  int ret=fscanf(fp,"%u %s\n",&result,buf);
+  if(ret!=0) printf("error\n");
+  printf("%u %s\n",result,buf);
+  fclose(fp);
 
   return is_exit_status_bad();
 }

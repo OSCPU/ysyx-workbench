@@ -95,6 +95,18 @@ static int cmd_x(char *args){
   }
   return 0;
 }
+static int cmd_p(char *args)
+{
+  if(args==NULL)
+  {
+    printf("Please input the <exper>\n");
+    return 0;
+  }
+
+  bool flat=false;
+  expr(args,&flat);
+  return 0;
+}
 
 static struct {
   const char *name;
@@ -107,6 +119,7 @@ static struct {
   {"si", "execute N row (default value:1)", cmd_si },
   {"info"," [r] print the rg state [w] print the monitoring points", cmd_info},
   {"x"," format: x [N] [EXPR], [N] print N*4bytes(hexadecimal) [EXPR] get [EXPR] value as the start memory", cmd_x},
+  {"p", "print the result of your input <exper>", cmd_p},
 
   /* TODO: Add more commands */
 
