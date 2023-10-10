@@ -49,12 +49,12 @@ static struct rule {
 
   {" +", TK_NOTYPE},    // spaces
   {"\\+", '+'},         // plus
-  {"\\-",'-'},
+  {"-",'-'},
   {"\\*",'*'},
-  {"\\/",'/'},
+  {"/",'/'},
   {"\\(",'('},
   {"\\)",')'},
-  {"[0-9]*",Num},
+  {"[0-9]+",Num},
   {"==", TK_EQ},        // equal
 };
 
@@ -137,9 +137,9 @@ static bool make_token(char *e) {
 		    nr_token++;
 		    break;
 	  case Num: tokens[nr_token].type=Num;
-	  	    if(substr_len>31) Assert(0,"tokens[].str[]full");
-	  	    strncpy(tokens[nr_token].str,&e[position -substr_len],substr_len);
+	  	    strncpy(tokens[nr_token].str,substr_start,substr_len);
 		    nr_token++;
+		    tokens[nr_token].str[substr_len]='\0';
 		    break;
 	  case TK_NOTYPE :break;
 
