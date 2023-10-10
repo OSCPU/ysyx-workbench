@@ -110,7 +110,7 @@ static int cmd_p(char *args)
   }
   else
   {
-	printf("%u",num);
+	printf("%u\n",num);
   }
 
 
