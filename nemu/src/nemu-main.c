@@ -17,12 +17,22 @@
 #include <string.h>
 #include <stdio.h>
 
+#include <stdlib.h>
+#include <string.h>
+#include <isa.h>
+#include <cpu/cpu.h>
+#include <memory/paddr.h>
+#include <readline/readline.h>
+#include <readline/history.h>
+
 static char buf[65536]={};
 
 void init_monitor(int, char *[]);
 void am_init_monitor();
 void engine_start();
 int is_exit_status_bad();
+
+word_t expr(char *e,bool *success);
 
 int main(int argc, char *argv[]) {
   /* Initialize the monitor. */
@@ -33,15 +43,33 @@ int main(int argc, char *argv[]) {
 #endif
 
   /* Start engine. */
-  engine_start();
-
-  FILE *fp=fopen("../tools/gen-expr/input","r");
+  // engine_start();
+  for(int i=0;i <1000;i++)
+  {
+  FILE *fp;
+  unsigned int result;
+  fp =fopen("./tools/gen-expr/input","r");
   assert(fp!=NULL);
-  unsigned result;
   int ret=fscanf(fp,"%u %s\n",&result,buf);
-  if(ret!=0) printf("error\n");
-  printf("%u %s\n",result,buf);
+  if(ret!=0) continue;
   fclose(fp);
-
+  bool success=true;
+  unsigned int num=expr(buf,&success);
+  if(success==false)
+  {
+  printf("error\n");
+  printf("%d\n",i);
+  assert(0);
+  }
+  else
+  {
+  if(num==result)
+  printf("%d\n",i);
+  else
+  printf("worng\n");
+  } 
+  memset(buf,'\0',sizeof(buf));
+  }
+	
   return is_exit_status_bad();
 }
