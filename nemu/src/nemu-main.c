@@ -17,7 +17,7 @@
 #include <string.h>
 #include <stdio.h>
 
-//static char buf[65536]={};
+static char buf[65536]={};
 
 void init_monitor(int, char *[]);
 void am_init_monitor();
@@ -35,7 +35,6 @@ int main(int argc, char *argv[]) {
   /* Start engine. */
   engine_start();
 
-/*
   FILE *fp=fopen("../tools/gen-expr/input","r");
   assert(fp!=NULL);
   unsigned result;
@@ -43,7 +42,6 @@ int main(int argc, char *argv[]) {
   if(ret!=0) printf("error\n");
   printf("%u %s\n",result,buf);
   fclose(fp);
-  */
 
   return is_exit_status_bad();
 }
