@@ -160,13 +160,23 @@ word_t expr(char *e, bool *success) {
 
 bool check_parentheses(int p, int q)
 {
-	int count,a,flat1=0,flat2=0;
+	int count,flat,a,flat1=0,flat2=0;
+	count=0;
 	if(tokens[p].type=='(')
+	{
+	flat=1;
 	count=1;
+	}
 	else if(tokens[p].type==Num)
+	{
+	flat=0;
 	count=0;
+	}
 	else if(tokens[p].type=='-')
+	{
+	flat=0;
 	count=0;
+	}
 	else
 	{
 	//Assert(0,"wrong expression");
@@ -217,8 +227,10 @@ bool check_parentheses(int p, int q)
 			}
 			else if(flat2==0)
 			{
-				printf("true\n");
+				if(flat==1)
 				return 1;
+				else
+				return 0;
 			}
 		}
 	}
@@ -264,6 +276,8 @@ uint32_t eval(int p, int q)
 	{
 		return eval(p+1,q-1);
 	}
+
+
 	else
 	{
 		int op,val1,val2;
@@ -281,7 +295,13 @@ uint32_t eval(int p, int q)
 		count=0;
 		else if(tokens[p].type=='-')
 		{
-		y=p+2;
+		y=p+1;
+		while(1)
+		{
+		if(tokens[y].type=='+'||tokens[y].type=='-'||tokens[y].type=='*'||tokens[y].type=='/')	
+		break;
+		y++;
+		}
 		count=0;
 		}
 
@@ -289,7 +309,7 @@ uint32_t eval(int p, int q)
 		while(q>a)
 		{
 		if(tokens[a].type=='(')
-	        count++;
+		count++;
 		else if(tokens[a].type==')')
 		count--;
 		else if(count==0)
