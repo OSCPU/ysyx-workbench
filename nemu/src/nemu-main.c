@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
   fp =fopen("./tools/gen-expr/input","r");
   assert(fp!=NULL);
   int ret=fscanf(fp,"%u %[^\n]]\n",&result,buf);
-  if(ret!=0) continue;
+  if(ret==0) continue;
   fclose(fp);
   bool success=true;
   unsigned int num=expr(buf,&success);
