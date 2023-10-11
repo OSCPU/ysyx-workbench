@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
   if(ret==0) continue;
   fclose(fp);
   bool success=true;
-  unsigned int num=expr(buf,&success);
+  uint32_t num=expr(buf,&success);
   if(success==false)
   {
   printf("error\n");
