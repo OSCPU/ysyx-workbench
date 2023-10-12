@@ -293,7 +293,7 @@ int tokens_len = nr_token;
     }
 
 
-  return eval(0,tokens_len);
+  return eval(0,tokens_len-1);
 }
 
 
