@@ -64,7 +64,7 @@ static struct rule {
   {"\\&\\&",AND},
   {"\\!",'!'},
   {"\\$[a-zA-Z]*[0-9]*",RESGISTER},
-  {"\\b0x[0-9a-fA-F]+\\b",HEX},
+  {"0x[0-9a-fA-F]+",HEX},
 
 };
 
