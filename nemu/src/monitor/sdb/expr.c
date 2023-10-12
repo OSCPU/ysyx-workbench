@@ -96,7 +96,6 @@ typedef struct token {
 
 static Token tokens[32] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
-int tokens_len = 0;
 
 static bool make_token(char *e) {
   int position = 0;
@@ -160,16 +159,18 @@ static bool make_token(char *e) {
     }
   }
 
+
+    int tokens_len = 0;
     for(int i = 0 ; i < 30 ; i ++)
     {
-	if(tokens[i].type == 0)
+	if(tokens[i].type == 256)
 	    break;
 	tokens_len ++;
     }
 
     for(int i = 0 ; i < tokens_len ; i ++)
     {
-	if(tokens[i].type == 2)
+	if(tokens[i].type == RESGISTER)
 	{
 	    bool flag = true;
 	    int tmp = isa_reg_str2val(tokens[i].str, &flag);
@@ -187,7 +188,7 @@ static bool make_token(char *e) {
      */
     for(int i = 0 ; i < tokens_len ; i ++)
     {
-        if(tokens[i].type == 3)// Hex num
+        if(tokens[i].type == HEX)// Hex num
         {
             int value = strtol(tokens[i].str, NULL, 16);
             int2char(value, tokens[i].str);
@@ -284,10 +285,6 @@ static bool make_token(char *e) {
 		}
     }
 
-
-
-
-   
   return true;
 }
 
