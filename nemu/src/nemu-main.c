@@ -25,7 +25,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
-char buf[65536]={};
+char *buf;
 
 void init_monitor(int, char *[]);
 void am_init_monitor();
@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
   else
   printf("worng\n");
   } 
-  memset(buf,'\0',sizeof(buf));
+  //memset(buf,'\0',sizeof(buf));
   }
 	
   return is_exit_status_bad();
