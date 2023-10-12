@@ -356,26 +356,26 @@ uint32_t eval(int p, int q) {
                 while(tokens[i].type != ')')
                     i ++;
             }
-            if(!flag && tokens[i].type == 6){
+            if(!flag && tokens[i].type == OR){
                 flag = true;
                 op = max(op,i);
             }
 
-            if(!flag && tokens[i].type == 7 ){
+            if(!flag && tokens[i].type == AND ){
 				flag = true;
                 op = max(op,i);
             }
 
-            if(!flag && tokens[i].type == 5){
+            if(!flag && tokens[i].type == NOTEQ){
                 flag = true;
                 op = max(op,i);
             }
 
-            if(!flag && tokens[i].type == 4){
+            if(!flag && tokens[i].type == EQ){
                 flag = true;
                 op = max(op,i);
             }
-            if(!flag && tokens[i].type == 10){
+            if(!flag && tokens[i].type == LEQ){
                 flag = true;
                 op = max(op, i);
             }
