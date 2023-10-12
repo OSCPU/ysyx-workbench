@@ -94,7 +94,7 @@ typedef struct token {
   char str[32];
 } Token;
 
-static Token tokens[65536] __attribute__((used)) = {};
+static Token tokens[32] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
 static bool make_token(char *e) {
@@ -145,7 +145,7 @@ static bool make_token(char *e) {
 
           default: TODO();
         }
-          if(nr_token==65536)
+          if(nr_token==32)
 	  {
 	     Assert(0,"the tokens full");
 	  }
@@ -161,7 +161,7 @@ static bool make_token(char *e) {
 
  
     int tokens_len = 0;
-    for(int i = 0 ; i < 65534 ; i ++)
+    for(int i = 0 ; i < 30 ; i ++)
     {
 	if(tokens[i].type == 0)
 	    break;
@@ -195,7 +195,6 @@ static bool make_token(char *e) {
     }
     /*
      * fu.
-     *
      */
     for(int i = 0 ; i < tokens_len ; i ++)
     {
@@ -226,7 +225,6 @@ static bool make_token(char *e) {
 
     /*
      * Init the tokens !
-     * TODO 
      */
     for(int i = 0 ; i < tokens_len ; i ++)
     {
@@ -253,7 +251,6 @@ static bool make_token(char *e) {
 	}
     }
     /*
-     * TODO
      * Jie yin yong
      * */
     for(int i = 0 ; i < tokens_len ; i ++)
