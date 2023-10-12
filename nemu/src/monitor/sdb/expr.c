@@ -171,13 +171,15 @@ word_t expr(char *e, bool *success) {
   }
 
   /* TODO: Insert codes to evaluate the expression. */
-int tokens_len = 0;
+int tokens_len = nr_token;
+/*
     for(int i = 0 ; i < 30 ; i ++)
     {
 	if(tokens[i].type == 0)
 	    break;
 	tokens_len ++;
     }
+    */
 
     for(int i = 0 ; i < tokens_len ; i ++)
     {
