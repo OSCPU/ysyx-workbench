@@ -407,13 +407,13 @@ uint32_t eval(int p, int q) {
                     return 0;
                 }
                 return val1 / val2;
-            case 4:
+            case EQ:
                 return val1 == val2;
-            case 5:
+            case NOTEQ:
                 return val1 != val2;
-            case 6:
+            case OR:
                 return val1 || val2;
-            case 7:
+            case AND:
                 return val1 && val2;
             default:
                 printf("No Op type.");
