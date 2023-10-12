@@ -235,7 +235,6 @@ int tokens_len = nr_token;
 
     /*
      * Init the tokens !
-     */
     for(int i = 0 ; i < tokens_len ; i ++)
     {
 	if(tokens[i].type == '!')
@@ -260,6 +259,7 @@ int tokens_len = nr_token;
 	    }
 	}
     }
+    */
     /*
      * Jie yin yong
      * */
