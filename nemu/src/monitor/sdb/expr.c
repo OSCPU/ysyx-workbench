@@ -305,86 +305,31 @@ word_t expr(char *e, bool *success) {
 }
 
 
-
 bool check_parentheses(int p, int q)
 {
-	int count,flat,a,flat1=0,flat2=0;
-	count=0;
-	if(tokens[p].type=='(')
-	{
-	flat=1;
-	count=1;
-	}
-	else if(tokens[p].type==Num)
-	{
-	flat=0;
-	count=0;
-	}
-	else
-	{
-	//Assert(0,"wrong expression");
-	printf("wrong expression\n");
-	assert(0);
-	}
-	 
+    if(tokens[p].type != '('  || tokens[q].type != ')')
+        return false;
+    int l = p , r = q;
+    while(l < r)
+    {
+        if(tokens[l].type == '('){
+            if(tokens[r].type == ')')
+            {
+                l ++ , r --;
+                continue;
+            }
 
-	a=p+1;
-	while(q>a)
-	{
-		if(flat1==1)
-		//the ')' > '('
-		break;
-		else if(tokens[a].type=='(')
-		count++;
-		else if(tokens[a].type==')')
-		{
-			count--;
-			if(count<0)
-			flat1=1; //')' > '('
-			else if(count==0)	
-			flat2=1; // Not belong "(" <exper> ")"
-		}
-		a++;
-	}
-	
-
-
-	if(flat1==1)
-	{
-		printf("flase,bad expressioan ')' > '('\n  ");
-		return 0;
-	}
-	else if(tokens[q].type==')')
-	{
-		if(count-1!=0)
-		{
-			printf("flase,bad expression\n");
-			return 0;	
-		}		
-		else
-		{
-			if(flat2==1||tokens[p].type==Num)
-			{
-				printf("Not belong '(' <exper> ')'\n ");
-				return 0;
-			}
-			else if(flat2==0)
-			{
-				if(flat==1)
-				return 1;
-				else
-				return 0;
-			}
-		}
-	}
-	else 
-	{
-		//Assert(0,"Wrong expression\n");
-		printf("wrong expression\n");
-	 	assert(0);
-	}
-	return 0;
+            else
+                r --;
+        }
+        else if(tokens[l].type == ')')
+            return false;
+        else l ++;
+    }
+    return true;
 }
+
+
 
 
 uint32_t eval(int p, int q) {
