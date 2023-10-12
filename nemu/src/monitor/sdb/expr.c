@@ -160,7 +160,20 @@ static bool make_token(char *e) {
   }
 
  
-    int tokens_len = 0;
+   
+  return true;
+}
+
+
+word_t expr(char *e, bool *success) {
+  if (!make_token(e)) {
+    *success = false;
+    return 0;
+  }
+
+  /* TODO: Insert codes to evaluate the expression. */
+
+ int tokens_len = 0;
     for(int i = 0 ; i < 30 ; i ++)
     {
 	if(tokens[i].type == 0)
@@ -287,18 +300,8 @@ static bool make_token(char *e) {
 
 
 
-  return true;
-}
 
-
-word_t expr(char *e, bool *success) {
-  if (!make_token(e)) {
-    *success = false;
-    return 0;
-  }
-
-  /* TODO: Insert codes to evaluate the expression. */
-  return eval(0,nr_token-1);
+  return eval(0,tokens_len);
 }
 
 
