@@ -34,7 +34,7 @@ void int2char(int x,char str[]);
 #include <regex.h>
 
 enum {
-  TK_NOTYPE = 256, EQ,Num,LEQ,NOTEQ,OR,AND,RESGISTER,HEX,
+  TK_NOTYPE = 256,EQ,Num,LEQ,NOTEQ,OR,AND,RESGISTER,HEX,
 
   /* TODO: Add more token types */
 
@@ -64,7 +64,7 @@ static struct rule {
   {"\\&\\&",AND},
   {"\\!",'!'},
   {"\\$[a-zA-Z]*[0-9]*",RESGISTER},
-  {"0[xX]{1}[0-9a-fA-F]+",HEX},
+  {"0[xX][0-9a-fA-F]{1,8}",HEX},
 
 };
 
