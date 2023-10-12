@@ -174,7 +174,7 @@ word_t expr(char *e, bool *success) {
 int tokens_len = 0;
     for(int i = 0 ; i < 30 ; i ++)
     {
-	if(tokens[i].type == 256)
+	if(tokens[i].type == TK_NOTYPE)
 	    break;
 	tokens_len ++;
     }
