@@ -22,7 +22,9 @@
 #include<string.h>
 bool check_parentheses(int p, int q);
 uint32_t eval(int p , int q);
-
+int char2int(char s[]);
+void int2char(int x,char str[]);
+#define max(a,b) (((a)>(b))?(a):(b))
 
 #include <isa.h>
 
@@ -32,7 +34,7 @@ uint32_t eval(int p , int q);
 #include <regex.h>
 
 enum {
-  TK_NOTYPE = 256, TK_EQ,Num,
+  TK_NOTYPE = 256, EQ,Num,LEQ,NOTEQ,OR,AND,RESGISTER,HEX,
 
   /* TODO: Add more token types */
 
@@ -55,7 +57,15 @@ static struct rule {
   {"\\(",'('},
   {"\\)",')'},
   {"[0-9]+",Num},
-  {"==", TK_EQ},        // equal
+  {"==", EQ},        // equal
+  {"\\<\\=",LEQ},
+  {"\\!\\=",NOTEQ},
+  {"\\|\\|",OR},
+  {"\\&\\&",AND},
+  {"\\!",'!'},
+  {"\\$[a-zA-Z]*[0-9]*",RESGISTER},
+  {"0[xX][0-9a-fA-F]",HEX},
+
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -118,6 +128,14 @@ static bool make_token(char *e) {
 	  case '(':
 	  case '/':
 	  case '*':
+	  case '!':
+	  case RESGISTER:
+	  case HEX:
+	  case EQ:
+	  case NOTEQ:
+	  case LEQ:
+	  case OR:
+	  case AND:
 	  case Num:
 	  	tokens[nr_token].type=rules[i].token_type;
 		strncpy(tokens[nr_token++].str,substr_start,substr_len);
@@ -141,6 +159,137 @@ static bool make_token(char *e) {
     }
   }
 
+ 
+    int tokens_len = 0;
+    for(int i = 0 ; i < 65534 ; i ++)
+    {
+	if(tokens[i].type == 0)
+	    break;
+	tokens_len ++;
+    }
+
+    for(int i = 0 ; i < tokens_len ; i ++)
+    {
+	if(tokens[i].type == 2)
+	{
+	    bool flag = true;
+	    int tmp = isa_reg_str2val(tokens[i].str, &flag);
+	    if(flag){
+		int2char(tmp, tokens[i].str); // transfrom the str --> $egx
+	    }else{
+		printf("Transfrom error. \n");
+		assert(0);
+	    }
+	}
+    }
+    /*
+     * Init the tokens HEX
+     */
+    for(int i = 0 ; i < tokens_len ; i ++)
+    {
+        if(tokens[i].type == 3)// Hex num
+        {
+            int value = strtol(tokens[i].str, NULL, 16);
+            int2char(value, tokens[i].str);
+        }
+    }
+    /*
+     * fu.
+     *
+     */
+    for(int i = 0 ; i < tokens_len ; i ++)
+    {
+	if((tokens[i].type == '-' && i > 0 && tokens[i-1].type != Num && tokens[i+1].type == Num)
+		||
+		(tokens[i].type == '-' && i == 0)
+	  )
+	{
+	    //printf("%s\n", tokens[i+1].str);
+	    tokens[i].type = TK_NOTYPE;
+	    //tokens[i].str = tmp;
+	    for(int j = 31 ; j >= 0 ; j --){
+		tokens[i+1].str[j] = tokens[i+1].str[j-1];
+	    }
+	    tokens[i+1].str[0] = '-';
+	    // printf("%s\n", tokens[i+1].str);
+	    for(int j = 0 ; j < tokens_len ; j ++){
+		if(tokens[j].type == TK_NOTYPE)
+		{
+		    for(int k = j +1 ; k < tokens_len ; k ++){
+			tokens[k - 1] = tokens[k];
+		    }
+		    tokens_len -- ;
+		}
+	    }
+	}
+    }
+
+    /*
+     * Init the tokens !
+     * TODO 
+     */
+    for(int i = 0 ; i < tokens_len ; i ++)
+    {
+	if(tokens[i].type == '!')
+	{
+	    tokens[i].type = TK_NOTYPE;
+	    int tmp = char2int(tokens[i+1].str);
+	    if(tmp == 0){
+		memset(tokens[i+1].str, 0 ,sizeof(tokens[i+1].str));
+		tokens[i+1].str[0] = '1';
+	    }
+	    else{
+		memset(tokens[i+1].str, 0 , sizeof(tokens[i+1].str));
+	    }
+	    for(int j = 0 ; j < tokens_len ; j ++){
+		if(tokens[j].type == TK_NOTYPE)
+		{
+		    for(int k = j +1 ; k < tokens_len ; k ++){
+			tokens[k - 1] = tokens[k];
+		    }
+		    tokens_len -- ;
+		}
+	    }
+	}
+    }
+    /*
+     * TODO
+     * Jie yin yong
+     * */
+    for(int i = 0 ; i < tokens_len ; i ++)
+    {
+	if(	(tokens[i].type == '*' && i > 0 
+		    && tokens[i-1].type != Num && tokens[i-1].type != HEX && tokens[i-1].type != RESGISTER
+		    && tokens[i+1].type == Num 
+		    )
+                ||
+		(tokens[i].type == '*' && i > 0
+                    && tokens[i-1].type != Num && tokens[i-1].type != HEX && tokens[i-1].type != RESGISTER
+                    && tokens[i+1].type == HEX
+                    )
+		||
+                (tokens[i].type == '*' && i == 0)
+          )
+		{
+            tokens[i].type = TK_NOTYPE;
+            int tmp = char2int(tokens[i+1].str);
+            uintptr_t a = (uintptr_t)tmp;
+            int value = *((int*)a);
+            int2char(value, tokens[i+1].str);	    
+            // 
+            for(int j = 0 ; j < tokens_len ; j ++){
+                if(tokens[j].type == TK_NOTYPE){
+                    for(int k = j +1 ; k < tokens_len ; k ++){
+                    tokens[k - 1] = tokens[k];
+                }
+                    tokens_len -- ;
+                }
+            }
+		}
+    }
+
+
+
   return true;
 }
 
@@ -152,8 +301,7 @@ word_t expr(char *e, bool *success) {
   }
 
   /* TODO: Insert codes to evaluate the expression. */
-  uint32_t num = eval(0,nr_token-1);
-  return num;
+  return eval(0,nr_token-1);
 }
 
 
@@ -168,11 +316,6 @@ bool check_parentheses(int p, int q)
 	count=1;
 	}
 	else if(tokens[p].type==Num)
-	{
-	flat=0;
-	count=0;
-	}
-	else if(tokens[p].type=='-')
 	{
 	flat=0;
 	count=0;
@@ -234,19 +377,6 @@ bool check_parentheses(int p, int q)
 			}
 		}
 	}
-	else if(tokens[q].type==Num)
-	{
-		if(count!=0)	
-		{
-			printf("bad expression\n");
-			return 0;
-		}
-		else 
-		{
-			printf("Not belong '(' <exper> ')'\n ");
-			return 0;
-		}
-	}
 	else 
 	{
 		//Assert(0,"Wrong expression\n");
@@ -257,130 +387,126 @@ bool check_parentheses(int p, int q)
 }
 
 
+uint32_t eval(int p, int q) {
+    if (p > q) {
+        /* Bad expression */
+        assert(0);
+        return -1;
+    }
+    else if (p == q) {
+        return atoi(tokens[p].str);
+    }
+    else if (check_parentheses(p, q) == true) {
+
+        return eval(p + 1, q - 1);
+    }
+
+    else {
+        int op = -1; 
+        bool flag = false;
+        for(int i = p ; i <= q ; i ++)
+        {
+            if(tokens[i].type == '(')
+            {
+                while(tokens[i].type != ')')
+                    i ++;
+            }
+            if(!flag && tokens[i].type == 6){
+                flag = true;
+                op = max(op,i);
+            }
+
+            if(!flag && tokens[i].type == 7 ){
+				flag = true;
+                op = max(op,i);
+            }
+
+            if(!flag && tokens[i].type == 5){
+                flag = true;
+                op = max(op,i);
+            }
+
+            if(!flag && tokens[i].type == 4){
+                flag = true;
+                op = max(op,i);
+            }
+            if(!flag && tokens[i].type == 10){
+                flag = true;
+                op = max(op, i);
+            }
+            if(!flag && (tokens[i].type == '+' || tokens[i].type == '-')){
+                flag = true;
+                op = max(op, i);
+            }
+            if(!flag && (tokens[i].type == '*' || tokens[i].type == '/') ){
+                op = max(op, i);
+            }
+        }
+
+        int  op_type = tokens[op].type;
 
 
-uint32_t eval(int p, int q)
-{
-	if(p>q)
-	{
-		//Assert(0,"Form error the p>q");
-		printf("Form error the p>q\n");
-		assert(0);
-		return -1;
-	}
-	else if(p==q)
-	{
-		return atoi(tokens[p].str);
-	}
-	else if (check_parentheses(p,q)==true)
-	{
-		return eval(p+1,q-1);
-	}
+        uint32_t  val1 = eval(p, op - 1);
+        uint32_t  val2 = eval(op + 1, q);
 
-
-	else
-	{
-		int op,val1,val2;
-		op=-1;
-		int count,a,ne,flat_ne_right,flat_ne_laft,y,x;
-		count=0;
-		flat_ne_right=0;
-		flat_ne_laft=0;
-		ne=0;//负数
-		x=0;//记录负数时主运算符位置
-		y=0;
-		if(tokens[p].type=='(')
-		count=1;
-		else if(tokens[p].type==Num)
-		count=0;
-		else if(tokens[p].type=='-')
-		{
-		y=p+1;
-		while(1)
-		{
-		if(tokens[y].type=='+'||tokens[y].type=='-'||tokens[y].type=='*'||tokens[y].type=='/')	
-		break;
-		y++;
-		}
-		count=0;
-		}
-
-		a=p+1;
-		while(q>a)
-		{
-		if(tokens[a].type=='(')
-		count++;
-		else if(tokens[a].type==')')
-		count--;
-		else if(count==0)
-		{
-			if(op==-1&&(tokens[a].type=='+'||tokens[a].type=='-'||tokens[a].type=='/'||tokens[a].type=='*'))
-			{
-		        	op=a;		
-				if(tokens[a+1].type=='-')
-				ne=1;
-				
-			}
-			else if(op!=-1&&(tokens[op].type=='*'||tokens[op].type=='/'))
-			{
-				if(ne==0&&(tokens[a].type=='+'||tokens[a].type=='-'||tokens[a].type=='/'||tokens[a].type=='*'))
-			      {
-				op=a;
-				if(tokens[a+1].type=='-')
-				ne=1;
-			      }	
-			      	else if(ne==1)
-				{
-					ne=0;	
-					x=op;
-				}
-			}
-			else if(op!=-1&&(tokens[op].type=='+'||tokens[op].type=='-'))
-			{
-				if(ne==0&&(tokens[a].type=='+'||tokens[a].type=='-'))
-				{
-					op=a;
-					if(tokens[a+1].type=='-')	
-					ne=1;
-				}
-				else if(ne==1)
-				{
-					ne=0;
-					x=op;
-				}
-			}
-		}
-		a++;
-		}
-
-
-		if(op==x)
-			flat_ne_right=1;
-		if(op==y)
-			flat_ne_laft=1;
-
-
-		if(flat_ne_laft==1)
-		{
-		flat_ne_laft=0;
-		val1 =-1*eval(p+1,op-1);
-		}
-		else val1 =eval(p,op-1);
-		if(flat_ne_right==1)
-		{
-		  flat_ne_right=0;
-		  val2 =-1*eval(op+2,q);
-		}
-		else val2=eval(op+1,q);
-
-
-		switch(tokens[op].type)
-		{
-			case '+':return val1 + val2;
-			case '-':return val1 - val2;
-			case '*':return val1 * val2;
-			case '/':return val1 / val2;
-			default:assert(0);
-		}
-	   }
+        switch (op_type) {
+            case '+':
+                return val1 + val2;
+            case '-':
+                return val1 - val2;
+            case '*':
+                return val1 * val2;
+            case '/':
+                if(val2 == 0){
+		    printf("/0\n");
+                    return 0;
+                }
+                return val1 / val2;
+            case 4:
+                return val1 == val2;
+            case 5:
+                return val1 != val2;
+            case 6:
+                return val1 || val2;
+            case 7:
+                return val1 && val2;
+            default:
+                printf("No Op type.");
+                assert(0);
+        }
+    }
 }
+
+
+int char2int(char s[]){
+    int s_size = strlen(s);
+    int res = 0 ;
+    for(int i = 0 ; i < s_size ; i ++)
+    {
+	res += s[i] - '0';
+	res *= 10;
+    }
+    res /= 10;
+    return res;
+}
+void int2char(int x, char str[]){
+    int len = strlen(str);
+    memset(str, 0, len);
+    int tmp_index = 0;
+    int tmp_x = x;
+    int x_size = 0, flag = 1;
+    while(tmp_x){
+	tmp_x /= 10;
+	x_size ++;
+	flag *= 10;
+    }
+    flag /= 10;
+    while(x)
+    {
+	int a = x / flag; 
+	x %= flag;
+	flag /= 10;
+	str[tmp_index ++] = a + '0';
+    }
+}
+
