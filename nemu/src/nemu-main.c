@@ -17,14 +17,15 @@
 #include <string.h>
 #include <stdio.h>
 
+/*
 #include <stdlib.h>
 #include <isa.h>
 #include <cpu/cpu.h>
 #include <memory/paddr.h>
 #include <readline/readline.h>
 #include <readline/history.h>
-
-char buf[65536]={};
+*/
+//char buf[65536]={};
 
 void init_monitor(int, char *[]);
 void am_init_monitor();
@@ -42,7 +43,8 @@ int main(int argc, char *argv[]) {
 #endif
 
   /* Start engine. */
-  //engine_start();
+  engine_start();
+  /*
   for(int i=0;i <1000;i++)
   {
   FILE *fp;
@@ -69,6 +71,7 @@ int main(int argc, char *argv[]) {
   } 
   memset(buf,'\0',sizeof(buf));
   }
+*/
 
   return is_exit_status_bad();
 }
