@@ -35,15 +35,16 @@ word_t expr(char *e,bool *success);
 
 int main(int argc, char *argv[]) {
   /* Initialize the monitor. */
+  /*
 #ifdef CONFIG_TARGET_AM
   am_init_monitor();
 #else
   init_monitor(argc, argv);
 #endif
+*/
 
   /* Start engine. */
-  engine_start();
-  /*
+  //engine_start();
   for(int i=0;i <1000;i++)
   {
   FILE *fp;
@@ -68,8 +69,8 @@ int main(int argc, char *argv[]) {
   else
   printf("worng\n");
   } 
-  //memset(buf,'\0',sizeof(buf));
+  memset(buf,'\0',sizeof(buf));
   }
-*/	
+
   return is_exit_status_bad();
 }
