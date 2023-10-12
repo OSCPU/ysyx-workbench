@@ -25,7 +25,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
-char* buf;
+char buf[65536]={};
 
 void init_monitor(int, char *[]);
 void am_init_monitor();
@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
   unsigned int result;
   fp =fopen("./tools/gen-expr/input","r");
   assert(fp!=NULL);
-  int ret=fscanf(fp,"%u %[^\n]]\n",&result,buf);
+  int ret=fscanf(fp,"%u %[^\n]\n",&result,buf);
   if(ret==0) continue;
   fclose(fp);
   bool success=true;
@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
   else
   printf("worng\n");
   } 
-  //memset(buf,'\0',sizeof(buf));
+  memset(buf,'\0',sizeof(buf));
   }
 	
   return is_exit_status_bad();
