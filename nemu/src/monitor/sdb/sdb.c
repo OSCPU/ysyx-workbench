@@ -26,6 +26,7 @@ static int is_batch_mode = false;
 
 void init_regex();
 void init_wp_pool();
+extern int flat_HEX;
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
@@ -110,6 +111,9 @@ static int cmd_p(char *args)
   }
   else
   {
+  	if(flat_HEX)
+	printf("0x%x\n",num);
+	else
 	printf("%u\n",num);
   }
 

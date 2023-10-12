@@ -24,7 +24,9 @@ bool check_parentheses(int p, int q);
 uint32_t eval(int p , int q);
 int char2int(char s[]);
 void int2char(int x,char str[]);
+int flat_HEX=0;
 #define max(a,b) (((a)>(b))?(a):(b))
+
 
 #include <isa.h>
 
@@ -56,8 +58,6 @@ static struct rule {
   {"/",'/'},
   {"\\(",'('},
   {"\\)",')'},
-  {"0[xX][0-9a-fA-F]+",HEX},
-  {"[0-9]+",Num},
   {"==", EQ},        // equal
   {"\\<\\=",LEQ},
   {"\\!\\=",NOTEQ},
@@ -65,6 +65,9 @@ static struct rule {
   {"\\&\\&",AND},
   {"\\!",'!'},
   {"\\$[a-zA-Z]*[0-9]*",RESGISTER},
+  {"0[xX][0-9a-fA-F]+",HEX},
+  {"[0-9]+",Num},
+
 
 };
 
@@ -202,6 +205,7 @@ int tokens_len = nr_token;
     {
         if(tokens[i].type == HEX)// Hex num
         {
+	    flat_HEX=1;
             int value = strtol(tokens[i].str, NULL, 16);
             int2char(value, tokens[i].str);
         }
