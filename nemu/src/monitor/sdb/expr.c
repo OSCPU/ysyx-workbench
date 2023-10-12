@@ -96,6 +96,7 @@ typedef struct token {
 
 static Token tokens[32] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
+int tokens_len = 0;
 
 static bool make_token(char *e) {
   int position = 0;
@@ -159,21 +160,6 @@ static bool make_token(char *e) {
     }
   }
 
- 
-   
-  return true;
-}
-
-
-word_t expr(char *e, bool *success) {
-  if (!make_token(e)) {
-    *success = false;
-    return 0;
-  }
-
-  /* TODO: Insert codes to evaluate the expression. */
-
- int tokens_len = 0;
     for(int i = 0 ; i < 30 ; i ++)
     {
 	if(tokens[i].type == 0)
@@ -193,6 +179,7 @@ word_t expr(char *e, bool *success) {
 		printf("Transfrom error. \n");
 		assert(0);
 	    }
+            // 
 	}
     }
     /*
@@ -286,7 +273,6 @@ word_t expr(char *e, bool *success) {
             uintptr_t a = (uintptr_t)tmp;
             int value = *((int*)a);
             int2char(value, tokens[i+1].str);	    
-            // 
             for(int j = 0 ; j < tokens_len ; j ++){
                 if(tokens[j].type == TK_NOTYPE){
                     for(int k = j +1 ; k < tokens_len ; k ++){
@@ -300,6 +286,19 @@ word_t expr(char *e, bool *success) {
 
 
 
+
+   
+  return true;
+}
+
+
+word_t expr(char *e, bool *success) {
+  if (!make_token(e)) {
+    *success = false;
+    return 0;
+  }
+
+  /* TODO: Insert codes to evaluate the expression. */
 
   return eval(0,tokens_len);
 }
