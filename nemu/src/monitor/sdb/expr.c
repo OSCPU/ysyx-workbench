@@ -160,7 +160,18 @@ static bool make_token(char *e) {
   }
 
 
-    int tokens_len = 0;
+      return true;
+}
+
+
+word_t expr(char *e, bool *success) {
+  if (!make_token(e)) {
+    *success = false;
+    return 0;
+  }
+
+  /* TODO: Insert codes to evaluate the expression. */
+int tokens_len = 0;
     for(int i = 0 ; i < 30 ; i ++)
     {
 	if(tokens[i].type == 256)
@@ -180,7 +191,6 @@ static bool make_token(char *e) {
 		printf("Transfrom error. \n");
 		assert(0);
 	    }
-            // 
 	}
     }
     /*
@@ -204,14 +214,11 @@ static bool make_token(char *e) {
 		(tokens[i].type == '-' && i == 0)
 	  )
 	{
-	    //printf("%s\n", tokens[i+1].str);
 	    tokens[i].type = TK_NOTYPE;
-	    //tokens[i].str = tmp;
 	    for(int j = 31 ; j >= 0 ; j --){
 		tokens[i+1].str[j] = tokens[i+1].str[j-1];
 	    }
 	    tokens[i+1].str[0] = '-';
-	    // printf("%s\n", tokens[i+1].str);
 	    for(int j = 0 ; j < tokens_len ; j ++){
 		if(tokens[j].type == TK_NOTYPE)
 		{
@@ -285,19 +292,9 @@ static bool make_token(char *e) {
 		}
     }
 
-  return true;
-}
 
 
-word_t expr(char *e, bool *success) {
-  if (!make_token(e)) {
-    *success = false;
-    return 0;
-  }
-
-  /* TODO: Insert codes to evaluate the expression. */
-
-  return eval(0,nr_token);
+  return eval(0,tokens_len);
 }
 
 
