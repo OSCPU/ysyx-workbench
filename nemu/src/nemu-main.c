@@ -25,6 +25,7 @@
 #include <readline/history.h>
 
 char buf[65536]={};
+char *s;
 
 void init_monitor(int, char *[]);
 void am_init_monitor();
@@ -55,7 +56,8 @@ int main(int argc, char *argv[]) {
   if(ret==0) continue;
   fclose(fp);
   bool success=true;
-  uint32_t num=expr(buf,&success);
+  s=buf;
+  uint32_t num=expr(s,&success);
   if(success==false)
   {
   printf("error\n");
