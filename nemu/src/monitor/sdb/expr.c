@@ -57,6 +57,7 @@ static struct rule {
   {"\\(",'('},
   {"\\)",')'},
   {"[0-9]+",Num},
+  {"0[xX][0-9a-fA-F]+",HEX},
   {"==", EQ},        // equal
   {"\\<\\=",LEQ},
   {"\\!\\=",NOTEQ},
@@ -64,7 +65,6 @@ static struct rule {
   {"\\&\\&",AND},
   {"\\!",'!'},
   {"\\$[a-zA-Z]*[0-9]*",RESGISTER},
-  {"0[xX][0-9a-fA-F]{1,8}",HEX},
 
 };
 
