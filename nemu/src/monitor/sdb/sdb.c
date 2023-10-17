@@ -20,6 +20,7 @@
 #include <memory/paddr.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include "watchpoint.h"
 #include "sdb.h"
 
 static int is_batch_mode = false;
@@ -27,6 +28,9 @@ static int is_batch_mode = false;
 void init_regex();
 void init_wp_pool();
 extern int flat_HEX;
+void sdb_watchpoint_display();
+void delete_watchpoint(int no);
+void create_watchpoint(char *args);
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
@@ -72,8 +76,22 @@ static int cmd_info(char *args) {
   printf("default\n");
   else if(strcmp(args,"r")==0)
   isa_reg_display();
+  else if(strcmp(args,"w")==0)
+  sdb_watchpoint_display();
   return 0;
 }
+static int cmd_d(char *args){
+  if(args==NULL)
+  printf("default\n");
+  else
+  delete_watchpoint(atoi(args));
+  return 0;
+}
+static int cmd_w(char *args){
+  create_watchpoint(args);
+  return 0;
+}
+
 static int cmd_x(char *args){
   char  *ch1;
   char *EXPR;
@@ -131,6 +149,8 @@ static struct {
   { "q", "Exit NEMU", cmd_q },
   {"si", "execute N row (default value:1)", cmd_si },
   {"info"," [r] print the rg state [w] print the monitoring points", cmd_info},
+  {"d", "delete the watchpoint",cmd_d},
+  {"w", "create the watchpoint",cmd_w},
   {"x"," format: x [N] [EXPR], [N] print N*4bytes(hexadecimal) [EXPR] get [EXPR] value as the start memory", cmd_x},
   {"p", "print the result of your input <exper>", cmd_p},
 
@@ -212,3 +232,33 @@ void init_sdb() {
   /* Initialize the watchpoint pool. */
   init_wp_pool();
 }
+
+
+void sdb_watchpoint_display(){
+    bool flat = true;
+    for(int i = 0 ; i < NR_WP ; i ++){
+        if(wp_pool[i].flat){
+            printf("Watchpoint.No: %d, expr = \"%s\", old_value = %d, new_value = %d\n",
+                    wp_pool[i].NO, wp_pool[i].expr,wp_pool[i].old_value, wp_pool[i].new_value);
+                flat = false;
+        }
+    }
+    if(flat) printf("No watchpoint now\n");
+}
+void delete_watchpoint(int no){
+    for(int i = 0 ; i < NR_WP ; i ++)
+        if(wp_pool[i].NO == no){
+            free_wp(&wp_pool[i]);
+            return ;
+        }
+}
+void create_watchpoint(char* args){
+    WP* p =  new_wp();
+    strcpy(p -> expr, args);
+    bool success = false;
+    int tmp = expr(p -> expr,&success);
+   if(success) p -> old_value = tmp;
+   else printf("creat watchpoint the expr error\n");
+    printf("Create watchpoint No.%d success\n", p -> NO);
+}
+
