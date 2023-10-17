@@ -18,7 +18,7 @@
 #include <cpu/difftest.h>
 #include <locale.h>
 
-#include "../monitor/sdb/watchpoint.h"
+#include "../monitor/sdb/watchpoint.c"
 
 
 /* The assembly code of instructions executed is only output to the screen
