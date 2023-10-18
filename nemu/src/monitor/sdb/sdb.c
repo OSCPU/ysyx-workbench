@@ -28,6 +28,7 @@ static int is_batch_mode = false;
 void init_regex();
 void init_wp_pool();
 extern int flat_HEX;
+void free_wp(int);
 
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
