@@ -28,12 +28,12 @@ static int is_batch_mode = false;
 void init_regex();
 void init_wp_pool();
 extern int flat_HEX;
-void free_wp(int);
 
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
   static char *line_read = NULL;
+void free_wp(int);
 
   if (line_read) {
     free(line_read);
@@ -92,7 +92,8 @@ static int cmd_w(char *args) {
 }
 
 static int cmd_d(char *args) {
-  free_wp(atoi(args));
+  int n=atoi(args);
+  free_wp(n);
   return 0;
 }
 
