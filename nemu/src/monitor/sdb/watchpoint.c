@@ -71,7 +71,6 @@ WP* new_wp() {
       free_ = free_->next;
     }
     new->next = NULL;
-    new->flat=1;
     if (wp_head == NULL) {
       wp_head = new;
       wp_tail = new;
