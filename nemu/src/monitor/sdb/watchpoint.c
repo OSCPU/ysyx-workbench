@@ -16,69 +16,108 @@
 #include "sdb.h"
 
 #define NR_WP 32
-
-typedef struct watchpoint {
-  int NO;
-  struct watchpoint *next;
-
-  /* TODO: Add more members if necessary */
-  bool flat;
-  char expr[100];
-  int new_value;
-  int old_value;
-} WP;
+#include "watchpoint.h"
 
 WP wp_pool[NR_WP] = {};
-WP *head = NULL, *free_ = NULL;
+static WP *wp_head = NULL, *wp_tail = NULL,           // watch point list
+          *free_ = NULL, *free_tail = NULL;           // free nodes list
 
 void init_wp_pool() {
   int i;
   for (i = 0; i < NR_WP; i ++) {
     wp_pool[i].NO = i;
+    wp_pool[i].flat =0;
     wp_pool[i].next = (i == NR_WP - 1 ? NULL : &wp_pool[i + 1]);
   }
-
-  head = NULL;
   free_ = wp_pool;
+  free_tail = wp_pool + NR_WP;
 }
 
 /* TODO: Implement the functionality of watchpoint */
 
-WP* new_wp()
-{
-	for(WP* p=free_;p->next!=NULL;p=p->next)
-	{
-		if(p->flat==false)
-		{
-		p->flat=true;
-		if(head==NULL)
-		  head=p;
-		return p;
-		}
-	}
-	printf("NO unuse point\n");
-	assert(0);
-	return NULL;
+void free_wp(int no){
+  if (wp_head->NO == no) {
+    if (wp_tail == wp_head) {
+      wp_tail = NULL;
+    }
+    free_tail->next = wp_head;
+    free_tail = wp_head;
+    wp_head->flat=0;
+    wp_head = wp_head->next;
+    free_tail->next = NULL;
+    return;
+  } else {
+    WP *pre = wp_head;
+    while (pre->next && pre->next->NO != no) {
+      pre = pre->next;
+    }
+    if (pre->next) {
+      if (pre->next == wp_tail) {
+        wp_tail = pre;
+      }
+      WP *wp = pre->next;              // search wp successfully
+      wp->flat=0;
+      pre->next = wp->next;
+      free_tail->next = wp;
+      free_tail = wp;
+      wp->next = NULL;
+  } else {
+      panic("Fail to free!\n");
+  }
+  }
 }
 
-void free_wp(WP* wp)
-{
-	if(head->NO==wp->NO)
-	{
-	head->flat=false;
-	head=NULL;
-	printf("delete watchpoint success\n");
-	return ;
-	}
-	for(WP* p=head;p->next!=NULL;p=p->next)
-	{
- 		if(p->next->NO==wp->NO)
-		{
-	 	p->next=p->next->next;
-		p->next->flat=false;
-		printf("free success\n");
-		return ;
-		}
-	}
+WP* new_wp() {
+  if (free_) {
+    WP *new = free_;
+    if (free_->next) {
+      free_ = free_->next;
+    }
+    new->next = NULL;
+    new->flat=1;
+    if (wp_head == NULL) {
+      wp_head = new;
+      wp_tail = new;
+    } else {
+      wp_tail->next = new;
+      wp_tail = new;
+    }
+    return new;
+  } else {
+    panic("No more free watch point nodes in wp_pool!\n");
+    return free_;
+  }
 }
 
+// return false if val change
+bool check_wp() {
+  if (!wp_head) {
+    return true;
+  }
+  WP *cur = wp_head;
+  bool success = true;
+  while (cur) {
+    if (cur->val != expr(cur->args, &success)) {
+      if (!success) {
+        printf("Bad expression,try again.\n");
+        return false;
+      }
+      printf("NO. %d watchpoint's value changed.\n", cur->NO);
+      return false;
+    }
+    cur = cur->next;
+  }
+  return true;
+}
+
+void watchpoint_display() {
+  if (wp_head == NULL) {
+    printf("No watchpoint.\n");
+  } else {
+    WP *cur = wp_head;
+    while (cur) {
+      printf("NO.%d expression : %s, init_value = %d.\n", cur->NO, cur->args, cur->val);
+      cur = cur->next;
+    }
+  }
+}

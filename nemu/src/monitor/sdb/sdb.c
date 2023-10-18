@@ -28,9 +28,7 @@ static int is_batch_mode = false;
 void init_regex();
 void init_wp_pool();
 extern int flat_HEX;
-void sdb_watchpoint_display();
-void delete_watchpoint(int no);
-void create_watchpoint(char *args);
+
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
@@ -77,18 +75,23 @@ static int cmd_info(char *args) {
   else if(strcmp(args,"r")==0)
   isa_reg_display();
   else if(strcmp(args,"w")==0)
-  sdb_watchpoint_display();
+  watchpoint_display();
   return 0;
 }
-static int cmd_d(char *args){
-  if(args==NULL)
-  printf("default\n");
-  else
-  delete_watchpoint(atoi(args));
+static int cmd_w(char *args) {
+  bool success = true;
+  WP *new = new_wp();
+  new->args = args;
+  new->val = expr(args, &success);
+  if (!success) {
+    printf("Bad expression,try again.\n");
+    return 0;
+  }
   return 0;
 }
-static int cmd_w(char *args){
-  create_watchpoint(args);
+
+static int cmd_d(char *args) {
+  free_wp(atoi(args));
   return 0;
 }
 
@@ -234,31 +237,4 @@ void init_sdb() {
 }
 
 
-void sdb_watchpoint_display(){
-    bool flat = true;
-    for(int i = 0 ; i < NR_WP ; i ++){
-        if(wp_pool[i].flat){
-            printf("Watchpoint.No: %d, expr = \"%s\", old_value = %d, new_value = %d\n",
-                    wp_pool[i].NO, wp_pool[i].expr,wp_pool[i].old_value, wp_pool[i].new_value);
-                flat = false;
-        }
-    }
-    if(flat) printf("No watchpoint now\n");
-}
-void delete_watchpoint(int no){
-    for(int i = 0 ; i < NR_WP ; i ++)
-        if(wp_pool[i].NO == no){
-            free_wp(&wp_pool[i]);
-            return ;
-        }
-}
-void create_watchpoint(char* args){
-    WP* p =  new_wp();
-    strcpy(p -> expr, args);
-    bool success = false;
-    int tmp = expr(p -> expr,&success);
-   if(success) p -> old_value = tmp;
-   else printf("creat watchpoint the expr error\n");
-    printf("Create watchpoint No.%d success\n", p -> NO);
-}
 

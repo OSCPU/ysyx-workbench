@@ -1,20 +1,21 @@
 #ifndef __WATCHPOINT_H__
 #define __WATCHPOINT_H__
 
-#include "common.h"
-#define NR_WP 32
+#include <common.h>
 word_t expr(char *e,bool *success);
+#define NR_WP 32
 
-typedef struct watchpoint{
+typedef struct watchpoint {
   int NO;
+  int flat;
   struct watchpoint *next;
-  bool flat;
-  char expr[100];
-  int  new_value;
-  int  old_value;
-}WP;
+  char *args;
+  word_t val;
+} WP;
 
-extern WP wp_pool[NR_WP];
 WP* new_wp();
-void free_wp(WP* wp);
+extern WP wp_pool[NR_WP];
+void free_wp(int no);
+bool check_wp();
+void watchpoint_display();
 #endif
