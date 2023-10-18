@@ -26,7 +26,6 @@ void init_wp_pool() {
   int i;
   for (i = 0; i < NR_WP; i ++) {
     wp_pool[i].NO = i;
-    wp_pool[i].flat =0;
     wp_pool[i].next = (i == NR_WP - 1 ? NULL : &wp_pool[i + 1]);
   }
   free_ = wp_pool;
@@ -42,7 +41,6 @@ void free_wp(int no){
     }
     free_tail->next = wp_head;
     free_tail = wp_head;
-    wp_head->flat=0;
     wp_head = wp_head->next;
     free_tail->next = NULL;
     return;
@@ -56,7 +54,6 @@ void free_wp(int no){
         wp_tail = pre;
       }
       WP *wp = pre->next;              // search wp successfully
-      wp->flat=0;
       pre->next = wp->next;
       free_tail->next = wp;
       free_tail = wp;
