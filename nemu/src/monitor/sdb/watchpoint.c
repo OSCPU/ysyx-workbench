@@ -52,12 +52,18 @@ void free_wp(int no){
     if (pre->next) {
       if (pre->next == wp_tail) {
         wp_tail = pre;
+	free_tail->next=pre->next;
+	free_tail =pre->next;
+	free_tail->next=NULL;
       }
+      else{
       WP *wp = pre->next;              // search wp successfully
       pre->next = wp->next;
       free_tail->next = wp;
       free_tail = wp;
+      free_tail->next=NULL;
       wp->next = NULL;
+      }
   } else {
       panic("Fail to free!\n");
   }
