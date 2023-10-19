@@ -38,7 +38,7 @@ void free_wp(int no){
     if (wp_tail == wp_head) {
       wp_tail = NULL;
     }
-    while(free_->next!=NULL)
+    while(free_->next==NULL)
     {
     	free_=free_->next;
     }
@@ -54,7 +54,7 @@ void free_wp(int no){
     if (pre->next) {
       if (pre->next == wp_tail) {
         wp_tail = pre;
-	while(free_->next!=NULL)
+	while(free_->next==NULL)
         {
     	free_=free_->next;
         }
@@ -66,7 +66,7 @@ void free_wp(int no){
       }
       else{
       WP *wp = pre->next;              // search wp successfully
-      while(free_->next!=NULL)
+      while(free_->next==NULL)
       {
     	free_=free_->next;
       }
