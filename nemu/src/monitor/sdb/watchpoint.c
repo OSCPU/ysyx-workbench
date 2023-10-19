@@ -42,8 +42,11 @@ void free_wp(int no){
     {
     	free_=free_->next;
     }
-    free_->next=wp_head;
-    free_->next=NULL;
+    WP *p=free_;
+    free_=wp_head;
+    free_->next=p;
+    //free_->next=wp_head;
+    //free_->next=NULL;
     wp_head = wp_head->next;
     return;
   } else {
@@ -60,8 +63,11 @@ void free_wp(int no){
         }
 	WP *wp=pre->next;
         pre->next = wp->next;
-        free_->next=wp;
-        free_->next=NULL;
+        //free_->next=wp;
+        WP *p=free_;
+        free_=wp;
+        free_->next=p;
+        //free_->next=NULL;
 
       }
       else{
@@ -71,8 +77,11 @@ void free_wp(int no){
     	free_=free_->next;
       }
       pre->next = wp->next;
-      free_->next=wp;
-      free_->next=NULL;
+      WP *p=free_;
+      free_=wp;
+      free_->next=p;
+      //free_->next=wp;
+      //free_->next=NULL;
       }
   } else {
       panic("Fail to free!\n");
