@@ -20,7 +20,7 @@
 
 WP wp_pool[NR_WP] = {};
 static WP *wp_head = NULL, *wp_tail = NULL,           // watch point list
-          *free_ = NULL, *free_tail = NULL;           // free nodes list
+          *free_ = NULL;            // free nodes list
 
 void init_wp_pool() {
   int i;
@@ -29,7 +29,6 @@ void init_wp_pool() {
     wp_pool[i].next = (i == NR_WP - 1 ? NULL : &wp_pool[i + 1]);
   }
   free_ = wp_pool;
-  free_tail = wp_pool + NR_WP;
 }
 
 /* TODO: Implement the functionality of watchpoint */
@@ -43,12 +42,9 @@ void free_wp(int no){
     {
     	free_=free_->next;
     }
-    //free_tail->next = wp_head;
-    //free_tail = wp_head;
     free_->next=wp_head;
     free_->next=NULL;
     wp_head = wp_head->next;
-    //free_tail->next = NULL;
     return;
   } else {
     WP *pre = wp_head;
@@ -77,9 +73,6 @@ void free_wp(int no){
       pre->next = wp->next;
       free_->next=wp;
       free_->next=NULL;
-     // free_tail->next = wp;
-     // free_tail = wp;
-      //wp->next = NULL;
       }
   } else {
       panic("Fail to free!\n");
