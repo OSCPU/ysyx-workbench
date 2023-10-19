@@ -45,9 +45,10 @@ void free_wp(int no){
     WP *p=free_;
     free_=wp_head;
     free_->next=p;
+    wp_head =NULL;
     //free_->next=wp_head;
     //free_->next=NULL;
-    //wp_head = wp_head->next;
+   //wp_head = wp_head->next;
     return;
   } else {
     WP *pre = wp_head;
