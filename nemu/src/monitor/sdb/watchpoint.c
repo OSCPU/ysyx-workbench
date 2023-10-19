@@ -29,7 +29,7 @@ void init_wp_pool() {
     wp_pool[i].next = (i == NR_WP - 1 ? NULL : &wp_pool[i + 1]);
   }
   free_ = wp_pool;
-  free_tail = wp_pool + NR_WP;
+  free_tail = wp_pool; //+ NR_WP;
 }
 
 /* TODO: Implement the functionality of watchpoint */
