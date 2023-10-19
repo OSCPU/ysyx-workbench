@@ -65,8 +65,11 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   }
   }*/
   if(check_wp()!=true)
-  assert(0);
-  
+  {
+  nemu_state.state=NEMU_STOP;
+  printf("NO EQ\n");
+  return ;
+  }
 }
 
 static void exec_once(Decode *s, vaddr_t pc) {

@@ -52,6 +52,9 @@ void free_wp(int no){
     if (pre->next) {
       if (pre->next == wp_tail) {
         wp_tail = pre;
+	free_tail->next=pre->next;
+	free_tail=pre->next;
+	pre->next->next=NULL;
       }
       else{
       WP *wp = pre->next;              // search wp successfully
