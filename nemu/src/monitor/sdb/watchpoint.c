@@ -37,7 +37,17 @@ void free_wp(int no){
   if (wp_head->NO == no) {
     if (wp_tail == wp_head) {
       wp_tail = NULL;
+    while(free_->next==NULL)
+    {
+    	free_=free_->next;
     }
+    WP *p=free_;
+    free_=wp_head;
+    free_->next=p;
+    wp_head=NULL;
+    }
+    else
+    {
     while(free_->next==NULL)
     {
     	free_=free_->next;
@@ -46,6 +56,8 @@ void free_wp(int no){
     free_=wp_head;
     free_->next=p;
     wp_head = wp_head->next;
+    }
+    
     //wp_head =NULL;
     //free_->next=wp_head;
     //free_->next=NULL;
