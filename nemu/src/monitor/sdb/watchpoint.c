@@ -42,12 +42,12 @@ void free_wp(int no){
     {
     	free_=free_->next;
     }
-    //WP *p=free_;
-    //free_=wp_head;
-    //free_->next=p;
-    free_->next=wp_head;
-    free_->next=NULL;
-    wp_head = wp_head->next;
+    WP *p=free_;
+    free_=wp_head;
+    free_->next=p;
+    //free_->next=wp_head;
+    //free_->next=NULL;
+    //wp_head = wp_head->next;
     return;
   } else {
     WP *pre = wp_head;
