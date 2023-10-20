@@ -2,12 +2,9 @@
 #include <klib.h>
 #include <klib-macros.h>
 #include <stdarg.h>
+#include <string.h>
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
-
-static char *substr;
-static int sublen;
-static int subnum;
 
 int num2str(int num, char *str) {
   int i = 0;
@@ -35,10 +32,54 @@ int num2str(int num, char *str) {
   }
   return len;
 }
+static void reverse(char *s, int len) {
+  char *end = s + len - 1;
+  char tmp;
+  while (s < end) {
+    tmp = *s;
+    *s = *end;
+    *end = tmp;
+    s++;end--;
+  }
+}static int itoa(int n, char *s, int base) {
+  int i = 0, sign = n, bit;
+  if (sign < 0) n = -n;
+  do {
+    bit = n % base;
+    if (bit >= 10) s[i++] = 'a' + bit - 10;
+    else s[i++] = '0' + bit;
+  } while ((n /= base) > 0);
+  if (sign < 0) s[i++] = '-';
+  s[i] = '\0';
+  reverse(s, i);
 
+  return i;
+}
 
 int vsprintf(char *out, const char *fmt, va_list ap) {
-  panic("Not implemented");
+  char *start = out;
+
+  for(; *fmt != '\0'; ++fmt) {
+    if(*fmt != '%') {
+      *out = *fmt;
+      ++out;
+    } else {
+      switch (*(++fmt)) {
+        case '%':
+          *out = *fmt; ++out; break;
+        case 'd':
+          out += itoa(va_arg(ap, int), out ,10); break;
+        case 's':
+          char *s = va_arg(ap, char *);
+          strcpy(out, s);
+          out += strlen(out);
+          break;
+      }
+    }
+  }
+  *out = '\0';
+  return out - start;
+        
 }
 
 int sprintf(char *out, const char *fmt, ...) {
@@ -84,35 +125,15 @@ int sprintf(char *out, const char *fmt, ...) {
 }
 
 int printf(const char *fmt, ...) {
-  int cnt = 0;
-  int i;
-
   va_list args;
   va_start(args, fmt);
 
+  char serial_buf[10000];
 
-  for(i = 0; fmt[i] != '\0'; i++) {
-    cnt++;
-    if(fmt[i] == '%') {
-      i++;
-      switch (fmt[i]) {
-        case 'd':
-          subnum = va_arg(args,int);
-          sublen = num2str(subnum, substr);
-          cnt += sublen - 1;
-          putstr(substr);
-          break;
-        case 's':
-          substr = va_arg(args,char *);
-          sublen = strlen(substr);
-          cnt += sublen - 1;
-          putstr(substr);
-          break;
-      }
-    }
-    else {
-      putch(fmt[i]);
-    }
+  int cnt = vsprintf(serial_buf, fmt, args);
+  int i;
+  for(i = 0; i < cnt; i++) {
+    putch(serial_buf[i]);
   }
 
   va_end(args);

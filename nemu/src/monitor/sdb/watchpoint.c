@@ -109,7 +109,7 @@ void free_wp(WP* wp){
   assert(0);
 }
 
-int scan_head_list() {
+int wp_display() {
   WP* tmp;
   bool success;
 

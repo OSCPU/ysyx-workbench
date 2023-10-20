@@ -20,7 +20,6 @@
 
 #define IO_SPACE_MAX (2 * 1024 * 1024)
 
-void scan_iringbuf();
 static uint8_t *io_space = NULL;
 static uint8_t *p_space = NULL;
 
@@ -35,9 +34,6 @@ uint8_t* new_space(int size) {
 
 static void check_bound(IOMap *map, paddr_t addr) {
   if (map == NULL) {
-#ifdef CONFIG_IRINGBUF
-    scan_iringbuf();
-#endif /* ifdef CONFIG_IRINGBUF */
     Assert(map != NULL, "address (" FMT_PADDR ") is out of bound at pc = " FMT_WORD, addr, cpu.pc);
   } else {
     Assert(addr <= map->high && addr >= map->low,

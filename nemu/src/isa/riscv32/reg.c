@@ -25,12 +25,12 @@ const char *regs[] = {
 };
 
 void isa_reg_display() {
-  printf("REG\tALIAS\tHEX\n");
   int i;
-  for(i=0;i < 32 ;i++){
-    printf("r%d\t%s\t0x%x\n",i,regs[i],cpu.gpr[i]);
+  printf("%s\n",ANSI_FMT("ISA RegFile Display", ANSI_FG_GREEN));
+  for(i = 0;i < ARRLEN(regs); i++){
+    //printf("r%d\t%s\t0x%x\n",i,regs[i],cpu.gpr[i]);
+    printf("%2d\t%-3s\t%#8x%15d\n",i, regs[i], cpu.gpr[i], cpu.gpr[i]);
   }
-  printf("\npc\t0x%x\n",cpu.pc);
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
@@ -45,4 +45,8 @@ word_t isa_reg_str2val(const char *s, bool *success) {
     res = cpu.gpr[index];
     return res;
   }
+}
+
+const char *isa_reg_val2str(int i) {
+  return regs[i];
 }

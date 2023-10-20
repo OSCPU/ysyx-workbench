@@ -36,7 +36,7 @@ void delete_wp(int NO);
 //ftrace
 #ifdef CONFIG_FTRACE
 void ftrace();
-void ftrace_init(char *elf_name);
+void print_symbol_table();
 #endif /* ifdef CONFIG_TRACE */
 
 /* We use the `readline' library to provide more flexibility to read from stdin.
@@ -93,7 +93,7 @@ static int cmd_info(char *args) {
     show_info_wp();
   }
   else{
-    printf("info arguments error!\nUsage:info r or info w\n");
+    printf("Usage:info r or info w\n");
   }
 
   return 0;
@@ -109,7 +109,6 @@ static int cmd_x(char *args) {
   bool success;
   uint32_t res = expr(arg2, &success);
 
-  printf("Addr\t\tValue\n");
   for(int i=0; i < n; i++){
     printf("0x%8x:\t0x%08x\n",res+i*4,paddr_read(res+i*4, 4));
   }
@@ -123,11 +122,11 @@ static int cmd_p(char *args) {
 
   res = expr(args, &success);
 
-  if(strcmp(args,"$pc")==0){
-    printf("0x%x\n", res);
+  if(strcmp(args,"pc")==0){
+    printf("%#x\n", res);
   }
   else {
-    printf("%u\n", res);
+    printf("%#x\t%u\n", res, res);
   }
 
   return 0;
@@ -149,13 +148,12 @@ static int cmd_d(char *args){
 }
 #ifdef CONFIG_FTRACE
 static int cmd_ftrace(char *args) {
-  /*extract the first argument*/
-  char *arg1 = strtok(NULL, " ");
-  if(arg1 == NULL) {
+  if(args == NULL) {
     ftrace();
-  }
-  else {
-    ftrace_init(arg1);
+  }else if(strcmp(args, "list") == 0){
+    print_symbol_table();
+  } else {
+    printf("Usage: ftrace or ftrace list");
   }
   return 0;
 }
@@ -175,7 +173,7 @@ static struct {
     /* TODO: Add more commands */
     {"si", "Cpu executes for n cycles", cmd_si},
     {"info", "Show information of regfile values or watchpoint", cmd_info},
-    {"x", "Scan memory for n times",cmd_x},
+    {"x", "Display memory",cmd_x},
     {"p", "Expressions evaluation",cmd_p},
     {"w", "Add watchpoint",cmd_w},
     {"d", "Delete watchpoint",cmd_d},

@@ -26,8 +26,6 @@ void (*ref_difftest_regcpy)(void *dut, bool direction) = NULL;
 void (*ref_difftest_exec)(uint64_t n) = NULL;
 void (*ref_difftest_raise_intr)(uint64_t NO) = NULL;
 
-void scan_iringbuf();
-
 #ifdef CONFIG_DIFFTEST
 
 static bool is_skip_ref = false;
@@ -99,7 +97,6 @@ static void checkregs(CPU_state *ref, vaddr_t pc) {
     nemu_state.halt_pc = pc;
     printf("%s\n",ANSI_FMT("Difftest Fail", ANSI_FG_RED));
     isa_reg_display();
-    scan_iringbuf();
   }
 }
 

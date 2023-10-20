@@ -186,7 +186,7 @@ uint32_t eval(int p, int q)
 {
   int op;
   bool success;
-  uint32_t val1,val2,res;
+  uint32_t val1,val2,res = 0;
 
   if(p > q){
     assert(0);

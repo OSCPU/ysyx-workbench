@@ -42,8 +42,9 @@ void *malloc(size_t size) {
   for(size_t *p = start; p!=end; p++) {
     *p = 0;
   }
+  return heap.start;
 #endif
-  return start;
+  return NULL;
 }
 
 void free(void *ptr) {

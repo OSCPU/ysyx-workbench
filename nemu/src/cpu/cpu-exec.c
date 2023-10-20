@@ -34,29 +34,28 @@ static bool g_print_step = false;
 
 void device_update();
 
-int scan_head_list();
+int wp_display();
 
 // iringbuf
 #ifdef CONFIG_IRINGBUF
 
 #define NR_IRINGBUF 32
 #define LEN_IRINGBUF 64
+#define iringbuf_next_index(iringbuf_index) ((iringbuf_index == NR_IRINGBUF - 1) ? 0 : iringbuf_index+1)
+
 static char iringbuf[NR_IRINGBUF][LEN_IRINGBUF] = {};
-static int index_iringbuf;
-#define next(index_iringbuf) ((index_iringbuf == NR_IRINGBUF - 1) ? 0 : index_iringbuf+1)
-void init_iringbuf() {
-  int i,j;
-  for(i = 0; i < NR_IRINGBUF; i++) {
-    for(j = 0; j < LEN_IRINGBUF; j++) {
-      iringbuf[i][j] = '\0';
-    }
-  }
+static int  iringbuf_index;
+
+void iringbuf_trace(Decode *_this) {
+  strcpy(iringbuf[iringbuf_index],_this->logbuf);
+  iringbuf_index = iringbuf_next_index(iringbuf_index);
 }
-void scan_iringbuf() {
+void iringbuf_display() {
   int i;
+  printf("%s\n",ANSI_FMT("Most Recently Used Instructions:", ANSI_FG_CYAN));
   for (i = 0; i < NR_IRINGBUF; i++) {
     if(strcmp(iringbuf[i],"") == 0) continue;
-    else if(i == index_iringbuf) printf("--->\t%s\n",iringbuf[i]);
+    else if(i == iringbuf_index) printf("--->\t%s\n",iringbuf[i]);
     else printf("\t%s\n",iringbuf[i]);
   }
 }
@@ -75,11 +74,11 @@ static char ftrace_buf[1024][128] = {};
 static int  ftrace_buf_idx = -1; 
 static int  ftrace_spcae_cnt;
 
-void print_symbol_table(Elf32_Shdr *shdr, Elf32_Sym *symtab, char *strtab) {
+void print_symbol_table() {
   int i;
-  printf("Function Table:\n");
+  printf("%s\n",ANSI_FMT("Function Table", ANSI_FG_CYAN));
   printf("Num:\tValue:\t\tSize:\tName:\n");
-  for (i = 0; i < shdr->sh_size / sizeof(Elf32_Sym); i++) {
+  for (i = 0; i < symtab_shdr->sh_size / sizeof(Elf32_Sym); i++) {
     Elf32_Sym *sym = &symtab[i];
     char *name = &strtab[sym->st_name];
     if(ELF32_ST_TYPE(sym->st_info) == 2)
@@ -88,10 +87,7 @@ void print_symbol_table(Elf32_Shdr *shdr, Elf32_Sym *symtab, char *strtab) {
 }
 void ftrace_init(char *elf_name) {
   // open elf file
-  //char file_name[100] = "/home/wophere/ysyx-workbench/am-kernels/tests/cpu-tests/build/";
-  char file_name[100] = "/home/wophere/ysyx-workbench/am-kernels/kernels/demo/build/";
-  strcat(file_name,elf_name);
-  FILE *fp = fopen(file_name, "rb");
+  FILE *fp = fopen(elf_name, "rb");
   if(fp == NULL) assert(0);
 
   // read elf header
@@ -128,7 +124,7 @@ void ftrace_init(char *elf_name) {
   if(fread(strtab, strtab_shdr->sh_size, 1, fp) == 0)  assert(0);
 
   // debug
-  print_symbol_table(symtab_shdr, symtab, strtab);
+  //print_symbol_table();
 
   // close elf file
   fclose(fp);
@@ -184,19 +180,12 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   if (ITRACE_COND) { log_write("%s\n", _this->logbuf); }
 #endif /* ifdef  */
 
-#ifdef CONFIG_IRINGBUF
-  strcpy(iringbuf[index_iringbuf],_this->logbuf);
-  if(nemu_state.state != NEMU_RUNNING) scan_iringbuf();
-  index_iringbuf = next(index_iringbuf);
-#endif /* ifdef CONFIG_IRINGBUF */
-
-#ifdef CONFIG_FTRACE
-  ftrace_once(_this, dnpc);
-#endif /* ifdef CONFIG_FTRACE */
-
 #ifdef CONFIG_WATCHPOINT
-  if(scan_head_list()){ nemu_state.state = NEMU_STOP; }
+  if(wp_display()){ nemu_state.state = NEMU_STOP; }
 #endif 
+
+  IFDEF(CONFIG_IRINGBUF, iringbuf_trace(_this));
+  IFDEF(CONFIG_FTRACE, ftrace_once(_this, dnpc));
 
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
@@ -254,6 +243,8 @@ static void statistic() {
 }
 
 void assert_fail_msg() {
+  IFDEF(CONFIG_FTRACE, ftrace());
+  IFDEF(CONFIG_IRINGBUF, iringbuf_display());
   isa_reg_display();
   statistic();
 }

@@ -19,12 +19,15 @@
 
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   int i;
-  if(ref_r->pc != pc) return false;
-  for(i = 0; i < MUXDEF(CONFIG_RVE, 16, 32); i++) {
+  for(i = 0; i < ARRLEN(cpu.gpr); i++) {
     if(ref_r->gpr[i] != cpu.gpr[i]) {
-      printf("expect r%d=0x%x\tget r%d=0x%x\n",i,ref_r->gpr[i],i,cpu.gpr[i]);
+      difftest_check_reg(isa_reg_val2str(i), pc, ref_r->gpr[i], cpu.gpr[i]);
       return false;
     }
+  }
+  if(ref_r->pc != pc) {
+    difftest_check_reg("pc", pc, ref_r->pc, cpu.pc);
+    return false;
   }
   return true;
 }
