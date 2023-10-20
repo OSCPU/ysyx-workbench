@@ -5,6 +5,10 @@
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
+static char *substr;
+static int sublen;
+static int subnum;
+
 int num2str(int num, char *str) {
   int i = 0;
   int isNegative = 0;
@@ -32,33 +36,6 @@ int num2str(int num, char *str) {
   return len;
 }
 
-int printf(const char *fmt, ...) {
-  int i = 0;
-  int cnt = 0;
-
-  va_list args;
-  va_start(args, fmt);
-
-  for(i = 0; fmt[i] != '\0'; i++) {
-    cnt++;
-    if(fmt[i] == '%') {
-      i++;
-      switch (fmt[i]) {
-        case 'd':
-          //int value = va_arg(args,int);
-          putch('0');
-        case 's':
-          //char *str = va_arg(args,char *);
-          putch('0');
-      }
-    }
-    putch(fmt[i]);
-  }
-  va_end(args);
-
-  return cnt;
-  //panic("Not implemented");
-}
 
 int vsprintf(char *out, const char *fmt, va_list ap) {
   panic("Not implemented");
@@ -104,6 +81,43 @@ int sprintf(char *out, const char *fmt, ...) {
 
   return cnt;
   //panic("Not implemented");
+}
+
+int printf(const char *fmt, ...) {
+  int cnt = 0;
+  int i;
+
+  va_list args;
+  va_start(args, fmt);
+
+
+  for(i = 0; fmt[i] != '\0'; i++) {
+    cnt++;
+    if(fmt[i] == '%') {
+      i++;
+      switch (fmt[i]) {
+        case 'd':
+          subnum = va_arg(args,int);
+          sublen = num2str(subnum, substr);
+          cnt += sublen - 1;
+          putstr(substr);
+          break;
+        case 's':
+          substr = va_arg(args,char *);
+          sublen = strlen(substr);
+          cnt += sublen - 1;
+          putstr(substr);
+          break;
+      }
+    }
+    else {
+      putch(fmt[i]);
+    }
+  }
+
+  va_end(args);
+
+  return cnt;
 }
 
 int snprintf(char *out, size_t n, const char *fmt, ...) {

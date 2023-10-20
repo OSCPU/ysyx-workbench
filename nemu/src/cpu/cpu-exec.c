@@ -37,6 +37,8 @@ void device_update();
 int scan_head_list();
 
 // iringbuf
+#ifdef CONFIG_IRINGBUF
+
 #define NR_IRINGBUF 32
 #define LEN_IRINGBUF 64
 static char iringbuf[NR_IRINGBUF][LEN_IRINGBUF] = {};
@@ -50,7 +52,7 @@ void init_iringbuf() {
     }
   }
 }
-static void scan_iringbuf() {
+void scan_iringbuf() {
   int i;
   for (i = 0; i < NR_IRINGBUF; i++) {
     if(strcmp(iringbuf[i],"") == 0) continue;
@@ -58,15 +60,20 @@ static void scan_iringbuf() {
     else printf("\t%s\n",iringbuf[i]);
   }
 }
+
+#endif /* ifdef CONFIG_IRINGBUF */
+
 // ftrace
+#ifdef CONFIG_FTRACE
+
 static Elf32_Sym *symtab;
 static char *strtab;
 static Elf32_Shdr *symtab_shdr;
 static Elf32_Shdr *strtab_shdr;
 
-static char ftrace_stack[1024][128];
-static int stack_indx;
-static int stack_cnt;
+static char ftrace_buf[1024][128] = {};
+static int  ftrace_buf_idx = -1; 
+static int  ftrace_spcae_cnt;
 
 void print_symbol_table(Elf32_Shdr *shdr, Elf32_Sym *symtab, char *strtab) {
   int i;
@@ -81,7 +88,8 @@ void print_symbol_table(Elf32_Shdr *shdr, Elf32_Sym *symtab, char *strtab) {
 }
 void ftrace_init(char *elf_name) {
   // open elf file
-  char file_name[100] = "/home/wophere/ysyx-workbench/am-kernels/tests/cpu-tests/build/";
+  //char file_name[100] = "/home/wophere/ysyx-workbench/am-kernels/tests/cpu-tests/build/";
+  char file_name[100] = "/home/wophere/ysyx-workbench/am-kernels/kernels/demo/build/";
   strcat(file_name,elf_name);
   FILE *fp = fopen(file_name, "rb");
   if(fp == NULL) assert(0);
@@ -126,66 +134,72 @@ void ftrace_init(char *elf_name) {
   fclose(fp);
 
   // init ftrace_stack
-  memset(ftrace_stack, '\0', sizeof(ftrace_stack));
+  memset(ftrace_buf, '\0', sizeof(ftrace_buf));
 }
 void ftrace_once(Decode *s, vaddr_t dnpc) {
   //sprintf(ftrace_stack[stack_indx++], "0x%x:\tcall[ %s@0x%x ]\n", s->pc, "hello", dnpc);
   int i;
-  char name_pre[32] = "";
   for (i = 0; i < symtab_shdr->sh_size / sizeof(Elf32_Sym); i++) {
     Elf32_Sym *sym = &symtab[i];
     char *name = &strtab[sym->st_name];
-    if(stack_cnt == 0) stack_indx = 0;
-    if(s->snpc != dnpc && strcmp(name,name_pre) && ELF32_ST_TYPE(sym->st_info) == 2 ) {
-      if( dnpc == sym->st_value ) {
-        stack_cnt++;
+    if(ELF32_ST_TYPE(sym->st_info) == 2 ) { // match function
+      if(!(s->pc >= sym->st_value && s->pc < (sym->st_value + sym->st_size)) && dnpc == sym->st_value ) { // function call
         //sprintf(ftrace_stack[stack_indx++], "0x%x:\tcall[ %s@0x%x ]\n", s->pc, name, dnpc);
-        char *p = ftrace_stack[stack_indx++];
+        ftrace_buf_idx++;
+        ftrace_spcae_cnt++;
+        char *p = ftrace_buf[ftrace_buf_idx];
         p += sprintf(p,"0x%x:",s->pc);
-        for(int j = 0; j < stack_cnt; j++) {
+        for(int j = 0; j < ftrace_spcae_cnt; j++) {
           p += sprintf(p, "  ");
         }
         p += sprintf(p, "call[%s@0x%x]\n", name, dnpc);
       }
-      else if( dnpc > sym->st_value && dnpc < (sym->st_value + sym->st_size) ) {
+      else if(!(s->pc >= sym->st_value && s->pc < (sym->st_value + sym->st_size)) && dnpc > sym->st_value && dnpc < (sym->st_value + sym->st_size) ) { //function return
         //sprintf(ftrace_stack[stack_indx++], "0x%x:\treturn[ %s@0x%x ]\n", s->pc, name, dnpc);
-        char *p = ftrace_stack[stack_indx++];
+        ftrace_buf_idx++;
+        char *p = ftrace_buf[ftrace_buf_idx];
         p += sprintf(p,"0x%x:",s->pc);
-        for(int j = 0; j < stack_cnt; j++) {
+        for(int j = 0; j < ftrace_spcae_cnt; j++) {
           p += sprintf(p, "  ");
         }
-        p += sprintf(p, "return[%s@0x%x]\n", name, dnpc);
-        stack_cnt--;
+        //p += sprintf(p, "return to[%s@0x%x]\n", name, dnpc);
+        p += sprintf(p, "ret\n");
+        ftrace_spcae_cnt--;
       }
-      strcpy(name_pre, name);
     }
   }
 }
 void ftrace() {
   int i;
-  for(i = 0; i < stack_indx; i++) {
-    printf("%s\n",ftrace_stack[i]);
+  for(i = 0; i <= ftrace_buf_idx; i++) {
+    if(i != ftrace_buf_idx) printf("%s\n",ftrace_buf[i]);
+    else printf("%s",ftrace_buf[i]);
   }
 }
+
+#endif /* ifdef CONFIG_FTRACE */
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
   if (ITRACE_COND) { log_write("%s\n", _this->logbuf); }
-#endif
-  if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
-  IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
+#endif /* ifdef  */
 
-  //memset(iringbuf[index_iringbuf], '\0', LEN_IRINGBUF);
+#ifdef CONFIG_IRINGBUF
   strcpy(iringbuf[index_iringbuf],_this->logbuf);
-  if(nemu_state.state != NEMU_RUNNING)
-    scan_iringbuf();
+  if(nemu_state.state != NEMU_RUNNING) scan_iringbuf();
   index_iringbuf = next(index_iringbuf);
+#endif /* ifdef CONFIG_IRINGBUF */
 
+#ifdef CONFIG_FTRACE
   ftrace_once(_this, dnpc);
+#endif /* ifdef CONFIG_FTRACE */
 
 #ifdef CONFIG_WATCHPOINT
   if(scan_head_list()){ nemu_state.state = NEMU_STOP; }
 #endif 
+
+  if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
+  IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
 }
 
 static void exec_once(Decode *s, vaddr_t pc) {

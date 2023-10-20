@@ -34,8 +34,10 @@ void free_wp(WP* wp);
 void show_info_wp();
 void delete_wp(int NO);
 //ftrace
+#ifdef CONFIG_FTRACE
 void ftrace();
 void ftrace_init(char *elf_name);
+#endif /* ifdef CONFIG_TRACE */
 
 /* We use the `readline' library to provide more flexibility to read from stdin.
  */
@@ -145,7 +147,7 @@ static int cmd_d(char *args){
 
   return 0;
 }
-
+#ifdef CONFIG_FTRACE
 static int cmd_ftrace(char *args) {
   /*extract the first argument*/
   char *arg1 = strtok(NULL, " ");
@@ -157,6 +159,7 @@ static int cmd_ftrace(char *args) {
   }
   return 0;
 }
+#endif /* ifdef CONFIG_TRACE */
 
 static int cmd_help(char *args);
 
@@ -176,7 +179,9 @@ static struct {
     {"p", "Expressions evaluation",cmd_p},
     {"w", "Add watchpoint",cmd_w},
     {"d", "Delete watchpoint",cmd_d},
+  #ifdef CONFIG_FTRACE
     {"ftrace", "function trace",cmd_ftrace},
+  #endif /* ifdef CONFIG_FTRACE */
 };
 
 #define NR_CMD ARRLEN(cmd_table)
