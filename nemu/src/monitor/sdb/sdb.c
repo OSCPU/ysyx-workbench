@@ -82,7 +82,8 @@ static int cmd_info(char *args) {
 static int cmd_w(char *args) {
   bool success = true;
   WP *new = new_wp();
-  new->args = args;
+  //new->args = args;
+  strcpy(new->args,args);
   new->val = expr(args, &success);
   if (!success) {
     printf("Bad expression,try again.\n");
