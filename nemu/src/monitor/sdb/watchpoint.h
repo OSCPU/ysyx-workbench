@@ -18,4 +18,5 @@ WP* new_wp();
 void free_wp(int no);
 bool check_wp();
 void watchpoint_display();
+void create_wp(char* args);
 #endif
