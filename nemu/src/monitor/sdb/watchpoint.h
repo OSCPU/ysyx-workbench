@@ -9,7 +9,7 @@ typedef struct watchpoint {
   int NO;
   int flat;
   struct watchpoint *next;
-  char *args;
+  char args[100];
   word_t val;
 } WP;
 
