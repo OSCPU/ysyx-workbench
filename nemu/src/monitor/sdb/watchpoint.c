@@ -14,6 +14,7 @@
 ***************************************************************************************/
 
 #include "sdb.h"
+#include <string.h>
 
 #define NR_WP 32
 #include "watchpoint.h"
@@ -164,8 +165,8 @@ void create_wp(char* args)
 {
   bool success = true;
   WP *new = new_wp();
-  new->args = args;
-  //strcpy(new->args,args);
+  //new->args = args;
+  strcpy(new->args,args);
   new->val = expr(args, &success);
   if (!success) {
     printf("Bad expression,try again.\n");
