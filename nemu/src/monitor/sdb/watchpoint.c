@@ -18,7 +18,7 @@
 #define NR_WP 32
 #include "watchpoint.h"
 
-WP wp_pool[NR_WP] = {};
+static WP wp_pool[NR_WP] = {};
 static WP *wp_head = NULL, *wp_tail = NULL,           // watch point list
           *free_ = NULL;            // free nodes list
 
@@ -54,16 +54,15 @@ void free_wp(int no){
     }
     WP *p=free_;
     free_=wp_head;
-    wp_head=wp_head->next;
+    wp_head=wp_head->next;//要放在 free_->next=p  前面
     free_->next=p;
     
     }
     
-    //wp_head =NULL;
-    //free_->next=wp_head;
-    //free_->next=NULL;
     return;
-  } else {
+  }
+  else
+    {
     WP *pre = wp_head;
     while (pre->next && pre->next->NO != no) {
       pre = pre->next;
@@ -77,11 +76,9 @@ void free_wp(int no){
         }
 	WP *wp=pre->next;
         pre->next = wp->next;
-        //free_->next=wp;
         WP *p=free_;
         free_=wp;
         free_->next=p;
-        //free_->next=NULL;
 
       }
       else{
@@ -94,10 +91,10 @@ void free_wp(int no){
       WP *p=free_;
       free_=wp;
       free_->next=p;
-      //free_->next=wp;
-      //free_->next=NULL;
       }
-  } else {
+  }
+  else
+  {
       panic("Fail to free!\n");
   }
   }
@@ -113,12 +110,16 @@ WP* new_wp() {
     if (wp_head == NULL) {
       wp_head = new;
       wp_tail = new;
-    } else {
+    }
+    else
+    {
       wp_tail->next = new;
       wp_tail = new;
     }
     return new;
-  } else {
+  }
+  else
+  {
     panic("No more free watch point nodes in wp_pool!\n");
     return free_;
   }
@@ -148,7 +149,9 @@ bool check_wp() {
 void watchpoint_display() {
   if (wp_head == NULL) {
     printf("No watchpoint.\n");
-  } else {
+  }
+  else
+  {
     WP *cur = wp_head;
     while (cur) {
       printf("NO.%d expression : %s, init_value = %d.\n", cur->NO, cur->args, cur->val);

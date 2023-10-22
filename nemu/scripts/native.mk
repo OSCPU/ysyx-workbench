@@ -48,3 +48,10 @@ clean-tools: $(clean-tools)
 clean-all: clean distclean clean-tools
 
 .PHONY: run gdb run-env clean-tools clean-all $(clean-tools)
+
+count:
+	@echo "Counting the .c and .h files"
+	@find . -name "*.c" -or -name "*.c" | xargs cat|grep -v ^.+$$|wc -l
+	
+
+

@@ -175,14 +175,6 @@ word_t expr(char *e, bool *success) {
 
   /* TODO: Insert codes to evaluate the expression. */
 int tokens_len = nr_token;
-/*
-    for(int i = 0 ; i < 30 ; i ++)
-    {
-	if(tokens[i].type == 0)
-	    break;
-	tokens_len ++;
-    }
-    */
 
     for(int i = 0 ; i < tokens_len ; i ++)
     {
@@ -190,9 +182,12 @@ int tokens_len = nr_token;
 	{
 	    bool flag = true;
 	    int tmp = isa_reg_str2val(tokens[i].str, &flag);
-	    if(flag){
+	    if(flag)
+	    {
 		int2char(tmp, tokens[i].str); // transfrom the str --> $egx
-	    }else{
+	    }
+	    else
+	    {
 		printf("Transfrom error. \n");
 		assert(0);
 	    }
@@ -211,7 +206,7 @@ int tokens_len = nr_token;
         }
     }
     /*
-     * fu.
+     * fushu
      */
     for(int i = 0 ; i < tokens_len ; i ++)
     {
@@ -248,7 +243,8 @@ int tokens_len = nr_token;
 		memset(tokens[i+1].str, 0 ,sizeof(tokens[i+1].str));
 		tokens[i+1].str[0] = '1';
 	    }
-	    else{
+	    else
+	    {
 		memset(tokens[i+1].str, 0 , sizeof(tokens[i+1].str));
 	    }
 	    for(int j = 0 ; j < tokens_len ; j ++){
