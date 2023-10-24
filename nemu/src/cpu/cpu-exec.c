@@ -139,6 +139,11 @@ void ftrace_once(Decode *s, vaddr_t dnpc) {
     Elf32_Sym *sym = &symtab[i];
     char *name = &strtab[sym->st_name];
     if(ELF32_ST_TYPE(sym->st_info) == 2 ) { // match function
+      if(ftrace_buf_idx >= 1000) {
+        ftrace_buf_idx = 0;
+        ftrace_spcae_cnt = 0;
+        memset(ftrace_buf, '\0', sizeof(ftrace_buf));
+      }
       if(!(s->pc >= sym->st_value && s->pc < (sym->st_value + sym->st_size)) && dnpc == sym->st_value ) { // function call
         //sprintf(ftrace_stack[stack_indx++], "0x%x:\tcall[ %s@0x%x ]\n", s->pc, name, dnpc);
         ftrace_buf_idx++;
