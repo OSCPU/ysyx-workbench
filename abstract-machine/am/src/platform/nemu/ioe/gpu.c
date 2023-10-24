@@ -4,20 +4,25 @@
 
 #define SYNC_ADDR (VGACTL_ADDR + 4)
 
+typedef struct screen {
+  uint32_t W;
+  uint32_t H;
+} screen;
+screen display;
+
 void __am_gpu_init() {
-  //int i;
-  //int W = inl(VGACTL_ADDR) >> 16;
-  //int H = inl(VGACTL_ADDR) & 0xffff;
-  //uint32_t *fb = (uint32_t *)(uintptr_t)FB_ADDR;
-  //for(i = 0; i< W * H; i++) fb[i] = i;
-  //outl(SYNC_ADDR, 1);
+  int i;
+  display.W = inl(VGACTL_ADDR) >> 16;
+  display.H = inl(VGACTL_ADDR) & 0xffff;
+  uint32_t *fb = (uint32_t *)(uintptr_t)FB_ADDR;
+  for(i = 0; i< display.W * display.H; i++) fb[i] = 0;
+  outl(SYNC_ADDR, 1);
 }
 
 void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
-  uint32_t vga_ctr = inl(VGACTL_ADDR);
   *cfg = (AM_GPU_CONFIG_T) {
     .present = true, .has_accel = false,
-    .width = vga_ctr >> 16, .height = vga_ctr & 0xffff,
+    .width = display.W, .height = display.H,
     .vmemsz = 0
   };
 }
@@ -29,17 +34,12 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
   int h = ctl->h;
   uint32_t *pixels = ctl->pixels;
   uint32_t *fb = (uint32_t *)(uintptr_t)FB_ADDR;
-
-  uint32_t W = inl(VGACTL_ADDR) >> 16;
-  uint32_t H = inl(VGACTL_ADDR) & 0xffff;
-
-  assert(x < W && y < H);
   
   int i,j;
   for(j = y; j < y + h; j++) {
     for(i = x; i < x + w; i++) {
       //fb[j][i] = pixels[j-y][i-x];
-      fb[j * W + i] = pixels[(j-y) * w + (i-x)];
+      fb[j * display.W + i] = pixels[(j-y) * w + (i-x)];
     }
   }
   
