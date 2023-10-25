@@ -74,11 +74,9 @@ void *memset(void *s, int c, size_t n) {
   assert(s != NULL);
   assert(n >= 0);
 
-  char *p = (char *)s;
-
   size_t i;
   for(i = 0; i < n; i++) {
-    p[i] = c;
+    *((unsigned char *)s + i) = (unsigned char)c;
   }
   return s;
   //panic("Not implemented");
@@ -92,13 +90,13 @@ void *memmove(void *dst, const void *src, size_t n) {
   void* ret = dst;
   if (dst < src) {
     while (n--) {
-      *(char*)dst = *(char*)src;
-      (char*)dst++;
-      (char*)src++;
+      *(unsigned char*)dst = *(unsigned char*)src;
+      (unsigned char*)dst++;
+      (unsigned char*)src++;
     }
   } else {
     while (n--) {
-      *((char*)dst + n) = *((char*)src + n);
+      *((unsigned char*)dst + n) = *((unsigned char*)src + n);
     }
   }
   return ret;
@@ -111,7 +109,7 @@ void *memcpy(void *dst, const void *src, size_t n) {
 
   size_t i;
   for(i = 0; i < n; i++) {
-    *((char *)dst + i) = *((char *)src + i);
+    *((unsigned char *)dst + i) = *((const unsigned char *)src + i);
   }
   return dst;
   //panic("Not implemented");

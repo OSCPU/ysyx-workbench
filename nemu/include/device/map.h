@@ -42,6 +42,7 @@ static inline int find_mapid_by_addr(IOMap *maps, int size, paddr_t addr) {
       return i;
     }
   }
+  printf("pc==0x%x\tmap not found\n", addr);
   return -1;
 }
 

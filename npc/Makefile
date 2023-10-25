@@ -1,4 +1,6 @@
 BUILD_DIR = ./build
+SIM_DIR   = ./sim
+Verilog_FILE = TOP.v
 
 export PATH := $(PATH):$(abspath ./utils)
 
@@ -9,7 +11,7 @@ verilog:
 	$(call git_commit, "generate verilog")
 	mkdir -p $(BUILD_DIR)
 	mill -i __.test.runMain Elaborate -td $(BUILD_DIR)
-	$(shell cp $(BUILD_DIR)/Top.v ./playground/sim/)
+	$(shell cp $(BUILD_DIR)/$(Verilog_FILE) $(SIM_DIR))
 
 help:
 	mill -i __.test.runMain Elaborate --help
@@ -28,11 +30,12 @@ checkformat:
 
 clean:
 	-rm -rf $(BUILD_DIR)
+	$(MAKE) -C $(SIM_DIR) clean
 
-.PHONY: test verilog help compile bsp reformat checkformat clean
+.PHONY: test verilog help compile bsp reformat checkformat clean sim
 
 sim:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
-	@echo "Write this Makefile by yourself."
+	$(MAKE) -C $(SIM_DIR) sim
 
 -include ../Makefile
