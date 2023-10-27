@@ -1,17 +1,22 @@
-BUILD_DIR = ./build
-SIM_DIR   = ./sim
-Verilog_FILE = TOP.v
+# include sim.mk for simulation
+include $(NPC_HOME)/scripts/sim.mk
+
+# Basic variables definition
+CHISEL_BUILD_DIR = $(shell pwd)/chisel-build
+VERILOG_FILE     = Top.v
 
 export PATH := $(PATH):$(abspath ./utils)
 
+# Some convenient for chisel build
 test:
 	mill -i __.test
 
 verilog:
 	$(call git_commit, "generate verilog")
-	mkdir -p $(BUILD_DIR)
-	mill -i __.test.runMain Elaborate -td $(BUILD_DIR)
-	$(shell cp $(BUILD_DIR)/$(Verilog_FILE) $(SIM_DIR))
+	@echo + Build verilog
+	@mkdir -p $(CHISEL_BUILD_DIR)
+	mill -i __.test.runMain Elaborate -td $(CHISEL_BUILD_DIR)
+	@cp $(CHISEL_BUILD_DIR)/$(VERILOG_FILE) $(VSRCS_DIR)
 
 help:
 	mill -i __.test.runMain Elaborate --help
@@ -29,13 +34,14 @@ checkformat:
 	mill -i __.checkFormat
 
 clean:
-	-rm -rf $(BUILD_DIR)
-	$(MAKE) -C $(SIM_DIR) clean
-
-.PHONY: test verilog help compile bsp reformat checkformat clean sim
+	@-rm -rf $(CHISEL_BUILD_DIR)
+	@-rm -rf $(BUILD_DIR)
+	@find $(VSRCS_DIR) -type f -name "*.v" -exec rm {} \;
 
 sim:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
-	$(MAKE) -C $(SIM_DIR) sim
+	$(NPC_EXEC)
+
+.PHONY: test verilog help compile bsp reformat checkformat clean sim
 
 -include ../Makefile
