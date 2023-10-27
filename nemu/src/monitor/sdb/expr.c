@@ -64,7 +64,7 @@ static struct rule {
   {"\\|\\|",OR},
   {"\\&\\&",AND},
   {"\\!",'!'},
-  {"\\$[a-zA-Z]*[0-9]*",RESGISTER},
+  {"\\$[a-zA-Z]*[0-9]*",RESGISTER},//下面顺序不可倒过来
   {"0[xX][0-9a-fA-F]+",HEX},
   {"[0-9]+",Num},
 
@@ -175,6 +175,9 @@ word_t expr(char *e, bool *success) {
 
   /* TODO: Insert codes to evaluate the expression. */
 int tokens_len = nr_token;
+     /*
+     * Register
+     */
 
     for(int i = 0 ; i < tokens_len ; i ++)
     {
@@ -194,7 +197,7 @@ int tokens_len = nr_token;
 	}
     }
     /*
-     * Init the tokens HEX
+     * HEX
      */
     for(int i = 0 ; i < tokens_len ; i ++)
     {
@@ -206,7 +209,7 @@ int tokens_len = nr_token;
         }
     }
     /*
-     * fushu
+     * 负数
      */
     for(int i = 0 ; i < tokens_len ; i ++)
     {
@@ -232,7 +235,7 @@ int tokens_len = nr_token;
 	}
     }
 
-     // Init the tokens !
+     // !
     for(int i = 0 ; i < tokens_len ; i ++)
     {
 	if(tokens[i].type == '!')
@@ -259,7 +262,7 @@ int tokens_len = nr_token;
 	}
     }
     /*
-     * Jie yin yong
+     *   the *()
      * */
     for(int i = 0 ; i < tokens_len ; i ++)
     {
