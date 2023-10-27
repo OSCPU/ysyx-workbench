@@ -19,7 +19,7 @@
 #define NR_WP 32
 #include "watchpoint.h"
 
-static WP wp_pool[NR_WP] = {};
+WP wp_pool[NR_WP] = {};
 static WP *wp_head = NULL, *wp_tail = NULL,           // watch point list
           *free_ = NULL;            // free nodes list
 
