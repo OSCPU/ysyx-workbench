@@ -1,16 +1,17 @@
 module register(
 	input [8:0]sw,
-	input BTNC,
+	input BTNC,//clk
 	output reg [15:0] ledr,
 	output reg [7:0] seg0,seg1);
 
 	//clk:BTNC changeinput:sw[8] input:sw[7:0]
 
-	seg u0(ledr[3:0],seg0);
+	seg u0(ledr[3:0],seg0);//显示
 	seg u1(ledr[7:4],seg1);
 
 	integer i;
 	reg[8:0] out;
+
 	always @(ledr)
 	begin
 	out[8]=ledr[4]^ledr[3]^ledr[2]^ledr[0];
@@ -27,17 +28,17 @@ module register(
 			begin
 				if(i==255)
 				begin
-				if(ledr[7:0]==0)
+				if(ledr[7:0]==0)//全0处理
 				ledr[7:0]=8'b11111111;
 				else
-				ledr[7:0]={out[8],out[7:1]};
+				ledr[7:0]={out[8],out[7:1]};//rightarrow
 				end
 			end
 		end
 	end
 endmodule
 
-
+//16进制
 module seg(
 	input [3:0]ledr,
 	output reg [7:0]seg0 );

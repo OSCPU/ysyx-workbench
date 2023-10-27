@@ -1,19 +1,19 @@
 module encoder(
-	input [8:0] sw,
+	input [8:0] sw,//开关输入
 	output [7:0] out,
 	output reg [15:0] ledr);
 	
-	wire [7:0] hex;
+	wire [7:0] hex;//数码管
 	seg u0(ledr[2:0],hex);
 	assign out=hex; 
 
 	always @(*)
 	begin
-	if(sw[8])
+	if(sw[8])//enable
 	begin
 
 	if(sw[7:0]==0)
-	ledr[4]=0;
+	ledr[4]=0;//全0指示位
 	else
 	ledr[4]=1;
 
@@ -42,6 +42,7 @@ module encoder(
 
 endmodule
 
+//数码管对应的十进制
 module seg(
 	input [2:0] b,
 	output reg [7:0] h);

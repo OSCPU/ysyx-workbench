@@ -27,20 +27,20 @@ module ps2_keyboard(clk,resetn,ps2_clk,ps2_data,seg7,seg6,seg4,seg3,seg1,seg0);
         end
         else begin
             if (sampling) begin
-              if (count == 4'd10) begin
+              if (count == 4'd10) begin//是否接收到10位
                 if ((buffer[0] == 0) &&  // start bit
                     (ps2_data)       &&  // stop bit
-                    (^buffer[9:1])) begin      // odd  parity
+                    (^buffer[9:1])) begin      //奇 偶校验 
                     $display("receive %x", buffer[8:1]);
-		    if(buffer[8:1]==8'hF0)
-			c=c+4'b1;
+		    if(buffer[8:1]==8'hF0)//断码
+			c=c+4'b1;//count times
 		    else
-	            b=buffer[8:1];
+	            b=buffer[8:1];//ASCII
                 end
                 count <= 0;     // for next
               end else begin
                 buffer[count] <= ps2_data;  // store ps2_data
-                count <= count + 3'b1;
+                count <= count + 3'b1;//接收位+1
               end
             end
         end

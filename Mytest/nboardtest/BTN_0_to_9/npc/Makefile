@@ -61,4 +61,4 @@ sim:$(Vfile) $(Cfile)
 clean:
 	rm -rf obj_dir wave.vcd
 	rm -rf $(BUILD_DIR)
-include ../Makefile
+include ../../../../Makefile
