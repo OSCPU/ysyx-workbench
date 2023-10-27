@@ -22,8 +22,8 @@
 #include<string.h>
 bool check_parentheses(int p, int q);
 uint32_t eval(int p , int q);
-int char2int(char s[]);
-void int2char(int x,char str[]);
+int char_to_int(char s[]);
+void int_to_char(int x,char str[]);
 int flat_HEX=0;
 #define max(a,b) (((a)>(b))?(a):(b))
 
@@ -184,7 +184,7 @@ int tokens_len = nr_token;
 	    int tmp = isa_reg_str2val(tokens[i].str, &flag);
 	    if(flag)
 	    {
-		int2char(tmp, tokens[i].str); // transfrom the str --> $egx
+		int_to_char(tmp, tokens[i].str); // transfrom the str --> $egx
 	    }
 	    else
 	    {
@@ -202,7 +202,7 @@ int tokens_len = nr_token;
         {
 	    flat_HEX=1;
             int value = strtol(tokens[i].str, NULL, 16);
-            int2char(value, tokens[i].str);
+            int_to_char(value, tokens[i].str);
         }
     }
     /*
@@ -238,7 +238,7 @@ int tokens_len = nr_token;
 	if(tokens[i].type == '!')
 	{
 	    tokens[i].type = TK_NOTYPE;
-	    int tmp = char2int(tokens[i+1].str);
+	    int tmp = char_to_int(tokens[i+1].str);
 	    if(tmp == 0){
 		memset(tokens[i+1].str, 0 ,sizeof(tokens[i+1].str));
 		tokens[i+1].str[0] = '1';
@@ -277,10 +277,10 @@ int tokens_len = nr_token;
           )
 		{
             tokens[i].type = TK_NOTYPE;
-            int tmp = char2int(tokens[i+1].str);
+            int tmp = char_to_int(tokens[i+1].str);
             uintptr_t a = (uintptr_t)tmp;
             int value = *((int*)a);
-            int2char(value, tokens[i+1].str);	    
+            int_to_char(value, tokens[i+1].str);	    
             for(int j = 0 ; j < tokens_len ; j ++){
                 if(tokens[j].type == TK_NOTYPE){
                     for(int k = j +1 ; k < tokens_len ; k ++){
@@ -415,7 +415,7 @@ uint32_t eval(int p, int q) {
 }
 
 
-int char2int(char s[]){
+int char_to_int(char s[]){
     int s_size = strlen(s);
     int res = 0 ;
     for(int i = 0 ; i < s_size ; i ++)
@@ -426,7 +426,7 @@ int char2int(char s[]){
     res /= 10;
     return res;
 }
-void int2char(int x, char str[]){
+void int_to_char(int x, char str[]){
     int len = strlen(str);
     memset(str, 0, len);
     int tmp_index = 0;

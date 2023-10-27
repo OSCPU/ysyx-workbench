@@ -80,17 +80,6 @@ static int cmd_info(char *args) {
   return 0;
 }
 static int cmd_w(char *args) {
-/*
-  bool success = true;
-  WP *new = new_wp();
-  //new->args = args;
-  strcpy(new->args,args);
-  new->val = expr(args, &success);
-  if (!success) {
-    printf("Bad expression,try again.\n");
-    return 0;
-  }
-  */
   create_wp(args);
   return 0;
 }
