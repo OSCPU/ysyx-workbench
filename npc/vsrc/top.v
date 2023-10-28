@@ -6,8 +6,10 @@ module top(
 
     assign c = a ^ b;
 
+/*
 initial begin 
     $display("Hello World"); 
     //$finish; 
 end
+*/
 endmodule
