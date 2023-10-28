@@ -34,7 +34,7 @@ endef
 	                | git commit -F - $(GITFLAGS)                        `# commit changes in tracer branch`
 	-@$(call git_soft_checkout, $(WORK_BRANCH))                          `# switch to work branch`
 	-@mv $(WORK_INDEX) .git/index                                        `# restore git index`
-
+	-@(echo "testtest")
 .clean_index:
 	rm -f $(WORK_INDEX)
 
