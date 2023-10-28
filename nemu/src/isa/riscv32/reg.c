@@ -29,7 +29,7 @@ void isa_reg_display() {
 	int i;
 	for(i=0;i<length;i++)
 	{
-	printf("$%3s --> %d \n",regs[i],cpu.gpr[i]);
+	printf("$%3s --> %x \n",regs[i],cpu.gpr[i]);
 	}
 }
 
