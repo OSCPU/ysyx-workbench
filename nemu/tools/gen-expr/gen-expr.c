@@ -39,8 +39,8 @@ static char *code_format =
 "  return 0; "
 "}";
 
-
 int main(int argc, char *argv[]) {
+  int flat=0;
   int seed = time(0);
   srand(seed);
   int loop = 1;
@@ -52,8 +52,11 @@ int main(int argc, char *argv[]) {
     memset(buf,'\0',sizeof(buf));
     count=0;
     memset(code_buf,'\0',sizeof(code_buf));
-    gen_rand_expr();
-    //strcpy(buf,"55/(2-2)");
+    //gen_rand_expr();
+    if(flat==0)
+    strcpy(buf,"55/(2-2)");
+    else 
+    strcpy(buf,"55/1");
     sprintf(code_buf, code_format, buf);
 
     FILE *fp = fopen("/tmp/.code.c", "w");
@@ -72,11 +75,15 @@ int main(int argc, char *argv[]) {
     int result;
     ret = fscanf(fp, "%d", &result);
     pclose(fp);
+    printf("%d\n",ret);
 
     if(ret==1) 
     printf("%u %s\n", result, buf);
     else
+    {
     i=i-1;
+    flat=1;
+    }
   }
   return 0;
 }

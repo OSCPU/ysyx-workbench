@@ -35,7 +35,9 @@ void init_wp_pool() {
 /* TODO: Implement the functionality of watchpoint */
 
 void free_wp(int no){
+  //the head
   if (wp_head->NO == no) {
+  //only one menber
     if (wp_tail == wp_head) {
       wp_tail = NULL;
     while(free_->next==NULL)
@@ -47,6 +49,7 @@ void free_wp(int no){
     free_->next=p;
     wp_head=NULL;
     }
+  //the menbers >1
     else
     {
     while(free_->next==NULL)
@@ -62,6 +65,7 @@ void free_wp(int no){
     
     return;
   }
+  //the no is not the head 
   else
     {
     WP *pre = wp_head;
@@ -69,6 +73,7 @@ void free_wp(int no){
       pre = pre->next;
     }
     if (pre->next) {
+    //the no is the tail
       if (pre->next == wp_tail) {
         wp_tail = pre;
 	while(free_->next==NULL)
@@ -82,8 +87,9 @@ void free_wp(int no){
         free_->next=p;
 
       }
+    //not the tail
       else{
-      WP *wp = pre->next;              // search wp successfully
+      WP *wp = pre->next;              
       while(free_->next==NULL)
       {
     	free_=free_->next;
@@ -121,7 +127,7 @@ WP* new_wp() {
   }
   else
   {
-    panic("No more free watch point nodes in wp_pool!\n");
+    panic("No more free watch point nodes in wp_pool\n");
     return free_;
   }
 }
@@ -136,10 +142,10 @@ bool check_wp() {
   while (cur) {
     if (cur->val != expr(cur->args, &success)) {
       if (!success) {
-        printf("Bad expression,try again.\n");
+        printf("Bad expression\n");
         return false;
       }
-      printf("NO. %d watchpoint's value changed.\n", cur->NO);
+      printf("NO. %d watchpoint's value changed\n", cur->NO);
       return false;
     }
     cur = cur->next;
@@ -149,13 +155,13 @@ bool check_wp() {
 
 void watchpoint_display() {
   if (wp_head == NULL) {
-    printf("No watchpoint.\n");
+    printf("No watchpoint\n");
   }
   else
   {
     WP *cur = wp_head;
     while (cur) {
-      printf("NO.%d expression: %s  , init_value= %d.\n", cur->NO, cur->args, cur->val);
+      printf("NO.%d expression: %s  , init_value= %d\n", cur->NO, cur->args, cur->val);
       cur = cur->next;
     }
   }
@@ -168,7 +174,7 @@ void create_wp(char* args)
   strcpy(new->args,args);
   new->val = expr(args, &success);
   if (!success) {
-    printf("Bad expression,try again.\n");
+    printf("Bad expression\n");
     }
 
 }

@@ -183,9 +183,9 @@ int tokens_len = nr_token;
     {
 	if(tokens[i].type == RESGISTER)
 	{
-	    bool flag = true;
-	    int tmp = isa_reg_str2val(tokens[i].str, &flag);
-	    if(flag)
+	    bool flat = true;
+	    int tmp = isa_reg_str2val(tokens[i].str, &flat);
+	    if(flat)
 	    {
 		int_to_char(tmp, tokens[i].str); // transfrom the str --> $egx
 	    }
@@ -281,7 +281,7 @@ int tokens_len = nr_token;
 		{
             tokens[i].type = TK_NOTYPE;
             int tmp = char_to_int(tokens[i+1].str);
-            uintptr_t a = (uintptr_t)tmp;
+            uintptr_t a = (uintptr_t)tmp;//int <-> *()
             int value = *((int*)a);
             int_to_char(value, tokens[i+1].str);	    
             for(int j = 0 ; j < tokens_len ; j ++){
@@ -411,7 +411,7 @@ uint32_t eval(int p, int q) {
             case AND:
                 return val1 && val2;
             default:
-                printf("No Op type.");
+                printf("error type.");
                 assert(0);
         }
     }
