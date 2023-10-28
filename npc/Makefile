@@ -10,4 +10,5 @@ sim:	all
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	# $(all)
 
-
+gtk:
+	gtkwave wave.vcd
