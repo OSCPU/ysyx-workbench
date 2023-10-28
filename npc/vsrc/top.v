@@ -1,4 +1,4 @@
-module example(
+module top(
     input a , 
     input b,
     output c
