@@ -1,3 +1,4 @@
+include ../Makefile
 
 V_FILE:=vsrc/example.v
 CPP_FILE:=csrc/main.cpp
@@ -14,4 +15,4 @@ sim:
 
 
 
-include ../Makefile
+
