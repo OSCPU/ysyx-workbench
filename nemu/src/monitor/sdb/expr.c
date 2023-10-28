@@ -184,10 +184,12 @@ int tokens_len = nr_token;
 	if(tokens[i].type == RESGISTER)
 	{
 	    bool flat = true;
-	    int tmp = isa_reg_str2val(tokens[i].str, &flat);
+	    int tmp=0;
+	    tmp = isa_reg_str2val(tokens[i].str, &flat);
 	    if(flat)
 	    {
-		int_to_char(tmp, tokens[i].str); // transfrom the str --> $egx
+	        sprintf(tokens[i].str,"%d",tmp);
+	//	int_to_char(tmp, tokens[i].str); // transfrom the str --> $egx
 	    }
 	    else
 	    {
@@ -205,7 +207,8 @@ int tokens_len = nr_token;
         {
 	    flat_HEX=1;
             int value = strtol(tokens[i].str, NULL, 16);
-            int_to_char(value, tokens[i].str);
+            sprintf(tokens[i].str,"%d",value);
+            //int_to_char(value, tokens[i].str);
         }
     }
     /*
