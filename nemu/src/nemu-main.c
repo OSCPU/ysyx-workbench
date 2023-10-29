@@ -55,16 +55,13 @@ int main(int argc, char *argv[]) {
   uint32_t num=expr(buf,&success);
   if(success==false)
   {
-  printf("error\n");
-  printf("%d\n",i);
+  printf("%d error\n",i);
   assert(0);
   }
   else
   {
-  if(num==result)
-  printf("%d\n",i);
-  else
-  printf("worng\n");
+  if(num!=result)
+  printf("%d worng\n",i);
   } 
   memset(buf,'\0',sizeof(buf));
   }
