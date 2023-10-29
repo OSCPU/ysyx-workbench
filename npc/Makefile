@@ -34,10 +34,16 @@ checkformat:
 clean:
 	@-rm -rf $(CHISEL_BUILD_DIR)
 
+cleanall: clean
+	@$(MAKE) -C $(SIM_DIR) clean
+
 sim:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
-	$(MAKE) -C $(SIM_DIR) run
+	$(MAKE) -C $(SIM_DIR) sim
 
-.PHONY: test verilog help compile bsp reformat checkformat clean sim
+wave:
+	gtkwave sim/wave.vcd
+
+.PHONY: test verilog help compile bsp reformat checkformat clean sim wave
 
 -include ../Makefile

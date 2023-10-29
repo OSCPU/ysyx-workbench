@@ -26,6 +26,7 @@ run: image
 	$(MAKE) -C $(NPC_HOME) sim ARGS="$(NPC_FLAGS)" IMG=$(IMAGE).bin
 
 wave: image
-	gtkwave $(NPC_HOME)/sim/wave.vcd 
+	$(MAKE) -C $(NPC_HOME) wave ARGS="$(NPC_FLAGS)" IMG=$(IMAGE).bin
+
 gdb: image
-	$(MAKE) -C $(NPC_HOME) gdb ARGS="" IMG=$(IMAGE).bin
+	$(MAKE) -C $(NPC_HOME) gdb ARGS="$(NPC_FLAGS)" IMG=$(IMAGE).bin
