@@ -12,13 +12,13 @@ VERILATOR_CFLAGS += -MMD --build -cc  \
 BIN := ./$(BUILD)/$(TOPNAME)
 V_FILE:= $(shell find $(abspath ./vsrc) -name "*.v")
 CPP_FILE:= $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp") 
-CPP_FILE+= $(SRC_AUTO_BIND)
+
 INC_PATH ?=
 
 SRC_AUTO_BIND:= ./$(BUILD)/auto_bind.cpp
 $(SRC_AUTO_BIND):$(NXDC_FILES)
 	python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
-
+CPP_FILE+= $(SRC_AUTO_BIND)
 
 include $(NVBOARD_HOME)/scripts/nvboard.mk
 
@@ -34,7 +34,7 @@ default: $(BIN)
 all:$(V_FILE)	$(CPP_FILE)
 	verilator -Wall --cc --exe --build $(CPP_FILE) $(V_FILE) --trace
 
-$(BIN):	$(V_FILE)	$(CPP_FILE) $(NVBOARD_ARCHIVE)
+$(BIN):	$(CPP_FILE) $(V_FILE)	 $(NVBOARD_ARCHIVE)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 
 	rm -rf $(OBJ_DIR)
