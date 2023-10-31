@@ -1,10 +1,9 @@
 module top(
-    input a , 
-    input b,
-    output c
+    input[1:0] sw , 
+    output ledr
 );
 
-    assign c = a ^ b;
+    assign c = a & b;
 
 /*
 initial begin 
