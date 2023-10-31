@@ -1,9 +1,9 @@
 include ../Makefile
 
-TOPNAME:=top
-NXDC_FILES:=constr/top.nxdc
-BUILD:=build
-YSYX_HOME :=$(shell pwd)/../
+TOPNAME =top
+NXDC_FILES =constr/top.nxdc
+BUILD =build
+YSYX_HOME =$(shell pwd)/../
 OBJ_DIR = $(BUILD)/obj_dir
 VERILATOR = verilator
 VERILATOR_CFLAGS += -MMD --build -cc  \
@@ -15,7 +15,7 @@ CPP_FILE = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name
 
 INC_PATH ?=
 
-SRC_AUTO_BIND:= ./$(BUILD)/auto_bind.cpp
+SRC_AUTO_BIND = $(abspath $(BUILD)/auto_bind.cpp)
 $(SRC_AUTO_BIND):$(NXDC_FILES)
 	python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
 CPP_FILE+= $(SRC_AUTO_BIND)
