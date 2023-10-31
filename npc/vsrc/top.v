@@ -4,18 +4,17 @@ module top(
 );
     
     reg flag;
-    reg[7:0] led;
     reg ledup;
     
     // wire[]led_l 
 
     always @(*) begin
         if (flag == 1'b0) begin
-            led = 8'b1;   
+            ledr[15:8] = 8'b1;   
             flag = 1;
         end
         else begin
-            led = {ledr[14:8] , ledr[15]};
+            ledr[15:8] = {ledr[14:8] , ledr[15]};
         end
     end
 
