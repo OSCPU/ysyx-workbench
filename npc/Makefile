@@ -4,7 +4,11 @@ TOPNAME =top
 NXDC_FILES =constr/top.nxdc
 BUILD =build
 YSYX_HOME =$(shell pwd)/../
+
 OBJ_DIR = $(BUILD)/obj_dir
+$(shell mkdir -p $(BUILD_DIR))
+
+
 VERILATOR = verilator
 VERILATOR_CFLAGS += -MMD --build -cc  \
 				-O3 --x-assign fast --x-initial fast --noassert
@@ -27,9 +31,6 @@ INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 
 default: $(BIN)
-
-
-
 
 all:$(V_FILE)	$(CPP_FILE)
 	verilator -Wall --cc --exe --build $(CPP_FILE) $(V_FILE) --trace
