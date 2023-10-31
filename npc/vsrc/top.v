@@ -3,7 +3,7 @@ module top(
     output ledr
 );
 
-    assign c = a & b;
+    assign ledr = sw[0] & sw[1];
 
 /*
 initial begin 
