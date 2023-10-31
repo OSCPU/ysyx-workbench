@@ -4,18 +4,22 @@ module top(
 );
 
     reg flag;
-    assign ledr[0] = sw[0] & sw[1];
+    wire[7:0] led;
+    wire ledup;
     
+    // wire[]led_l 
+
     always @(*) begin
         if (flag == 1'b0) begin
-            ledr[8] = 1;   
+            led = 8'b1;   
         end
         else begin
-            ledr[15:8] = {ledr[14:8] , ledr[15]};
+            led = {ledr[14:8] , ledr[15]};
         end
     end
-    
 
+    assign ledup = sw[0] & sw[1];
+    assign  ledr = {led , 7'b0000000 ,ledup}
 /*
 initial begin 
     $display("Hello World"); 
