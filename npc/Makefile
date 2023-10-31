@@ -29,7 +29,7 @@ all:$(V_FILE)	$(CPP_FILE)
 $(BIN):	$(V_FILE)	$(CPP_FILE) $(NVBOARD_ARCHIVE)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 
-	rm -rf $(BUILD)
+	rm -rf $(OBJ_DIR)
 
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $^ \
