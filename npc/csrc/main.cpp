@@ -55,4 +55,7 @@ int main(){
   while(1) {
     nvboard_update();
     top ->eval();
-    // top.clk = 0; du
+    // top.clk = 0; dut.eval();
+    // top.clk = 1; dut.eval();
+  }
+}
