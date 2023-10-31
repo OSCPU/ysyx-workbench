@@ -41,6 +41,9 @@
 
 #include <nvboard.h>
 #include <Vtop.h>
+
+extern void nvboard_bind_all_pins(Vtop* top);
+
 int main(){
 
   VerilatedContext* contextp = new VerilatedContext;
@@ -52,7 +55,4 @@ int main(){
   while(1) {
     nvboard_update();
     top ->eval();
-    // top.clk = 0; dut.eval();
-    // top.clk = 1; dut.eval();
-  }
-}
+    // top.clk = 0; du
