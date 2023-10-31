@@ -7,7 +7,7 @@ module top(
     assign ledr[0] = sw[0] & sw[1];
     
     always @(*) begin
-        if flag == 1'b0 begin
+        if (flag == 1'b0) begin
             ledr[8] = 1;   
         end
         else begin

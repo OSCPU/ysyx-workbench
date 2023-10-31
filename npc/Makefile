@@ -22,7 +22,7 @@ INC_PATH ?=
 SRC_AUTO_BIND = $(abspath $(BUILD)/auto_bind.cpp)
 $(SRC_AUTO_BIND):$(NXDC_FILES)
 	python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
-	echo "1111122"
+
 CPP_FILE += $(SRC_AUTO_BIND)
 
 include $(NVBOARD_HOME)/scripts/nvboard.mk
