@@ -9,9 +9,9 @@ VERILATOR = verilator
 VERILATOR_CFLAGS += -MMD --build -cc  \
 				-O3 --x-assign fast --x-initial fast --noassert
 
-BIN := ./$(BUILD)/$(TOPNAME)
-V_FILE:= $(shell find $(abspath ./vsrc) -name "*.v")
-CPP_FILE:= $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp") 
+BIN  = ./$(BUILD)/$(TOPNAME)
+V_FILE = $(shell find $(abspath ./vsrc) -name "*.v")
+CPP_FILE = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp") 
 
 INC_PATH ?=
 
