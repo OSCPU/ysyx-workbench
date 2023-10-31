@@ -39,6 +39,7 @@ all:$(V_FILE)	$(CPP_FILE)
 $(BIN):	$(CPP_FILE) $(V_FILE)	 $(NVBOARD_ARCHIVE)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 
+	echo $(CPP_FILE)
 	rm -rf $(OBJ_DIR)
 
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
