@@ -11,7 +11,7 @@ module top(
     // wire[]led_l 
 
     always @(posedge clk) begin
-        if (rst == 1'b0) begin
+        if (rst == 1'b1) begin
             led <= 1;  
             count <= 0 ;
         end
