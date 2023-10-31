@@ -2,11 +2,11 @@ include ../Makefile
 
 TOPNAME =top
 NXDC_FILES =constr/top.nxdc
-BUILD =build
+BUILD =./build
 YSYX_HOME =$(shell pwd)/../
 
 OBJ_DIR = $(BUILD)/obj_dir
-$(shell mkdir -p $(BUILD_DIR))
+$(shell mkdir -p $(BUILD))
 
 
 VERILATOR = verilator
