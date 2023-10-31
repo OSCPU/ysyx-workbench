@@ -29,17 +29,17 @@ include $(NVBOARD_HOME)/scripts/nvboard.mk
 
 
 INCFLAGS = $(addprefix -I, $(INC_PATH))
-CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
+CXXFLAGS += $(INCFLAGS) 
 
 default: $(BIN)
 
 all:$(V_FILE)	$(CPP_FILE)
 	verilator -Wall --cc --exe --build $(CPP_FILE) $(V_FILE) --trace
 
-$(BIN):	$(CPP_FILE) $(V_FILE)	 $(NVBOARD_ARCHIVE)
+$(BIN):	$(CPP_FILE) $(V_FILE)  $(NVBOARD_ARCHIVE)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 
-	echo $(CPP_FILE)
+	echo $^
 	rm -rf $(OBJ_DIR)
 
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
