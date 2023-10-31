@@ -16,6 +16,8 @@ CPP_FILE+= $(SRC_AUTO_BIND)
 INC_PATH ?=
 
 SRC_AUTO_BIND:= ./$(BUILD)/auto_bind.cpp
+$(SRC_AUTO_BIND):$(NXDC_FILES)
+	python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
 
 
 include $(NVBOARD_HOME)/scripts/nvboard.mk
@@ -27,8 +29,6 @@ CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 default: $(BIN)
 
 
-$(SRC_AUTO_BIND):$(NXDC_FILES)
-	python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
 
 
 all:$(V_FILE)	$(CPP_FILE)
