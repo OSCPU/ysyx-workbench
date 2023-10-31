@@ -10,8 +10,9 @@ VERILATOR_CFLAGS += -MMD --build -cc  \
 				-O3 --x-assign fast --x-initial fast --noassert
 
 BIN := ./$(BUILD)/$(TOPNAME)
-V_FILE:=vsrc/top.v
-CPP_FILE:=csrc/main.cpp $(SRC_AUTO_BIND)
+V_FILE:= $(shell find $(abspath ./vsrc) -name "*.v")
+CPP_FILE:= $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp") 
+CPP_FILE+=$(SRC_AUTO_BIND)
 SRC_AUTO_BIND:= ./$(BUILD)/auto_bind.cpp
 
 
