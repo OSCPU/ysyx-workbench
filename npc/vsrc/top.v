@@ -1,7 +1,7 @@
 
 
 
-//  4 select 2 
+//  4 select 1
 // module top(
 //     input [7:0]a ,
 //     input [7:0]b ,
@@ -34,20 +34,44 @@
 // endmodule
 
 
+// encoder 
+// module top(
+//     input [1:0] x,
+//     input en , 
+//     output reg [4:0] y 
+// );
+    
+//     always @(*)
+
+//         if(en) begin
+//             case(x) 
+//                 0:y=1;
+//                 1:y=2;
+//                 2:y=4;
+//                 3:y=8;
+//             endcase
+//         end
+//         else begin
+//             y = 0 ;
+//         end
+
+// endmodule
+
+//decoder 
 module top(
-    input [1:0] x,
+    input [4:0] y,
     input en , 
-    output reg [4:0] y 
+    output reg [1:0] x 
 );
     
     always @(*)
 
         if(en) begin
-            case(x) 
-                0:y=1;
-                1:y=2;
-                2:y=4;
-                3:y=8;
+            case(y) 
+                1:x=0;
+                2:x=1;
+                4:x=2;
+                8:x=3;
             endcase
         end
         else begin
