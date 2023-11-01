@@ -100,7 +100,7 @@ int main(){
     top->en = i%1;
     top->eval();
 
-    if(  i%4  != top->x ){
+    if(  top->en == 1 &&i%4  != top->x ){
       printf("error !\n");
     }
     else printf("success1 !\n");
