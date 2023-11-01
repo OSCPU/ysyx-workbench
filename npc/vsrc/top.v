@@ -115,6 +115,7 @@ module ALU(
     output reg Equal 
 );
 
+
     always @(*)
 
         case(OPT)
@@ -122,26 +123,67 @@ module ALU(
                 {Carry , Output} = A + B ;
                 EqualZero = (Output == 0) ? 1: 0 ;
                 Overflow = A[31] == B[31] && A[31] != Output[31];
-                
+                Carry = 0 ;
+                Compare = 0 ;
+                Equal = 0 ;
             end
             3'b001:begin
 
                 {Carry , Output} = A - B ;
                 EqualZero = (Output == 0) ? 1: 0 ;
                 Overflow = A[31] != B[31] && A[31] != Output[31];
+
+                Compare = 0 ;
+                Equal = 0 ;
             end
             3'b010:
                 Output = ~A;
+
+                Carry = 0 ;
+                EqualZero = 0 ;
+                Overflow = 0 ;
+                Compare = 0 ;
+                Equal = 0 ;
             3'b011:
                 Output = A & B;
+
+                Carry = 0 ;
+                EqualZero = 0 ;
+                Overflow = 0 ;
+                Compare = 0 ;
+                Equal = 0 ;
             3'b100:
                 Output = A | B;
+
+                Carry = 0 ;
+                EqualZero = 0 ;
+                Overflow = 0 ;
+                Compare = 0 ;
+                Equal = 0 ;
             3'b101:
                 Output = A ^ B;
+
+                Carry = 0 ;
+                EqualZero = 0 ;
+                Overflow = 0 ;
+                Compare = 0 ;
+                Equal = 0 ;
             3'b110:
                 Compare = (A < B) ? 1 : 0 ;
+
+                Carry = 0 ;
+                EqualZero = 0 ;
+                Overflow = 0 ;
+                Compare = 0 ;
+                Equal = 0 ;
             3'b111:
                 Equal = (A == B) ? 1: 0 ;
+                
+                Carry = 0 ;
+                EqualZero = 0 ;
+                Overflow = 0 ;
+                Compare = 0 ;
+                Equal = 0 ;
         endcase
             
 
