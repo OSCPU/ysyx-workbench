@@ -72,7 +72,7 @@
 //   }
 // }
 
-//encoder
+//decoder
 // void 4selct2(Vtop * top){
 //     for(int i= 0 ; i <30;i++){
 
@@ -87,6 +87,26 @@
 //   }
 
 // }
+
+
+void test( Vtop*p , int a , int b , int sub , int *res , int *zero , int *overflow ){
+
+  p->a = a;
+  p->b = b;
+  p->sub = sub;
+  p->eval();
+
+  *zero = p->Zero;
+  *overflow = p->Overflow;
+  *res = p->res;
+  // carry = p ->
+  printf("%d %d %d %d %d %d\n" , a , b , sub , *zero , *overflow , *res);
+}
+#define INT_MAX 0x7fffffff
+
+
+#define INT_MIN 0x80000000
+
 int main(){
 
   VerilatedContext* contextp = new VerilatedContext;
@@ -94,16 +114,18 @@ int main(){
   // nvboard_bind_all_pins(top);
   // nvboard_init();
 
-  for(int i= 0 ; i <30;i++){
+  int a , b , sub , zero , overflow , res ;
+  printf("%d\n" , -1-INT_MIN);
+  test(top , 1 , INT_MIN , 1 , &zero , &overflow , &res);
+  
+  test(top , INT_MAX , INT_MIN , 0 , &zero , &overflow , &res);
+  
+  test(top , 0 , INT_MIN , 1 , &zero , &overflow , &res);
 
-    top->y = (i%4+1) * 2;
-    top->en = i%1;
-    top->eval();
+  test(top , INT_MAX , 0 , 1 , &zero , &overflow , &res);
+ 
+  test(top , 0 , INT_MAX , 1 , &zero , &overflow , &res);
 
-    if(  top->en == 1 &&i%4  != top->x ){
-      printf("error !\n");
-    }
-    else printf("success1 !\n");
-  }
-
+  test(top , -1 , INT_MIN , 1 , &zero , &overflow , &res);
+ 
 }

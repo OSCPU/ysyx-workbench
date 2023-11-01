@@ -58,24 +58,108 @@
 // endmodule
 
 //decoder 
-module top(
-    input [4:0] y,
-    input en , 
-    output reg [1:0] x 
-);
+// module top(
+//     input [4:0] y,
+//     input en , 
+//     output reg [1:0] x 
+// );
     
-    always @(*)
+//     always @(*)
 
-        if(en) begin
-            case(y) 
-                1:x=0;
-                2:x=1;
-                4:x=2;
-                8:x=3;
-            endcase
-        end
-        else begin
-            x = 0 ;
-        end
+//         if(en) begin
+//             case(y) 
+//                 1:x=0;
+//                 2:x=1;
+//                 4:x=2;
+//                 8:x=3;
+//             endcase
+//         end
+//         else begin
+//             x = 0 ;
+//         end
+
+// endmodule
+
+// ADDER
+module top(
+    input [31:0] a,
+    input [31:0] b,
+    input sub     , 
+    output [31:0] res ,
+    output Carry ,
+    output Zero  , 
+    output Overflow 
+);
+    wire [31:0] k;
+    assign k = {  {32{sub}} ^b } ; 
+
+    assign {Carry , res} = a + k + {31'b000 , sub } ;
+
+    assign Zero =  ~(|res) ;
+
+    assign Overflow = (a[31] == k[31] && res[31] != a[31] ) ;
 
 endmodule
+
+
+// module ALU(
+//     input[31:0] A , 
+//     input[31:0] B ,
+//     input[2:0] OPT,
+
+//     output reg[31:0] Output , 
+//     output reg Overflow ,
+//     output reg EqualZero,
+//     output reg Carry , 
+//     output reg Compare , 
+//     output reg Equal 
+// );
+
+//     always @(*)
+
+//         case(OPT)
+//             3'b000:begin 
+//                 {Carry , Output} = A + B ;
+//                 EqualZero = (Output == 0) ? 1: 0 ;
+//                 Overflow = A[31] == B[31] && A[31] != Output[31];
+                
+//             end
+//             3'b001:begin
+
+//                 {Carry , Output} = A - B ;
+//                 EqualZero = (Output == 0) ? 1: 0 ;
+//                 Overflow = A[31] != B[31] && A[31] != Output[31];
+//             end
+//             3'b010:
+//                 Output = ~A;
+//             3'b011:
+//                 Output = A & B;
+//             3'b100:
+//                 Output = A | B;
+//             3'b101:
+//                 Output = A ^ B;
+//             3'b110:
+//                 Compare = (A < B) ? 1 : 0 ;
+//             3'b111:
+//                 Equal = (A == B) ? 1: 0 ;
+//         endcase
+            
+
+
+// endmodule
+
+// module top(
+//     input[31:0] A , 
+//     input[31:0] B ,
+//     input[2:0] OPT,
+
+//     output reg[31:0] Output , 
+//     output reg Overflow ,
+//     output reg EqualZero,
+//     output reg Carry , 
+//     output reg Compare , 
+//     output reg Equal 
+// );
+//     ALU alu(A,B,OPT,Output,Overflow,EqualZero,Carry,Compare,Equal)
+
+// endmodule
