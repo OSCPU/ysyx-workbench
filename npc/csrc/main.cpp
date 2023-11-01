@@ -112,7 +112,7 @@ int main(){
         }
         else{
           printf(" oh no \n");
-          printf("%d %d %d %d %d %d\n" ,i + j == 0 , top->Zero , top->Overflow , top->Carry , top->res );
+          printf("%d %d %d %d %d %d\n" ,i , j , top->Zero , top->Overflow , top->Carry , top->res );
         }
     }
 
