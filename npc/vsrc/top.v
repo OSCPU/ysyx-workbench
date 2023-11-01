@@ -160,6 +160,6 @@ module top(
     output reg Compare , 
     output reg Equal 
 );
-    ALU alu(A,B,OPT,Output,Overflow,EqualZero,Carry,Compare,Equal)
+    ALU alu(A,B,OPT,Output,Overflow,EqualZero,Carry,Compare,Equal);
 
 endmodule
