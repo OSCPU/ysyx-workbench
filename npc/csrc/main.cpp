@@ -55,6 +55,37 @@
 //   top->rst = 0;
 // }
 
+// void 4select1(Vtop * top){
+//   top->a = 0;
+//   top->b = 1;
+//   top->c = 2;
+//   top->d = 3;
+//   for(int i= 0; i<30;i++){
+//       top->s = i%4;
+//       top->eval();
+//       if(top->o == i%4){
+//           printf(" success !\n");
+//       }
+//       else{
+//         printf("oh no \n ");
+//       }
+//   }
+// }
+
+// void 4selct2(Vtop * top){
+//     for(int i= 0 ; i <30;i++){
+
+//     top->x = i%4;
+//     top->en = i%1;
+//     top->eval();
+
+//     if( (i%1 && top->y != 1<<(i%4) )|| (i%1 == 0 && top->y !=0)){
+//       printf("error !\n");
+//     }
+//     else printf("success1 !\n");
+//   }
+
+// }
 int main(){
 
   VerilatedContext* contextp = new VerilatedContext;
@@ -62,27 +93,6 @@ int main(){
   // nvboard_bind_all_pins(top);
   // nvboard_init();
 
-  // reset(top , 10);
-  // while() {
-  //   // nvboard_update();
-  //   single_cycle(top);
-  //   // top ->eval();
-  //   // top.clk = 0; dut.eval();
-  //   // top.clk = 1; dut.eval();
-  // }
 
-  top->a = 0;
-  top->b = 1;
-  top->c = 2;
-  top->d = 3;
-  for(int i= 0; i<30;i++){
-      top->s = i%4;
-      top->eval();
-      if(top->o == i%4){
-          printf(" success !\n");
-      }
-      else{
-        printf("oh no \n ");
-      }
-  }
+
 }
