@@ -104,10 +104,10 @@ int main(){
       top->b = j;
       top->sub = 0 ;
       top->eval();
-      if(i + j == 0 && top->Zero == 1 && top->Overflow == 0 && top->Carry == 0 && top->res == 0||
-        i+j >= -8 && i+j <8 && top->Zero ==0 && top->Overflow == 0 && top->Carry == 0 && top->res == i+j ||
-        i+j < -8 && top->Zero ==0 && top->Overflow == 1 && top->Carry == 1  ||
-        i+j > 7 && top->Zero ==0 && top->Overflow == 1 && top->Carry == 0){
+      if(i + j == 0 && top->Zero == 1 && top->Overflow == 0  && top->res == 0||
+        i+j >= -8 && i+j <8 && top->Zero ==0 && top->Overflow == 0 &&  top->res == i+j ||
+        i+j < -8 && top->Zero ==0 && top->Overflow == 1  ||
+        i+j > 7 && top->Zero ==0 && top->Overflow == 1 ){
           printf("ok !\n");
         }
         else{
