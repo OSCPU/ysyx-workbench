@@ -72,6 +72,7 @@
 //   }
 // }
 
+//encoder
 // void 4selct2(Vtop * top){
 //     for(int i= 0 ; i <30;i++){
 
@@ -93,6 +94,16 @@ int main(){
   // nvboard_bind_all_pins(top);
   // nvboard_init();
 
+  for(int i= 0 ; i <30;i++){
 
+    top->y = (i%4+1) * 2;
+    top->en = i%1;
+    top->eval();
+
+    if(  top->en == 1 &&i%4  != top->x ){
+      printf("error !\n");
+    }
+    else printf("success1 !\n");
+  }
 
 }
