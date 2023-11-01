@@ -82,21 +82,21 @@
 
 
 module top(
-    input [3:0] a,
-    input [3:0] b,
-    input sub  , 
-    output [3:0] res ,
+    input [31:0] a,
+    input [31:0] b,
+    input sub     , 
+    output [31:0] res ,
     output Carry ,
     output Zero  , 
     output Overflow 
 );
-    wire [3:0] k;
-    assign k = {  {4{sub}} ^b } + {2'b000 , sub }; 
+    wire [31:0] k;
+    assign k = {  {32{sub}} ^b } + {31'b000 , sub }; 
 
     assign {Carry , res} = a + k ;
 
     assign Zero =  ~(|res) ;
 
-    assign Overflow = (a[3] == sub && res[3] != a[3] ) ;
+    assign Overflow = (a[32] == sub && res[32] != a[32] ) ;
 
 endmodule
