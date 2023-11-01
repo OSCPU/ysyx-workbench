@@ -72,7 +72,7 @@
 //   }
 // }
 
-//encoder
+//decoder
 // void 4selct2(Vtop * top){
 //     for(int i= 0 ; i <30;i++){
 
@@ -87,6 +87,9 @@
 //   }
 
 // }
+
+
+
 int main(){
 
   VerilatedContext* contextp = new VerilatedContext;
@@ -94,16 +97,25 @@ int main(){
   // nvboard_bind_all_pins(top);
   // nvboard_init();
 
-  for(int i= 0 ; i <30;i++){
+  for(int i= -8 ; i <8;i++){
 
-    top->y = (i%4+1) * 2;
-    top->en = i%1;
-    top->eval();
-
-    if(  top->en == 1 &&i%4  != top->x ){
-      printf("error !\n");
+    for(int j=-8 ; j<8;j++){
+      top->a = i;
+      top->b = j;
+      top->sub = 0 ;
+      top->eval();
+      if(i + j == 0 && top->Zero == 1 && top->Overflow == 0 && top->Carry == 0 && top->res == 0||
+        i+j >= -8 && i+j <8 && top->Zero ==0 && top->Overflow == 0 && top->Carry == 0 && top->res == i+j ||
+        i+j < -8 && top->Zero ==0 && top->Overflow == 1 && top->Carry == 1  ||
+        i+j > 7 && top->Zero ==0 && top->Overflow == 1 && top->Carry == 0){
+          printf("ok !\n");
+        }
+        else{
+          printf(" oh no \n");
+          printf("%d %d %d %d %d %d\n" ,i + j == 0 , top->Zero , top->Overflow , top->Carry , top->res );
+        }
     }
-    else printf("success1 !\n");
+
   }
 
 }

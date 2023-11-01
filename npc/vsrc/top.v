@@ -58,24 +58,45 @@
 // endmodule
 
 //decoder 
-module top(
-    input [4:0] y,
-    input en , 
-    output reg [1:0] x 
-);
+// module top(
+//     input [4:0] y,
+//     input en , 
+//     output reg [1:0] x 
+// );
     
-    always @(*)
+//     always @(*)
 
-        if(en) begin
-            case(y) 
-                1:x=0;
-                2:x=1;
-                4:x=2;
-                8:x=3;
-            endcase
-        end
-        else begin
-            x = 0 ;
-        end
+//         if(en) begin
+//             case(y) 
+//                 1:x=0;
+//                 2:x=1;
+//                 4:x=2;
+//                 8:x=3;
+//             endcase
+//         end
+//         else begin
+//             x = 0 ;
+//         end
+
+// endmodule
+
+
+module top(
+    input [2:0] a,
+    input [2:0] b,
+    input sub , 
+
+    output [2:0] res;
+    output Carry ;
+    output Zero ;
+    output Overflow; 
+);
+    assign k = { 3{sub} ^b } + sub; 
+
+    assign {Carry , res} = a + k ;
+
+    assign Zero = !res ;
+
+    assign Overflow = (a[2-1] == sub && res[2-1] != a[2-1] ) 
 
 endmodule
