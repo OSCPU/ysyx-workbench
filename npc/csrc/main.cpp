@@ -39,10 +39,10 @@
 //   return 0;
 // }
 
-#include <nvboard.h>
+// #include <nvboard.h>
 #include <Vtop.h>
 
-extern void nvboard_bind_all_pins(Vtop* top);
+// extern void nvboard_bind_all_pins(Vtop* top);
 
 void single_cycle(Vtop* top ) {
   top->clk = 0; top->eval();
@@ -59,15 +59,27 @@ int main(){
 
   VerilatedContext* contextp = new VerilatedContext;
   Vtop* top = new Vtop{contextp};
-  nvboard_bind_all_pins(top);
-  nvboard_init();
+  // nvboard_bind_all_pins(top);
+  // nvboard_init();
 
-  reset(top , 10);
-  while(1) {
-    nvboard_update();
-    single_cycle(top);
-    // top ->eval();
-    // top.clk = 0; dut.eval();
-    // top.clk = 1; dut.eval();
+  // reset(top , 10);
+  // while() {
+  //   // nvboard_update();
+  //   single_cycle(top);
+  //   // top ->eval();
+  //   // top.clk = 0; dut.eval();
+  //   // top.clk = 1; dut.eval();
+  // }
+
+  top->a = 0;
+  top->b = 1;
+  top->c = 2;
+  top->d = 3;
+  for(int i= 0; i<30;i++){
+      top->s = i%4;
+      top->eval();
+      if(top->o == i){
+          printf(" success !\n");
+      }
   }
 }
