@@ -19,13 +19,11 @@ CPP_FILE = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name
 
 INC_PATH ?=
 
-SRC_AUTO_BIND = $(abspath $(BUILD)/auto_bind.cpp)
-$(SRC_AUTO_BIND):$(NXDC_FILES)
-	python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
-
-CPP_FILE += $(SRC_AUTO_BIND)
-
-include $(NVBOARD_HOME)/scripts/nvboard.mk
+# SRC_AUTO_BIND = $(abspath $(BUILD)/auto_bind.cpp)
+# $(SRC_AUTO_BIND):$(NXDC_FILES)
+# 	python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
+# CPP_FILE += $(SRC_AUTO_BIND)
+# include $(NVBOARD_HOME)/scripts/nvboard.mk
 
 
 INCFLAGS = $(addprefix -I, $(INC_PATH))
