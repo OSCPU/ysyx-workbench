@@ -135,48 +135,55 @@ module ALU(
                 Compare = 0 ;
                 Equal = 0 ;
             end
-            3'b010:
+            3'b010:begin
                 Output = ~A;
                 Carry = 0 ;
                 EqualZero = 0 ;
                 Overflow = 0 ;
                 Compare = 0 ;
                 Equal = 0 ;
-            3'b011:
+            end
+            3'b011:begin
                 Output = A & B;
                 Carry = 0 ;
                 EqualZero = 0 ;
                 Overflow = 0 ;
                 Compare = 0 ;
                 Equal = 0 ;
-            3'b100:
+            end
+
+            3'b100:begin
                 Output = A | B;
                 Carry = 0 ;
                 EqualZero = 0 ;
                 Overflow = 0 ;
                 Compare = 0 ;
                 Equal = 0 ;
-            3'b101:
+            end
+            3'b101:begin
                 Output = A ^ B;
                 Carry = 0 ;
                 EqualZero = 0 ;
                 Overflow = 0 ;
                 Compare = 0 ;
                 Equal = 0 ;
-            3'b110:
+            end
+            3'b110:begin
                 Compare = (A < B) ? 1 : 0 ;
                 Carry = 0 ;
                 EqualZero = 0 ;
                 Overflow = 0 ;
                 Compare = 0 ;
                 Equal = 0 ;
-            3'b111:
+            end
+            3'b111:begin
                 Equal = (A == B) ? 1: 0 ;
                 Carry = 0 ;
                 EqualZero = 0 ;
                 Overflow = 0 ;
                 Compare = 0 ;
                 Equal = 0 ;
+            end
         endcase
             
 
