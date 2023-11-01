@@ -13,11 +13,11 @@ module top(
     always @(*) begin
 
         case(s)
-            0: o <= a;
-            1: o <= b;
-            2: o <= c;
-            3: o <= d;
-            default: o<=0;
+            0: o = a;
+            1: o = b;
+            2: o = c;
+            3: o = d;
+            default: o =0;
         endcase
     end
 
