@@ -97,6 +97,6 @@ module top(
 
     assign Zero =  ~(|res) ;
 
-    assign Overflow = (a[31] == sub && res[31] != a[31] ) ;
+    assign Overflow = (a[31] == sub[31] && res[31] != a[31] ) ;
 
 endmodule
