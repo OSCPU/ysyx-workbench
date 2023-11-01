@@ -130,6 +130,7 @@ int main(){
   tfp->open("wave.vcd"); //设置输出的文件wave.vcd
 
   test( 1 , 1 , 0);
+  test( 2 , 1 , 1);
 
 
   delete top;
