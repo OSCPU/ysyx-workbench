@@ -115,8 +115,8 @@ module ALU(
     output reg Equal 
 );
     parameter fff = 32'hffffffff;
-    reg [31:0] tmp = 0 ;
-    always_latch @(*)
+    // reg [31:0] tmp ;
+    always @(*)
 
         case(OPT)
             3'b000:begin 
@@ -129,10 +129,10 @@ module ALU(
             end
             3'b001:begin
 
-                tmp = fff^ B;
-                {Carry , Output} = A + tmp + 1 ;
+                // tmp = fff^ B;
+                {Carry , Output} = A + (~tmp) + 1 ;
                 EqualZero = (Output == 0) ? 1: 0 ;
-                Overflow = A[31] == tmp[31] && A[31] != Output[31];
+                Overflow = A[31] == (~tmp)[31] && A[31] != Output[31];
                 Compare = 0 ; 
                 Equal = 0 ;
             end
