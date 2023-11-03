@@ -116,7 +116,7 @@ module ALU(
 );
     parameter fff = 32'hffffffff;
     reg [31:0]tmp;
-    always @(*)
+    always_latch
 
         case(OPT)
             3'b000:begin 
@@ -124,8 +124,6 @@ module ALU(
                 EqualZero = (Output == 0) ? 1: 0 ;
                 Overflow = A[31] == B[31] && A[31] != Output[31];
                 
-                Compare = 0 ;
-                Equal = 0 ;
             end
             3'b001:begin
 
@@ -133,61 +131,34 @@ module ALU(
                 {Carry , Output} = A + tmp + 1 ;
                 EqualZero = (Output == 0) ? 1: 0 ;
                 Overflow = A[31] == tmp[31] && A[31] != Output[31];
-                Compare = 0 ; 
-                Equal = 0 ;
+
             end
             3'b010:begin
                 Output = ~A;
-                Carry = 0 ;
-                EqualZero = 0 ;
-                Overflow = 0 ;
-                Compare = 0 ;
-                Equal = 0 ;
+
             end
             3'b011:begin
                 Output = A & B;
-                Carry = 0 ;
-                EqualZero = 0 ;
-                Overflow = 0 ;
-                Compare = 0 ;
-                Equal = 0 ;
+
             end
 
             3'b100:begin
                 Output = A | B;
-                Carry = 0 ;
-                EqualZero = 0 ;
-                Overflow = 0 ;
-                Compare = 0 ;
-                Equal = 0 ;
+
             end
             3'b101:begin
                 Output = A ^ B;
-                Carry = 0 ;
-                EqualZero = 0 ;
-                Overflow = 0 ;
-                Compare = 0 ;
-                Equal = 0 ;
+
             end
             3'b110:begin
 
-                Output = 0 ;
                 Compare = (A < B) ? 1 : 0 ;
-                Carry = 0 ;
-                EqualZero = 0 ;
-                Overflow = 0 ;
-                Compare = 0 ;
-                Equal = 0 ;
+
             end
             3'b111:begin
 
-                Output = 0;
                 Equal = (A == B) ? 1: 0 ;
-                Carry = 0 ;
-                EqualZero = 0 ;
-                Overflow = 0 ;
-                Compare = 0 ;
-                Equal = 0 ;
+
             end
         endcase
             
