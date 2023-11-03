@@ -41,9 +41,12 @@ sim:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	$(MAKE) -C $(SIM_DIR) sim
 
+gdb:
+	$(MAKE) -C $(SIM_DIR) gdb
+
 wave:
 	gtkwave sim/wave.vcd
 
-.PHONY: test verilog help compile bsp reformat checkformat clean sim wave
+.PHONY: test verilog help compile bsp reformat checkformat clean sim wave gdb
 
 -include ../Makefile
