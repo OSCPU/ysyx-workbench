@@ -123,7 +123,7 @@ module ALU(
                 {Carry , Output} = A + B ;
                 EqualZero = (Output == 0) ? 1: 0 ;
                 Overflow = A[31] == B[31] && A[31] != Output[31];
-                Carry = 0 ;
+                
                 Compare = 0 ;
                 Equal = 0 ;
             end
