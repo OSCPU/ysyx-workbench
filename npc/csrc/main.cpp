@@ -7,6 +7,12 @@
  
 #include "verilated_vcd_c.h" //可选，如果要导出vcd则需要加上
  
+
+VerilatedContext* contextp;
+Vtop* top ;
+VerilatedVcdC* tfp ;
+
+
 // int main(int argc, char** argv, char** env) {
  
 //   VerilatedContext* contextp = new VerilatedContext;
@@ -41,6 +47,8 @@
 
 // #include <nvboard.h>
 #include <Vtop.h>
+#define INT_MAX 0x7fffffff
+#define INT_MIN 0x80000000
 
 // extern void nvboard_bind_all_pins(Vtop* top);
 
@@ -88,44 +96,46 @@
 
 // }
 
+// input[31:0] A , 
+// input[31:0] B ,
+// input[2:0] OPT,
 
-void test( Vtop*p , int a , int b , int sub , int *res , int *zero , int *overflow ){
+// output reg[31:0] Output , 
+// output reg Overflow ,
+// output reg EqualZero,
+// output reg Carry , 
+// output reg Compare , 
+// output reg Equal 
+void test(  int a , int b , int opt){
 
-  p->a = a;
-  p->b = b;
-  p->sub = sub;
-  p->eval();
+  top->A = a;
+  top->B = b;
+  top->OPT = opt;
+  top->eval();
 
-  *zero = p->Zero;
-  *overflow = p->Overflow;
-  *res = p->res;
+
+  tfp->dump(contextp->time()); //dump wave
+  contextp->timeInc(1); //推动仿真时间
   // carry = p ->
-  printf("%d %d %d %d %d %d\n" , a , b , sub , *zero , *overflow , *res);
+  // printf("%d %d %d %d %d %d\n" , a , b , sub , *zero , *overflow , *res);
 }
-#define INT_MAX 0x7fffffff
-
-
-#define INT_MIN 0x80000000
 
 int main(){
 
-  VerilatedContext* contextp = new VerilatedContext;
-  Vtop* top = new Vtop{contextp};
-  // nvboard_bind_all_pins(top);
-  // nvboard_init();
+  contextp = new VerilatedContext;
+  top = new Vtop{contextp};
+  tfp = new VerilatedVcdC; //初始化VCD对象指针
+  contextp->traceEverOn(true); //打开追踪功能
+  top->trace(tfp, 0); //
+  tfp->open("wave.vcd"); //设置输出的文件wave.vcd
 
-  int a , b , sub , zero , overflow , res ;
-  printf("%d\n" , -1-INT_MIN);
-  test(top , 1 , INT_MIN , 1 , &zero , &overflow , &res);
-  
-  test(top , INT_MAX , INT_MIN , 0 , &zero , &overflow , &res);
-  
-  test(top , 0 , INT_MIN , 1 , &zero , &overflow , &res);
+  test( 1 , 1 , 0);
+  test( 2 , 1 , 1);
 
-  test(top , INT_MAX , 0 , 1 , &zero , &overflow , &res);
- 
-  test(top , 0 , INT_MAX , 1 , &zero , &overflow , &res);
 
-  test(top , -1 , INT_MIN , 1 , &zero , &overflow , &res);
+  delete top;
+  tfp->close();
+  delete contextp;
+  return 0;
  
 }
