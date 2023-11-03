@@ -129,8 +129,20 @@ int main(){
   top->trace(tfp, 0); //
   tfp->open("wave.vcd"); //设置输出的文件wave.vcd
 
-  test( 1 , 1 , 0);
-  test( 2 , 1 , 1);
+  test( INT_MAX , 0 , 0);
+  test( INT_MAX , 1 , 0);
+  test( INT_MIN , INT_MAX , 0);
+  test( INT_MIN , -INT_MIN , 0);
+  test( INT_MIN , INT_MIN , 0);
+  test( INT_MIN , 0 , 0);
+  test( 100 , -100 , 0);
+  test( 512 , 512 , 0);
+  test( 0 , -INT_MIN , 0);
+  test( 0 , INT_MIN , 0);
+  test( 0 , INT_MAX , 0);
+  test( 0 , -INT_MAX , 0);
+  test( 0 , -0 , 0);
+  test( -0 , 0 , 0);
 
 
   delete top;
