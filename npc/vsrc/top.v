@@ -114,7 +114,7 @@ module ALU(
     output reg Compare , 
     output reg Equal 
 );
-    parameter fff = {32{1}};
+    parameter fff = 32'hffffffff;
     reg [31:0] tmp;
     always @(*)
 
