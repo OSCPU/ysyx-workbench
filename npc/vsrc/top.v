@@ -115,7 +115,7 @@ module ALU(
     output reg Equal 
 );
     parameter fff = 32'hffffffff;
-    reg [31:0] tmp;
+    reg [31:0] tmp = 0 ;
     always @(*)
 
         case(OPT)
