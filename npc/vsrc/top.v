@@ -115,7 +115,7 @@ module ALU(
     output reg Equal 
 );
 
-
+    reg [31:0] tmp;
     always @(*)
 
         case(OPT)
@@ -129,10 +129,11 @@ module ALU(
             end
             3'b001:begin
 
-                {Carry , Output} = A - B ;
+                tmp = {{32{1} ^ B}}
+                {Carry , Output} = A + tmp + 1 ;
                 EqualZero = (Output == 0) ? 1: 0 ;
-                Overflow = A[31] != B[31] && A[31] != Output[31];
-                Compare = 0 ;
+                Overflow = A[31] == tmp[31] && A[31] != Output[31];
+                Compare = 0 ; 
                 Equal = 0 ;
             end
             3'b010:begin

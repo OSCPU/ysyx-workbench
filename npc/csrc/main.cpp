@@ -150,7 +150,11 @@ int main(){
   test( INT_MIN , -INT_MIN , 1);
   test( INT_MIN , INT_MIN , 1);
   test( INT_MIN , 0 , 1);
-  test( 100 , -100 , 1);
+  test( 100 , -130 , 1);
+  test( 100 , -90 , 1);
+  test( -100 , 90 , 1);
+  test( -100 , 130 , 1);
+  
   test( 512 , 512 , 1);
   test( 0 , -INT_MIN , 1);
   test( 0 , INT_MIN , 1);
