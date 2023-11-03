@@ -116,7 +116,7 @@ module ALU(
 );
     parameter fff = 32'hffffffff;
     reg [31:0] tmp = 0 ;
-    always @(*)
+    always_latch @(*)
 
         case(OPT)
             3'b000:begin 
