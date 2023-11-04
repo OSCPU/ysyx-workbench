@@ -20,9 +20,9 @@
 #include <memory/paddr.h>
 
 __EXPORT void difftest_memcpy(paddr_t addr, void *buf, size_t n, bool direction) {
-  if(direction == DIFFTEST_TO_DUT) {
+  if(direction == DIFFTEST_TO_REF) {
     memcpy(guest_to_host(addr), (const void *)buf, n);
-  } else if(direction == DIFFTEST_TO_REF) {
+  } else if(direction == DIFFTEST_TO_DUT) {
     memcpy(buf, guest_to_host(addr), n);
   } else {
     assert(0);
