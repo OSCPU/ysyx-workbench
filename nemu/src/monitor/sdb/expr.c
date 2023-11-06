@@ -189,7 +189,8 @@ int tokens_len = nr_token;
 	    tmp = isa_reg_str2val(tokens[i].str, &flat);
 	    if(flat)
 	    {
-	        sprintf(tokens[i].str,"%d",tmp);
+	        sprintf(tokens[i].str,"0x%x",tmp);
+		tokens[i].type=HEX;
 	//	int_to_char(tmp, tokens[i].str); // transfrom the str --> $egx
 	    }
 	    else
@@ -239,20 +240,20 @@ int tokens_len = nr_token;
 	}
     }
 
-     // ! reverse
+     // ! bool reverse
     for(int i = 0 ; i < tokens_len ; i ++)
     {
 	if(tokens[i].type == '!')
 	{
 	    tokens[i].type = TK_NOTYPE;
-	    int tmp = char_to_int(tokens[i+1].str);
-	    if(tmp == 0){
-		memset(tokens[i+1].str, 0 ,sizeof(tokens[i+1].str));
-		tokens[i+1].str[0] = '1';
+	    int tmp = atoi(tokens[i+1].str);
+	    if(tmp==0){
+	        memset(tokens[i+1].str, 0 ,sizeof(tokens[i+1].str));
+		tokens[i+1].str[0]='1';
 	    }
 	    else
 	    {
-		memset(tokens[i+1].str, 0 , sizeof(tokens[i+1].str));
+	        memset(tokens[i+1].str, 0 , sizeof(tokens[i+1].str));
 	    }
 	    for(int j = 0 ; j < tokens_len ; j ++){
 		if(tokens[j].type == TK_NOTYPE)
@@ -285,9 +286,10 @@ int tokens_len = nr_token;
 		{
             tokens[i].type = TK_NOTYPE;
             int tmp = char_to_int(tokens[i+1].str);
-            uintptr_t a = (uintptr_t)tmp;//int <-> *()
+            uintptr_t *a = (uintptr_t*)&tmp;//int <-> *()
             int value = *((int*)a);
-            int_to_char(value, tokens[i+1].str);	    
+            //int_to_char(value, tokens[i+1].str);	    
+	    sprintf(tokens[i+1].str,"%d",value);
             for(int j = 0 ; j < tokens_len ; j ++){
                 if(tokens[j].type == TK_NOTYPE){
                     for(int k = j +1 ; k < tokens_len ; k ++){

@@ -45,7 +45,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   if(check_wp()!=true)
   {
   nemu_state.state=NEMU_STOP;
-  printf("NO EQ\n");
+  printf("error the nemu stop\n");
   return ;
   }
 }

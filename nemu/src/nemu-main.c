@@ -68,6 +68,6 @@ int main(int argc, char *argv[]) {
   } 
   memset(buf,'\0',sizeof(buf));
   }
-*/
+  */
   return is_exit_status_bad();
 }

@@ -27,7 +27,7 @@ const char *regs[] = {
 void isa_reg_display() {
 	int length=sizeof(regs) / sizeof(regs[1]);
 	int i;
-	printf("$pc --> 0x%x \n",cpu.pc);
+	printf("$ pc --> 0x%x \n",cpu.pc);
 	for(i=0;i<length;i++)
 	{
 	printf("$%3s --> 0x%x \n",regs[i],cpu.gpr[i]);

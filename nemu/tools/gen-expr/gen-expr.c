@@ -75,7 +75,8 @@ int main(int argc, char *argv[]) {
     int result;
     ret = fscanf(fp, "%d", &result);
     pclose(fp);
-    printf("%d\n",ret);
+    //if warning the ret will change
+    printf("the ret is -> %d\n",ret);
 
     if(ret==1) 
     printf("%u %s\n", result, buf);

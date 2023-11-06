@@ -132,6 +132,7 @@ static int cmd_p(char *args)
 	printf("0x%x\n",num);
 	else
 	printf("%u\n",num);
+	flat_HEX=0;
   }
 
 
