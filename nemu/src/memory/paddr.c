@@ -62,6 +62,8 @@ word_t paddr_read(paddr_t addr, int len) {
     return pmem_read(addr, len);
   }
   IFDEF(CONFIG_DEVICE, return mmio_read(addr, len));
+  if(addr == 0x80003394)
+    printf("%s at " FMT_PADDR " len=%d\n",ANSI_FMT("paddr read", ANSI_FG_MAGENTA), addr, len);
   out_of_bound(addr);
   return 0;
 }
@@ -73,5 +75,7 @@ void paddr_write(paddr_t addr, int len, word_t data) {
     return; 
   }
   IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);
+  if(addr == 0x80003394)
+    printf("%s at " FMT_PADDR " len=%d data=" FMT_WORD "\n",ANSI_FMT("paddr write", ANSI_FG_MAGENTA), addr, len, data);
   out_of_bound(addr);
 }
