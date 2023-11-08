@@ -129,7 +129,7 @@ module ALU(
 
                 tmp = fff^ B;
                 {Carry , Output} = A + tmp + 1 ;
-                EqualZero = (Output == 0) ? 1: 0 ;
+                EqualZero = !(~Output) ;
                 Overflow = A[31] == tmp[31] && A[31] != Output[31];
 
             end
