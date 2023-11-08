@@ -21,13 +21,10 @@ class Top(xlen: Int) extends Module {
   val rd     = io.inst(11,7)
   val opcode = io.inst(6,0)
 
-  // wire definition
+  // mux target definition
   val oprand1 = WireDefault(0.U(xlen.W))
   val oprand2 = WireDefault(0.U(xlen.W))
-  val reg_write_data = WireDefault(0.U(xlen.W))
-  val branch_target  = WireDefault(0.U(xlen.W))
-  val jal_target     = WireDefault(0.U(xlen.W))
-  val jalr_target    = WireDefault(0.U(xlen.W))
+  val wb_data = WireDefault(0.U(xlen.W))
 
   // specify module
   // IFU
@@ -39,8 +36,8 @@ class Top(xlen: Int) extends Module {
   // EXU
   val alu         = Module(new Alu(xlen))
   val branchGen   = Module(new BranchGen(xlen))
-  // MEM
-  val mem         = BlackBox(new Mem)
+  // memUnit
+  val memUnit     = Module(new MemUnit)
 
   // route modules
   // data path design
@@ -58,26 +55,23 @@ class Top(xlen: Int) extends Module {
       B_RS2 -> regFile.io.rdata2
     )
   )
-  reg_write_data := MuxLookup(controlUnit.io.wb_sel, alu.io.out)(
+  wb_data := MuxLookup(controlUnit.io.wb_sel, alu.io.out)(
     Seq(
       WB_ALU -> alu.io.out,
       WB_PC4 -> (pcGen.io.npc + 4.U),
-      WB_MEM -> mem.io.rdata
+      WB_MEM -> memUnit.io.rdata
       )
   )
-  branch_target  := alu.io.out
-  jal_target     := alu.io.out
-  jalr_target    := alu.io.out
 
   io.pc                  := pcGen.io.npc
-  pcGen.io.branch_target := branch_target
-  pcGen.io.jal_target    := jal_target
-  pcGen.io.jalr_target   := jalr_target
+  pcGen.io.branch_target := alu.io.out
+  pcGen.io.jal_target    := alu.io.out
+  pcGen.io.jalr_target   := alu.io.out
 
   regFile.io.raddr1 := rs1
   regFile.io.raddr2 := rs2
   regFile.io.waddr  := rd
-  regFile.io.wdata  := reg_write_data
+  regFile.io.wdata  := wb_data
 
   immUnit.io.inst := io.inst
 
@@ -86,13 +80,13 @@ class Top(xlen: Int) extends Module {
   alu.io.src1 := oprand1
   alu.io.src2 := oprand2
 
-  branchGen.io.src1 := oprand1
-  branchGen.io.src2 := oprand2
+  branchGen.io.src1 := regFile.io.rdata1
+  branchGen.io.src2 := regFile.io.rdata2
 
-  /*mem*/
-  mem.io.raddr := alu.io.out
-  mem.io.waddr := alu.io.out
-  mem.io.wdata := oprand2
+  /*memUnit*/
+  memUnit.io.raddr := alu.io.out
+  memUnit.io.waddr := alu.io.out
+  memUnit.io.wdata := regFile.io.rdata2
 
   // control logic design
   pcGen.io.branch := branchGen.io.branch
@@ -105,11 +99,12 @@ class Top(xlen: Int) extends Module {
   alu.io.opcode   := controlUnit.io.alu_op
   branchGen.io.opcode := controlUnit.io.br_type
 
-  mem.io.wen := (controlUnit.io.st_type =/= 0.U)
-  mem.io.wmask := MuxLookup(controlUnit.io.st_type, 4.U)(
+  memUnit.io.valid := (controlUnit.io.st_type =/= 0.U) || (controlUnit.io.ld_type =/= 0.U)
+  memUnit.io.wen := (controlUnit.io.st_type =/= 0.U)
+  memUnit.io.wmask := MuxLookup(controlUnit.io.st_type, 0.U)(
     Seq(
-      ST_SW -> 4.U,
-      ST_SH -> 2.U,
+      ST_SW -> 15.U,
+      ST_SH -> 3.U,
       ST_SB -> 1.U
     )
   )
