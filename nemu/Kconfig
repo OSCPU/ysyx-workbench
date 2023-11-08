@@ -122,6 +122,10 @@ config CC_ASAN
   depends on MODE_SYSTEM
   bool "Enable address sanitizer"
   default n
+
+config CC_WATCHPOINT
+  bool "Eanble the watchpoint"
+  default n
 endmenu
 
 menu "Testing and Debugging"
