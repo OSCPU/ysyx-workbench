@@ -121,7 +121,7 @@ module ALU(
         case(OPT)
             3'b000:begin 
                 {Carry , Output} = A + B ;
-                EqualZero = (Output == 0) ? 1: 0 ;
+                EqualZero = (Output == 0) ? 1'b1: 1'b0 ;
                 Overflow = A[31] == B[31] && A[31] != Output[31];
                 
             end
@@ -129,7 +129,7 @@ module ALU(
 
                 tmp = fff^ B;
                 {Carry , Output} = A + tmp + 1 ;
-                EqualZero = (~(~Output)) ;
+                EqualZero = (Output == 0) ? 1'b1: 1'b0 ;
                 Overflow = A[31] == tmp[31] && A[31] != Output[31];
 
             end
