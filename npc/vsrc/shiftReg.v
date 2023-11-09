@@ -23,7 +23,7 @@ module ShiftRegister(
                 out<= {out[7] , out[5:0] , 1'b0};
             end
             3'b100:begin
-                out<={0 , out[7:1]};
+                out<={1'b0 , out[7:1]};
             end
             3'b101:begin
                 out<= { in,out[7:1]};
