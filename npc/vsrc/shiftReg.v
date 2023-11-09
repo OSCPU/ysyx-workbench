@@ -5,7 +5,7 @@ module ShiftRegister(
     input in,
     input clk,
     input [2:0] opt,
-    output [7:0] out
+    output reg[7:0] out
 
 );
     always @(posedge clk)
