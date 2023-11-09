@@ -106,10 +106,10 @@ VerilatedVcdC* tfp ;
 // output reg Carry , 
 // output reg Compare , 
 // output reg Equal 
-void test(  int a , int b , int opt){
+void test(  int a , int clk , int opt){
 
   top->in = a;
-  top->clk = b;
+  top->clk = clk;
   top->opt = opt;
   top->eval();
 
@@ -128,7 +128,7 @@ int main(){
   contextp->traceEverOn(true); //打开追踪功能
   top->trace(tfp, 0); //
   tfp->open("wave.vcd"); //设置输出的文件wave.vcd
-
+  {
   //ALU test
   // test( INT_MAX , 0 , 0);
   // test( INT_MAX , 1 , 0);
@@ -163,8 +163,13 @@ int main(){
   // test( 0 , -INT_MAX , 1);
   // test( 0 , -0 , 1);
   // test( -0 , 0 , 1);
+  }
 
-
+  for(int i=0;i<10;i++){
+    for(int j=0;j<100;j++){
+      test(j%2 , (j+i)%2 , i);
+    }
+  }
   delete top;
   tfp->close();
   delete contextp;
