@@ -44,11 +44,13 @@ module top(
     rs[shiftStep](in , left , logicORalg , out);
 
     initial begin
+        genvar  i;
+        generate
+            for i=0;i<32;i = i + 1) begin:gen
+                rs[i] = RegShift #(len,shiftStep);
+            end            
+        endgenerate
 
-        
-        for(integer i=0;i<32;i = i + 1) begin
-            rs[i] = RegShift #(len,shiftStep);
-        end
     end
 
 endmodule
