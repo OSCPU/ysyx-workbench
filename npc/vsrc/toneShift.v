@@ -88,7 +88,7 @@ module top(
                         ):
                         (
                             (c  >= shiftStep)?
-                            in[i-shiftStep]:1
+                            in[i-shiftStep]:0
                         )
 
                     ):
