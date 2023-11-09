@@ -167,7 +167,7 @@ int main(){
 
   for(int i=0;i<10;i++){
     for(int j=0;j<100;j++){
-      test(j%2 , (j+i)%2 , i);
+      test(rand()%2 , (rand())%2 , i);
     }
   }
   delete top;
