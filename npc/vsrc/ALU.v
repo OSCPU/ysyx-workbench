@@ -166,7 +166,7 @@ module ALU(
 
 endmodule
 
-module top(
+module ALUtop(
     input[31:0] A , 
     input[31:0] B ,
     input[2:0] OPT,
