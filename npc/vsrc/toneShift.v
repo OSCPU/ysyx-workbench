@@ -90,7 +90,7 @@ module top(
             //          in[i+shiftStep]:in[len])
             //         );
                     if(left == 1'b1) begin
-                        if(cur  >= shiftStep)
+                        if(i  >= shiftStep)
                             assign out[i] = in[i-shiftStep];
                         else 
                             assign out[i] = 0;
