@@ -80,37 +80,36 @@ module top(
             
             // for (j=0;j< len+1; j = j +1) begin:gen1
                 // if(j == shiftStep)begin
-            // assign out[i] = (left == 1 )?(
-            //         (i  >= shiftStep)?
-            //         in[i-shiftStep]:0):
-            //         ((logicORalg == 1'b1)?
-            //         ((i + shiftStep <=len)?
-            //          in[i+shiftStep]: 0):
-            //          ((i + shiftStep <=len)?
-            //          in[i+shiftStep]:in[len])
-            //         );
-                    assign cond1 = left - 1'b1;
-                    if(cond1 == 0) begin
-                        if(i  >= shiftStep)
-                            assign out[i] = in[i-shiftStep];
-                        else 
-                            assign out[i] = 0;
-                    end
-                    else begin
+            assign out[i] = (left == 1 )?(
+                    (i  >= shiftStep)?
+                    in[i-shiftStep]:0):
+                    ((logicORalg == 1'b1)?
+                    ((i + shiftStep <=len)?
+                     in[i+shiftStep]: 0):
+                     ((i + shiftStep <=len)?
+                     in[i+shiftStep]:in[len])
+                    );
+                    // if(left == 1'b1) begin
+                    //     if(i  >= shiftStep)
+                    //         assign out[i] = in[i-shiftStep];
+                    //     else 
+                    //         assign out[i] = 0;
+                    // end
+                    // else begin
 
-                        if (logicORalg == 1'b1)begin
-                            if(i + shiftStep <=len)
-                                assign out[i] = in[i+shiftStep];
-                            else 
-                                assign out[i] = 0;
-                        end
-                        else begin
-                            if(i + shiftStep <=len)
-                                assign out[i] = in[i+shiftStep];
-                            else 
-                                assign out[i] = in[len];
-                        end
-                    end
+                    //     if (logicORalg == 1'b1)begin
+                    //         if(i + shiftStep <=len)
+                    //             assign out[i] = in[i+shiftStep];
+                    //         else 
+                    //             assign out[i] = 0;
+                    //     end
+                    //     else begin
+                    //         if(i + shiftStep <=len)
+                    //             assign out[i] = in[i+shiftStep];
+                    //         else 
+                    //             assign out[i] = in[len];
+                    //     end
+                    // end
                 // end
             // end
         end            
