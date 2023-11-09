@@ -76,7 +76,7 @@ module top(
     genvar  i  ;
     generate
         // always @(*) begin
-        for (i=0;i<len;i = i + 1) begin:gen0
+        for (i=0;i<=len;i = i + 1) begin:gen0
             
             // for (j=0;j< len+1; j = j +1) begin:gen1
                 // if(j == shiftStep)begin
@@ -88,7 +88,7 @@ module top(
                         ):
                         (
                             (i  >= shiftStep)?
-                            in[i-shiftStep]:0
+                            in[i-shiftStep]:1
                         )
 
                     ):
