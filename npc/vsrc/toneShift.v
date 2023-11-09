@@ -81,7 +81,7 @@ module top(
             // for (j=0;j< len+1; j = j +1) begin:gen1
                 // if(j == shiftStep)begin
             assign out[i] = (left == 1 )?(
-                    (cur - shiftStep >=0)?
+                    (i - shiftStep >=0)?
                     in[i-shiftStep]:0):
                     ((logicORalg == 1'b1)?
                     ((i + shiftStep <=len)?
