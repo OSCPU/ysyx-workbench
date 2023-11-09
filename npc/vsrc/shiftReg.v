@@ -32,7 +32,7 @@ module ShiftRegister(
                 out<={out[0] , out[7:1]};
             end
             3'b111:begin
-                out<={out[6,0] , out[7]};
+                out<= {out[6:0] , out[7]};
             end
         endcase
 
