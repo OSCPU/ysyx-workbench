@@ -85,7 +85,7 @@ module top(
                     in[i-shiftStep]:0):
                     ((logicORalg == 1'b1)?
                     ((i + shiftStep <=len)?
-                     in[i+shiftStep]:out[i] = 0):
+                     in[i+shiftStep]: 0):
                      ((i + shiftStep <=len)?
                      in[i+shiftStep]:in[len])
                     );
