@@ -39,29 +39,33 @@ module top(
 );
     parameter len = 31; // max 31
     // parameter sS = shiftStep %len;
-    genvar  i;
+    genvar  i , j ;
     generate
         always @(*) begin
             for (i=0;i<len;i = i + 1) begin:gen0
-                if(left == 1) begin
-                    if(i - shiftStep >=0)
-                        out[i] = in[i-shiftStep];
-                    else 
-                        out[i] = 0;
-                end
-                else begin
+                for (j=0;j< len+1; j = j +1) begin:gen1
+                    if(j == shiftStep)begin
+                        if(left == 1) begin
+                            if(i - shiftStep >=0)
+                                out[i] = in[i-shiftStep];
+                            else 
+                                out[i] = 0;
+                        end
+                        else begin
 
-                    if (logicORalg == 1)begin
-                        if(i + shiftStep <=len)
-                            out[i] = in[i+shiftStep];
-                        else 
-                            out[i] = 0;
-                    end
-                    else begin
-                        if(i + shiftStep <=len)
-                            out[i] = in[i+shiftStep];
-                        else 
-                            out[i] = in[len];
+                            if (logicORalg == 1)begin
+                                if(i + shiftStep <=len)
+                                    out[i] = in[i+shiftStep];
+                                else 
+                                    out[i] = 0;
+                            end
+                            else begin
+                                if(i + shiftStep <=len)
+                                    out[i] = in[i+shiftStep];
+                                else 
+                                    out[i] = in[len];
+                            end
+                        end
                     end
                 end
             end            
