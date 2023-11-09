@@ -41,7 +41,7 @@ endmodule
 module top(
     input in,
     input clk,
-    input [2:0] opt
+    input [2:0] opt,
     output [7:0] out
 );
     ShiftRegister sr(in ,clk ,opt , out);
