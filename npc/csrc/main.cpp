@@ -108,9 +108,9 @@ VerilatedVcdC* tfp ;
 // output reg Equal 
 void test(  int a , int b , int opt){
 
-  top->A = a;
-  top->B = b;
-  top->OPT = opt;
+  top->in = a;
+  top->clk = b;
+  top->opt = opt;
   top->eval();
 
 
@@ -129,6 +129,7 @@ int main(){
   top->trace(tfp, 0); //
   tfp->open("wave.vcd"); //设置输出的文件wave.vcd
 
+  //ALU test
   // test( INT_MAX , 0 , 0);
   // test( INT_MAX , 1 , 0);
   // test( INT_MIN , INT_MAX , 0);
@@ -144,24 +145,24 @@ int main(){
   // test( 0 , -0 , 0);
   // test( -0 , 0 , 0);
 
-  test( INT_MAX , 0 , 1);
-  test( INT_MAX , 1 , 1);
-  test( INT_MIN , INT_MAX , 1);
-  test( INT_MIN , -INT_MIN , 1);
-  test( INT_MIN , INT_MIN , 1);
-  test( INT_MIN , 0 , 1);
-  test( 100 , -130 , 1);
-  test( 100 , -90 , 1);
-  test( -100 , 90 , 1);
-  test( -100 , 130 , 1);
+  // test( INT_MAX , 0 , 1);
+  // test( INT_MAX , 1 , 1);
+  // test( INT_MIN , INT_MAX , 1);
+  // test( INT_MIN , -INT_MIN , 1);
+  // test( INT_MIN , INT_MIN , 1);
+  // test( INT_MIN , 0 , 1);
+  // test( 100 , -130 , 1);
+  // test( 100 , -90 , 1);
+  // test( -100 , 90 , 1);
+  // test( -100 , 130 , 1);
   
-  test( 512 , 512 , 1);
-  test( 0 , -INT_MIN , 1);
-  test( 0 , INT_MIN , 1);
-  test( 0 , INT_MAX , 1);
-  test( 0 , -INT_MAX , 1);
-  test( 0 , -0 , 1);
-  test( -0 , 0 , 1);
+  // test( 512 , 512 , 1);
+  // test( 0 , -INT_MIN , 1);
+  // test( 0 , INT_MIN , 1);
+  // test( 0 , INT_MAX , 1);
+  // test( 0 , -INT_MAX , 1);
+  // test( 0 , -0 , 1);
+  // test( -0 , 0 , 1);
 
 
   delete top;

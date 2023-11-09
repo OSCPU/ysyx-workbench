@@ -1,7 +1,7 @@
 include ../Makefile
 
 TOPNAME =top
-NXDC_FILES =constr/top.nxdc
+NXDC_FILES =constr/shiftReg.nxdc
 BUILD =./build
 YSYX_HOME =$(shell pwd)/../
 
