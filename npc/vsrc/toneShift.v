@@ -13,7 +13,7 @@ module RegShift#(int len)(
     always @(*)
         if(logicORalg == 1)begin
            if(left ==1) begin
-                out = {in[len - shiftStep:0] , {shiftStep{0}}};
+                out = out<<shiftStep;
            end 
            else begin
                 out = {{shiftStep{0}} , in[len:len - shiftStep + 1]};
