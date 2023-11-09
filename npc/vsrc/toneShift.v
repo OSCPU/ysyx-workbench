@@ -34,10 +34,10 @@ module top(
     input [len:0] in,
     input  left, // 1left or  0right
     input logicORalg , // 1 logical //0 algorithm
-    input [32:0]shiftStep,
+    input [4:0]shiftStep,
     output reg [len:0] out
 );
-    parameter len = 5; // max 31
+    parameter len = 31; // max 31
     parameter sS = shiftStep %len;
     genvar  i;
     generate
