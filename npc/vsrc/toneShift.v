@@ -41,7 +41,7 @@ module top(
     // parameter sS = shiftStep %len;
     genvar  j ;
     interger i ;
-    for (i=0;i<len;i = i + 1) begin
+    for (i=0;i<len;i = i + 1) begin:
         generate
             always @(*) begin
                 for (j=0;j< len+1; j = j +1) begin:gen1
