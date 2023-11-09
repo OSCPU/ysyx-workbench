@@ -119,7 +119,12 @@ void test(  int a , int clk , int opt){
   // carry = p ->
   // printf("%d %d %d %d %d %d\n" , a , b , sub , *zero , *overflow , *res);
 }
+void clkTest(int *a , int *opt , int len){
 
+  for(int i=0;i<len;i++){
+    test(a[i] , i%2 , opt[i]);
+  }
+}
 int main(){
 
   contextp = new VerilatedContext;
@@ -165,11 +170,10 @@ int main(){
   // test( -0 , 0 , 1);
   }
 
-  for(int i=0;i<10;i++){
-    for(int j=0;j<100;j++){
-      test(rand()%2 , (rand())%2 , i);
-    }
-  }
+
+  int in[] = {1,1,1,1,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1};
+  int opt[]= {1,1,1,1,1,1,1,0,1,0,0,0,0,1,1,1,6,6,6,7,7,7,6,6,6,6,5,5,5,5,5,4,4,4,3,3};
+  clkTest(in , opt , strlen(in) );
   delete top;
   tfp->close();
   delete contextp;
