@@ -4,7 +4,7 @@ module ShiftRegister(
 
     input in,
     input clk,
-    input [2:0] opt
+    input [2:0] opt,
     output [7:0] out
 
 );
