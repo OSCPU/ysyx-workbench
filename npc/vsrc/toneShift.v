@@ -39,10 +39,11 @@ module top(
 );
     parameter len = 31; // max 31
     // parameter sS = shiftStep %len;
-    genvar  i , j ;
-    generate
-        always @(*) begin
-            for (i=0;i<len;i = i + 1) begin:gen0
+    genvar  j ;
+    interger i ;
+    for (i=0;i<len;i = i + 1) begin
+        generate
+            always @(*) begin
                 for (j=0;j< len+1; j = j +1) begin:gen1
                     if(j == shiftStep)begin
                         if(left == 1) begin
@@ -68,8 +69,8 @@ module top(
                         end
                     end
                 end
-            end            
-        end
-    endgenerate
-
+                        
+            end
+        endgenerate
+    end
 endmodule
