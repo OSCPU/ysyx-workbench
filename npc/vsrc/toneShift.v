@@ -34,7 +34,7 @@ module top(
     input [len:0] in,
     input  left, // 1left or  0right
     input logicORalg , // 1 logical //0 algorithm
-    input shiftStep,
+    input [32:0]shiftStep,
     output [len:0] out
 );
     parameter len = 5; // max 31
