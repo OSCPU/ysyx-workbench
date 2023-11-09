@@ -39,38 +39,37 @@ module top(
 );
     parameter len = 31; // max 31
     // parameter sS = shiftStep %len;
-    genvar  j ;
-    interger i ;
-    for (i=0;i<len;i = i + 1) begin:
-        generate
-            always @(*) begin
-                for (j=0;j< len+1; j = j +1) begin:gen1
-                    if(j == shiftStep)begin
-                        if(left == 1) begin
-                            if(i - shiftStep >=0)
-                                out[i] = in[i-shiftStep];
+    genvar  i , j ;
+    generate
+        // always @(*) begin
+        for (i=0;i<len;i = i + 1) begin:gen0
+            for (j=0;j< len+1; j = j +1) begin:gen1
+                if(j == shiftStep)begin
+                    if(left == 1) begin
+                        if(i - shiftStep >=0)
+                            out[i] = in[i-shiftStep];
+                        else 
+                            out[i] = 0;
+                    end
+                    else begin
+
+                        if (logicORalg == 1)begin
+                            if(i + shiftStep <=len)
+                                out[i] = in[i+shiftStep];
                             else 
                                 out[i] = 0;
                         end
                         else begin
-
-                            if (logicORalg == 1)begin
-                                if(i + shiftStep <=len)
-                                    out[i] = in[i+shiftStep];
-                                else 
-                                    out[i] = 0;
-                            end
-                            else begin
-                                if(i + shiftStep <=len)
-                                    out[i] = in[i+shiftStep];
-                                else 
-                                    out[i] = in[len];
-                            end
+                            if(i + shiftStep <=len)
+                                out[i] = in[i+shiftStep];
+                            else 
+                                out[i] = in[len];
                         end
                     end
                 end
-                        
             end
-        endgenerate
-    end
+        end            
+        // end
+    endgenerate
+
 endmodule
