@@ -45,7 +45,7 @@ module top(
 
     genvar  i;
     generate
-        for (i=0;i<32 and i <=len;i = i + 1) begin:gen0
+        for (i=0;i<32 && i <=len;i = i + 1) begin:gen0
             rs[i] <= RegShift #(len,i);
         end            
     endgenerate
