@@ -5,7 +5,7 @@ module RegShift#(int len)(
     input [len:0] in,
     input  left, // 1left or  0right
     input logicORalg , // 1 logical //0 algorithm
-    input reg shiftStep,
+    input reg[32,0] shiftStep,
     output [len:0] out
 
 );
