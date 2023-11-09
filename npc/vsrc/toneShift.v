@@ -77,30 +77,39 @@ module top(
     generate
         // always @(*) begin
         for (i=0;i<len;i = i + 1) begin:gen0
-            integer  cur = i;
+            
             // for (j=0;j< len+1; j = j +1) begin:gen1
                 // if(j == shiftStep)begin
-                    if(left == 1'b1) begin
-                        if(cur - shiftStep >=0)
-                            assign out[i] = in[i-shiftStep];
-                        else 
-                            assign out[i] = 0;
-                    end
-                    else begin
+            out[i] = (left == 1 )?(
+                    (cur - shiftStep >=0)?
+                    in[i-shiftStep]:0):
+                    ((logicORalg == 1'b1)?
+                    ((i + shiftStep <=len)?
+                     in[i+shiftStep]:out[i] = 0):
+                     ((i + shiftStep <=len)?
+                     in[i+shiftStep]:in[len])
+                    );
+                    // if(left == 1'b1) begin
+                    //     if(cur - shiftStep >=0)
+                    //         assign out[i] = in[i-shiftStep];
+                    //     else 
+                    //         assign out[i] = 0;
+                    // end
+                    // else begin
 
-                        if (logicORalg == 1'b1)begin
-                            if(i + shiftStep <=len)
-                                assign out[i] = in[i+shiftStep];
-                            else 
-                                assign out[i] = 0;
-                        end
-                        else begin
-                            if(i + shiftStep <=len)
-                                assign out[i] = in[i+shiftStep];
-                            else 
-                                assign out[i] = in[len];
-                        end
-                    end
+                    //     if (logicORalg == 1'b1)begin
+                    //         if(i + shiftStep <=len)
+                    //             assign out[i] = in[i+shiftStep];
+                    //         else 
+                    //             assign out[i] = 0;
+                    //     end
+                    //     else begin
+                    //         if(i + shiftStep <=len)
+                    //             assign out[i] = in[i+shiftStep];
+                    //         else 
+                    //             assign out[i] = in[len];
+                    //     end
+                    // end
                 // end
             // end
         end            
