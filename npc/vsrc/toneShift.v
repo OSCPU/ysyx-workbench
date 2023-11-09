@@ -77,10 +77,10 @@ module top(
     generate
         // always @(*) begin
         for (i=0;i<len;i = i + 1) begin:gen0
-            integer  j;
+            
             // for (j=0;j< len+1; j = j +1) begin:gen1
                 // if(j == shiftStep)begin
-            out[j] = (left == 1 )?(
+            assign out[i] = (left == 1 )?(
                     (cur - shiftStep >=0)?
                     in[i-shiftStep]:0):
                     ((logicORalg == 1'b1)?
