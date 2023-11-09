@@ -47,23 +47,23 @@ module top(
                 if(j == shiftStep)begin
                     if(left == 1) begin
                         if(i - j >=0)
-                            out[i] <= in[i-j];
+                            assign out[i] = in[i-j];
                         else 
-                            out[i] <= 0;
+                            assign out[i] = 0;
                     end
                     else begin
 
                         if (logicORalg == 1)begin
                             if(i + j <=len)
-                                out[i] = in[i+j];
+                                assign out[i] = in[i+j];
                             else 
-                                out[i] = 0;
+                                assign out[i] = 0;
                         end
                         else begin
                             if(i + j <=len)
-                                out[i] = in[i+j];
+                                assign out[i] = in[i+j];
                             else 
-                                out[i] = in[len];
+                                assign out[i] = in[len];
                         end
                     end
                 end
