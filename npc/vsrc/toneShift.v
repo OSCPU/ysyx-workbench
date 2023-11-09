@@ -77,17 +77,17 @@ module top(
     generate
         // always @(*) begin
         for (i=0;i<=len;i = i + 1) begin:gen0
-            
+            parameter c = i;
             // for (j=0;j< len+1; j = j +1) begin:gen1
                 // if(j == shiftStep)begin
             assign out[i] = (left == 1 )?
                     (
-                        (logicORalg == 1'b0 && i == len)?
+                        (logicORalg == 1'b0 && c == len)?
                         (
                             in[i]
                         ):
                         (
-                            (i  >= shiftStep)?
+                            (c  >= shiftStep)?
                             in[i-shiftStep]:1
                         )
 
@@ -95,11 +95,11 @@ module top(
                     (
                         (logicORalg == 1'b1)?
                         (
-                            (i + shiftStep <=len)?
+                            (c + shiftStep <=len)?
                             in[i+shiftStep]: 0
                         ):
                         (
-                            (i + shiftStep <=len)?
+                            (c + shiftStep <=len)?
                             in[i+shiftStep]:in[len]
                         )
                     );
