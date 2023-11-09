@@ -30,9 +30,43 @@ module RegShift#(int len ,int shiftStep)(
 
 endmodule
 
+
+// module Shift_(
+//     input pos_in , 
+//     input [31:0]pos , 
+//     input left ,
+//     input logicORalg,
+//     input [31:0] shiftStep,
+//     output o
+// );
+//     if(left == 1) begin
+//         if(pos - shiftStep >=0)
+//             assign out[i] = pos_in;
+//         else 
+//             assign out[i] = 0;
+//     end
+//     else begin
+
+//         if (logicORalg == 1)begin
+//             if(i + shiftStep <=len)
+//                 assign out[i] = in[i+shiftStep];
+//             else 
+//                 assign out[i] = 0;
+//         end
+//         else begin
+//             if(i + shiftStep <=len)
+//                 assign out[i] = in[i+shiftStep];
+//             else 
+//                 assign out[i] = in[len];
+//         end
+//     end
+// end
+// end
+   
+// endmodule
 module top(
     input [len:0] in,
-    input  reg left, // 1left or  0right
+    input  left, // 1left or  0right
     input logicORalg , // 1 logical //0 algorithm
     input [31:0]shiftStep,
     output reg [len:0] out
@@ -41,35 +75,36 @@ module top(
     // parameter sS = shiftStep %len;
     genvar  i , j ;
     generate
-        always @(*) begin
-            for (i=0;i<len;i = i + 1) begin:gen0
-                // for (j=0;j< len+1; j = j +1) begin:gen1
-                    // if(j == shiftStep)begin
-                        if(left == 1'b1) begin
-                            if(i - shiftStep >= 32'b0)
-                                 out[i] = in[i-shiftStep];
+        // always @(*) begin
+        for (i=0;i<len;i = i + 1) begin:gen0
+            integer  cur = i;
+            // for (j=0;j< len+1; j = j +1) begin:gen1
+                // if(j == shiftStep)begin
+                    if(left == 1'b1) begin
+                        if(cur - shiftStep >=0)
+                            assign out[i] = in[i-shiftStep];
+                        else 
+                            assign out[i] = 0;
+                    end
+                    else begin
+
+                        if (logicORalg == 1'b1)begin
+                            if(i + shiftStep <=len)
+                                assign out[i] = in[i+shiftStep];
                             else 
-                                 out[i] = 0;
+                                assign out[i] = 0;
                         end
                         else begin
-
-                            if (logicORalg == 1'b1)begin
-                                if(i + shiftStep <= len)
-                                     out[i] = in[i+shiftStep];
-                                else 
-                                     out[i] = 0;
-                            end
-                            else begin
-                                if(i + shiftStep <=len)
-                                     out[i] = in[i+shiftStep];
-                                else 
-                                     out[i] = in[len];
-                            end
+                            if(i + shiftStep <=len)
+                                assign out[i] = in[i+shiftStep];
+                            else 
+                                assign out[i] = in[len];
                         end
-                    // end
+                    end
                 // end
-            end            
-        end
+            // end
+        end            
+        // end
     endgenerate
 
 endmodule
