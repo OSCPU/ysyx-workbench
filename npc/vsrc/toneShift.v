@@ -80,20 +80,34 @@ module top(
             
             // for (j=0;j< len+1; j = j +1) begin:gen1
                 // if(j == shiftStep)begin
-            assign out[i] = (left == 1 )?(
-                    (i  >= shiftStep)?
-                    in[i-shiftStep]:0):
-                    ((logicORalg == 1'b1)?
-                    ((i + shiftStep <=len)?
-                     in[i+shiftStep]: 0):
-                     ((i + shiftStep <=len)?
-                     in[i+shiftStep]:in[len])
+            assign out[i] = (left == 1 )?
+                    (
+                        (logicORalg == 1'b0 && i == 0)?
+                        (
+                            in[i]
+                        ):
+                        (
+                            (i  >= shiftStep)?
+                            in[i-shiftStep]:0
+                        )
+
+                    ):
+                    (
+                        (logicORalg == 1'b1)?
+                        (
+                            (i + shiftStep <=len)?
+                            in[i+shiftStep]: 0
+                        ):
+                        (
+                            (i + shiftStep <=len)?
+                            in[i+shiftStep]:in[len]
+                        )
                     );
 
             assign out[i] = (i==0 && left ==1 && logicORalg ==0)?
                             in[i] : out[i];
                             
-                    // if(left == 1'b1) begin
+                    // if(left == 1'b1) begin  
                     //     if(i  >= shiftStep)
                     //         assign out[i] = in[i-shiftStep];
                     //     else 
