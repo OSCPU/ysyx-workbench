@@ -35,7 +35,7 @@ module top(
     input  left, // 1left or  0right
     input logicORalg , // 1 logical //0 algorithm
     input [31:0]shiftStep,
-    output reg [len:0] out
+    output [len:0] out
 );
     parameter len = 31; // max 31
     // parameter sS = shiftStep %len;
@@ -46,22 +46,22 @@ module top(
             for (j=0;j< len+1; j = j +1) begin:gen1
                 if(j == shiftStep)begin
                     if(left == 1) begin
-                        if(i - shiftStep >=0)
-                            out[i] = in[i-shiftStep];
+                        if(i - j >=0)
+                            out[i] = in[i-j];
                         else 
                             out[i] = 0;
                     end
                     else begin
 
                         if (logicORalg == 1)begin
-                            if(i + shiftStep <=len)
-                                out[i] = in[i+shiftStep];
+                            if(i + j <=len)
+                                out[i] = in[i+j];
                             else 
                                 out[i] = 0;
                         end
                         else begin
-                            if(i + shiftStep <=len)
-                                out[i] = in[i+shiftStep];
+                            if(i + j <=len)
+                                out[i] = in[i+j];
                             else 
                                 out[i] = in[len];
                         end
