@@ -31,13 +31,23 @@ module RegShift#(int len ,int shiftStep)(
 endmodule
 
 module top(
-    input [5:0] in,
+    input [len:0] in,
     input  left, // 1left or  0right
     input logicORalg , // 1 logical //0 algorithm
     input shiftStep,
-    output [5:0] out
+    output [len:0] out
 );
-    RegShift #(5 , shiftStep) rs(in , left , logicORalg  ,out) ;
+    parameter len = 5; // max 31
+    // RegShift #(len , shiftStep) rs(in , left , logicORalg  ,out) ;
     // rs(in , left , logicORalg , shiftStep);
+    rs[shiftStep](in , left , logicORalg , out);
+
+    initial begin
+
+        parameter rs[32];
+        for(integer i=0;i<32;i = i + 1) begin
+            rs[i] = RegShift #(len,shiftStep);
+        end
+    end
 
 endmodule
