@@ -82,7 +82,7 @@ module top(
                 // if(j == shiftStep)begin
             assign out[i] = (left == 1 )?
                     (
-                        (logicORalg == 1'b0 && i == 0)?
+                        (logicORalg == 1'b0 && i == len)?
                         (
                             in[i]
                         ):
