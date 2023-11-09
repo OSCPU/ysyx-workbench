@@ -47,7 +47,7 @@ module top(
                 if(j == shiftStep)begin
                     if(left == 1) begin
                         if(i - j >=0)
-                            out[i] = in[i-j];
+                            out[i] <= in[i-j];
                         else 
                             out[i] = 0;
                     end
