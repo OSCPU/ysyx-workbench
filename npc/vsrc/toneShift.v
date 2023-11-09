@@ -38,13 +38,14 @@ module top(
     output [len:0] out
 );
     parameter len = 5; // max 31
+    parameter RegShift rs[32];
     // RegShift #(len , shiftStep) rs(in , left , logicORalg  ,out) ;
     // rs(in , left , logicORalg , shiftStep);
     rs[shiftStep](in , left , logicORalg , out);
 
     initial begin
 
-        parameter rs[32];
+        
         for(integer i=0;i<32;i = i + 1) begin
             rs[i] = RegShift #(len,shiftStep);
         end
