@@ -89,7 +89,8 @@ module top(
             //          ((i + shiftStep <=len)?
             //          in[i+shiftStep]:in[len])
             //         );
-                    if(left == 1'b1) begin
+                    assign cond1 = left - 1'b1;
+                    if(cond1 == 0) begin
                         if(i  >= shiftStep)
                             assign out[i] = in[i-shiftStep];
                         else 
