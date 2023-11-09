@@ -5,7 +5,7 @@ module top(
     input [len:0] seed , 
     input  opt,
     input clk , 
-    output [len:0] out
+    output reg [len:0] out
 );
     parameter len = 7;
     always @(posedge clk )
