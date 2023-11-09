@@ -32,7 +32,7 @@ endmodule
 
 module top(
     input [len:0] in,
-    input  left, // 1left or  0right
+    input  reg left, // 1left or  0right
     input logicORalg , // 1 logical //0 algorithm
     input [31:0]shiftStep,
     output reg [len:0] out
