@@ -38,7 +38,7 @@ module top(
     output reg [len:0] out
 );
     parameter len = 5; // max 31
-
+    parameter sS = shiftStep %len;
     genvar  i;
     generate
         always @(*) begin
