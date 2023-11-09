@@ -89,6 +89,10 @@ module top(
                      ((i + shiftStep <=len)?
                      in[i+shiftStep]:in[len])
                     );
+
+            assign out[i] = (i==0 && left ==1 && logicORalg ==0)?
+                            in[i] : out[i];
+                            
                     // if(left == 1'b1) begin
                     //     if(i  >= shiftStep)
                     //         assign out[i] = in[i-shiftStep];
