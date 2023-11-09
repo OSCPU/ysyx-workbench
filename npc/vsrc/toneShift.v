@@ -38,7 +38,7 @@ module top(
     output [len:0] out
 );
     parameter len = 5; // max 31
-    parameter RegShift rs[32];
+    parameter RegShift rs[31:0];
     // RegShift #(len , shiftStep) rs(in , left , logicORalg  ,out) ;
     // rs(in , left , logicORalg , shiftStep);
     rs[shiftStep](in , left , logicORalg , out);
