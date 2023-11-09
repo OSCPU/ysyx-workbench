@@ -16,8 +16,7 @@ module RegShift#(int len)(
                 out = in<<shiftStep;
            end 
            else begin
-                tmp =  (in>>shiftStep);
-                out = {{shiftStep{0}} , tmp[shiftStep-1:0]};
+                out = (in>>shiftStep);
            end
         end
         else begin
