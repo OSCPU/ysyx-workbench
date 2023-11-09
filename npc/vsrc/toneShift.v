@@ -46,7 +46,7 @@ module top(
                 // for (j=0;j< len+1; j = j +1) begin:gen1
                     // if(j == shiftStep)begin
                         if(left == 1'b1) begin
-                            if(i - shiftStep >=0)
+                            if(i - shiftStep >= 32'b0)
                                  out[i] = in[i-shiftStep];
                             else 
                                  out[i] = 0;
@@ -54,7 +54,7 @@ module top(
                         else begin
 
                             if (logicORalg == 1'b1)begin
-                                if(i + shiftStep <=len)
+                                if(i + shiftStep <= len)
                                      out[i] = in[i+shiftStep];
                                 else 
                                      out[i] = 0;
