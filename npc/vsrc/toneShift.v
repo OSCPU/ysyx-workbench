@@ -38,16 +38,32 @@ module top(
     output [len:0] out
 );
     parameter len = 5; // max 31
-    RegShift rs[31:0];
-    // RegShift #(len , shiftStep) rs(in , left , logicORalg  ,out) ;
-    // rs(in , left , logicORalg , shiftStep);
-    rs[shiftStep](in , left , logicORalg , out);
 
     genvar  i;
     generate
         always @(*) begin
-            for (i=0;i<32 && i <=len;i = i + 1) begin:gen0
-                rs[i] = RegShift r #(len,i);
+            for (i=0;i<len;i = i + 1) begin:gen0
+                if(left == 1) begin
+                    if(i - shiftStep >=0)
+                        out[i] = in[i-shiftStep];
+                    else 
+                        out[i] = 0;
+                end
+                else begin
+
+                    if (logicORalg == 1)begin
+                        if(i + shiftStep <=len)
+                            out[i] = in[i+shiftStep];
+                        else 
+                            out[i] = 0;
+                    end
+                    else begin
+                        if(i + shiftStep <=len)
+                            out[i] = in[i+shiftStep];
+                        else 
+                            out[i] = in[len];
+                    end
+                end
             end            
         end
     endgenerate
