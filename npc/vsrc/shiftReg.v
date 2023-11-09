@@ -38,7 +38,7 @@ module ShiftRegister(
 
 endmodule
 
-module top(
+module ShiftRegistertop(
     input in,
     input clk,
     input [2:0] opt,

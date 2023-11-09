@@ -106,11 +106,12 @@ VerilatedVcdC* tfp ;
 // output reg Carry , 
 // output reg Compare , 
 // output reg Equal 
-void test(  int a , int clk , int opt){
+void test(  int in , int left , int logicORalg , int shiftStep){
 
-  top->in = a;
-  top->clk = clk;
-  top->opt = opt;
+  top->in = in;
+  top->left = left;
+  top->logicORalg = logicORalg;
+  top->shiftStep = shiftStep;
   top->eval();
 
 
@@ -170,10 +171,22 @@ int main(){
   // test( -0 , 0 , 1);
   }
 
+  {
+  // int in[] = {1,1,1,0,0,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1};
+  // int opt[]= {0,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,6,6,6,7,7,7,6,6,6,6,5,5,5,5,5,4,4,4,3,3};
+  // clkTest(in , opt , sizeof(in)/sizeof(int) );
+  }
+  
+  test(43 , 1 , 1 , 3);
+  test(43 , 0 , 1 , 3);
+  test(43 , 1 , 0 , 3);
+  test(43 , 0 , 0 , 3);
 
-  int in[] = {1,1,1,0,0,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1};
-  int opt[]= {0,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,6,6,6,7,7,7,6,6,6,6,5,5,5,5,5,4,4,4,3,3};
-  clkTest(in , opt , sizeof(in)/sizeof(int) );
+
+  test(33 , 1 , 1 , 2);
+  test(33 , 0 , 1 , 2);
+  test(33 , 1 , 0 , 2);
+  test(33 , 0 , 0 , 2);
   delete top;
   tfp->close();
   delete contextp;
