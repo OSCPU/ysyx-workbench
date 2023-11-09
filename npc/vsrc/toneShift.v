@@ -73,7 +73,7 @@ module top(
 );
     parameter len = 31; // max 31
     // parameter sS = shiftStep %len;
-    genvar  i , j ;
+    genvar  i  ;
     generate
         // always @(*) begin
         for (i=0;i<len;i = i + 1) begin:gen0
