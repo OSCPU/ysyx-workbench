@@ -10,7 +10,7 @@ module RegShift#(int len)(
 
 );
     wire [len:0] tmp;
-    always @(*)
+    always_latch
         if(logicORalg == 1)begin
            if(left ==1) begin
                 out = in<<shiftStep;
@@ -25,7 +25,7 @@ module RegShift#(int len)(
                 out = {in[len] ,  (in[len-1 :0] )<< shiftStep};
             end
             else begin
-                tmp = (in>>shiftStep)
+                tmp = (in>>shiftStep);
                 out = {{shiftStep{in[len]}}  , tmp[shiftStep-1:0]};
             end
         end
