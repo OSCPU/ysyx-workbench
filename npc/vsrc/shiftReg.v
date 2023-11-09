@@ -8,7 +8,7 @@ module ShiftRegister(
     output [7:0] out
 
 );
-    always *(posedge clk)
+    always @(posedge clk)
         case(opt)
             3'b000:begin
                 out<=0;
