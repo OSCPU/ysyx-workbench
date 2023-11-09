@@ -173,7 +173,7 @@ int main(){
 
   int in[] = {1,1,1,1,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1};
   int opt[]= {1,1,1,1,1,1,1,0,1,0,0,0,0,1,1,1,6,6,6,7,7,7,6,6,6,6,5,5,5,5,5,4,4,4,3,3};
-  clkTest(in , opt , strlen(in) );
+  clkTest(in , opt , sizeof(in)/sizeof(int) );
   delete top;
   tfp->close();
   delete contextp;
