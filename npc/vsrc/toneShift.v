@@ -37,7 +37,7 @@ module top(
     input shiftStep,
     output [5:0] out
 );
-    RegShift #(5) rs(in , left , logicORalg , shiftStep) ;
+    RegShift #(5) rs(in , left , logicORalg , shiftStep ,out) ;
     // rs(in , left , logicORalg , shiftStep);
 
 endmodule
