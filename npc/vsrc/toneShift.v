@@ -49,7 +49,7 @@ module top(
                         if(i - j >=0)
                             out[i] <= in[i-j];
                         else 
-                            out[i] = 0;
+                            out[i] <= 0;
                     end
                     else begin
 
