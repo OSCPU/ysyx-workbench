@@ -120,12 +120,12 @@ void test(  int in , int left , int logicORalg , int shiftStep){
   // carry = p ->
   // printf("%d %d %d %d %d %d\n" , a , b , sub , *zero , *overflow , *res);
 }
-void clkTest(int *a , int *opt , int len){
+// void clkTest(int *a , int *opt , int len){
 
-  for(int i=0;i<len;i++){
-    test(a[i] , i%2 , opt[i]);
-  }
-}
+//   for(int i=0;i<len;i++){
+//     test(a[i] , i%2 , opt[i]);
+//   }
+// }
 int main(){
 
   contextp = new VerilatedContext;
