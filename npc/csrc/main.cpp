@@ -106,12 +106,14 @@ VerilatedVcdC* tfp ;
 // output reg Carry , 
 // output reg Compare , 
 // output reg Equal 
-void test(  int in , int left , int logicORalg , int shiftStep){
 
-  top->in = in;
-  top->left = left;
-  top->logicORalg = logicORalg;
-  top->shiftStep = shiftStep;
+
+void test(  int seed , int opt , int clk ){
+
+  top->seed = seed;
+  top->opt = opt;
+  top->clk = clk;
+  // top->shiftStep = shiftStep;
   top->eval();
 
 
@@ -176,17 +178,30 @@ int main(){
   // int opt[]= {0,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,6,6,6,7,7,7,6,6,6,6,5,5,5,5,5,4,4,4,3,3};
   // clkTest(in , opt , sizeof(in)/sizeof(int) );
   }
+  {
+  // test(43 , 1 , 1 , 3);
+  // test(43 , 0 , 1 , 3);
+  // test(43 , 1 , 0 , 3);
+  // test(43 , 0 , 0 , 3);
+
+
+  // test(33 , 1 , 1 , 2);
+  // test(33 , 0 , 1 , 2);
+  // test(33 , 1 , 0 , 2);
+  // test(33 , 0 , 0 , 2);
+  }
   
-  test(43 , 1 , 1 , 3);
-  test(43 , 0 , 1 , 3);
-  test(43 , 1 , 0 , 3);
-  test(43 , 0 , 0 , 3);
 
-
-  test(33 , 1 , 1 , 2);
-  test(33 , 0 , 1 , 2);
-  test(33 , 1 , 0 , 2);
-  test(33 , 0 , 0 , 2);
+  test(1245798 , 0 , 0);
+  test(1245798 , 1 , 1);
+  test(1245798 , 1 , 0);
+  test(1245798 , 1 , 1);
+  test(1245798 , 1 , 0);
+  test(1245798 , 1 , 1);
+  test(1245798 , 1 , 0);
+  test(1245798 , 1 , 1);
+  test(1245798 , 1 , 0);
+  test(1245798 , 1 , 1);
   delete top;
   tfp->close();
   delete contextp;
