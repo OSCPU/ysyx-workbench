@@ -16,18 +16,32 @@ module top(
 
     input [7:0]in , 
     input clk , 
-    // output [9:0]c
+    output [9:0] keyboards
 
-    output [7:0]ta , 
-    output [7:0]tb
 );
     
     reg [7:0]  sto[1:0];
     SimpleStorage ss(in , clk , sto);
 
-    assign ta = sto[1];
-    assign tb = sto[0];
+    parameter [7:0 ] keyMap [9:0]= {8'h45 , 8'h16 , 8'h1e ,8'h26,8'h25,8'h2e,8'h36,8'h3d,8'h3e,8'h46} ;
 
+    genvar  i ;
+    generate
+        
+        for(i = 0 ; i<= 9 ;i = i +1) begin
+        
+            assign keyboards[i] = (sto[1] == 8'hF0 )?
+                                    (
+                                      (keyMap[i] == sto[0])?
+                                        0 : keyboards[i]  
+                                    ):
+                                    (
+                                        (keyMap[i] == sto[0])?
+                                        1 : keyboards[i]
+                                    );
+            
+        end
 
+    endgenerate
 
 endmodule
