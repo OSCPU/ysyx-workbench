@@ -257,7 +257,7 @@ int main(){
     test(200 , 0);
     test(200 , 1);
     test(-1 , 0);
-    test(-1 , 1)
+    test(-1 , 1);
     test(-256 , 0);
     test(-245, 1);
     test(123 , 0);
