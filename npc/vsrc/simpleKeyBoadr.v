@@ -33,7 +33,7 @@ module top(
                 always @(posedge clk)
                         keyboards[i] <= ( in == keyMap[i])?
                                             (
-                                                (sto[1] == 8'hF0)?
+                                                (sto[0] == 8'hF0)?
                                                 0:1
                                             ):
                                             (keyboards[i]);
