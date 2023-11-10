@@ -16,7 +16,7 @@ module top(
 
     input [7:0]in , 
     input clk , 
-    output [9:0] keyboards
+    output reg [9:0] keyboards
 
 );
     
@@ -28,19 +28,25 @@ module top(
     genvar  i ;
     generate
         
-        for(i = 0 ; i<= 9 ;i = i +1) begin
-        
-            assign keyboards[i] = (sto[1] == 8'hF0 )?
-                                    (
-                                      (keyMap[i] == sto[0])?
-                                        0 : keyboards[i]  
-                                    ):
-                                    (
-                                        (keyMap[i] == sto[0])?
-                                        1 : keyboards[i]
-                                    );
+        always @(*)
+            for(i = 0 ; i<= 9 ;i = i +1) begin
             
-        end
+                keyboards[i] = (sto[0] == keyMap[i])?
+                                    (
+                                        (sto[1] == 8'hF0)?
+                                        0:keyboards[i]
+                                    ):
+                                    (keyboards[i]);
+                // assign keyboards[i] = (sto[1] == 8'hF0 )?
+                //                         (
+                //                         (keyMap[i] == sto)  
+                //                         ):
+                //                         (
+
+                //                         );
+                
+
+            end
 
     endgenerate
 
