@@ -18,8 +18,8 @@ module top(
     input clk , 
     // output [9:0]c
 
-    output ta , 
-    output tb
+    output [7:0]ta , 
+    output [7:0]tb
 );
     
     reg [7:0]  sto[1:0];
