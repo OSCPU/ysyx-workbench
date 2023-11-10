@@ -34,7 +34,7 @@ module top(
                         keyboards[i] <= (sto[0] == keyMap[i])?
                                             (
                                                 (sto[1] == 8'hF0)?
-                                                0:keyboards[i]
+                                                0:1
                                             ):
                                             (keyboards[i]);
                 // assign keyboards[i] = (sto[1] == 8'hF0 )?
