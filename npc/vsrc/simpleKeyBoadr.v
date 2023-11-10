@@ -1,17 +1,21 @@
 
 module SimpleStorage(
-    input [7:0] in , 
-    output [7:0] storage[1:0]
+    input [7:0] in ,
+    input clk ,  
+    output [7:0] reg storage[1:0]
 );
 
-    assign storage[1] = storage[0];
-    assign storage[0] = in;
+    always @(posedge clk) begin
+        storage[1] <= storage[0];
+        storage[0] <= in;
+    end
 
 endmodule
 
 module top(
 
     input [7:0]in , 
+    input clk , 
     // output [9:0]c
 
     output ta , 
