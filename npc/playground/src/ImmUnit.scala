@@ -19,7 +19,7 @@ class ImmUnit(val xlen: Int) extends Module {
   val imm_j = Cat(Fill(12, io.inst(31)), io.inst(19,12), io.inst(20), io.inst(30,21), 0.U(1.W))
   val imm_u = Cat(io.inst(31,12), 0.U(12.W))
   // imm look up table
-  io.out := MuxLookup(io.imm_type, imm_i)(
+  io.out := MuxLookup(io.imm_type, 0.U)(
     Seq(
       IMM_I -> imm_i,
       IMM_S -> imm_s,

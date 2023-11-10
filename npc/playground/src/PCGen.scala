@@ -15,7 +15,7 @@ class PCGenIO(xlen: Int) extends Bundle {
 class PCGen(xlen: Int) extends Module {
   val io = IO(new PCGenIO(xlen))
 
-  val pc = RegInit(0.U(xlen.W))
+  val pc = RegInit("x80000000".U(xlen.W))
 
   when(io.branch) {
     pc := io.branch_target

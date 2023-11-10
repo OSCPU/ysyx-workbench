@@ -36,8 +36,9 @@ class Top(xlen: Int) extends Module {
   // EXU
   val alu         = Module(new Alu(xlen))
   val branchGen   = Module(new BranchGen(xlen))
-  // memUnit
+  // Mem
   val memUnit     = Module(new MemUnit)
+  val dataExt     = Module(new DataExt(xlen))
 
   // route modules
   // data path design
@@ -59,7 +60,7 @@ class Top(xlen: Int) extends Module {
     Seq(
       WB_ALU -> alu.io.out,
       WB_PC4 -> (pcGen.io.npc + 4.U),
-      WB_MEM -> memUnit.io.rdata
+      WB_MEM -> dataExt.io.out
       )
   )
 
@@ -88,6 +89,8 @@ class Top(xlen: Int) extends Module {
   memUnit.io.waddr := alu.io.out
   memUnit.io.wdata := regFile.io.rdata2
 
+  dataExt.io.in := memUnit.io.rdata
+
   // control logic design
   pcGen.io.branch := branchGen.io.branch
   pcGen.io.jal    := (controlUnit.io.pc_sel === PC_ALU) && (controlUnit.io.imm_type === IMM_J)
@@ -108,4 +111,6 @@ class Top(xlen: Int) extends Module {
       ST_SB -> 1.U
     )
   )
+
+  dataExt.io.opcode := controlUnit.io.ld_type
 }

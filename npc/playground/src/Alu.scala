@@ -42,7 +42,7 @@ class Alu(xlen: Int) extends Module {
       ALU_SLTU -> (io.src1.asUInt < io.src2.asUInt),
       ALU_XOR  -> (io.src1 ^ io.src2),
       ALU_SRL  -> (io.src1 >> shamt),
-      ALU_SRA  -> (io.src2.asSInt >> shamt).asUInt,
+      ALU_SRA  -> (io.src1.asSInt >> shamt).asUInt,
       ALU_OR   -> (io.src1 | io.src2),
       ALU_AND  -> (io.src1 & io.src2),
       ALU_COPY_A -> io.src1,
