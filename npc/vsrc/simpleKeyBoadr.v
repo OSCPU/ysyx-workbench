@@ -23,7 +23,7 @@ module top(
 );
     
     reg [7:0]  sto[1:0];
-    SimpleStorage ss(in , sto);
+    SimpleStorage ss(in , clk , sto);
 
     assign ta = sto[1];
     assign tb = sto[0];
