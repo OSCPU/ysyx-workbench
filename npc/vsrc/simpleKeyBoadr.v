@@ -22,7 +22,7 @@ module top(
     SimpleStorage ss(in , sto);
 
     assign ta = sto[1];
-    assign tb = stop[0];
+    assign tb = sto[0];
 
 
 
