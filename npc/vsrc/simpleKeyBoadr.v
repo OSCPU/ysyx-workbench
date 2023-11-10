@@ -28,15 +28,15 @@ module top(
     genvar  i ;
     generate
         
-        always @(*)
+        
             for(i = 0 ; i<= 9 ;i = i +1) begin
-            
-                keyboards[i] = (sto[0] == keyMap[i])?
-                                    (
-                                        (sto[1] == 8'hF0)?
-                                        0:keyboards[i]
-                                    ):
-                                    (keyboards[i]);
+                always @(*)
+                    keyboards[i] = (sto[0] == keyMap[i])?
+                                        (
+                                            (sto[1] == 8'hF0)?
+                                            0:keyboards[i]
+                                        ):
+                                        (keyboards[i]);
                 // assign keyboards[i] = (sto[1] == 8'hF0 )?
                 //                         (
                 //                         (keyMap[i] == sto)  
