@@ -1,6 +1,6 @@
 
 
-module top(
+module Lineartop(
 
     input [len:0] seed , 
     input  opt,
