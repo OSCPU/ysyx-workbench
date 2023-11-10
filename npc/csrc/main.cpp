@@ -108,10 +108,10 @@ VerilatedVcdC* tfp ;
 // output reg Equal 
 
 
-void test(  int in  ){
+void test(  int in  , int clk ){
 
   top->in = in;
-  // top->clk = clk;
+  top->clk = clk;
   // top->shiftStep = shiftStep;
   top->eval();
 
