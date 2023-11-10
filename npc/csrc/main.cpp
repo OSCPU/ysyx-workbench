@@ -108,10 +108,10 @@ VerilatedVcdC* tfp ;
 // output reg Equal 
 
 
-void test(  int in  , int clk ){
+void test(  int in  ){
 
   top->in = in;
-  top->clk = clk;
+  // top->clk = clk;
   // top->shiftStep = shiftStep;
   top->eval();
 
@@ -229,26 +229,34 @@ int main(){
   }
   
   {
-    test(0,0);
-    test(0,1);
-    test(0,0);
-    test(0,1);
-    test(0,0);
-    test(0,1);
-    test(0,0);
-    test(0,1);
-    test(0,0);
-    test(1,1);
-    test(1,0);
-    test(1,1);
-    test(1,0);
-    test(1,1);
-    test(1,0);
-    test(1,1);
-    test(1,0);
-    test(0,1);
-    test(0,0);
-    test(0,1);
+    // test(0,0);
+    // test(0,1);
+    // test(0,0);
+    // test(0,1);
+    // test(0,0);
+    // test(0,1);
+    // test(0,0);
+    // test(0,1);
+    // test(0,0);
+    // test(1,1);
+    // test(1,0);
+    // test(1,1);
+    // test(1,0);
+    // test(1,1);
+    // test(1,0);
+    // test(1,1);
+    // test(1,0);
+    // test(0,1);
+    // test(0,0);
+    // test(0,1);
+  }
+
+  {
+    test(100);
+    test(200);
+    test(-1);
+    test(-256);
+    test(123);
   }
 
   delete top;
