@@ -252,16 +252,18 @@ int main(){
   }
 
   {
-    test(100,0);
-    test(100 , 1);
-    test(200 , 0);
-    test(200 , 1);
-    test(-1 , 0);
-    test(-1 , 1);
-    test(-256 , 0);
-    test(-245, 1);
-    test(123 , 0);
-    test(13 , 1);
+    test(0x16,0);
+    test(0x16 , 1);
+    test(0x1e , 0);
+    test(0x1e , 1);
+    test(0x2e , 0);
+    test(0x2e , 1);
+    test(0xF0 , 0);
+    test(0xF0, 1);
+    test(0x16 , 0);
+    test(0x16 , 1);
+    test(0x16 , 0);
+    test(0x16 , 1);
   }
 
   delete top;
