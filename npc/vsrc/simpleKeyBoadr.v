@@ -16,10 +16,10 @@ module top(
 
     input [7:0]in , 
     input clk , 
-    output reg [9:0] keyboards
+    output [9:0] keyboards
 
 );
-    
+    // reg [9:0] curKeyBoard;
     reg [7:0]  sto[1:0];
     SimpleStorage ss(in , clk , sto);
 
@@ -29,9 +29,9 @@ module top(
     generate
         
         
-            for(i = 0 ; i<= 9 ;i = i +1) begin
+            for(i = 0 ; i<= 9 ;i = i +1) begin:gen0
                 always @(posedge clk)
-                        keyboards[i] <= (sto[0] == keyMap[i])?
+                        keyboards[i] <= ( in == keyMap[i])?
                                             (
                                                 (sto[1] == 8'hF0)?
                                                 0:1
