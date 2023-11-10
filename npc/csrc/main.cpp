@@ -107,9 +107,7 @@ VerilatedVcdC* tfp ;
 // output reg Compare , 
 // output reg Equal 
 
-    input in , 
-    input clk , 
-    output c
+
 void test(  int in  , int clk ){
 
   top->in = in;
