@@ -43,6 +43,8 @@ void iringbuf_step(vaddr_t pc, uint32_t inst) {
   char *buf = iringbuf[iringbuf_curidx];
   disassemble(p, buf + LEN_IRINGBUF - p, pc, (uint8_t *)&inst, ilen);
 
+  // puts to log
+  log_write("%s\n", iringbuf[iringbuf_curidx]);
   // next indx
   iringbuf_curidx = (iringbuf_curidx + 1) % NR_IRINGBUF;
 }

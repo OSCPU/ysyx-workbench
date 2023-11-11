@@ -98,9 +98,9 @@ void init_monitor(int argc, char *argv[]) {
 
   init_elf(elf_file);
 
-  sim_init();
-
   init_disasm("riscv32-pc-linux-gnu");
+
+  sim_init();
 
   welcome();
 }

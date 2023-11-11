@@ -32,14 +32,16 @@ static void step_and_dump_wave(){
 static void sim_reset() {
   int sim_time = 0;
   while(sim_time <= 6) {
-    top->reset = 0;
     if(sim_time >=3 && sim_time <= 5) {
       top->reset = 1;
+    } else {
+      top->reset = 0;
     }
     top->clock ^= 1;
     step_and_dump_wave();
     sim_time++;
   }
+  top->clock ^= 1;
 }
 
 void sim_init(){
@@ -51,12 +53,6 @@ void sim_init(){
   tfp->open("wave.vcd");
 
   sim_reset();
-	// skip the first cycle
-  //top->clock ^= 1;
-  // step_and_dump_wave();
-  // sim negedge
-  top->clock ^= 1;
-  // step_and_dump_wave();
 }
 
 void sim_exit(){

@@ -2,8 +2,10 @@
 #include "debug.h"
 #include "macro.h"
 #include "paddr.h"
+#include "utils.h"
 #include <common.h>
 #include <cstdint>
+#include <time.h>
 
 extern riscv32_CPU_state cpu;
 extern uint64_t g_nr_guest_inst;
@@ -53,7 +55,22 @@ extern "C" void paddr_read(int raddr, int *rdata) {
     IFDEF(CONFIG_MTRACE, printf("%s at " FMT_PADDR " len=%d data=" FMT_WORD "\n",ANSI_FMT("paddr  read", ANSI_FG_MAGENTA), raddr, len, *rdata));
     return;
   }
-  if(g_nr_guest_inst) out_of_bound(raddr); // skip sim reset
+  //if(g_nr_guest_inst) out_of_bound(raddr); // skip sim reset
+  if(raddr == 0xa0000048) {
+    *rdata = get_time();
+    *(rdata + 4) = get_time() >> 32;
+  } else if(raddr == 0xa0000050) {
+    time_t t = time(NULL);
+    struct tm *tm = localtime(&t);
+    
+    uint8_t *p = (uint8_t *)rdata;
+    p[0] = tm->tm_sec;
+    p[1] = tm->tm_min;
+    p[2] = tm->tm_hour;
+    p[3] = tm->tm_mday;
+    p[4] = tm->tm_mon;
+    p[5] = tm->tm_year;
+  }
 }
 
 extern "C" void paddr_write(int waddr, int wdata, char wmask) {
@@ -69,7 +86,11 @@ extern "C" void paddr_write(int waddr, int wdata, char wmask) {
     IFDEF(CONFIG_MTRACE, printf("%s at " FMT_PADDR " len=%d data=" FMT_WORD "\n",ANSI_FMT("paddr write", ANSI_FG_MAGENTA), waddr, len, wdata));
     return;
   }
-  out_of_bound(waddr);
+  if(waddr == 0xa00003f8) {
+    putchar(wdata);
+    return;
+  }
+  //out_of_bound(waddr);
 }
 #ifdef CONFIG_NATIVE_MEM
 word_t paddr_read(paddr_t addr, int len) {
