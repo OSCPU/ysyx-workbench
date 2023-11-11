@@ -7,8 +7,8 @@
 
 #ifdef CONFIG_TRACE
 //#define CONFIG_FTRACE   1
-#define CONFIG_WATCHPOINT 1
-#define CONFIG_IRINGBUF 1
+//#define CONFIG_WATCHPOINT 1
+//#define CONFIG_IRINGBUF 1
 //#define CONFIG_MTRACE 1
 #endif
 

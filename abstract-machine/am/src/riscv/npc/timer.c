@@ -1,4 +1,5 @@
 #include <am.h>
+#include <stdio.h>
 #include "../riscv.h"
 
 #define TIMER_ADDR 0xa0000048
@@ -22,11 +23,11 @@ void __am_timer_uptime(AM_TIMER_UPTIME_T *uptime) {
 
 void __am_timer_rtc(AM_TIMER_RTC_T *rtc) {
   uint32_t lo = inl(RTC_ADDR);
-	uint32_t hi = inl(RTC_ADDR + 4);
   rtc->second = lo & 0xff;
   rtc->minute = lo >> 8 & 0xff;
   rtc->hour   = lo >> 16 & 0xff;
   rtc->day    = lo >> 24 & 0xff;
+	uint32_t hi = inl(RTC_ADDR + 4);
   rtc->month  = hi & 0xff;
   rtc->year   = 1900 + (hi >> 8 & 0xff);
 }

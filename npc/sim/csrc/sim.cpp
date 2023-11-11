@@ -26,7 +26,7 @@ void sim_exec_once();
 static void step_and_dump_wave(){
   top->eval();
   contextp->timeInc(1);
-  tfp->dump(contextp->time());
+  //tfp->dump(contextp->time());
 }
 
 static void sim_reset() {

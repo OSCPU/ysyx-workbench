@@ -59,7 +59,8 @@ extern "C" void paddr_read(int raddr, int *rdata) {
   if(raddr == 0xa0000048) {
     *rdata = get_time();
     *(rdata + 4) = get_time() >> 32;
-  } else if(raddr == 0xa0000050) {
+  }
+  if(raddr == 0xa0000050) {
     time_t t = time(NULL);
     struct tm *tm = localtime(&t);
     
@@ -68,8 +69,14 @@ extern "C" void paddr_read(int raddr, int *rdata) {
     p[1] = tm->tm_min;
     p[2] = tm->tm_hour;
     p[3] = tm->tm_mday;
-    p[4] = tm->tm_mon;
-    p[5] = tm->tm_year;
+
+  } else if(raddr == 0xa0000054) {
+    time_t t = time(NULL);
+    struct tm *tm = localtime(&t);
+    
+    uint8_t *p = (uint8_t *)(rdata);
+    p[0] = (tm->tm_mon + 1) & 0xff;
+    p[1] = (tm->tm_year) & 0xff;
   }
 }
 
