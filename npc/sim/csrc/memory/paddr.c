@@ -3,8 +3,10 @@
 #include "macro.h"
 #include "paddr.h"
 #include <common.h>
+#include <cstdint>
 
 extern riscv32_CPU_state cpu;
+extern uint64_t g_nr_guest_inst;
 
 #if   defined(CONFIG_PMEM_MALLOC)
 static uint8_t *pmem = NULL;
@@ -51,7 +53,7 @@ extern "C" void paddr_read(int raddr, int *rdata) {
     IFDEF(CONFIG_MTRACE, printf("%s at " FMT_PADDR " len=%d data=" FMT_WORD "\n",ANSI_FMT("paddr  read", ANSI_FG_MAGENTA), raddr, len, *rdata));
     return;
   }
-  //out_of_bound(raddr);
+  if(g_nr_guest_inst) out_of_bound(raddr); // skip sim reset
 }
 
 extern "C" void paddr_write(int waddr, int wdata, char wmask) {

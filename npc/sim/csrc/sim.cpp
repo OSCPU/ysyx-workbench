@@ -35,7 +35,6 @@ static void sim_reset() {
     top->reset = 0;
     if(sim_time >=3 && sim_time <= 5) {
       top->reset = 1;
-      top->io_inst = 0;
     }
     top->clock ^= 1;
     step_and_dump_wave();
@@ -147,9 +146,6 @@ void npc_trap(word_t pc, int code) {
 
 // isa_exec_once simulation
 void sim_exec_once() {
-  // fetch instruction
-  top->io_inst = pmem_read(top->io_pc, 4);
-  IFDEF(CONFIG_IRINGBUF, iringbuf_step(top->io_pc, top->io_inst));
   // sim poedge
   top->clock ^= 1;
   step_and_dump_wave();
@@ -158,5 +154,6 @@ void sim_exec_once() {
   step_and_dump_wave();
   // copy regfile and check halt
   isa_reg_copy();
+  IFDEF(CONFIG_IRINGBUF, iringbuf_step(top->io_pc, top->io_inst));
   if(top->io_halt) npc_trap(cpu.pc, cpu.gpr[10]);
 }

@@ -20,7 +20,7 @@ void trace_and_difftest();
 static void exec_once() {
   sim_exec_once();
   trace_and_difftest();
-	if(g_print_step) print_current_inst();
+	IFDEF(CONFIG_IRINGBUF, if(g_print_step) print_current_inst();)
 }
 
 static void execute(uint64_t n) {
