@@ -13,5 +13,5 @@ class MemUnit extends BlackBox with HasBlackBoxPath {
     val wmask = Input(UInt(8.W))
     val wen   = Input(Bool())
   })
-  addPath("/home/wophere/ysyx-workbench/npc/playground/src/memory.v")
+  addPath("/home/wophere/ysyx-workbench/npc/playground/src/MemUnit.sv")
 }

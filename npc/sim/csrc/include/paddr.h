@@ -34,7 +34,7 @@ uint8_t* guest_to_host(paddr_t paddr);
 paddr_t host_to_guest(uint8_t *haddr);
 
 static inline bool in_pmem(paddr_t addr) {
-  return addr < CONFIG_MSIZE + CONFIG_MBASE;
+  return (addr < CONFIG_MSIZE + CONFIG_MBASE) && (addr >= CONFIG_MBASE);
 }
 
 word_t pmem_read(paddr_t addr, int len);

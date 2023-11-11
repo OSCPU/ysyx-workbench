@@ -3,7 +3,6 @@
 #include "macro.h"
 #include "paddr.h"
 #include <common.h>
-#include <cstdio>
 
 extern riscv32_CPU_state cpu;
 
@@ -52,7 +51,7 @@ extern "C" void paddr_read(int raddr, int *rdata) {
     IFDEF(CONFIG_MTRACE, printf("%s at " FMT_PADDR " len=%d data=" FMT_WORD "\n",ANSI_FMT("paddr  read", ANSI_FG_MAGENTA), raddr, len, *rdata));
     return;
   }
-  out_of_bound(raddr);
+  //out_of_bound(raddr);
 }
 
 extern "C" void paddr_write(int waddr, int wdata, char wmask) {

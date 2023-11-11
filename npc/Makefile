@@ -1,7 +1,9 @@
 # Basic variables definition
-CHISEL_BUILD_DIR = $(shell pwd)/chisel-build
-SIM_DIR = $(shell pwd)/sim
-VERILOG_FILE     = Top.v
+BUILD_DIR = $(NPC_HOME)/build
+GEN_VSRCS_DIR  = $(BUILD_DIR)/sv-gen
+GEN_VSRCS      = $(shell find -L $(GEN_VSRCS_DIR) -name "*.sv")
+SIM_DIR   = $(NPC_HOME)/sim
+VSRCS_DIR = $(SIM_DIR)/vsrc
 
 export PATH := $(PATH):$(abspath ./utils)
 
@@ -12,9 +14,8 @@ test:
 verilog:
 	$(call git_commit, "generate verilog")
 	@echo + Build verilog
-	@mkdir -p $(CHISEL_BUILD_DIR)
-	mill -i __.test.runMain Elaborate -td $(CHISEL_BUILD_DIR)
-	@cp $(CHISEL_BUILD_DIR)/$(VERILOG_FILE) $(SIM_DIR)
+	mill -i __.test.runMain Elaborate
+	@cp -r $(GEN_VSRCS) $(VSRCS_DIR)
 
 help:
 	mill -i __.test.runMain Elaborate --help
@@ -32,7 +33,7 @@ checkformat:
 	mill -i __.checkFormat
 
 clean:
-	@-rm -rf $(CHISEL_BUILD_DIR)
+	@-rm -rf $(BUILD_DIR)
 
 cleanall: clean
 	@$(MAKE) -C $(SIM_DIR) clean

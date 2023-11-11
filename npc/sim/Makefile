@@ -26,6 +26,7 @@ endif
 
 ## 2. General Compilation Targets
 
+### Build targets
 GUEST_ISA  := riscv32e
 ENGINE     := interpreter
 NAME       := $(GUEST_ISA)-npc-$(ENGINE)
@@ -35,17 +36,24 @@ BUILD_DIR  := $(CURDIR)/build
 OBJ_DIR    := $(BUILD_DIR)/obj-$(NAME)
 $(shell mkdir -p $(OBJ_DIR))
 
-SRCS_DIR   := $(CURDIR)/csrc
-SRCS       += $(shell find -L $(SRCS_DIR) -name "*.c") 
-SRCS       += $(shell find -L $(SRCS_DIR) -name "*.cc") 
-SRCS       += $(shell find -L $(SRCS_DIR) -name "*.cpp") 
-INC_PATH   := $(SRCS_DIR)/include $(INC_PATH) 
+### CSRCS
+CSRCS_DIR  := $(CURDIR)/csrc
+CSRCS      += $(shell find -L $(CSRCS_DIR) -name "*.c") 
+CSRCS      += $(shell find -L $(CSRCS_DIR) -name "*.cc") 
+CSRCS      += $(shell find -L $(CSRCS_DIR) -name "*.cpp") 
+INC_PATH   := $(CSRCS_DIR)/include $(INC_PATH) 
 INCLUDES    = $(addprefix -I, $(INC_PATH))
 
 BINARY      = $(OBJ_DIR)/V$(TOP_MODULE)
 
-VERILATOR_INPUT = -f input.vc Top.v $(SRCS)
+### VSRCS
+VSRCS_DIR  := $(CURDIR)/vsrc
+VSRCS      := $(shell find -L $(VSRCS_DIR) -name "*.sv")
 
+### Verilator inputs
+VERILATOR_INPUT = -f input.vc $(CSRCS) $(VSRCS)
+
+### Wave file
 WAVE_FILE  = wave.vcd
 
 ## 3. Verilator flags
@@ -118,7 +126,7 @@ build: verilate
 
 sim: build
 	@echo + Run Simulation
-	$(BINARY) $(ARGS) $(IMG)
+	$(NPC_EXEC)
 
 gdb: build
 	@echo + Run gdb
