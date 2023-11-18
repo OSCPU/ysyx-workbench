@@ -140,7 +140,7 @@ void init_monitor(int argc, char *argv[]) {
 #endif
 
   /* Display welcome message. */
-  welcome();
+  // welcome();
 }
 #else // CONFIG_TARGET_AM
 static long load_img() {
