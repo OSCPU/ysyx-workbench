@@ -43,11 +43,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = pc;
   s->snpc = pc;
-
-
-  // printf("test %d\n", nemu_state.state);
   isa_exec_once(s);
-  // printf("test %d\n", nemu_state.state);
   cpu.pc = s->dnpc;
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;
@@ -65,8 +61,6 @@ static void exec_once(Decode *s, vaddr_t pc) {
   memset(p, ' ', space_len);
   p += space_len;
 
-
-
 #ifndef CONFIG_ISA_loongarch32r
   void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
   disassemble(p, s->logbuf + sizeof(s->logbuf) - p,
@@ -79,14 +73,10 @@ static void exec_once(Decode *s, vaddr_t pc) {
 
 static void execute(uint64_t n) {
   Decode s;
-  for (; n > 0 ; n --) {
-
-    // printf("test %d %d\n", n , nemu_state.state);
+  for (;n > 0; n --) {
     exec_once(&s, cpu.pc);
-    // printf("test %d %d\n", n , nemu_state.state);
     g_nr_guest_inst ++;
     trace_and_difftest(&s, cpu.pc);
-    // printf("test %d %d\n", n , nemu_state.state);
     if (nemu_state.state != NEMU_RUNNING) break;
     IFDEF(CONFIG_DEVICE, device_update());
   }
@@ -110,8 +100,7 @@ void assert_fail_msg() {
 void cpu_exec(uint64_t n) {
   g_print_step = (n < MAX_INST_TO_PRINT);
   switch (nemu_state.state) {
-    case NEMU_END: 
-    case NEMU_ABORT:
+    case NEMU_END: case NEMU_ABORT:
       printf("Program execution has ended. To restart the program, exit NEMU and run again.\n");
       return;
     default: nemu_state.state = NEMU_RUNNING;
@@ -127,8 +116,7 @@ void cpu_exec(uint64_t n) {
   switch (nemu_state.state) {
     case NEMU_RUNNING: nemu_state.state = NEMU_STOP; break;
 
-    case NEMU_END:
-    case NEMU_ABORT:
+    case NEMU_END: case NEMU_ABORT:
       Log("nemu: %s at pc = " FMT_WORD,
           (nemu_state.state == NEMU_ABORT ? ANSI_FMT("ABORT", ANSI_FG_RED) :
            (nemu_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) :
