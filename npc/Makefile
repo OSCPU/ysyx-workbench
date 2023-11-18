@@ -1,7 +1,7 @@
 include ../Makefile
 
 TOPNAME =top
-NXDC_FILES =constr/shiftReg.nxdc
+NXDC_FILES =constr/top.nxdc
 BUILD =./build
 YSYX_HOME =$(shell pwd)/../
 
@@ -43,7 +43,7 @@ $(BIN):	$(CPP_FILE) $(V_FILE)  $(NVBOARD_ARCHIVE)
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $^ \
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
-		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) --trace
+		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
 
 
 all: default

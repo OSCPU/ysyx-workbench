@@ -7,12 +7,6 @@
  
 #include "verilated_vcd_c.h" //可选，如果要导出vcd则需要加上
  
-
-VerilatedContext* contextp;
-Vtop* top ;
-VerilatedVcdC* tfp ;
-
-
 // int main(int argc, char** argv, char** env) {
  
 //   VerilatedContext* contextp = new VerilatedContext;
@@ -47,8 +41,6 @@ VerilatedVcdC* tfp ;
 
 // #include <nvboard.h>
 #include <Vtop.h>
-#define INT_MAX 0x7fffffff
-#define INT_MIN 0x80000000
 
 // extern void nvboard_bind_all_pins(Vtop* top);
 
@@ -96,179 +88,44 @@ VerilatedVcdC* tfp ;
 
 // }
 
-// input[31:0] A , 
-// input[31:0] B ,
-// input[2:0] OPT,
 
-// output reg[31:0] Output , 
-// output reg Overflow ,
-// output reg EqualZero,
-// output reg Carry , 
-// output reg Compare , 
-// output reg Equal 
+void test( Vtop*p , int a , int b , int sub , int *res , int *zero , int *overflow ){
 
+  p->a = a;
+  p->b = b;
+  p->sub = sub;
+  p->eval();
 
-void test(  int in  , int clk ){
-
-  top->in = in;
-  top->clk = clk;
-  // top->shiftStep = shiftStep;
-  top->eval();
-
-
-  tfp->dump(contextp->time()); //dump wave
-  contextp->timeInc(1); //推动仿真时间
+  *zero = p->Zero;
+  *overflow = p->Overflow;
+  *res = p->res;
   // carry = p ->
-  // printf("%d %d %d %d %d %d\n" , a , b , sub , *zero , *overflow , *res);
+  printf("%d %d %d %d %d %d\n" , a , b , sub , *zero , *overflow , *res);
 }
-// void clkTest(int *a , int *opt , int len){
+#define INT_MAX 0x7fffffff
 
-//   for(int i=0;i<len;i++){
-//     test(a[i] , i%2 , opt[i]);
-//   }
-// }
+
+#define INT_MIN 0x80000000
+
 int main(){
 
-  contextp = new VerilatedContext;
-  top = new Vtop{contextp};
-  tfp = new VerilatedVcdC; //初始化VCD对象指针
-  contextp->traceEverOn(true); //打开追踪功能
-  top->trace(tfp, 0); //
-  tfp->open("wave.vcd"); //设置输出的文件wave.vcd
-  {
-  //ALU test
-  // test( INT_MAX , 0 , 0);
-  // test( INT_MAX , 1 , 0);
-  // test( INT_MIN , INT_MAX , 0);
-  // test( INT_MIN , -INT_MIN , 0);
-  // test( INT_MIN , INT_MIN , 0);
-  // test( INT_MIN , 0 , 0);
-  // test( 100 , -100 , 0);
-  // test( 512 , 512 , 0);
-  // test( 0 , -INT_MIN , 0);
-  // test( 0 , INT_MIN , 0);
-  // test( 0 , INT_MAX , 0);
-  // test( 0 , -INT_MAX , 0);
-  // test( 0 , -0 , 0);
-  // test( -0 , 0 , 0);
+  VerilatedContext* contextp = new VerilatedContext;
+  Vtop* top = new Vtop{contextp};
+  // nvboard_bind_all_pins(top);
+  // nvboard_init();
 
-  // test( INT_MAX , 0 , 1);
-  // test( INT_MAX , 1 , 1);
-  // test( INT_MIN , INT_MAX , 1);
-  // test( INT_MIN , -INT_MIN , 1);
-  // test( INT_MIN , INT_MIN , 1);
-  // test( INT_MIN , 0 , 1);
-  // test( 100 , -130 , 1);
-  // test( 100 , -90 , 1);
-  // test( -100 , 90 , 1);
-  // test( -100 , 130 , 1);
+  int a , b , sub , zero , overflow , res ;
+  printf("%d\n" , -1-INT_MIN);
+  test(top , 1 , INT_MIN , 1 , &zero , &overflow , &res);
   
-  // test( 512 , 512 , 1);
-  // test( 0 , -INT_MIN , 1);
-  // test( 0 , INT_MIN , 1);
-  // test( 0 , INT_MAX , 1);
-  // test( 0 , -INT_MAX , 1);
-  // test( 0 , -0 , 1);
-  // test( -0 , 0 , 1);
-  }
-
-  {
-  // int in[] = {1,1,1,0,0,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1};
-  // int opt[]= {0,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,6,6,6,7,7,7,6,6,6,6,5,5,5,5,5,4,4,4,3,3};
-  // clkTest(in , opt , sizeof(in)/sizeof(int) );
-  }
-  {
-  // test(43 , 1 , 1 , 3);
-  // test(43 , 0 , 1 , 3);
-  // test(43 , 1 , 0 , 3);
-  // test(43 , 0 , 0 , 3);
-
-
-  // test(33 , 1 , 1 , 2);
-  // test(33 , 0 , 1 , 2);
-  // test(33 , 1 , 0 , 2);
-  // test(33 , 0 , 0 , 2);
-  }
+  test(top , INT_MAX , INT_MIN , 0 , &zero , &overflow , &res);
   
-  {
-  // test(1245798 , 0 , 0);
-  // test(1245798 , 0 , 1);
-  // test(1245798 , 1 , 1);
-  // test(1245798 , 1 , 0);
-  // test(1245798 , 1 , 1);
-  // test(1245798 , 1 , 0);
-  // test(1245798 , 1 , 1);
-  // test(1245798 , 1 , 0);
-  // test(1245798 , 1 , 1);
-  // test(1245798 , 1 , 0);
-  // test(1245798 , 1 , 1);
-  // test(1245798 , 1 , 0);
-  // test(1245798 , 1 , 1);
-  // test(1245798 , 1 , 0);
-  // test(1245798 , 1 , 1);
-  // test(1245798 , 1 , 0);
-  // test(1245798 , 1 , 1);
-  // test(1245798 , 1 , 0);
-  // test(1245798 , 1 , 1);
-  // test(1245798 , 1 , 0);
-  // test(1245798 , 1 , 1);
-  // test(1245798 , 1 , 0);
-  // test(1245798 , 1 , 1);
-  // test(1245798 , 1 , 0);
-  // test(1245798 , 1 , 1);
-  // test(1245798 , 1 , 0);
-  // test(1245798 , 1 , 1);
-  // test(1245798 , 1 , 0);
-  // test(1245798 , 1 , 1);
-  // test(1245798 , 1 , 0);
-  // test(1245798 , 1 , 1);
-  // test(1245798 , 1 , 0);
-  // test(1245798 , 1 , 1);
-  // test(1245798 , 1 , 0);
-  // test(1245798 , 1 , 1);
-  }
-  
-  {
-    // test(0,0);
-    // test(0,1);
-    // test(0,0);
-    // test(0,1);
-    // test(0,0);
-    // test(0,1);
-    // test(0,0);
-    // test(0,1);
-    // test(0,0);
-    // test(1,1);
-    // test(1,0);
-    // test(1,1);
-    // test(1,0);
-    // test(1,1);
-    // test(1,0);
-    // test(1,1);
-    // test(1,0);
-    // test(0,1);
-    // test(0,0);
-    // test(0,1);
-  }
+  test(top , 0 , INT_MIN , 1 , &zero , &overflow , &res);
 
-  {
-    test(0x16,0);
-    test(0x16 , 1);
-    test(0x1e , 0);
-    test(0x1e , 1);
-    test(0x2e , 0);
-    test(0x2e , 1);
-    test(0xF0 , 0);
-    test(0xF0, 1);
-    test(0x16 , 0);
-    test(0x16 , 1);
-    test(0x16 , 0);
-    test(0x16 , 1);
-  }
+  test(top , INT_MAX , 0 , 1 , &zero , &overflow , &res);
+ 
+  test(top , 0 , INT_MAX , 1 , &zero , &overflow , &res);
 
-  delete top;
-  tfp->close();
-  delete contextp;
-  return 0;
+  test(top , -1 , INT_MIN , 1 , &zero , &overflow , &res);
  
 }
