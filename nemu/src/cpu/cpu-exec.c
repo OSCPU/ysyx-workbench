@@ -45,9 +45,9 @@ static void exec_once(Decode *s, vaddr_t pc) {
   s->snpc = pc;
 
 
-  printf("test %d\n", nemu_state.state);
+  // printf("test %d\n", nemu_state.state);
   isa_exec_once(s);
-  printf("test %d\n", nemu_state.state);
+  // printf("test %d\n", nemu_state.state);
   cpu.pc = s->dnpc;
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;
