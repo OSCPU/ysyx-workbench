@@ -20,7 +20,6 @@ endef
 
 # prototype: git_commit(msg)
 define git_commit
-	echo $(YSYX_HOME)
 	-@flock $(LOCK_DIR) $(MAKE) -C $(YSYX_HOME) .git_commit MSG='$(1) '
 	-@sync
 endef
