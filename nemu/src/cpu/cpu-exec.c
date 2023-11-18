@@ -43,7 +43,11 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = pc;
   s->snpc = pc;
+
+
+  printf("test %d\n", nemu_state.state);
   isa_exec_once(s);
+  printf("test %d\n", nemu_state.state);
   cpu.pc = s->dnpc;
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;
@@ -61,6 +65,8 @@ static void exec_once(Decode *s, vaddr_t pc) {
   memset(p, ' ', space_len);
   p += space_len;
 
+
+
 #ifndef CONFIG_ISA_loongarch32r
   void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
   disassemble(p, s->logbuf + sizeof(s->logbuf) - p,
@@ -75,12 +81,12 @@ static void execute(uint64_t n) {
   Decode s;
   for (; n > 0 ; n --) {
 
-    printf("test %d %d\n", n , nemu_state.state);
+    // printf("test %d %d\n", n , nemu_state.state);
     exec_once(&s, cpu.pc);
-    printf("test %d %d\n", n , nemu_state.state);
+    // printf("test %d %d\n", n , nemu_state.state);
     g_nr_guest_inst ++;
     trace_and_difftest(&s, cpu.pc);
-    printf("test %d %d\n", n , nemu_state.state);
+    // printf("test %d %d\n", n , nemu_state.state);
     if (nemu_state.state != NEMU_RUNNING) break;
     IFDEF(CONFIG_DEVICE, device_update());
   }
