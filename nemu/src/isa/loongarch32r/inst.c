@@ -67,9 +67,6 @@ static int decode_exec(Decode *s) {
 }
 
 int isa_exec_once(Decode *s) {
-
-  // printf("test %d\n", nemu_state.state);
   s->isa.inst.val = inst_fetch(&s->snpc, 4);
-  // printf("test %d\n", nemu_state.state);
   return decode_exec(s);
 }
