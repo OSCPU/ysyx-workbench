@@ -1,16 +1,16 @@
 // Verilated -*- C++ -*-
 // DESCRIPTION: Verilator output: Symbol table implementation internals
 
-#include "Vps2_keyboard__Syms.h"
-#include "Vps2_keyboard.h"
-#include "Vps2_keyboard___024root.h"
+#include "Vysyx_23060111_top__Syms.h"
+#include "Vysyx_23060111_top.h"
+#include "Vysyx_23060111_top___024root.h"
 
 // FUNCTIONS
-Vps2_keyboard__Syms::~Vps2_keyboard__Syms()
+Vysyx_23060111_top__Syms::~Vysyx_23060111_top__Syms()
 {
 }
 
-Vps2_keyboard__Syms::Vps2_keyboard__Syms(VerilatedContext* contextp, const char* namep, Vps2_keyboard* modelp)
+Vysyx_23060111_top__Syms::Vysyx_23060111_top__Syms(VerilatedContext* contextp, const char* namep, Vysyx_23060111_top* modelp)
     : VerilatedSyms{contextp}
     // Setup internal state of the Syms class
     , __Vm_modelp{modelp}

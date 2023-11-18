@@ -1,5 +1,8 @@
 Vfile=$(wildcard ./vsrc/*.v)
 Cfile=$(wildcard ./csrc/*.cpp)
+Wavefile=$(wildcard ./*.vcd)
+TOPfile=vsrc/ysyx_23060111_top.v
+
 
 #nvboard
 TOPNAME = top
@@ -50,11 +53,17 @@ run: $(BIN)
 all:
 	@echo "Write this Makefile by your self."
 
-sim:$(Vfile) $(Cfile)
+sim:$(Vfile) $(Cfile) $(TOPfile)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	@echo "Write this Makefile by your self."
-	verilator -Wall --cc --trace --exe --build $^
-	./obj_dir/V$(basename $(subst ./vsrc/,,$(Vfile)))
+	verilator -Wall --cc --trace --exe --build $(TOPfile) $(subst $(TOPfile),,$^)
+	./obj_dir/V$(basename $(subst vsrc/,,$(TOPfile)))
+wave:$(Wavefile)
+	gtkwave $(Wavefile)
+lint:$(Vfile)
+	verilator --lint-only $(Vfile)
+
+
 
 
 .PHONY:clean
