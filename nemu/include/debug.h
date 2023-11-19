@@ -43,7 +43,7 @@
 
 #ifdef CONFIG_CC_DEBUG
 #define  DEBUG_LOG(format ,...) \
-    _Log("[%s:%d %s] " ANSI_FMT( "DEBUG" , ANSI_BG_YELLOW)   format "\n", \
+    _Log("[%s:%d %s] " ANSI_FMT( "[DEBUG] " , ANSI_BG_YELLOW)   format "\n", \
         __FILE__, __LINE__, __func__, ## __VA_ARGS__)
 #else
 #define  DEBUG_LOG(format ,...)

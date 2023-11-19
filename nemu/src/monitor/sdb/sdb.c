@@ -60,6 +60,7 @@ static int cmd_si(char * args){
   while(*args >='0' && *args <='9') step_num = step_num * 10  +  (*args - '0' );
 
   cpu_exec(step_num);
+  return 0;
 }
 
 static int cmd_help(char *args);
