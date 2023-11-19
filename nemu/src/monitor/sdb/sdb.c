@@ -78,7 +78,7 @@ static int cmd_info(char * args){
     isa_reg_display();
   }
   else if (strcmp(arg, "w") == 0 ){
-
+    TODO();
   }
   else{
     INFO_LOG("Unknown command '%s' " , arg);
@@ -86,6 +86,39 @@ static int cmd_info(char * args){
 
   return 0;
 } 
+
+static int cmd_x(char * args){
+
+  // char *arg = strtok(NULL, " ");
+  // int read_num = 1 ;
+  // if(arg == NULL){
+  //   INFO_LOG("NULL args");
+  // }
+  // else{
+  //   read_num = atoi(arg);
+  //   if(read_num == 0) {
+  //     INFO_LOG("error param 1 , set to default 1"); read_num = 1;
+  //   }
+  //   arg = strtok(NULL, " ");
+  //   if(arg == NULL){
+  //     INFO_LOG("need two param , we only have one param %d" , read_num);
+  //   }
+  //   else{
+  //     int idx = read_reg_by_name(arg);
+  //     int addr = 0;
+  //     if(idx == -1) INFO_LOG("can not find reg %s" , arg);
+  //     else{
+  //       addr = gpr(idx);
+  //       while(read_num>0){
+  //         read_num -- ;
+          
+  //       }
+  //     }
+  //   }
+  // }
+
+  return ;
+}
 
 static int cmd_help(char *args);
 
@@ -99,7 +132,7 @@ static struct {
   { "q", "Exit NEMU", cmd_q },
   { "si", "step n comdand" , cmd_si},
   { "info" , "check program status" , cmd_info},
-
+  { "x" , "read memory and print hex " , cmd_x},
   /* TODO: Add more commands */
 
 };

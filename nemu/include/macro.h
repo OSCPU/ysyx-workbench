@@ -41,7 +41,7 @@
 #define MUX_WITH_COMMA(contain_comma, a, b) CHOOSE2nd(contain_comma a, b)
 #define MUX_MACRO_PROPERTY(p, macro, a, b) MUX_WITH_COMMA(concat(p, macro), a, b)
 // define placeholders for some property
-#define __P_DEF_0  X,
+#define __P_DEF_0  
 #define __P_DEF_1  X,
 #define __P_ONE_1  X,
 #define __P_ZERO_0 X,
@@ -51,6 +51,9 @@
 #define MUXONE(macro, X, Y)  MUX_MACRO_PROPERTY(__P_ONE_, macro, X, Y)
 #define MUXZERO(macro, X, Y) MUX_MACRO_PROPERTY(__P_ZERO_,macro, X, Y)
 
+// macro = 0 , X , Y
+// MUX_WITH_COMMA ( __P_DEF_0,  X , Y )
+// CHOOSE2nd(X, X,Y)
 // test if a boolean macro is defined
 #define ISDEF(macro) MUXDEF(macro, 1, 0)
 // test if a boolean macro is undefined
