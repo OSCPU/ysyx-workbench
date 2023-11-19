@@ -54,7 +54,7 @@ static int cmd_q(char *args) {
 }
 
 static int cmd_si(char * args){
-  // if(strlen(args) == 0) args = "\0";
+  if(strlen(args) == 0) 
   // DEBUG_LOG("si args : %s  len : %ld" , args , strlen(args));
   // // int len = strlen(args);
   // int step_num = 0 ;
