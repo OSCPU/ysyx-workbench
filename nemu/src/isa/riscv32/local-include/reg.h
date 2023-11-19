@@ -30,4 +30,21 @@ static inline const char* reg_name(int idx) {
   return regs[check_reg_idx(idx)];
 }
 
+static inline const char* read_reg_by_name(const char* name) {
+
+  Assert(name !=NULL , "");
+  extern const char* regs[];
+
+  for(int i = 0 ; i<NR_REGS ; i++){
+    if(strcmp( name , regs[i]) == 0 ) return i;
+  }
+  return -1;
+  // return regs[check_reg_idx(idx)];
+}
+
+
+
+static inline const int reg_num(){ return  MUXDEF(CONFIG_RVE, 16, 32) ;}
+
+
 #endif

@@ -16,6 +16,7 @@
 #include <isa.h>
 #include <memory/paddr.h>
 
+
 word_t vaddr_ifetch(vaddr_t addr, int len) {
   return paddr_read(addr, len);
 }
@@ -27,3 +28,8 @@ word_t vaddr_read(vaddr_t addr, int len) {
 void vaddr_write(vaddr_t addr, int len, word_t data) {
   paddr_write(addr, len, data);
 }
+
+
+#define READ_WORD_FROM_VADDR(addr) vaddr_read(addr , word_len)
+#define WRITE_WORD_TO_VADDR(addr , data) vaddr_write(addr , word_len , data)
+

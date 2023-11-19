@@ -35,6 +35,7 @@
 #define PMEM64 1
 #endif
 
+typedef MUXDEF(CONFIG_ISA64, 8, 4) word_len;
 typedef MUXDEF(CONFIG_ISA64, uint64_t, uint32_t) word_t;
 typedef MUXDEF(CONFIG_ISA64, int64_t, int32_t)  sword_t;
 #define FMT_WORD MUXDEF(CONFIG_ISA64, "0x%016" PRIx64, "0x%08" PRIx32)
