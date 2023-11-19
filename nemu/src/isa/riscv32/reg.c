@@ -28,11 +28,13 @@ const char *regs[] = {
 void isa_reg_display() {
   
   int rn = reg_num();
-  Log("--------------------------------------");
+  printf("--------------------------------------\n");
   for(int i = 0 ; i< rn ; i++){
-    Log("%s\t: %x" , reg_name(i)  , gpr(i) );
+    if(i%4==0) printf("\n");
+    printf("%s\t:0x%08x\t" , reg_name(i)  , gpr(i) );
   }
-  Log("--------------------------------------");
+  if((rn-1)%4 !=0) printf("\n");
+  printf("--------------------------------------\n");
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
