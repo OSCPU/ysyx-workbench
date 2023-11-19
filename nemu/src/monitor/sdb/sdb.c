@@ -68,6 +68,24 @@ static int cmd_si(char * args){
   cpu_exec(step_num);
   return 0;
 }
+static int cmd_info(char * args){
+
+  char *arg = strtok(NULL, " ");
+
+  if (arg == NULL || strcmp(arg, "r") == 0 ) {
+    // printf("%s - %s\n", cmd_table[i].name, cmd_table[i].description);
+    // return 0;
+    isa_reg_display();
+  }
+  else if (strcmp(arg, "w") == 0 ){
+
+  }
+  else{
+    INFO_LOG("Unknown command '%s' " , arg);
+  }
+
+  return 0;
+} 
 
 static int cmd_help(char *args);
 
@@ -80,6 +98,7 @@ static struct {
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
   { "si", "step n comdand" , cmd_si},
+  { "info " , "check program status" , cmd_info},
 
   /* TODO: Add more commands */
 
