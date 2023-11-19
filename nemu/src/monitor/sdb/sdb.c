@@ -59,9 +59,10 @@ static int cmd_si(char * args){
   int step_num = 1 ;
   if(arg != NULL) step_num = atoi(arg);
   // DEBUG_LOG("si args : %s  len : %ld" , args , strlen(args));
-  if(step_num == 0)
-    INFO_LOG("args invalid : %s , set default step 1" , *arg);
-    
+  if(step_num == 0){
+    // INFO_LOG("args invalid : %s , set default step 1" , *arg);
+    step_num = 1;
+  }
   DEBUG_LOG("si step num : %d " , step_num);
 
   cpu_exec(step_num);
