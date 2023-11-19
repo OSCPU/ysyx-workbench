@@ -57,7 +57,7 @@ static int cmd_si(char * args){
   int len = strlen(args);
   int step_num =0 ;
   while(*args == ' ' && *args !='\0') args++;
-  while(*args >='0' && *args <='9') step_num = step_num * 10  +  (*args - '0' );
+  while(*args >='0' && *args <='9') step_num = step_num * 10  +  (*args - '0' ) , args++;
 
   cpu_exec(step_num);
   return 0;
