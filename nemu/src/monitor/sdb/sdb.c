@@ -18,7 +18,6 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "sdb.h"
-
 static int is_batch_mode = false;
 
 void init_regex();
@@ -55,12 +54,10 @@ static int cmd_q(char *args) {
 
 static int cmd_si(char * args){
   // if(strlen(args) == 0) 
-  if(args == NULL) args = '\0'; 
-  DEBUG_LOG("si args : %s  len : %ld" , args , strlen(args));
-  // int len = strlen(args);
-  int step_num = 0 ;
-  while(*args == ' ' && *args !='\0') args++;
-  while(*args >='0' && *args <='9') step_num = step_num * 10  +  (*args - '0' ) , args++;
+  char *arg = strtok(args, " ");
+  // DEBUG_LOG("si args : %s  len : %ld" , args , strlen(args));
+  int step_num = atoi(arg);
+
 
   if(step_num  == 0 ){
     INFO_LOG("si step unvalid args  ,  set step_num to default 1 "  );
