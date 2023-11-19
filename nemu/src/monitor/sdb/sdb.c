@@ -54,18 +54,15 @@ static int cmd_q(char *args) {
 
 static int cmd_si(char * args){
   // if(strlen(args) == 0) 
-  char *arg = strtok(args, " ");
+  char *arg = strtok(NULL, " ");
+
+  int step_num = 1 ;
+  if(arg != NULL) step_num = atoi(arg);
   // DEBUG_LOG("si args : %s  len : %ld" , args , strlen(args));
-  int step_num = atoi(arg);
-
-
-  if(step_num  == 0 ){
-    INFO_LOG("si step unvalid args  ,  set step_num to default 1 "  );
-    step_num = 1;
-  }
-  else{
-    DEBUG_LOG("si step num : %d " , step_num);
-  }
+  if(step_num == 0)
+    INFO_LOG("args invalid : %s , set default step 1" , *arg);
+    
+  DEBUG_LOG("si step num : %d " , step_num);
 
   cpu_exec(step_num);
   return 0;
