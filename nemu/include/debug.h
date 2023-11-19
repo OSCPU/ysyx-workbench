@@ -47,8 +47,15 @@
         __FILE__, __LINE__, __func__, ## __VA_ARGS__)
 #else
 #define  DEBUG_LOG(format ,...)
-
 #endif
+
+#define ERROR_LOG(format , ...) \
+    _Log("[%s:%d %s] " ANSI_FMT( "[ERROR] " , ANSI_FG_RED)   format "\n", \
+        __FILE__, __LINE__, __func__, ## __VA_ARGS__)
+
+#define INFO_LOG(format , ...) \
+    _Log("[%s:%d %s] " ANSI_FMT( "[INFO] " , ANSI_FG_BLUE)   format "\n", \
+        __FILE__, __LINE__, __func__, ## __VA_ARGS__)
 
 
 #endif
