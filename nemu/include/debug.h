@@ -40,4 +40,15 @@
 
 #define TODO() panic("please implement me")
 
+
+#ifdef CONFIG_CC_DEBUG
+#define  DEBUG_LOG(format ,...) \
+    _Log(ANSI_FMT("DEBUG [%s:%d %s] " format, ANSI_BG_YELLOW) "\n", \
+        __FILE__, __LINE__, __func__, ## __VA_ARGS__)
+#else
+#define  DEBUG_LOG(format ,...)
+
+#endif
+
+
 #endif
