@@ -18,7 +18,6 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "sdb.h"
-
 static int is_batch_mode = false;
 
 void init_regex();
@@ -53,6 +52,41 @@ static int cmd_q(char *args) {
   return -1;
 }
 
+static int cmd_si(char * args){
+  // if(strlen(args) == 0) 
+  char *arg = strtok(NULL, " ");
+
+  int step_num = 1 ;
+  if(arg != NULL) step_num = atoi(arg);
+  // DEBUG_LOG("si args : %s  len : %ld" , args , strlen(args));
+  if(step_num == 0){
+    INFO_LOG("args invalid : %s , set default step 1" , arg);
+    step_num = 1;
+  }
+  DEBUG_LOG("si step num : %d " , step_num);
+
+  cpu_exec(step_num);
+  return 0;
+}
+static int cmd_info(char * args){
+
+  char *arg = strtok(NULL, " ");
+
+  if (arg == NULL || strcmp(arg, "r") == 0 ) {
+    // printf("%s - %s\n", cmd_table[i].name, cmd_table[i].description);
+    // return 0;
+    isa_reg_display();
+  }
+  else if (strcmp(arg, "w") == 0 ){
+
+  }
+  else{
+    INFO_LOG("Unknown command '%s' " , arg);
+  }
+
+  return 0;
+} 
+
 static int cmd_help(char *args);
 
 static struct {
@@ -63,6 +97,8 @@ static struct {
   { "help", "Display information about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
+  { "si", "step n comdand" , cmd_si},
+  { "info" , "check program status" , cmd_info},
 
   /* TODO: Add more commands */
 
