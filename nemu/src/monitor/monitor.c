@@ -131,10 +131,7 @@ void init_monitor(int argc, char *argv[]) {
   /* Initialize the simple debugger. */
   init_sdb();
 
-  TODO();
-  // 需要了解正则表达式
-  // ERROR_LOG("test %d %d %d" , MUXDEF(1, 4, 8) , MUXDEF(0, 4, 8) , MUXDEF(CONFIG_ISA64,  8 , 4) );
-  // ERROR_LOG("test %d  " , MUX_WITH_COMMA(1, ,1,2));
+
 
 #ifndef CONFIG_ISA_loongarch32r
   IFDEF(CONFIG_ITRACE, init_disasm(
