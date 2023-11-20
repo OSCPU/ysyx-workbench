@@ -133,7 +133,7 @@ void init_monitor(int argc, char *argv[]) {
 
   // TODO();
   // 需要了解正则表达式
-  ERROR_LOG("test %d %d %d" , MUXDEF(0, 4, 8) , MUXDEF(1,  8 , 4) , MUXDEF(CONFIG_ISA64,  8 , 4));
+  ERROR_LOG("test %d %d %d" , MUXDEF(0, 4, 8) , MUXDEF(1,  4 , 8) , MUXDEF(CONFIG_ISA64,  8 , 4));
   // ERROR_LOG("test %d  " , MUX_WITH_COMMA(1, ,1,2));
   // MUXDEF(1,  uint16_t,  uint32_t);
   // MUXDEF(0, uint16_t, uint32_t);
