@@ -32,13 +32,13 @@ static inline const char* reg_name(int idx) {
 
 static inline const char* read_reg_by_name(const char* name) {
 
-  Assert(name !=NULL , "");
-  extern const char* regs[];
+  // Assert(name !=NULL , "");
+  // extern const char* regs[];
 
-  for(int i = 0 ; i<NR_REGS ; i++){
-    if(strcmp( name , regs[i]) == 0 ) return i;
-  }
-  return -1;
+  // for(int i = 0 ; i<NR_REGS ; i++){
+  //   if(strcmp( name , regs[i]) == 0 ) return i;
+  // }
+  // return -1;
   // return regs[check_reg_idx(idx)];
 }
 

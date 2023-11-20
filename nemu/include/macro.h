@@ -51,6 +51,9 @@
 #define MUXONE(macro, X, Y)  MUX_MACRO_PROPERTY(__P_ONE_, macro, X, Y)
 #define MUXZERO(macro, X, Y) MUX_MACRO_PROPERTY(__P_ZERO_,macro, X, Y)
 
+// macro = 0 , X , Y
+// MUX_WITH_COMMA ( __P_DEF_0,  X , Y )
+// CHOOSE2nd(X, X,Y)
 // test if a boolean macro is defined
 #define ISDEF(macro) MUXDEF(macro, 1, 0)
 // test if a boolean macro is undefined

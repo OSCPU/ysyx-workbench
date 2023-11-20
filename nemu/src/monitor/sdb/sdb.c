@@ -89,31 +89,33 @@ static int cmd_info(char * args){
 
 static int cmd_x(char * args){
 
-  char *arg = strtok(NULL, " ");
-  int read_num = 1 ;
-  if(arg == NULL){
-    INFO_LOG("NULL args");
-  }
-  else{
-    read_num = atoi(arg);
-    if(read_num == 0) INFO_LOG("error param 1 , set to default 1"), read_num = 1;
-    arg = strtok(NULL, " ");
-    if(arg == NULL){
-      INFO_LOG("need two param , we only have one param %d" , read_num);
-    }
-    else{
-      int idx = read_reg_by_name(arg);
-      int addr = 0;
-      if(idx == -1) INFO_LOG("can not find reg %s" , arg);
-      else{
-        addr = gpr(idx);
-        while(read_num>0){
-          read_num -- ;
+  // char *arg = strtok(NULL, " ");
+  // int read_num = 1 ;
+  // if(arg == NULL){
+  //   INFO_LOG("NULL args");
+  // }
+  // else{
+  //   read_num = atoi(arg);
+  //   if(read_num == 0) {
+  //     INFO_LOG("error param 1 , set to default 1"); read_num = 1;
+  //   }
+  //   arg = strtok(NULL, " ");
+  //   if(arg == NULL){
+  //     INFO_LOG("need two param , we only have one param %d" , read_num);
+  //   }
+  //   else{
+  //     int idx = read_reg_by_name(arg);
+  //     int addr = 0;
+  //     if(idx == -1) INFO_LOG("can not find reg %s" , arg);
+  //     else{
+  //       addr = gpr(idx);
+  //       while(read_num>0){
+  //         read_num -- ;
           
-        }
-      }
-    }
-  }
+  //       }
+  //     }
+  //   }
+  // }
 
   return ;
 }
