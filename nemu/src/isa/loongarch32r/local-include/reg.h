@@ -30,4 +30,6 @@ static inline const char* reg_name(int idx) {
   return regs[check_reg_idx(idx)];
 }
 
+static inline const int reg_num(){ return 32;}
+
 #endif

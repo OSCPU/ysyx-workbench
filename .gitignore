@@ -11,3 +11,5 @@
 !.gitignore
 !init.sh
 /nvboard
+/am-kernels
+yosys-sta
