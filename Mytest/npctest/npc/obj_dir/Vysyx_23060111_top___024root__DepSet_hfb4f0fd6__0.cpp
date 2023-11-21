@@ -8,6 +8,16 @@
 #include "Vysyx_23060111_top__Syms.h"
 #include "Vysyx_23060111_top___024root.h"
 
+extern "C" void ebreak(int inst);
+
+VL_INLINE_OPT void Vysyx_23060111_top___024root____Vdpiimwrap_ysyx_23060111_top__DOT__ebreak_TOP(IData/*31:0*/ inst) {
+    VL_DEBUG_IF(VL_DBG_MSGF("+    Vysyx_23060111_top___024root____Vdpiimwrap_ysyx_23060111_top__DOT__ebreak_TOP\n"); );
+    // Body
+    int inst__Vcvt;
+    for (size_t inst__Vidx = 0; inst__Vidx < 1; ++inst__Vidx) inst__Vcvt = inst;
+    ebreak(inst__Vcvt);
+}
+
 #ifdef VL_DEBUG
 VL_ATTR_COLD void Vysyx_23060111_top___024root___dump_triggers__ico(Vysyx_23060111_top___024root* vlSelf);
 #endif  // VL_DEBUG
@@ -25,33 +35,6 @@ void Vysyx_23060111_top___024root___eval_triggers__ico(Vysyx_23060111_top___024r
 #endif
 }
 
-void Vysyx_23060111_top___024unit____Vdpiimwrap_add_TOP____024unit(IData/*31:0*/ inst);
-
-VL_INLINE_OPT void Vysyx_23060111_top___024root___ico_sequent__TOP__0(Vysyx_23060111_top___024root* vlSelf) {
-    if (false && vlSelf) {}  // Prevent unused
-    Vysyx_23060111_top__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
-    VL_DEBUG_IF(VL_DBG_MSGF("+    Vysyx_23060111_top___024root___ico_sequent__TOP__0\n"); );
-    // Body
-    Vysyx_23060111_top___024unit____Vdpiimwrap_add_TOP____024unit(vlSelf->inst);
-    vlSelf->val = vlSelf->inst;
-    vlSelf->imm = (vlSelf->inst >> 0x14U);
-    vlSelf->rs1 = (0x1fU & (vlSelf->inst >> 0xfU));
-    vlSelf->funct3 = (7U & (vlSelf->inst >> 0xcU));
-    vlSelf->reg_out = ((0U >= (1U & (vlSelf->inst >> 0xfU)))
-                        ? vlSelf->ysyx_23060111_top__DOT__init_EXU__DOT__reg_src1__DOT__rf
-                       [(1U & (vlSelf->inst >> 0xfU))]
-                        : 0U);
-    vlSelf->reg_out1 = ((0U >= (1U & (vlSelf->inst 
-                                      >> 7U))) ? vlSelf->ysyx_23060111_top__DOT__init_EXU__DOT__reg_rd__DOT__rf
-                        [(1U & (vlSelf->inst >> 7U))]
-                         : 0U);
-    vlSelf->rd = (0x1fU & (vlSelf->inst >> 7U));
-    vlSelf->opcode = (0x7fU & vlSelf->inst);
-    vlSelf->rbb = (((IData)(vlSelf->rd) << 0xfU) | 
-                   ((0x7f80U & (vlSelf->inst >> 5U)) 
-                    | (IData)(vlSelf->opcode)));
-}
-
 #ifdef VL_DEBUG
 VL_ATTR_COLD void Vysyx_23060111_top___024root___dump_triggers__act(Vysyx_23060111_top___024root* vlSelf);
 #endif  // VL_DEBUG
@@ -61,9 +44,16 @@ void Vysyx_23060111_top___024root___eval_triggers__act(Vysyx_23060111_top___024r
     Vysyx_23060111_top__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vysyx_23060111_top___024root___eval_triggers__act\n"); );
     // Body
-    vlSelf->__VactTriggered.at(0U) = ((IData)(vlSelf->clk) 
+    vlSelf->__VactTriggered.at(0U) = (vlSelf->inst 
+                                      != vlSelf->__Vtrigrprev__TOP__inst);
+    vlSelf->__VactTriggered.at(1U) = ((IData)(vlSelf->clk) 
                                       & (~ (IData)(vlSelf->__Vtrigrprev__TOP__clk)));
+    vlSelf->__Vtrigrprev__TOP__inst = vlSelf->inst;
     vlSelf->__Vtrigrprev__TOP__clk = vlSelf->clk;
+    if (VL_UNLIKELY((1U & (~ (IData)(vlSelf->__VactDidInit))))) {
+        vlSelf->__VactDidInit = 1U;
+        vlSelf->__VactTriggered.at(0U) = 1U;
+    }
 #ifdef VL_DEBUG
     if (VL_UNLIKELY(vlSymsp->_vm_contextp__->debug())) {
         Vysyx_23060111_top___024root___dump_triggers__act(vlSelf);

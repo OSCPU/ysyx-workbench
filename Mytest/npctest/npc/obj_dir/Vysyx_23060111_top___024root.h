@@ -8,13 +8,9 @@
 #include "verilated.h"
 
 class Vysyx_23060111_top__Syms;
-class Vysyx_23060111_top___024unit;
-
 
 class Vysyx_23060111_top___024root final : public VerilatedModule {
   public:
-    // CELLS
-    Vysyx_23060111_top___024unit* __PVT____024unit;
 
     // DESIGN SPECIFIC STATE
     VL_IN8(clk,0,0);
@@ -24,6 +20,7 @@ class Vysyx_23060111_top___024root final : public VerilatedModule {
     VL_OUT8(rd,11,7);
     VL_OUT8(opcode,6,0);
     CData/*0:0*/ __Vtrigrprev__TOP__clk;
+    CData/*0:0*/ __VactDidInit;
     CData/*0:0*/ __VactContinue;
     VL_OUT16(imm,31,20);
     VL_IN(inst,31,0);
@@ -37,14 +34,15 @@ class Vysyx_23060111_top___024root final : public VerilatedModule {
     VL_OUT(rbb,20,1);
     IData/*31:0*/ __VstlIterCount;
     IData/*31:0*/ __VicoIterCount;
+    IData/*31:0*/ __Vtrigrprev__TOP__inst;
     IData/*31:0*/ __VactIterCount;
     VlUnpacked<IData/*31:0*/, 1> ysyx_23060111_top__DOT__reg___0240__DOT__rf;
     VlUnpacked<IData/*31:0*/, 1> ysyx_23060111_top__DOT__init_EXU__DOT__reg_src1__DOT__rf;
     VlUnpacked<IData/*31:0*/, 1> ysyx_23060111_top__DOT__init_EXU__DOT__reg_rd__DOT__rf;
     VlTriggerVec<1> __VstlTriggered;
     VlTriggerVec<1> __VicoTriggered;
-    VlTriggerVec<1> __VactTriggered;
-    VlTriggerVec<1> __VnbaTriggered;
+    VlTriggerVec<2> __VactTriggered;
+    VlTriggerVec<2> __VnbaTriggered;
 
     // INTERNAL VARIABLES
     Vysyx_23060111_top__Syms* const vlSymsp;

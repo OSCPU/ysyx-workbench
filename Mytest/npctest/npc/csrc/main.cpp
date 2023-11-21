@@ -9,14 +9,6 @@
 #include"svdpi.h"
 #include"../hsrc/mem.h"
 
-void add (int inst)
-{
-	if(inst == 0x00100073 )
-	{
-	printf("error --------- ebreak\n");
-	assert(0);
-	}
-}
 
 int main(int argc ,char** argv, char** env)
 {
@@ -68,4 +60,8 @@ int main(int argc ,char** argv, char** env)
 	return 0;
 }
 
-
+void ebreak (uint32_t inst)
+{
+	if(inst == 0x00100073 )
+	assert(0);	
+}
