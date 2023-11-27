@@ -10,7 +10,7 @@ static uint8_t pmem[0x8000000] __attribute((aligned(4096)))={};
 static uint32_t img[]
 {
 	0x00110123,
-	0x00100073,
+	0x00100073, //ebreak
 };
 
 void init_mem()

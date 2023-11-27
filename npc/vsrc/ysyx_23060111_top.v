@@ -1,4 +1,4 @@
-import "DPI-C" function void add(input int inst);
+//import "DPI-C" function void ebreak(input int inst);
 module ysyx_23060111_top(
   input       rst,
   input       clk,
@@ -22,10 +22,11 @@ assign val=inst;
 assign snpc=pc+32'h4;
 
 //break
-always @(*)
+/*always @(*)
 begin 
-     add(inst);
+     ebreak(inst);
 end
+*/
  
  //init reg
 ysyx_23060111_reg #(1,32) reg_$0(clk,0,1'b0,1'b1,out);
