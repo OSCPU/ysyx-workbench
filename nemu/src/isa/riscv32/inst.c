@@ -13,6 +13,7 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
+#include "common.h"
 #include "local-include/reg.h"
 #include <cpu/cpu.h>
 #include <cpu/ifetch.h>
@@ -21,6 +22,11 @@
 #define R(i) gpr(i)
 #define Mr vaddr_read
 #define Mw vaddr_write
+
+word_t isa_csr_fetch(int addr);
+int isa_csr_str2addr(char *s);
+vaddr_t* isa_csr(int addr);
+#define CSR(i) *isa_csr(i)
 
 enum {
   TYPE_I, TYPE_U, TYPE_S, TYPE_J, TYPE_R, TYPE_B, TYPE_M,
@@ -123,8 +129,18 @@ static int decode_exec(Decode *s) {
   INSTPAT("0000001 ????? ????? 100 ????? 01100 11", div    , M, R(rd) = (src2 == 0) ? -1 : ((int32_t)src1 / (int32_t)src2));
   INSTPAT("0000001 ????? ????? 101 ????? 01100 11", divu   , M, R(rd) = (src2 == 0) ? -1 : (src1 / src2));
 
+  /*******************************************csr********************************************************/
+  INSTPAT("??????? ????? ????? 001 ????? 11100 11", csrrw  , I, R(rd) = CSR(imm); CSR(imm) = src1);
+  INSTPAT("??????? ????? ????? 010 ????? 11100 11", csrrs  , I, R(rd) = CSR(imm); CSR(imm) |= src1);
+  INSTPAT("??????? ????? ????? 011 ????? 11100 11", csrrc  , I, R(rd) = CSR(imm); CSR(imm) &= ~src1);
+  INSTPAT("??????? ????? ????? 101 ????? 11100 11", csrrwi , I, R(rd) = CSR(imm); CSR(imm) = (word_t)BITS(INSTPAT_INST(s) , 19, 15));
+  INSTPAT("??????? ????? ????? 110 ????? 11100 11", csrrsi , I, R(rd) = CSR(imm); CSR(imm) |= (word_t)BITS(INSTPAT_INST(s) , 19, 15));
+  INSTPAT("??????? ????? ????? 111 ????? 11100 11", csrrci , I, R(rd) = CSR(imm); CSR(imm) &= (word_t)(~BITS(INSTPAT_INST(s) , 19, 15)));
   /*******************************************other********************************************************/
+  INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall  , N, s->dnpc = isa_raise_intr(R(17), s->pc));
   INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak , N, NEMUTRAP(s->pc, R(10))); // R(10) is $a0
+  INSTPAT("0001000 00000 00000 000 00000 11100 11", eret   , N, s->dnpc = CSR(isa_csr_str2addr("mepc")));
+
   INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv    , N, INV(s->pc));
   INSTPAT_END();
 

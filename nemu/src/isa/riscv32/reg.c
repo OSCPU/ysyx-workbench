@@ -15,6 +15,7 @@
 
 #include <isa.h>
 #include "common.h"
+#include "debug.h"
 #include "local-include/reg.h"
 
 const char *regs[] = {
@@ -51,3 +52,36 @@ word_t isa_reg_str2val(const char *s, bool *success) {
 const char *isa_reg_val2str(int i) {
   return regs[i];
 }
+
+const char* csrs[] = {
+  "mstatus","mtvec","mepc","mcause"
+};
+
+vaddr_t* isa_csr(int addr) {
+  switch (addr) {
+    case 0x300: return &cpu.csr.mstatus;
+    case 0x305: return &cpu.csr.mtvec;
+    case 0x341: return &cpu.csr.mepc;
+    case 0x342: return &cpu.csr.mcause;
+    default: Assert(0, "Invalid csr addr"); return 0;
+  }
+}
+
+word_t isa_csr_fetch(int addr) {
+  switch (addr) {
+    case 0x300: return cpu.csr.mstatus;
+    case 0x305: return cpu.csr.mtvec;
+    case 0x341: return cpu.csr.mepc;
+    case 0x342: return cpu.csr.mcause;
+    default: Assert(0, "Invalid csr addr"); return 0;
+  }
+}
+
+int isa_csr_str2addr(char *s) {
+  if(strcmp(s,"mstatus") == 0) return 0x300;
+  else if(strcmp(s,"mtvec") == 0) return 0x305;
+  else if(strcmp(s,"mepc") == 0) return 0x341;
+  else if(strcmp(s,"mcause") == 0) return 0x342;
+  else Assert(0, "Invalid csr addr");
+}
+
