@@ -33,6 +33,9 @@ void isa_reg_display() {
     printf("%2d\t%-3s\t%#8x%15d\n",i, regs[i], cpu.gpr[i], cpu.gpr[i]);
   }
   printf("pc = %#x\n",cpu.pc);
+  printf("mcause = %x\n", cpu.csr.mcause);
+  printf("mstatus = %x\n", cpu.csr.mstatus);
+  printf("mepc = %x\n", cpu.csr.mepc);
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
@@ -59,10 +62,10 @@ const char* csrs[] = {
 
 vaddr_t* isa_csr(int addr) {
   switch (addr) {
-    case 0x300: return &cpu.csr.mstatus;
-    case 0x305: return &cpu.csr.mtvec;
-    case 0x341: return &cpu.csr.mepc;
-    case 0x342: return &cpu.csr.mcause;
+    case 0x300: return &(cpu.csr.mstatus);
+    case 0x305: return &(cpu.csr.mtvec);
+    case 0x341: return &(cpu.csr.mepc);
+    case 0x342: return &(cpu.csr.mcause);
     default: Assert(0, "Invalid csr addr"); return 0;
   }
 }
