@@ -15,12 +15,18 @@
 
 #include <isa.h>
 
+void etrace() {
+  printf("%s\n",ANSI_FMT("Exception Happen!", ANSI_FG_RED));
+  isa_reg_display();
+}
 word_t isa_raise_intr(word_t NO, vaddr_t epc) {
   /* TODO: Trigger an interrupt/exception with ``NO''.
    * Then return the address of the interrupt/exception vector.
    */
   cpu.csr.mcause = NO;
   cpu.csr.mepc = epc;
+
+  etrace();
 
   return cpu.csr.mtvec;
 }

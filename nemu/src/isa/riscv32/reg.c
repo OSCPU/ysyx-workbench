@@ -29,13 +29,12 @@ void isa_reg_display() {
   int i;
   printf("%s\n",ANSI_FMT("ISA RegFile Display", ANSI_FG_GREEN));
   for(i = 0;i < ARRLEN(regs); i++){
-    //printf("r%d\t%s\t0x%x\n",i,regs[i],cpu.gpr[i]);
     printf("%2d\t%-3s\t%#8x%15d\n",i, regs[i], cpu.gpr[i], cpu.gpr[i]);
   }
   printf("pc = %#x\n",cpu.pc);
-  printf("mcause = %x\n", cpu.csr.mcause);
-  printf("mstatus = %x\n", cpu.csr.mstatus);
-  printf("mepc = %x\n", cpu.csr.mepc);
+  printf("mcause = %#x\n", cpu.csr.mcause);
+  printf("mstatus = %#x\n", cpu.csr.mstatus);
+  printf("mepc = %#x\n", cpu.csr.mepc);
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
