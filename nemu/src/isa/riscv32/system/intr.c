@@ -15,9 +15,8 @@
 
 #include <isa.h>
 
-void etrace() {
-  printf("%s\n",ANSI_FMT("Exception Happen!", ANSI_FG_RED));
-  isa_reg_display();
+void etrace(vaddr_t epc) {
+  printf("%s at pc =" FMT_PADDR "\n",ANSI_FMT("Exception Happen", ANSI_FG_RED), epc);
 }
 word_t isa_raise_intr(word_t NO, vaddr_t epc) {
   /* TODO: Trigger an interrupt/exception with ``NO''.
@@ -26,7 +25,7 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
   cpu.csr.mcause = NO;
   cpu.csr.mepc = epc;
 
-  etrace();
+  etrace(epc);
 
   return cpu.csr.mtvec;
 }

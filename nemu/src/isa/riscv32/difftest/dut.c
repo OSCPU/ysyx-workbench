@@ -16,19 +16,23 @@
 #include <isa.h>
 #include <cpu/difftest.h>
 #include "../local-include/reg.h"
+#include "macro.h"
 
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   int i;
+  // check gpr
   for(i = 0; i < ARRLEN(cpu.gpr); i++) {
-    if(ref_r->gpr[i] != cpu.gpr[i]) {
-      difftest_check_reg(isa_reg_val2str(i), pc, ref_r->gpr[i], cpu.gpr[i]);
-      return false;
-    }
+    if(!difftest_check_reg(isa_reg_val2str(i), pc,  ref_r->gpr[i], cpu.gpr[i])) return false;
   }
-  if(ref_r->pc != pc) {
-    difftest_check_reg("pc", pc, ref_r->pc, cpu.pc);
-    return false;
-  }
+  // check pc
+  if(!difftest_check_reg("pc", pc, ref_r->pc, cpu.pc)) return false;
+
+  // check csr
+  if(!difftest_check_reg("mtvec", pc, ref_r->csr.mtvec, cpu.csr.mtvec)) return false;
+  if(!difftest_check_reg("mepc", pc, ref_r->csr.mepc, cpu.csr.mepc)) return false;
+  if(!difftest_check_reg("mcause", pc, ref_r->csr.mcause, cpu.csr.mcause)) return false;
+  if(!difftest_check_reg("mstatus", pc, ref_r->csr.mstatus, cpu.csr.mstatus)) return false;
+
   return true;
 }
 
