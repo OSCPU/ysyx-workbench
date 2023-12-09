@@ -24,7 +24,7 @@ $(BINARY): compile_git
 
 # Some convenient rules
 
-override ARGS_RUN ?= --batch
+override ARGS_RUN ?= --batch=$(BUILD_DIR)/nemu-log.txt
 override ARGS_GDB ?= --log=$(BUILD_DIR)/nemu-log.txt
 override ARGS_RUN += $(ARGS_DIFF)
 override ARGS_GDB += $(ARGS_DIFF)

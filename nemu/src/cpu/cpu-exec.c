@@ -20,13 +20,20 @@
 
 #include "../monitor/sdb/watchpoint.h"
 
-
 /* The assembly code of instructions executed is only output to the screen
  * when the number of instructions executed is less than this value.
  * This is useful when you use the `si' command.
  * You can modify this value as you want.
  */
 #define MAX_INST_TO_PRINT 10
+
+//ringbuf val
+#define BUF_LEN 10
+#define NEXT_POS(x) ((x+1)%BUF_LEN)
+char ringbuf[BUF_LEN][128];
+int w=0;//ringbuf's write flag
+void iringbuf_put_char(char *p);
+void print_ringbuf();
 
 CPU_state cpu = {};
 uint64_t g_nr_guest_inst = 0;
@@ -58,7 +65,6 @@ static void exec_once(Decode *s, vaddr_t pc) {
   s->snpc = pc;
   isa_exec_once(s);
   cpu.pc = s->dnpc;
-  //printf("pc=dnpc the dnpc==%x\n",s->dnpc);
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;
   p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);
@@ -68,12 +74,17 @@ static void exec_once(Decode *s, vaddr_t pc) {
   for (i = ilen - 1; i >= 0; i --) {
     p += snprintf(p, 4, " %02x", inst[i]);
   }
+
+
   int ilen_max = MUXDEF(CONFIG_ISA_x86, 8, 4);
   int space_len = ilen_max - ilen;
   if (space_len < 0) space_len = 0;
   space_len = space_len * 3 + 1;
   memset(p, ' ', space_len);
   p += space_len;
+  
+  //itrace the wrong instruct
+  iringbuf_put_char(s->logbuf);
 
 #ifndef CONFIG_ISA_loongarch32r
   void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
@@ -85,13 +96,15 @@ static void exec_once(Decode *s, vaddr_t pc) {
 #endif
 }
 
+
+
 static void execute(uint64_t n) {
   Decode s;
   for (;n > 0; n --) {
     exec_once(&s, cpu.pc);
     g_nr_guest_inst ++;
     trace_and_difftest(&s, cpu.pc);
-    if (nemu_state.state != NEMU_RUNNING) break;
+    if (nemu_state.state != NEMU_RUNNING) break; 
     IFDEF(CONFIG_DEVICE, device_update());
   }
 }
@@ -136,7 +149,34 @@ void cpu_exec(uint64_t n) {
            (nemu_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) :
             ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED))),
           nemu_state.halt_pc);
+
+	  //print the ringbuf
+	  if(nemu_state.halt_ret !=0)
+	  print_ringbuf();
+
       // fall through
     case NEMU_QUIT: statistic();
+
   }
 }
+
+void iringbuf_put_char(char *p)
+{
+		int n=sizeof(ringbuf[w]);
+		memset(ringbuf[w],'\0',n);
+		strcpy(ringbuf[w],p);
+		w=NEXT_POS(w);
+
+}
+
+void print_ringbuf(){
+	for(int num=0;num<BUF_LEN;num++)
+		{
+			if((num!=w-1)&&(ringbuf[num]!=NULL))
+			printf("    %s\n",ringbuf[num]);
+			else
+			printf("--> %s\n",ringbuf[num]);
+		}
+
+}
+
