@@ -154,6 +154,26 @@ config ITRACE_COND
   depends on ITRACE
   string "Only trace instructions when the condition is true"
   default "true"
+config MTRACE
+  depends on TRACE
+  bool "Enable memory tracer"
+  default y
+config MTRACE_WRITE_START
+  depends on MTRACE
+  int "When MTRACE is enable (uint: number of write memory)"
+  default 0
+config MTRACE_WRITE_END
+  depends on MTRACE
+  int "When MTRACE is enable (uint: number of write memory)"
+  default 10000 
+config MTRACE_READ_START
+  depends on MTRACE
+  int "When MTRACE is enable (uint: number of read memory)"
+  default 0
+config MTRACE_READ_END
+  depends on MTRACE
+  int "When MTRACE is enable (uint: number of read memory)"
+  default 10000 
 
 
 config DIFFTEST
