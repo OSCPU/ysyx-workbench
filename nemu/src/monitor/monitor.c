@@ -37,6 +37,10 @@ static void welcome() {
 #ifndef CONFIG_TARGET_AM
 #include <getopt.h>
 
+#ifdef CONFIG_FTRACE
+char *elf_file =NULL;
+int times=0;
+#endif
 void sdb_set_batch_mode();
 
 static char *log_file = NULL;
@@ -78,11 +82,25 @@ static int parse_args(int argc, char *argv[]) {
   int o;
   while ( (o = getopt_long(argc, argv, "-bhl:d:p:", table, NULL)) != -1) {
     switch (o) {
-      case 'b': log_file = optarg; sdb_set_batch_mode(); break;
+      case 'b':
+		log_file = optarg; 
+      		//sdb_set_batch_mode();
+		break;
       case 'p': sscanf(optarg, "%d", &difftest_port); break;
       case 'l': log_file = optarg; break;
       case 'd': diff_so_file = optarg; break;
-      case 1: img_file = optarg; return 0;
+      case 1:
+      		#ifdef CONFIG_FTRACE
+		if(times==0){
+		elf_file = optarg;	
+		times++;
+		printf("----%s\n",elf_file);
+		break;
+		}
+		#endif
+      		img_file = optarg;
+		printf("-0-%s\n",img_file);
+		return 0;
       default:
         printf("Usage: %s [OPTION...] IMAGE [args]\n\n", argv[0]);
         printf("\t-b,--batch              run with batch mode\n");
