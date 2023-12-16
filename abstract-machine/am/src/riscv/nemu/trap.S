@@ -40,10 +40,13 @@ f(30) f(31)
 .align 3
 .globl __am_asm_trap
 __am_asm_trap:
+  # push context to stack
   addi sp, sp, -CONTEXT_SIZE
-
+  
+  ## push gpr
   MAP(REGS, PUSH)
 
+  ## push csr
   csrr t0, mcause
   csrr t1, mstatus
   csrr t2, mepc
@@ -52,19 +55,26 @@ __am_asm_trap:
   STORE t1, OFFSET_STATUS(sp)
   STORE t2, OFFSET_EPC(sp)
 
-  # set mstatus.MPRV to pass difftest
+  ## set mstatus.MPRV to pass difftest
   li a0, (1 << 17)
   or t1, t1, a0
   csrw mstatus, t1
 
+  # handle exception
   mv a0, sp
   jal __am_irq_handle
 
+  # load context from stack
+  mv sp, a0
+
+  ## load csr
   LOAD t1, OFFSET_STATUS(sp)
   LOAD t2, OFFSET_EPC(sp)
+
   csrw mstatus, t1
   csrw mepc, t2
 
+  ## load gpr
   MAP(REGS, POP)
 
   addi sp, sp, CONTEXT_SIZE
