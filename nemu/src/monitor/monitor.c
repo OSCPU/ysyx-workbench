@@ -16,6 +16,12 @@
 #include <isa.h>
 #include <memory/paddr.h>
 
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+
 void init_rand();
 void init_log(const char *log_file);
 void init_mem();
@@ -38,8 +44,12 @@ static void welcome() {
 #include <getopt.h>
 
 #ifdef CONFIG_FTRACE
+#include <elf.h>
 char *elf_file =NULL;
 int times=0;
+void elf_read(char *elf_file);
+void elf_read_fun(char* elf_file);
+void elf_read_strtab(char* elf_file);
 #endif
 void sdb_set_batch_mode();
 
@@ -100,6 +110,7 @@ static int parse_args(int argc, char *argv[]) {
 		#endif
       		img_file = optarg;
 		printf("-0-%s\n",img_file);
+		elf_read(elf_file);
 		return 0;
       default:
         printf("Usage: %s [OPTION...] IMAGE [args]\n\n", argv[0]);
@@ -174,5 +185,189 @@ void am_init_monitor() {
   load_img();
   IFDEF(CONFIG_DEVICE, init_device());
   welcome();
+}
+#endif
+
+#ifdef CONFIG_FTRACE
+void elf_read(char *elf_file)
+{
+	elf_read_strtab(elf_file);
+	elf_read_fun(elf_file);
+}
+void elf_read_strtab(char *elf_file) {
+	FILE* fp;
+	Elf32_Ehdr elf_header;
+	fp=fopen(elf_file,"r");
+	if(fp==NULL)   exit(0);
+	int ret=fread(&elf_header,sizeof(Elf32_Ehdr),1,fp);
+	assert(ret==1);
+	if(elf_header.e_ident[0] !=0x7f||elf_header.e_ident[1]!='E')  {printf("no elf file\n");exit(0);} 
+	
+	Elf32_Shdr* sec_headers=(Elf32_Shdr*)malloc(sizeof(Elf32_Shdr)*elf_header.e_shnum);
+	fseek(fp,elf_header.e_shoff,SEEK_SET);
+	int ret1=fread(sec_headers,sizeof(Elf32_Shdr)*elf_header.e_shnum,1,fp);
+	assert(ret1==1);
+	printf("There are %d section headers, starting at offset 0x%x\n\n", elf_header.e_shnum, elf_header.e_shoff);
+
+	int str_tab_ind=elf_header.e_shstrndx;
+	fseek(fp,sec_headers[str_tab_ind].sh_offset,SEEK_SET);
+	char* string_table = (char*)malloc(sec_headers[str_tab_ind].sh_size * sizeof(char));
+	int ret2=fread(string_table,sec_headers[str_tab_ind].sh_size,1,fp);
+	assert(ret2==1);
+
+	printf("  [Nr]\tName\t\t\tType\t\tAddr\t\tOffset\t\tSize\t\t"
+           "EntSize\t\tLink\tInfo\tAlign\n");
+    //遍历section_headers段表里的每个section,输出相应的信息
+    for (int i = 0; i < elf_header.e_shnum; i++) {
+    	if(sec_headers[i].sh_type==SHT_STRTAB)
+	{
+        printf("  [%2d]\t", i);
+        printf("%-24s", &string_table[sec_headers[i].sh_name]);
+        printf("STRTAB          ");
+        printf("0x%08x\t", sec_headers[i].sh_addr);
+        printf("0x%08x\t", sec_headers[i].sh_offset);
+        printf("0x%08x\t", sec_headers[i].sh_size);
+        printf("0x%08x\t", sec_headers[i].sh_entsize);
+        printf("%-8d", sec_headers[i].sh_link);
+        printf("%-8d", sec_headers[i].sh_info);
+        printf("%-8d", sec_headers[i].sh_addralign);
+        printf("\n");
+	}
+    }
+
+    //释放堆内存
+    free (string_table);
+    free (sec_headers);
+    fclose(fp);	
+
+
+
+}
+void elf_read_fun(char *elf_file) {
+	FILE* fp;
+	Elf32_Ehdr elf_header;
+	fp=fopen(elf_file,"r");
+	if(fp==NULL)   exit(0);
+	int ret=fread(&elf_header,sizeof(Elf32_Ehdr),1,fp);
+	assert(ret==1);
+	if(elf_header.e_ident[0] !=0x7f||elf_header.e_ident[1]!='E')  {printf("no elf file\n");exit(0);} 
+	
+	Elf32_Shdr* sec_headers=(Elf32_Shdr*)malloc(sizeof(Elf32_Shdr)*elf_header.e_shnum);
+	fseek(fp,elf_header.e_shoff,SEEK_SET);
+	int ret1=fread(sec_headers,sizeof(Elf32_Shdr)*elf_header.e_shnum,1,fp);
+	assert(ret1==1);
+	printf("There are %d section headers, starting at offset 0x%x\n\n", elf_header.e_shnum, elf_header.e_shoff);
+
+	int str_tab_ind=elf_header.e_shstrndx;
+	fseek(fp,sec_headers[str_tab_ind].sh_offset,SEEK_SET);
+	char* string_table = (char*)malloc(sec_headers[str_tab_ind].sh_size * sizeof(char));
+	int ret2=fread(string_table,sec_headers[str_tab_ind].sh_size,1,fp);
+	assert(ret2==1);
+
+	int dynsym_ind = -1;//默认.dynsym符号表索引为-1
+    	int symtab_ind = -1;//默认.symtab符号表索引为-1
+    	int dynstr_ind = -1;//默认.dynstr字符串表索引为-1
+    	int strtab_ind = -1;//默认.strtab字符串索引为-1
+
+    //遍历段表section_headers获取符号表.dynsym;.symtab;.dynstr;.strtab四张表在段表中的索引
+    	for (int i = 0; i < elf_header.e_shnum; i++) {
+        	if (sec_headers[i].sh_type == SHT_DYNSYM)//是.dynsym符号表
+            		dynsym_ind = i;
+        	else if (sec_headers[i].sh_type == SHT_SYMTAB)//是.symtab符号表
+            		symtab_ind = i;
+        	if (strcmp(&string_table[sec_headers[i].sh_name], ".strtab") == 0)//是.strtab字符串表
+            		strtab_ind = i;
+        	else if (strcmp(&string_table[sec_headers[i].sh_name], ".dynstr") == 0)//是.dynstr字符串表
+            		dynstr_ind = i;
+    }
+
+	
+	
+
+
+	if((dynsym_ind!=-1)&&(dynstr_ind !=-1))
+	{
+		 unsigned long entry_num = sec_headers[dynsym_ind].sh_size / sec_headers[dynsym_ind].sh_entsize;
+        	 printf("Symbol table '.dynsym' contains %ld entries\n", entry_num);
+		 fseek(fp, sec_headers[dynstr_ind].sh_offset, SEEK_SET);
+		 char* dynstr_string_table=(char*)malloc(sec_headers[str_tab_ind].sh_size * sizeof(char));
+		 int ret4=fread(dynstr_string_table, sec_headers[dynstr_ind].sh_size,1, fp);
+		 assert(ret4==1);
+
+
+	fseek(fp, sec_headers[dynsym_ind].sh_offset, SEEK_SET);//将指针移动到符号表对应的偏移地址
+
+        Elf32_Sym* sym_entries = (Elf32_Sym*)malloc(sizeof(Elf32_Sym)*entry_num);//开辟堆内存用来存储符号表中所有entry
+        int ret3=fread(sym_entries, sizeof(Elf64_Sym)*entry_num,1, fp);//读符号表
+	assert(ret3==1);
+
+
+	printf("  NUM:\tValue\t\tSize\tType\tName\n");
+
+	for(int i=0;i<entry_num;i++)
+	{
+	   if((sym_entries[i].st_info & 0x0000000f)==STT_FUNC)
+	   {
+ 	    printf("  %3d:\t", i);
+            printf("0x%08x:\t", sym_entries[i].st_value);
+            printf("%4d\t", sym_entries[i].st_size);
+	    printf("FUN\t");
+            printf("%s", &dynstr_string_table[sym_entries[i].st_name]);
+            printf("\n");
+	   }
+	}
+
+    free (sym_entries);
+
+    free (dynstr_string_table);
+	}
+	else{printf("NO Dynamic linker symbol table!\n");}
+	printf("\n");
+
+
+	if ((symtab_ind != -1) && (strtab_ind != -1)) {
+        unsigned long entry_num = sec_headers[symtab_ind].sh_size / sec_headers[symtab_ind].sh_entsize;
+        printf("Symbol table '.symtab' contains %ld entries\n", entry_num);
+        fseek(fp, sec_headers[strtab_ind].sh_offset, SEEK_SET);
+        char* strtab_string_table = (char*)malloc(sec_headers[str_tab_ind].sh_size * sizeof(char));
+        int ret5=fread(strtab_string_table, sec_headers[strtab_ind].sh_size,1, fp);
+	assert(ret5==1);
+
+	fseek(fp, sec_headers[symtab_ind].sh_offset, SEEK_SET);//将指针移动到符号表对应的偏移地址
+
+        Elf32_Sym* sym_entries = (Elf32_Sym*)malloc(sizeof(Elf32_Sym)*entry_num);//开辟堆内存用来存储符号表中所有entry
+        int ret3=fread(sym_entries, sizeof(Elf64_Sym)*entry_num,1, fp);//读符号表
+	assert(ret3==1);
+
+
+	printf("  NUM:\tValue\t\tSize\tType\tName\n");
+
+	for(int i=0;i<entry_num;i++)
+	{
+	   if((sym_entries[i].st_info & 0x0000000f)==STT_FUNC)
+	   {
+ 	    printf("  %3d:\t", i);
+            printf("0x%08x:\t", sym_entries[i].st_value);
+            printf("%4d\t", sym_entries[i].st_size);
+	    printf("FUN\t");
+            printf("%s", &strtab_string_table[sym_entries[i].st_name]);
+            printf("\n");
+	    }
+	}
+
+    free (sym_entries);
+
+	free(strtab_string_table);
+    } else {
+        printf("No symbol table!\n");
+    }
+
+    //释放堆内存
+    free (string_table);
+    free (sec_headers);
+    fclose(fp);	
+
+
+
 }
 #endif
