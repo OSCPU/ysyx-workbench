@@ -28,7 +28,7 @@
 #define MAX_INST_TO_PRINT 10
 
 //ringbuf val
-#define BUF_LEN 10
+#define BUF_LEN 18
 #define NEXT_POS(x) ((x+1)%BUF_LEN)
 char ringbuf[BUF_LEN][128];
 int w=0;//ringbuf's write flag
@@ -65,6 +65,60 @@ static void exec_once(Decode *s, vaddr_t pc) {
   s->snpc = pc;
   isa_exec_once(s);
   cpu.pc = s->dnpc;
+#ifdef CONFIG_FTRACE
+  //char* fun_str;
+  char ar1[]="jal";
+  char ar2[]="jalr";
+  char *q = s->funbuf;
+  q += snprintf(q, sizeof(s->funbuf), FMT_WORD ":", s->pc);
+  int funlen = s->snpc - s->pc;
+  int j;
+  uint8_t *funinst = (uint8_t *)&s->isa.inst.val;
+  for (j = funlen - 1; j >= 0; j --) {
+    q += snprintf(q, 4, " %02x", funinst[j]);
+  }
+
+  int funlen_max = MUXDEF(CONFIG_ISA_x86, 8, 4);
+  int fspace_len = funlen_max - funlen;
+  if (fspace_len < 0) fspace_len = 0;
+  fspace_len = fspace_len * 3 + 1;
+  memset(q, ' ', fspace_len);
+  q += fspace_len;
+  printf("%s\n",s->funbuf);
+
+  /*
+  while(fun_str!=NULL) 
+  {
+  */
+  	if(strncmp(s->funbuf+24,ar2,4)==0)
+	{
+		printf("1\n");
+	}
+	else if(strncmp(s->funbuf+24,ar1,3)==0)
+	{
+		printf("2\n");
+	}
+	/*
+	else
+	{
+	fun_str=strtok(NULL," ");	
+	}
+
+  }
+  */
+
+
+  #ifndef CONFIG_ISA_loongarch32r
+  void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
+  disassemble(q, s->funbuf + sizeof(s->funbuf) - q,
+      MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc), (uint8_t *)&s->isa.inst.val, funlen);
+#else
+  q[0] = '\0'; // the upstream llvm does not support loongarch32r
+#endif
+
+  
+#endif
+
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;
   p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);
@@ -75,14 +129,12 @@ static void exec_once(Decode *s, vaddr_t pc) {
     p += snprintf(p, 4, " %02x", inst[i]);
   }
 
-
   int ilen_max = MUXDEF(CONFIG_ISA_x86, 8, 4);
   int space_len = ilen_max - ilen;
   if (space_len < 0) space_len = 0;
   space_len = space_len * 3 + 1;
   memset(p, ' ', space_len);
   p += space_len;
-  
   //itrace the wrong instruct
   iringbuf_put_char(s->logbuf);
 
@@ -150,9 +202,11 @@ void cpu_exec(uint64_t n) {
             ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED))),
           nemu_state.halt_pc);
 
+	#ifdef CONFIG_ITRACE
 	  //print the ringbuf
 	  if(nemu_state.halt_ret !=0)
 	  print_ringbuf();
+	#endif
 
       // fall through
     case NEMU_QUIT: statistic();
@@ -160,6 +214,7 @@ void cpu_exec(uint64_t n) {
   }
 }
 
+#ifdef CONFIG_ITRACE
 void iringbuf_put_char(char *p)
 {
 		int n=sizeof(ringbuf[w]);
@@ -179,4 +234,4 @@ void print_ringbuf(){
 		}
 
 }
-
+#endif
