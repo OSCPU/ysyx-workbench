@@ -27,6 +27,12 @@
  */
 #define MAX_INST_TO_PRINT 10
 
+#ifdef CONFIG_FTRACE
+#include "../monitor/monitor.h"
+extern FUN fun_buff[128];
+extern int fun_num;
+#endif
+
 //ringbuf val
 #define BUF_LEN 18
 #define NEXT_POS(x) ((x+1)%BUF_LEN)
@@ -66,9 +72,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
   isa_exec_once(s);
   cpu.pc = s->dnpc;
 #ifdef CONFIG_FTRACE
-  //char* fun_str;
-  char ar1[]="jal";
-  char ar2[]="jalr";
+  char ar[]="jal";//read the jal and jalr
   char *q = s->funbuf;
   q += snprintf(q, sizeof(s->funbuf), FMT_WORD ":", s->pc);
   int funlen = s->snpc - s->pc;
@@ -84,28 +88,6 @@ static void exec_once(Decode *s, vaddr_t pc) {
   fspace_len = fspace_len * 3 + 1;
   memset(q, ' ', fspace_len);
   q += fspace_len;
-  printf("%s\n",s->funbuf);
-
-  /*
-  while(fun_str!=NULL) 
-  {
-  */
-  	if(strncmp(s->funbuf+24,ar2,4)==0)
-	{
-		printf("1\n");
-	}
-	else if(strncmp(s->funbuf+24,ar1,3)==0)
-	{
-		printf("2\n");
-	}
-	/*
-	else
-	{
-	fun_str=strtok(NULL," ");	
-	}
-
-  }
-  */
 
 
   #ifndef CONFIG_ISA_loongarch32r
@@ -115,8 +97,49 @@ static void exec_once(Decode *s, vaddr_t pc) {
 #else
   q[0] = '\0'; // the upstream llvm does not support loongarch32r
 #endif
-
-  
+/*
+if(pc!=0x80000000)
+{
+ printf("%s\n",s->funbuf);
+}
+*/
+ //read jal and jalr
+ if(strncmp(s->funbuf+24,ar,3)==0)
+ {
+ 	int flat=0;
+	int f,g;
+ 	for(g=0;g<fun_num;g++)
+	{
+		
+		if(s->dnpc>=fun_buff[g].value&&s->dnpc<fun_buff[g].value+fun_buff[g].size)
+		{
+		   for(f=0;f<fun_num;f++)
+		   {
+		       if(s->pc==fun_buff[f].value+fun_buff[f].size-4)	
+		       {
+		          flat=1;
+			  break;
+		       }
+		   }
+		   if(flat==1)
+		   {
+		     printf("0x%x:   ret[fun:%s  @%x]\n",s->pc,fun_buff[f].name,fun_buff[f].value); 
+		     break;
+		   }
+		   else if(flat==0)
+		   {
+		   	printf("0x%x:  call[fun:%s  @%x]\n",s->pc,fun_buff[g].name,fun_buff[g].value);
+			break;
+		   }
+		}
+		else if(g==fun_num-1)
+		{
+			printf("error no funcion\n");
+			assert(0);
+		}
+	}
+ }
+ 
 #endif
 
 #ifdef CONFIG_ITRACE

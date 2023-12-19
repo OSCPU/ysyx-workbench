@@ -45,13 +45,15 @@ static void welcome() {
 
 #ifdef CONFIG_FTRACE
 #include <elf.h>
+#include "monitor.h"
 char *elf_file =NULL;
 int times=0;
 int fun_num=0;
 void elf_read(char *elf_file);
 void elf_read_fun(char* elf_file);
 void elf_read_strtab(char* elf_file);
-
+/*
+transfer to momitor.h
 typedef struct function
 {
 	uint32_t value;
@@ -59,6 +61,7 @@ typedef struct function
 	char     name[128];
 }FUN;
 
+*/
 FUN fun_buff[128];
 
 #endif
@@ -179,6 +182,10 @@ void init_monitor(int argc, char *argv[]) {
 
   /* Display welcome message. */
   welcome();
+  #ifdef CONFIG_FTRACE
+  elf_read(elf_file);
+  #endif
+
 
 
 }
@@ -198,17 +205,14 @@ void am_init_monitor() {
   load_img();
   IFDEF(CONFIG_DEVICE, init_device());
   welcome();
-  #ifdef CONFIG_FTRACE
-  elf_read(elf_file);
-  #endif
-
+  
 }
 #endif
 
 #ifdef CONFIG_FTRACE
 void elf_read(char *elf_file)
 {
-	elf_read_strtab(elf_file);
+	//elf_read_strtab(elf_file);
 	elf_read_fun(elf_file);
 }
 void elf_read_strtab(char *elf_file) {
@@ -273,7 +277,7 @@ void elf_read_fun(char *elf_file) {
 	fseek(fp,elf_header.e_shoff,SEEK_SET);
 	int ret1=fread(sec_headers,sizeof(Elf32_Shdr)*elf_header.e_shnum,1,fp);
 	assert(ret1==1);
-	printf("There are %d section headers, starting at offset 0x%x\n\n", elf_header.e_shnum, elf_header.e_shoff);
+	//printf("There are %d section headers, starting at offset 0x%x\n\n", elf_header.e_shnum, elf_header.e_shoff);
 
 	int str_tab_ind=elf_header.e_shstrndx;
 	fseek(fp,sec_headers[str_tab_ind].sh_offset,SEEK_SET);
@@ -305,7 +309,7 @@ void elf_read_fun(char *elf_file) {
 	if((dynsym_ind!=-1)&&(dynstr_ind !=-1))
 	{
 		 unsigned long entry_num = sec_headers[dynsym_ind].sh_size / sec_headers[dynsym_ind].sh_entsize;
-        	 printf("Symbol table '.dynsym' contains %ld entries\n", entry_num);
+        	 //printf("Symbol table '.dynsym' contains %ld entries\n", entry_num);
 		 fseek(fp, sec_headers[dynstr_ind].sh_offset, SEEK_SET);
 		 char* dynstr_string_table=(char*)malloc(sec_headers[str_tab_ind].sh_size * sizeof(char));
 		 int ret4=fread(dynstr_string_table, sec_headers[dynstr_ind].sh_size,1, fp);
@@ -349,7 +353,7 @@ void elf_read_fun(char *elf_file) {
 
 	if ((symtab_ind != -1) && (strtab_ind != -1)) {
         unsigned long entry_num = sec_headers[symtab_ind].sh_size / sec_headers[symtab_ind].sh_entsize;
-        printf("Symbol table '.symtab' contains %ld entries\n", entry_num);
+        //printf("Symbol table '.symtab' contains %ld entries\n", entry_num);
         fseek(fp, sec_headers[strtab_ind].sh_offset, SEEK_SET);
         char* strtab_string_table = (char*)malloc(sec_headers[str_tab_ind].sh_size * sizeof(char));
         int ret5=fread(strtab_string_table, sec_headers[strtab_ind].sh_size,1, fp);
@@ -384,7 +388,7 @@ void elf_read_fun(char *elf_file) {
 	    fun_num++;
 	    }
 	}
-	/*
+	/*   print the fun_buff
 	for(int i=0;i<fun_num;i++)
 	{
 		printf("0x%08x:\t",fun_buff[i].value);
