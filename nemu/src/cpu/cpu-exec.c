@@ -31,6 +31,8 @@
 #include "../monitor/monitor.h"
 extern FUN fun_buff[128];
 extern int fun_num;
+int space_num=-1;
+int space_flat=0;
 #endif
 
 //ringbuf val
@@ -73,6 +75,9 @@ static void exec_once(Decode *s, vaddr_t pc) {
   cpu.pc = s->dnpc;
 #ifdef CONFIG_FTRACE
   char ar[]="jal";//read the jal and jalr
+  char ar1[]="jalr";
+  char ar2[]="00 00 80 67";//funbuf 0x8--------: 00 00 80 67 jalr  ..... the ret is 80 67
+  //00 07 80 67 jr mean call to but no printf the ret//in f1 have jr call to f0 the f1 no ret
   char *q = s->funbuf;
   q += snprintf(q, sizeof(s->funbuf), FMT_WORD ":", s->pc);
   int funlen = s->snpc - s->pc;
@@ -97,38 +102,69 @@ static void exec_once(Decode *s, vaddr_t pc) {
 #else
   q[0] = '\0'; // the upstream llvm does not support loongarch32r
 #endif
-/*
 if(pc!=0x80000000)
 {
  printf("%s\n",s->funbuf);
 }
-*/
  //read jal and jalr
  if(strncmp(s->funbuf+24,ar,3)==0)
  {
- 	int flat=0;
+ 	int flat_ret=0;
 	int f,g;
  	for(g=0;g<fun_num;g++)
 	{
 		
-		if(s->dnpc>=fun_buff[g].value&&s->dnpc<fun_buff[g].value+fun_buff[g].size)
+		if(s->dnpc>=fun_buff[g].value&&s->dnpc<fun_buff[g].value+fun_buff[g].size)//read the next pc
 		{
+		   if(strncmp(s->funbuf+24,ar1,4)==0&&strncmp(s->funbuf+12,ar2,5)==0)//ret or not ret 
+		   {
 		   for(f=0;f<fun_num;f++)
 		   {
-		       if(s->pc==fun_buff[f].value+fun_buff[f].size-4)	
+		       if(s->pc>=fun_buff[f].value&&s->pc<fun_buff[f].size+fun_buff[f].value)	
 		       {
-		          flat=1;
+		          flat_ret=1;
 			  break;
 		       }
 		   }
-		   if(flat==1)
+		   }
+		   if(flat_ret==1)//ret
 		   {
-		     printf("0x%x:   ret[fun:%s  @%x]\n",s->pc,fun_buff[f].name,fun_buff[f].value); 
+		     printf("%d\n",space_flat);
+		     if(space_flat==1)
+		     {
+		     	space_num--;
+		     }
+		     printf("0x%x:",s->pc);
+		     /*
+		     int n=space_num;
+		     while (n>0)
+		     {
+		     	printf(" ");
+			n--;
+		     }
+		     */
+		     printf("---num: %d   ret [fun:%s  @%x]\n",space_num,fun_buff[f].name,fun_buff[f].value); 
+		     space_flat=1;
 		     break;
 		   }
-		   else if(flat==0)
+		   else if(flat_ret==0)//call
 		   {
-		   	printf("0x%x:  call[fun:%s  @%x]\n",s->pc,fun_buff[g].name,fun_buff[g].value);
+		     printf("%d\n",space_flat);
+		     if(space_flat==0)
+		     {
+		     	space_num++;
+		     }
+		     printf("0x%x:",s->pc);
+		     /*
+		     int m=space_num;
+		     while (m>0)
+		     {
+		     	printf(" ");
+			m--;
+		     }
+		     */
+		   	printf("---num: %d  call [fun:%s  @%x]\n",space_num,fun_buff[g].name,fun_buff[g].value);
+			space_flat=0;
 			break;
 		   }
 		}
