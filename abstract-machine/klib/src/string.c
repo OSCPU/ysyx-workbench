@@ -54,8 +54,7 @@ char *strncpy(char *dst, const char *src, size_t n) {
 
 	}
 	return str;
-  
- // panic("Not implemented");
+  //panic("Not implemented");
 }
 
 char *strcat(char *dst, const char *src) {
@@ -99,6 +98,8 @@ int strcmp(const char *s1, const char *s2) {
 		return -1;
 	else 
 		return 0;
+     //panic("Not implemented");
+
 }
 
 int strncmp(const char *s1, const char *s2, size_t n) {

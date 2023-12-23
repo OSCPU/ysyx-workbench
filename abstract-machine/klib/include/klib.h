@@ -9,6 +9,7 @@
 extern "C" {
 #endif
 
+//use klib int native
 //#define __NATIVE_USE_KLIB__
 
 // string.h

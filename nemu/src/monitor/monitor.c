@@ -180,13 +180,15 @@ void init_monitor(int argc, char *argv[]) {
   ));
 #endif
 
-  /* Display welcome message. */
+   /* Display welcome message. */
   welcome();
-  #ifdef CONFIG_FTRACE
+
+ #ifdef CONFIG_FTRACE
   elf_read(elf_file);
   #endif
 
 
+  
 
 }
 #else // CONFIG_TARGET_AM
@@ -214,6 +216,7 @@ void elf_read(char *elf_file)
 {
 	//elf_read_strtab(elf_file);
 	elf_read_fun(elf_file);
+   Log("read elf file: %s",elf_file ?elf_file:"stdout");
 }
 void elf_read_strtab(char *elf_file) {
 	FILE* fp;
