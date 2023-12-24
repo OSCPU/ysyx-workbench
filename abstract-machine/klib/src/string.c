@@ -143,23 +143,32 @@ void *memset(void *s, int c, size_t n) {
 void *memmove(void *dst, const void *src, size_t n) {
 	if(dst==NULL||src==NULL)
 	return 0;
-	char* sr=(char *)dst;
-	while(n!=0)
+	void* ret=dst;
+	if(dst<src)
 	{
-		*sr=*(char *)src;
-		n--;
-		sr++;
-		(char *)src++;
+		while(n--)//前到后拷贝
+		{
+		*(char*)dst=*(char *)src;
+		dst=(char*)dst+1;
+		src=(char*)src+1;
+		
+		}
 	}
-	return (void *) sr;
+	else
+	{
+		while(n--)
+		{
+		*((char*)dst+n)=*((char*)src+n);
+		}
+	}
+	return ret;
 }
 
 void *memcpy(void *out, const void *in, size_t n) {
 	if(out==NULL||in==NULL)
 	return 0;
 	char* sr1=(char *)out;
-	char* sr2=(char *)in;
-	while(n!=0)
+	char* sr2=(char *)in; while(n!=0)
 	{
 		*sr1=*sr2;
 		sr1++;
@@ -170,6 +179,19 @@ void *memcpy(void *out, const void *in, size_t n) {
 }
 
 int memcmp(const void *s1, const void *s2, size_t n) {
+	if(s1==NULL||s2==NULL)
+	return 0;
+	while(n--)
+	{
+		if(*(char*)s1!=*(char*)s2)
+		{
+			return *(char*)s1-*(char*)s2;
+		}
+		s1=(char*)s1+1;
+		s2=(char*)s2+1;
+	}
+	return 0;
+/*
 	char* sr1=(char *)s1;
 	char* sr2=(char *)s2;
 	while(n!=0&&(*sr1!='\0'||*sr2!='\0'))
@@ -192,6 +214,8 @@ int memcmp(const void *s1, const void *s2, size_t n) {
 		return -1;
 	else 
 		return 0;
+*/
+	
 
 
 }

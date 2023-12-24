@@ -102,10 +102,12 @@ static void exec_once(Decode *s, vaddr_t pc) {
 #else
   q[0] = '\0'; // the upstream llvm does not support loongarch32r
 #endif
+/*
 if(pc!=0x80000000)
 {
  printf("%s\n",s->funbuf);
 }
+*/
  //read jal and jalr
  if(strncmp(s->funbuf+24,ar,3)==0)
  {
