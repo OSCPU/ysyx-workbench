@@ -6,7 +6,7 @@
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
 int printf(const char *fmt, ...) {
-  	char buff[1024];
+  	char buff[4096];
 	va_list arg;
 	va_start(arg,fmt);
 
@@ -40,7 +40,7 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
 			     len++;
 			     val=0-val;}
 			     int r;
-			     char *p="0";
+			     char p[1024];
 			     int plen=0;
 			     while(val>0)
 			     {
