@@ -2,6 +2,7 @@
 #include "isa.h"
 #include <cstddef>
 #include <cstdint>
+#include <cstdio>
 #include <dlfcn.h>
 #include <common.h>
 
@@ -21,22 +22,49 @@ char *isa_reg_val2str(int i);
 
 #ifdef CONFIG_DIFFTEST
 
-bool isa_difftest_checkregs(riscv32_CPU_state *ref_r) {
-  int i;
-  for(i = 0; i < ARRLEN(cpu.gpr); i++) {
-    if(ref_r->gpr[i] != cpu.gpr[i]) {
-      Log("%s is different after executing instruction at pc = " FMT_WORD
-          ", right = " FMT_WORD ", wrong = " FMT_WORD ", diff = " FMT_WORD,
-          isa_reg_val2str(i), cpu.pc, ref_r->gpr[i], cpu.gpr[i], ref_r->gpr[i] ^ cpu.gpr[i]);
-      return false;
-    }
-  }
-  if(ref_r->pc != cpu.npc) {
+static bool difftest_check_reg(const char *name, vaddr_t pc, word_t ref, word_t dut) {
+  if (ref != dut) {
     Log("%s is different after executing instruction at pc = " FMT_WORD
         ", right = " FMT_WORD ", wrong = " FMT_WORD ", diff = " FMT_WORD,
-        "pc", cpu.npc, ref_r->pc, cpu.npc, ref_r->pc ^ cpu.npc);
+        name, pc, ref, dut, ref ^ dut);
     return false;
   }
+  return true;
+}
+
+bool isa_difftest_checkregs(riscv32_CPU_state *ref_r, vaddr_t pc) {
+  // int i;
+  // for(i = 0; i < ARRLEN(cpu.gpr); i++) {
+  //   if(ref_r->gpr[i] != cpu.gpr[i]) {
+  //     Log("%s is different after executing instruction at pc = " FMT_WORD
+  //         ", right = " FMT_WORD ", wrong = " FMT_WORD ", diff = " FMT_WORD,
+  //         isa_reg_val2str(i), cpu.pc, ref_r->gpr[i], cpu.gpr[i], ref_r->gpr[i] ^ cpu.gpr[i]);
+  //     return false;
+  //   }
+  // }
+  // if(ref_r->pc != cpu.npc) {
+  //   Log("%s is different after executing instruction at pc = " FMT_WORD
+  //       ", right = " FMT_WORD ", wrong = " FMT_WORD ", diff = " FMT_WORD,
+  //       "pc", cpu.npc, ref_r->pc, cpu.npc, ref_r->pc ^ cpu.npc);
+  //   return false;
+  // }
+  // if(ref_r->csr.mcause != cpu.csr.mcause)
+  // return true;
+  int i;
+  // check gpr
+  for(i = 0; i < ARRLEN(cpu.gpr); i++) {
+    if(!difftest_check_reg(isa_reg_val2str(i), pc,  ref_r->gpr[i], cpu.gpr[i])) return false;
+  }
+
+  // check pc
+  if(!difftest_check_reg("pc", pc, ref_r->pc, cpu.npc)) return false;
+
+  // check csr
+  if(!difftest_check_reg("mtvec"  , pc, ref_r->csr.mtvec  , cpu.csr.mtvec))   return false;
+  if(!difftest_check_reg("mepc"   , pc, ref_r->csr.mepc   , cpu.csr.mepc))    return false;
+  if(!difftest_check_reg("mcause" , pc, ref_r->csr.mcause , cpu.csr.mcause))  return false;
+  if(!difftest_check_reg("mstatus", pc, ref_r->csr.mstatus, cpu.csr.mstatus)) return false;
+
   return true;
 }
 
@@ -76,7 +104,7 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
 }
 
 static void checkregs(riscv32_CPU_state *ref, vaddr_t pc) {
-  if (!isa_difftest_checkregs(ref)) {
+  if (!isa_difftest_checkregs(ref,pc)) {
     npc_state.state = NPC_ABORT;
     npc_state.halt_pc = pc;
     printf("%s\n",ANSI_FMT("Difftest Fail", ANSI_FG_RED));

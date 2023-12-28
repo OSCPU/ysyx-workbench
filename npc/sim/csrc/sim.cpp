@@ -109,6 +109,10 @@ void isa_reg_copy() {
   cpu.gpr[29] = top->rootp->Top__DOT__regFile__DOT__regfile_29;
   cpu.gpr[30] = top->rootp->Top__DOT__regFile__DOT__regfile_30;
   cpu.gpr[31] = top->rootp->Top__DOT__regFile__DOT__regfile_31;
+  cpu.csr.mcause  = top->rootp->Top__DOT__csr__DOT__mcause;
+  cpu.csr.mepc    = top->rootp->Top__DOT__csr__DOT__mepc;
+  cpu.csr.mstatus = top->rootp->Top__DOT__csr__DOT__mstatus;
+  cpu.csr.mtvec   = top->rootp->Top__DOT__csr__DOT__mtvec;
   // next pc
   cpu.npc = top->io_pc;
 }
@@ -119,7 +123,12 @@ void isa_reg_display() {
   for(i = 0;i < ARRLEN(regs); i++){
     printf("%2d\t%-3s\t%#8x%15d\n",i, regs[i], cpu.gpr[i], cpu.gpr[i]);
   }
+  printf("npc status:\n");
   printf("pc = %#x\n", cpu.pc);
+  printf("mcause  = %#x\n", cpu.csr.mcause);
+  printf("mepc    = %#x\n", cpu.csr.mepc);
+  printf("mstatus = %#x\n", cpu.csr.mstatus);
+  printf("mtvec   = %#x\n", cpu.csr.mtvec);
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {

@@ -3,7 +3,7 @@
 void init_monitor(int, char *[]);
 void cpu_exec(uint64_t n);
 void sdb_mainloop();
-int is_exit_status_bad();
+int  is_exit_status_bad();
 
 int main(int argc, char *argv[])
 {
