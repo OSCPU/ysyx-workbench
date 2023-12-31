@@ -10,6 +10,7 @@
 
 
 word_t isa_reg_str2val(const char *s, bool *success);
+word_t isa_csr_val(const char *s);
 
 enum {
   TK_NOTYPE = 256, TK_EQ,
@@ -34,7 +35,7 @@ static struct rule {
   {"/", '/'},           // divider
   {"\\(", '('},         // left parantheses
   {"\\)", ')'},         // right parantheses
-  {"\\$([0-9]+|pc)", TK_REG},  //reg
+  {"\\$([0-9]+|pc|mepc|mstatus|mtvec|mcause)", TK_REG},  //reg
   {"(0x|0X)[0-9a-fA-F]+",TK_HEX},  //hex
   {"==", TK_EQ},        // equal
   {"!=", TK_NOTEQ},     // not equal
@@ -188,7 +189,8 @@ uint32_t eval(int p, int q)
         sscanf(tokens[p].str, "%x", &res);
         break; 
       case TK_REG:
-        res = isa_reg_str2val(tokens[p].str, &success);
+        if(strcmp(tokens[p].str, "mepc") == 0) res = isa_csr_val("mepc");
+        else res = isa_reg_str2val(tokens[p].str, &success);
         break;
       case TK_DEREF:
         res = atoi(tokens[p].str);
@@ -340,7 +342,6 @@ word_t expr(char *e, bool *success) {
     return 0;
   }
 
-  /* TODO: Insert codes to evaluate the expression. */
   uint32_t mem_addr,mem_value;
   int right_parentheses_index = 0;
 

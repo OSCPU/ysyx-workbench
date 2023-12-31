@@ -1,8 +1,12 @@
+#include "isa.h"
 #include <common.h>
 #include <assert.h>
+#include <cstdio>
 
 #define NR_WP 32
 #define LEN_EXPR 100
+
+extern riscv32_CPU_state cpu;
 
 word_t expr(char *s, bool *success);
 
@@ -31,17 +35,17 @@ void init_wp_pool() {
 }
 
 void check_wp() {
-  WP *tmp;
+  WP *node;
   int cnt_head;
   int cnt_free;
 
   cnt_head = 0;
-  for(tmp=head;tmp!=NULL;tmp=tmp->next){
+  for(node=head;node!=NULL;node=node->next){
     cnt_head++;
   }
 
   cnt_free = 0;
-  for(tmp=free_;tmp!=NULL;tmp=tmp->next){
+  for(node=free_;node!=NULL;node=node->next){
     cnt_free++;
   }
   printf("cnt_head:%d\tcnt_free:%d\tcnt_total:%d\n",cnt_head,cnt_free,cnt_free+cnt_head);
@@ -51,38 +55,38 @@ void check_wp() {
 
 void new_wp(char e[])
 {
-  WP* tmp;
+  WP* node;
   uint32_t expr_value;
   bool success;
   // at least one watchpoint is availble
   if(free_ == NULL){
     assert(0);
   }
-  tmp = free_;
+  node = free_;
   free_ = free_->next;
 
-  tmp->next = head;
-  head = tmp;
+  node->next = head;
+  head = node;
   
   // create a new node
   expr_value = expr(e,&success);
-  tmp->last_value = expr_value;
-  tmp->value = expr_value;
-  strcpy(tmp->expr, e);
+  node->last_value = expr_value;
+  node->value = expr_value;
+  strcpy(node->expr, e);
 }
 
 void free_wp(WP* wp){
-  WP* tmp;
-  // tranverse head list
-  for(tmp=head; tmp!=NULL; tmp=tmp->next){
-    if(tmp == wp && tmp == head){
+  WP* node;
+
+  for(node = head; node != NULL; node = node->next){
+    if(node == wp && node == head){
       head = head->next;
-      tmp->next = free_;
+      node->next = free_;
       free_ = wp;
       return;
     }
-    else if(tmp->next == wp){
-      tmp->next = wp->next;
+    else if(node->next == wp){
+      node->next = wp->next;
       wp->next = free_;
       free_ = wp;
       return;
@@ -93,41 +97,39 @@ void free_wp(WP* wp){
 }
 
 int trace_wp_step() {
-  WP* tmp;
-  bool success;
+  WP* node;
 
-  for(tmp = head; tmp != NULL; tmp = tmp->next){
-    tmp->value = expr(tmp->expr, &success);
-    if(tmp->value!=tmp->last_value){
-      printf("Hit breakpoint:\t%d\t%s\n", tmp->NO,tmp->expr);
+  for(node = head; node != NULL; node = node->next){
+    node->value = expr(node->expr, NULL);
+    if(node->value != node->last_value){
+      printf("Hit breakpoint:\t%d\t%s\n", node->NO, node->expr);
+      printf("change:%#x(%d) to %#x(%d)\t@%#x\n",node->last_value, node ->last_value, node->value, node->value, cpu.pc);
+
+      node->last_value = node->value;
       return 1;
     }
   }
+
   return 0;
 }
 
 void print_wp_info() {
-  WP* tmp;
-  int start;
+  WP* node;
 
-  start = 0;
-  for(tmp=head; tmp!=NULL; tmp=tmp->next){
-    if(!start){
-      printf("Num\tWhat\n");
-      start = 1;
-    }
-    printf("%d\t%s\n", tmp->NO,tmp->expr);
+  printf("Num\tWhat\n");
+  for(node = head; node != NULL; node = node->next){
+    printf("%d\t%s\n", node->NO, node->expr);
   }
   //debug
   //check_wp();
 }
 
 void delete_wp(int NO) {
-  WP *tmp;
+  WP *node;
 
-  for(tmp=head; tmp!=NULL; tmp=tmp->next){
-    if(tmp->NO == NO){
-      free_wp(tmp);
+  for(node = head; node != NULL; node = node->next){
+    if(node->NO == NO){
+      free_wp(node);
     }
   }
 }

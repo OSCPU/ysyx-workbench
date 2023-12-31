@@ -1,12 +1,14 @@
 #include <cstdint>
 #include <memory.h>
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <iostream>
 
 #include "common.h"
 #include "config.h"
+#include "debug.h"
 #include "verilated.h"
 #include "verilated_vcd_c.h"
 #include "svdpi.h"
@@ -141,6 +143,16 @@ word_t isa_reg_str2val(const char *s, bool *success) {
 
 const char *isa_reg_val2str(int i) {
   return regs[i];
+}
+
+word_t isa_csr_val(const char *s) {
+  if(strcmp(s, "mepc") == 0) return cpu.csr.mepc;
+  else if(strcmp(s, "mstatus") == 0) return cpu.csr.mstatus;
+  else if(strcmp(s, "mcause") == 0) return cpu.csr.mcause;
+  else if(strcmp(s, "mtvec" ) == 0) return cpu.csr.mtvec;
+  else panic("Invalid csr!");
+
+  return 0;
 }
 
 void npc_trap(word_t pc, int code) {
