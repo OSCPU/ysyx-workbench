@@ -90,7 +90,7 @@ class Top(xlen: Int) extends Module {
   pcGen.io.jal_target    := alu.io.out
   pcGen.io.jalr_target   := alu.io.out
   pcGen.io.epc           := csr.io.epc
-  pcGen.io.etvec         := csr.io.etvec
+  pcGen.io.evec         := csr.io.evec
 
   regFile.io.raddr1 := rs1
   regFile.io.raddr2 := rs2

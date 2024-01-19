@@ -1,19 +1,16 @@
 package core
 
 import chisel3._
+import chisel3.util.MuxLookup
 
 class PCGenIO(xlen: Int) extends Bundle {
-  val npc    = Output(UInt(xlen.W))
-  val branch = Input(Bool())
-  val jal    = Input(Bool())
-  val jalr   = Input(Bool())
-  val expc   = Input(Bool())
-  val eret   = Input(Bool())
+  val pc_sel        = Input(UInt(2.W))
   val branch_target = Input(UInt(xlen.W))
   val jal_target    = Input(UInt(xlen.W))
   val jalr_target   = Input(UInt(xlen.W))
-  val etvec  = Input(UInt(xlen.W))
-  val epc    = Input(UInt(xlen.W))
+  val evec          = Input(UInt(xlen.W))
+  val epc           = Input(UInt(xlen.W))
+  val npc           = Output(UInt(xlen.W))
 }
 
 class PCGen(xlen: Int) extends Module {
@@ -21,19 +18,12 @@ class PCGen(xlen: Int) extends Module {
 
   val pc = RegInit("x80000000".U(xlen.W))
 
-  when(io.expc){
-    pc := io.etvec
-  }.elsewhen(io.eret){
-    pc := io.epc
-  }.elsewhen(io.branch) {
-    pc := io.branch_target
-  }.elsewhen(io.jal) {
-    pc:= io.jal_target
-  }.elsewhen(io.jalr) {
-    pc := io.jalr_target
-  }.otherwise {
-    pc := pc + 4.U(xlen.W)
-  }
-
+  pc := MuxLookup(io.pc_sel,pc + 4)(
+    Seq(
+      PC_4   -> pc + 4,
+      PC_ALU -> io.branch_target,
+      PC_
+    )
+  )
   io.npc := pc
 }

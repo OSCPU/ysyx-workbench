@@ -30,7 +30,7 @@ class CsrIO(xlen: Int) extends Bundle {
   val isExpt = Input(Bool())
   val out    = Output(UInt(xlen.W))
   val epc    = Output(UInt(xlen.W))
-  val etvec  = Output(UInt(xlen.W))
+  val evec  = Output(UInt(xlen.W))
 }
 
 class Csr(val xlen: Int) extends Module {
@@ -51,7 +51,7 @@ class Csr(val xlen: Int) extends Module {
   )
   io.out := MuxLookup(csr_addr, 0.U)(csrFile).asUInt
 
-  io.etvec := mtvec
+  io.evec := mtvec
   io.epc   := mepc
 
   val wdata = MuxLookup(io.inst(13,12), 1.U)(Seq(
