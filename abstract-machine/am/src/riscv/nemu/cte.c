@@ -46,8 +46,9 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
   c->mstatus = 0x1800;
   c->mepc = (uintptr_t)entry;
   c->gpr[10] = (uintptr_t)arg;
-  // c->gpr[11] = (uintptr_t)(p->tentry);
-  // c->gpr[12] = (uintptr_t)(p->parameter);
+  c->gpr[11] = (uintptr_t)(p->tentry);
+  c->gpr[12] = (uintptr_t)(p->parameter);
+  c->gpr[13] = (uintptr_t)(p->texit);
 
 
   assert(c!=0);
