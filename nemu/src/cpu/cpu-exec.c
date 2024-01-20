@@ -154,8 +154,8 @@ if(pc!=0x80000000)
 		}
 		else if(g==fun_num-1)
 		{
-			printf("error no funcion\n");
-			assert(0);
+			printf("error no funcion\nsrc/cpu/cpu-exec.c:158:error\n");
+			
 		}
 	}
  }
@@ -249,7 +249,10 @@ void cpu_exec(uint64_t n) {
 	  //print the ringbuf
 	  if(nemu_state.halt_ret !=0)
 	  print_ringbuf();
+	  else if(nemu_state.state==NEMU_ABORT)
+	  print_ringbuf();
 	#endif
+
 
       // fall through
     case NEMU_QUIT: statistic();

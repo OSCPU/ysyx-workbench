@@ -118,12 +118,10 @@ static int parse_args(int argc, char *argv[]) {
 		if(times==0){
 		elf_file = optarg;	
 		times++;
-		printf("----%s\n",elf_file);
 		break;
 		}
 		#endif
       		img_file = optarg;
-		printf("-0-%s\n",img_file);
 		return 0;
       default:
         printf("Usage: %s [OPTION...] IMAGE [args]\n\n", argv[0]);
