@@ -4,13 +4,15 @@ import chisel3._
 import chisel3.util.MuxLookup
 
 class PCGenIO(xlen: Int) extends Bundle {
-  val pc_sel        = Input(UInt(2.W))
-  val branch_target = Input(UInt(xlen.W))
-  val jal_target    = Input(UInt(xlen.W))
-  val jalr_target   = Input(UInt(xlen.W))
-  val evec          = Input(UInt(xlen.W))
-  val epc           = Input(UInt(xlen.W))
-  val npc           = Output(UInt(xlen.W))
+  val br          = Input(Bool())
+  val jal         = Input(Bool())
+  val jalr        = Input(Bool())
+  val br_target   = Input(UInt(xlen.W))
+  val jal_target  = Input(UInt(xlen.W))
+  val jalr_target = Input(UInt(xlen.W))
+  val evec        = Input(UInt(xlen.W))
+  val epc         = Input(UInt(xlen.W))
+  val pc_in       = Output(UInt(xlen.W))
 }
 
 class PCGen(xlen: Int) extends Module {
@@ -25,5 +27,5 @@ class PCGen(xlen: Int) extends Module {
       PC_
     )
   )
-  io.npc := pc
+  io.pc_in := pc
 }
