@@ -11,7 +11,7 @@ class PCGenIO(xlen: Int) extends Bundle {
   val branch_target = Input(UInt(xlen.W))
   val jal_target    = Input(UInt(xlen.W))
   val jalr_target   = Input(UInt(xlen.W))
-  val etvec         = Input(UInt(xlen.W))
+  val evec          = Input(UInt(xlen.W))
   val epc           = Input(UInt(xlen.W))
   val pc_in         = Output(UInt(xlen.W))
 }
@@ -22,7 +22,7 @@ class PCGen(xlen: Int) extends Module {
   val pc = RegInit("x80000000".U(xlen.W))
 
   when(io.exception) {
-    pc := io.etvec
+    pc := io.evec
   }.elsewhen(io.eret) {
     pc := io.epc
   }.elsewhen(io.branch) {

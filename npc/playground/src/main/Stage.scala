@@ -16,7 +16,7 @@ class MessageIDU_EXU(xlen: Int) extends Bundle {
   val imm    = Output(UInt(xlen.W))
   val inst   = Output(UInt(xlen.W))
   val pc     = Output(UInt(xlen.W))
-  val ctrl   = new CtrlSignals(xlen)
+  val ctrl    = new CtrlSignals(xlen)
 }
 
 class MessageEXU_WBU(xlen: Int) extends Bundle {
@@ -39,23 +39,35 @@ class IFU(xlen: Int) extends Module {
     val branch_target = Input(UInt(xlen.W))
     val jal_target    = Input(UInt(xlen.W))
     val jalr_target   = Input(UInt(xlen.W))
-    val etvec         = Input(UInt(xlen.W))
+    val evec          = Input(UInt(xlen.W))
     val epc           = Input(UInt(xlen.W))
   })
 
   val pcGen    = Module(new PCGen(xlen))
   val iMemUnit = Module(new MemUnit)
 
-  pcGen.io <> io
+  io.out.valid := true.B
 
+  // PCGen
+  pcGen.io.branch := io.branch
+  pcGen.io.branch_target := io.branch_target
+  pcGen.io.jal := io.jal
+  pcGen.io.jal_target := io.jal_target
+  pcGen.io.jalr := io.jalr
+  pcGen.io.jalr_target := io.jalr_target
+  pcGen.io.eret := io.eret
+  pcGen.io.epc := io.epc
+  pcGen.io.exception := io.exception
+  pcGen.io.evec := io.evec
+  io.out.bits.pc := pcGen.io.pc_in
+
+  // IMem
   iMemUnit.io.raddr := pcGen.io.pc_in
   iMemUnit.io.valid := true.B
   iMemUnit.io.wen   := 0.U
   iMemUnit.io.waddr := 0.U
   iMemUnit.io.wdata := 0.U
   iMemUnit.io.wmask := 0.U
-
-  io.out.bits.pc   := pcGen.io.pc_in
   io.out.bits.inst := iMemUnit.io.rdata
 
 }
@@ -65,6 +77,7 @@ class IDU(xlen: Int) extends Module {
     val in  = Flipped(Decoupled(new MessageIFU_IDU(xlen)))
     val out = Decoupled(new MessageIDU_EXU(xlen))
     val wdata = Input(UInt(xlen.W))
+    val wen   = Input(Bool())
   })
 
   val regFile     = Module(new RegFile(xlen))
@@ -79,15 +92,31 @@ class IDU(xlen: Int) extends Module {
   val rd     = inst(11,7)
   val opcode = inst(6,0)
 
-  regFile.io.raddr1 := rs1
-  regFile.io.raddr2 := rs2
-  regFile.io.waddr  := rd
-  regFile.io.wdata  := io.wdata
+  io.out.valid := true.B
+  io.in.ready := true.B
 
-  immUnit.io.inst := inst
-  immUnit.io.imm_type := controlUnit.io.imm_type
+  // RegFile
+  regFile.io.raddr1  := rs1
+  io.out.bits.rdata1 := regFile.io.rdata1
+  regFile.io.raddr2  := rs2
+  io.out.bits.rdata2 := regFile.io.rdata2
+  regFile.io.waddr   := rd
+  regFile.io.wdata   := io.wdata
+  regFile.io.wen     := io.wen
+  regFile.io.exception := controlUnit.io.ctrl.exception
 
-  controlUnit.io.inst := inst
+  // ImmUnit
+  immUnit.io.inst := io.in.bits.inst
+  immUnit.io.imm_type := controlUnit.io.ctrl.imm_type
+  io.out.bits.imm := immUnit.io.out
+
+  // Control Unit
+  controlUnit.io.inst := io.in.bits.inst
+  io.out.bits.ctrl := controlUnit.io.ctrl
+
+  // passby
+  io.out.bits.inst := io.in.bits.inst
+  io.out.bits.pc := io.in.bits.pc
 }
 
 class EXU(xlen: Int) extends Module {
@@ -108,6 +137,9 @@ class EXU(xlen: Int) extends Module {
   val oprand1 = WireDefault(0.U(xlen.W))
   val oprand2 = WireDefault(0.U(xlen.W))
 
+  io.out.valid := true.B
+  io.in.ready := true.B
+
   // Mux
   oprand1 := MuxLookup(io.in.bits.ctrl.A_sel, io.in.bits.rdata1)(
     Seq(
@@ -126,7 +158,7 @@ class EXU(xlen: Int) extends Module {
   alu.io.src1 := oprand1
   alu.io.src2 := oprand2
   alu.io.opcode := io.in.bits.ctrl.alu_op
-  io.out.bits.alu_out
+  io.out.bits.alu_out := alu.io.out
 
   // BranchGen
   branchGen.io.src1 := io.in.bits.rdata1
@@ -164,6 +196,8 @@ class EXU(xlen: Int) extends Module {
 
   // ctrol signals
   io.out.bits.ctrl := io.in.bits.ctrl
+
+  io.out.bits.pc_4 := io.in.bits.pc + 4.U
 }
 
 class WBU(xlen: Int) extends Module {
@@ -172,6 +206,8 @@ class WBU(xlen: Int) extends Module {
     val wb_data = Output(UInt(xlen.W))
     val wb_en   = Output(Bool())  
   })
+
+  io.in.ready := true.B
 
   io.wb_data := MuxLookup(io.in.bits.ctrl.wb_sel, io.in.bits.alu_out)(
     Seq(

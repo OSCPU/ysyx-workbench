@@ -10,7 +10,7 @@ class RegFileIO(xlen: Int) extends Bundle {
   val wen    = Input(Bool())
   val waddr  = Input(UInt(5.W))
   val wdata  = Input(UInt(xlen.W))
-  val isExpt = Input(Bool())
+  val exception = Input(Bool())
 }
 
 class RegFile(xlen: Int) extends Module {
@@ -18,7 +18,7 @@ class RegFile(xlen: Int) extends Module {
 
   //val regfile = Mem(32, UInt(xlen.W))
   val regfile = RegInit(VecInit(Seq.fill(32)(0.U(xlen.W))))
-  val mux_raddr1 = Mux(io.isExpt, 0xf.U, io.raddr1)
+  val mux_raddr1 = Mux(io.exception, 0xf.U, io.raddr1)
 
   // read data
   io.rdata1 := Mux(mux_raddr1.orR, regfile(mux_raddr1), 0.U)
