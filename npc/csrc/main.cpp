@@ -10,36 +10,42 @@
 #include"../hsrc/mem.h"
 
 
-void ebreak (int inst)
-{
-	if(inst == 0x00100073 )
-	{
-	printf("error --------- ebreak\n");
-	//assert(0);
-	}
-}
+
+VerilatedContext* contextp=NULL; 
+Vysyx_23060111_top *top=NULL; 
+VerilatedVcdC* tfp=NULL;
+
+int main_time=0;
+
+void cpu_init();
+void cpu_exce_once(VerilatedVcdC* tfp);
+void ebreak(int inst);
+void cpu_exce(uint32_t n);
+void execute(uint32_t n);
+
+
 
 int main(int argc ,char** argv, char** env)
 {
-	//init
-	int count=0;
-	VerilatedContext* contextp = new VerilatedContext;
+	int count=3;
+	contextp = new VerilatedContext;
 	contextp->commandArgs(argc,argv);
-	Vysyx_23060111_top *top = new Vysyx_23060111_top{contextp};
-
-	VerilatedVcdC* tfp=new VerilatedVcdC;
+	top = new Vysyx_23060111_top{contextp};
 	contextp->traceEverOn(true);
+	tfp=new VerilatedVcdC;
+
 	top->trace(tfp,0);
 	tfp->open("wave.vcd");
 
 	//init mem
 	init_mem();
-        uint32_t a=0x80000000;
-	top->pc=a;
+
+	//init cpu
+	cpu_init();
+	//top->pc=0x80000000;
+	/*
 	while(count<=10&&!contextp->gotFinish())
 	{
-		//printf("------%x\n",top->pc);
-		top->inst =pc_read(top->pc);
 		if(count==2)
 		{
 		top->rst=1;
@@ -48,26 +54,70 @@ int main(int argc ,char** argv, char** env)
 		{
 		top->rst=0;
 		}
-		top->clk =0; top->eval();
-		top->clk =1; top->eval();
-		//printf("----top->inst %x\n",top->inst);
-		/*
-		printf("------top->reg_out1 %x\n",top->reg_out1);
-		printf("------top->imm %x\n",top->imm);
-		printf("------top->val %x\n",top->inst);
-		*/
+		cpu_exce_once(tfp);
 
-
-		top->eval();
-
-		tfp->dump(contextp->time());
-		contextp->timeInc(1);
+		//contextp->timeInc(1);
 		count++;
 	}
+	*/
+	cpu_exce(count);
 	delete top;
 	tfp->close();
 	delete contextp;
 	return 0;
+}
+void cpu_init()
+{
+	top->pc=0x80000000;
+	top->rst=1;
+	top->clk =0; top->eval();
+	tfp->dump(main_time);
+	main_time++;
+	top->eval();
+	top->clk =1; top->eval();
+	tfp->dump(main_time);
+	main_time++;
+	top->eval();
+	top->rst=0;
+
+	
+}
+void cpu_exce_once(VerilatedVcdC* tfp)
+{
+		//top->snpc=top->pc;
+		top->inst =pc_read(top->snpc);
+		//top->dnpc=top->snpc;
+
+		top->clk =0; top->eval();
+		tfp->dump(main_time);
+		main_time++;
+		top->eval();
+		top->clk =1; top->eval();
+		tfp->dump(main_time);
+		main_time++;
+		top->eval();
+
+		//top->pc=top->dnpc;
+
+}
+void cpu_exce(uint32_t n)
+{
+	execute(n);
+}
+void execute(uint32_t n)
+{
+	for(;n>0;n--)
+	{
+		cpu_exce_once(tfp);
+	}
+}
+void ebreak (int inst)
+{
+	if(inst == 0x00100073 )
+	{
+	printf("error --------- ebreak\n");
+	//assert(0);
+	}
 }
 
 

@@ -8,7 +8,7 @@ module ysyx_23060111_IDU(
   output [11:7] rd,
   output [6:0] opcode
 );
-  assign dnpc=snpc;
+  assign dnpc=32'h80000004;
   assign imm=inst[31:20];
   assign rs1=inst[19:15];
   assign funct3=inst[14:12];

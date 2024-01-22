@@ -18,15 +18,17 @@ Vysyx_23060111_top::Vysyx_23060111_top(VerilatedContext* _vcontextp__, const cha
     , funct3{vlSymsp->TOP.funct3}
     , rd{vlSymsp->TOP.rd}
     , opcode{vlSymsp->TOP.opcode}
+    , waddr{vlSymsp->TOP.waddr}
+    , raddr{vlSymsp->TOP.raddr}
+    , wen{vlSymsp->TOP.wen}
     , imm{vlSymsp->TOP.imm}
     , inst{vlSymsp->TOP.inst}
     , val{vlSymsp->TOP.val}
     , snpc{vlSymsp->TOP.snpc}
     , dnpc{vlSymsp->TOP.dnpc}
     , pc{vlSymsp->TOP.pc}
-    , out{vlSymsp->TOP.out}
-    , reg_out{vlSymsp->TOP.reg_out}
-    , reg_out1{vlSymsp->TOP.reg_out1}
+    , wdata{vlSymsp->TOP.wdata}
+    , rout{vlSymsp->TOP.rout}
     , rbb{vlSymsp->TOP.rbb}
     , __PVT____024unit{vlSymsp->TOP.__PVT____024unit}
     , rootp{&(vlSymsp->TOP)}
