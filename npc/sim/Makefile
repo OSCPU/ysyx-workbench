@@ -103,7 +103,7 @@ DIFF_REF_NAME = riscv32-nemu-interpreter-so
 DIFF_REF_SO = $(NEMU_HOME)/build/$(DIFF_REF_NAME)
 override ARGS ?= --log=$(BUILD_DIR)/npc-log.txt
 override ARGS += --diff=$(DIFF_REF_SO)
-# override ARGS += -b
+override ARGS += -b
 
 ### Img to load
 IMG ?=
