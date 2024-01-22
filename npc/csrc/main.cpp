@@ -20,8 +20,8 @@ int main_time=0;
 void cpu_init();
 void cpu_exce_once(VerilatedVcdC* tfp);
 void ebreak(int inst);
-void cpu_exce(uint32_t n);
-void execute(uint32_t n);
+void cpu_exce(uint64_t n);
+void execute(uint64_t n);
 
 
 
@@ -100,11 +100,11 @@ void cpu_exce_once(VerilatedVcdC* tfp)
 		//top->pc=top->dnpc;
 
 }
-void cpu_exce(uint32_t n)
+void cpu_exce(uint64_t n)
 {
 	execute(n);
 }
-void execute(uint32_t n)
+void execute(uint64_t n)
 {
 	for(;n>0;n--)
 	{
