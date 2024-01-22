@@ -4,22 +4,7 @@ import chisel3._
 import chisel3.util._
 import core.ControlUnit._
 
-// IDU产生的控制信号
-class CtrlSignals(xlen: Int) extends Bundle {
-  val pc_sel   = Output(UInt(2.W))
-  val A_sel    = Output(UInt(1.W))
-  val B_sel    = Output(UInt(1.W))
-  val imm_type = Output(UInt(3.W))
-  val alu_op   = Output(UInt(4.W))
-  val br_type  = Output(UInt(3.W))
-  val st_type  = Output(UInt(2.W))
-  val ld_type  = Output(UInt(3.W))
-  val wb_sel   = Output(UInt(2.W))
-  val wb_en    = Output(Bool())
-  val csr_sel  = Output(UInt(1.W))
-}
-
-// 各个Stage之间传递的Message
+// Messages between different stages
 class MessageIFU_IDU(xlen: Int) extends Bundle {
   val inst = Output(UInt(xlen.W))
   val pc   = Output(UInt(xlen.W))
@@ -31,7 +16,7 @@ class MessageIDU_EXU(xlen: Int) extends Bundle {
   val imm    = Output(UInt(xlen.W))
   val inst   = Output(UInt(xlen.W))
   val pc     = Output(UInt(xlen.W))
-  val ctrl_signals = new CtrlSignals(xlen)
+  val ctrl   = new CtrlSignals(xlen)
 }
 
 class MessageEXU_WBU(xlen: Int) extends Bundle {
@@ -39,53 +24,79 @@ class MessageEXU_WBU(xlen: Int) extends Bundle {
   val mem_out = Output(UInt(xlen.W))
   val csr_out = Output(UInt(xlen.W))
   val pc_4    = Output(UInt(xlen.W))
-  val ctrl_signals = new CtrlSignals(xlen)
+  val ctrl    = new CtrlSignals(xlen)
 }
 
-class MessageEXU_IFU(xlen: Int) extends Bundle {
-  val alu_out = Output(UInt(xlen.W))
-  val epc     = Output(UInt(xlen.W))
-  val evec    = Output(UInt(xlen.W))
-}
-
-class MessageWBU_IDU(xlen: Int) extends Bundle {
-  val wb_data = Output(UInt(xlen.W))
-}
-
-// 各个Stage的实现
+// Stages
 class IFU(xlen: Int) extends Module {
   val io = IO(new Bundle {
-    val in  = Flipped(Decoupled(new MessageEXU_IFU(xlen)))
-    val out = Decoupled(new MessageIFU_IDU(xlen))
+    val out           = Decoupled(new MessageIFU_IDU(xlen))
+    val branch        = Input(Bool())
+    val jal           = Input(Bool())
+    val jalr          = Input(Bool())
+    val exception     = Input(Bool())
+    val eret          = Input(Bool())
+    val branch_target = Input(UInt(xlen.W))
+    val jal_target    = Input(UInt(xlen.W))
+    val jalr_target   = Input(UInt(xlen.W))
+    val etvec         = Input(UInt(xlen.W))
+    val epc           = Input(UInt(xlen.W))
   })
 
   val pcGen    = Module(new PCGen(xlen))
   val iMemUnit = Module(new MemUnit)
 
-  pcGen.io.branch_target := io.in.bits.alu_out
-  pcGen.io.jal_target    := io.in.bits.alu_out
-  pcGen.io.jalr_target   := io.in.bits.alu_out
-  pcGen.io.epc           := io.in.bits.epc
-  pcGen.io.evec          := io.in.bits.evec
+  pcGen.io <> io
 
+  iMemUnit.io.raddr := pcGen.io.pc_in
+  iMemUnit.io.valid := true.B
+  iMemUnit.io.wen   := 0.U
+  iMemUnit.io.waddr := 0.U
+  iMemUnit.io.wdata := 0.U
+  iMemUnit.io.wmask := 0.U
 
+  io.out.bits.pc   := pcGen.io.pc_in
+  io.out.bits.inst := iMemUnit.io.rdata
 
 }
 
 class IDU(xlen: Int) extends Module {
   val io = IO(new Bundle {
-    val in = Flipped(Decoupled(new MessageIFU_IDU(xlen)))
+    val in  = Flipped(Decoupled(new MessageIFU_IDU(xlen)))
+    val out = Decoupled(new MessageIDU_EXU(xlen))
+    val wdata = Input(UInt(xlen.W))
   })
 
   val regFile     = Module(new RegFile(xlen))
   val immUnit     = Module(new ImmUnit(xlen))
   val controlUnit = Module(new ControlUnit(xlen))
+
+  val inst   = io.in.bits.inst
+  val func7  = inst(31,25)
+  val rs2    = inst(24,20)
+  val rs1    = inst(19,15)
+  val func3  = inst(14,12)
+  val rd     = inst(11,7)
+  val opcode = inst(6,0)
+
+  regFile.io.raddr1 := rs1
+  regFile.io.raddr2 := rs2
+  regFile.io.waddr  := rd
+  regFile.io.wdata  := io.wdata
+
+  immUnit.io.inst := inst
+  immUnit.io.imm_type := controlUnit.io.imm_type
+
+  controlUnit.io.inst := inst
 }
 
 class EXU(xlen: Int) extends Module {
   val io = IO(new Bundle {
-    val in  = Flipped(Decoupled(new MessageIDU_EXU(xlen)))
-    val out = Decoupled(new MessageEXU_WBU(xlen))
+    val in     = Flipped(Decoupled(new MessageIDU_EXU(xlen)))
+    val out    = Decoupled(new MessageEXU_WBU(xlen))
+    val branch = Output(Bool())
+    val epc    = Output(UInt(xlen.W))
+    val evec   = Output(UInt(xlen.W))
   })
 
   val alu       = Module(new Alu(xlen))
@@ -93,15 +104,76 @@ class EXU(xlen: Int) extends Module {
   val dMemUnit  = Module(new MemUnit)
   val dataExt   = Module(new DataExt(xlen))
   val csr       = Module(new Csr(xlen))
+
+  val oprand1 = WireDefault(0.U(xlen.W))
+  val oprand2 = WireDefault(0.U(xlen.W))
+
+  // Mux
+  oprand1 := MuxLookup(io.in.bits.ctrl.A_sel, io.in.bits.rdata1)(
+    Seq(
+      A_PC  -> io.in.bits.pc,
+      A_RS1 -> io.in.bits.rdata1
+    )
+  )
+  oprand2 := MuxLookup(io.in.bits.ctrl.B_sel, io.in.bits.rdata2)(
+    Seq(
+      B_IMM -> io.in.bits.imm,
+      B_RS2 -> io.in.bits.rdata2
+    )
+  )
+
+  // Alu
+  alu.io.src1 := oprand1
+  alu.io.src2 := oprand2
+  alu.io.opcode := io.in.bits.ctrl.alu_op
+  io.out.bits.alu_out
+
+  // BranchGen
+  branchGen.io.src1 := io.in.bits.rdata1
+  branchGen.io.src2 := io.in.bits.rdata2
+  branchGen.io.opcode := io.in.bits.ctrl.br_type
+  io.branch := branchGen.io.branch
+
+  // DMem
+  dMemUnit.io.raddr := alu.io.out
+  dMemUnit.io.waddr := alu.io.out
+  dMemUnit.io.wdata := io.in.bits.rdata2
+  dMemUnit.io.valid := (io.in.bits.ctrl.st_type =/= 0.U) || (io.in.bits.ctrl.ld_type =/= 0.U)
+  dMemUnit.io.wen   := (io.in.bits.ctrl.st_type =/= 0.U)
+  dMemUnit.io.wmask := MuxLookup(io.in.bits.ctrl.st_type, 0.U)(
+    Seq(
+      ST_SW -> 15.U,
+      ST_SH -> 3.U,
+      ST_SB -> 1.U
+    )
+  )
+
+  // DataExt
+  dataExt.io.in := dMemUnit.io.rdata
+  dataExt.io.opcode := io.in.bits.ctrl.ld_type
+  io.out.bits.mem_out := dataExt.io.out
+
+  // Csr
+  csr.io.pc := io.in.bits.pc
+  csr.io.inst := io.in.bits.inst
+  csr.io.in := io.in.bits.rdata1
+  csr.io.exception := io.in.bits.ctrl.exception
+  io.out.bits.csr_out := csr.io.out
+  io.epc := csr.io.epc
+  io.evec := csr.io.evec
+
+  // ctrol signals
+  io.out.bits.ctrl := io.in.bits.ctrl
 }
 
 class WBU(xlen: Int) extends Module {
   val io = IO(new Bundle {
-    val in  = Flipped(Decoupled(new MessageEXU_WBU(xlen)))
-    val out = Decoupled(new MessageWBU_IDU(xlen))
+    val in      = Flipped(Decoupled(new MessageEXU_WBU(xlen)))
+    val wb_data = Output(UInt(xlen.W))
+    val wb_en   = Output(Bool())  
   })
 
-  io.out.bits.wb_data := MuxLookup(io.in.bits.ctrl_signals.wb_sel, io.in.bits.alu_out)(
+  io.wb_data := MuxLookup(io.in.bits.ctrl.wb_sel, io.in.bits.alu_out)(
     Seq(
       WB_ALU -> io.in.bits.alu_out,
       WB_PC4 -> io.in.bits.pc_4,
@@ -109,5 +181,5 @@ class WBU(xlen: Int) extends Module {
       WB_CSR -> io.in.bits.csr_out
     )
   )
-
+  io.wb_en := io.in.bits.ctrl.wb_en
 }

@@ -9,7 +9,6 @@ object CSR_INST {
   val csrrc = 2.U
 }
 object CSR_ADDR {
-
   val mstatus_addr = 0x300.U(12.W)
   val mtvec_addr   = 0x305.U(12.W)
   val mepc_addr    = 0x341.U(12.W)
@@ -24,13 +23,13 @@ object CSR_ADDR {
 }
 
 class CsrIO(xlen: Int) extends Bundle {
-  val pc     = Input(UInt(xlen.W))
-  val inst   = Input(UInt(xlen.W))
-  val in     = Input(UInt(xlen.W))
-  val isExpt = Input(Bool())
-  val out    = Output(UInt(xlen.W))
-  val epc    = Output(UInt(xlen.W))
-  val evec  = Output(UInt(xlen.W))
+  val pc        = Input(UInt(xlen.W))
+  val inst      = Input(UInt(xlen.W))
+  val in        = Input(UInt(xlen.W))
+  val exception = Input(Bool())
+  val out       = Output(UInt(xlen.W))
+  val epc       = Output(UInt(xlen.W))
+  val evec      = Output(UInt(xlen.W))
 }
 
 class Csr(val xlen: Int) extends Module {
@@ -52,15 +51,24 @@ class Csr(val xlen: Int) extends Module {
   io.out := MuxLookup(csr_addr, 0.U)(csrFile).asUInt
 
   io.evec := mtvec
-  io.epc   := mepc
+  io.epc  := mepc
 
-  val wdata = MuxLookup(io.inst(13,12), 1.U)(Seq(
-    CSR_INST.csrrw -> io.out,
-    CSR_INST.csrrs -> (io.out | io.in),
-    CSR_INST.csrrc -> (io.out & ~io.in),
-  ))
+  val oprand = MuxLookup(io.inst(14), 0.U)(
+    Seq(
+      0.U -> io.in,
+      1.U -> io.inst(19,15)
+    )
+  )
+
+  val wdata = MuxLookup(io.inst(13,12), 1.U)(
+    Seq(
+      CSR_INST.csrrw -> io.out,
+      CSR_INST.csrrs -> (io.out | oprand),
+      CSR_INST.csrrc -> (io.out & ~oprand),
+    )
+  )
   
-  when(io.isExpt) {
+  when(io.exception) {
     mepc := io.pc
     mcause := io.in
   }.elsewhen(csr_addr === CSR_ADDR.mepc_addr) {
