@@ -67,12 +67,19 @@ extern uint8_t imem[CONFIG_MSIZE];
 /********** regfile **********/
 extern riscv32_CPU_state cpu;
 
+#ifdef __riscv32_e
+const char *regs[] = {
+  "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
+  "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5"
+};
+#else
 const char *regs[] = {
   "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
   "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5",
   "a6", "a7", "s2", "s3", "s4", "s5", "s6", "s7",
   "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
 };
+#endif
 
 void isa_reg_copy() {
   // current pc
@@ -94,6 +101,7 @@ void isa_reg_copy() {
   cpu.gpr[13] = top->rootp->Top__DOT__idu__DOT__regFile__DOT__regfile_13;
   cpu.gpr[14] = top->rootp->Top__DOT__idu__DOT__regFile__DOT__regfile_14;
   cpu.gpr[15] = top->rootp->Top__DOT__idu__DOT__regFile__DOT__regfile_15;
+#ifndef __riscv32_e
   cpu.gpr[16] = top->rootp->Top__DOT__idu__DOT__regFile__DOT__regfile_16;
   cpu.gpr[17] = top->rootp->Top__DOT__idu__DOT__regFile__DOT__regfile_17;
   cpu.gpr[18] = top->rootp->Top__DOT__idu__DOT__regFile__DOT__regfile_18;
@@ -110,6 +118,7 @@ void isa_reg_copy() {
   cpu.gpr[29] = top->rootp->Top__DOT__idu__DOT__regFile__DOT__regfile_29;
   cpu.gpr[30] = top->rootp->Top__DOT__idu__DOT__regFile__DOT__regfile_30;
   cpu.gpr[31] = top->rootp->Top__DOT__idu__DOT__regFile__DOT__regfile_31;
+#endif
   cpu.csr.mcause  = top->rootp->Top__DOT__exu__DOT__csr__DOT__mcause;
   cpu.csr.mepc    = top->rootp->Top__DOT__exu__DOT__csr__DOT__mepc;
   cpu.csr.mstatus = top->rootp->Top__DOT__exu__DOT__csr__DOT__mstatus;

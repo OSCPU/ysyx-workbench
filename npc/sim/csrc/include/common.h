@@ -33,4 +33,5 @@ typedef uint16_t ioaddr_t;
 #include <config.h>
 #include <paddr.h>
 
+#define __riscv32_e
 #endif

@@ -17,7 +17,7 @@ class RegFile(xlen: Int) extends Module {
   val io = IO(new RegFileIO(xlen))
 
   //val regfile = Mem(32, UInt(xlen.W))
-  val regfile = RegInit(VecInit(Seq.fill(32)(0.U(xlen.W))))
+  val regfile = RegInit(VecInit(Seq.fill(16)(0.U(xlen.W))))
   val mux_raddr1 = Mux(io.exception, 0xf.U, io.raddr1)
 
   // read data
