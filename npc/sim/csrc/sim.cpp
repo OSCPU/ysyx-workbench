@@ -28,13 +28,13 @@ void sim_exec_once();
 static void step_and_dump_wave(){
   top->eval();
   contextp->timeInc(1);
-  //tfp->dump(contextp->time());
+  tfp->dump(contextp->time());
 }
 
 static void sim_reset() {
   int sim_time = 0;
   while(sim_time <= 6) {
-    if(sim_time >=3 && sim_time <= 5) {
+    if(sim_time >=3 && sim_time <= 4) {
       top->reset = 1;
     } else {
       top->reset = 0;
@@ -43,7 +43,6 @@ static void sim_reset() {
     step_and_dump_wave();
     sim_time++;
   }
-  top->clock ^= 1;
 }
 
 void sim_init(){

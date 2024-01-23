@@ -1,8 +1,5 @@
 #include "config.h"
 #include "isa.h"
-#include <cstddef>
-#include <cstdint>
-#include <cstdio>
 #include <dlfcn.h>
 #include <common.h>
 
