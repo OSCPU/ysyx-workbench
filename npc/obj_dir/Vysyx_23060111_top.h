@@ -30,22 +30,9 @@ class Vysyx_23060111_top VL_NOT_FINAL : public VerilatedModel {
     // propagate new values into/out from the Verilated model.
     VL_IN8(&clk,0,0);
     VL_IN8(&rst,0,0);
-    VL_OUT8(&rs1,19,15);
-    VL_OUT8(&funct3,14,12);
-    VL_OUT8(&rd,11,7);
-    VL_OUT8(&opcode,6,0);
-    VL_OUT8(&waddr,4,0);
-    VL_OUT8(&raddr,4,0);
-    VL_OUT8(&wen,0,0);
-    VL_OUT16(&imm,31,20);
+    VL_OUT16(&rbb,9,0);
     VL_IN(&inst,31,0);
-    VL_OUT(&val,31,0);
-    VL_OUT(&snpc,31,0);
-    VL_OUT(&dnpc,31,0);
     VL_OUT(&pc,31,0);
-    VL_OUT(&wdata,31,0);
-    VL_OUT(&rout,31,0);
-    VL_OUT(&rbb,20,1);
 
     // CELLS
     // Public to allow access to /* verilator public */ items.

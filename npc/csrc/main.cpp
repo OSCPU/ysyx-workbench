@@ -27,7 +27,7 @@ void execute(uint64_t n);
 
 int main(int argc ,char** argv, char** env)
 {
-	int count=3;
+	int count=6;
 	contextp = new VerilatedContext;
 	contextp->commandArgs(argc,argv);
 	top = new Vysyx_23060111_top{contextp};
@@ -68,27 +68,26 @@ int main(int argc ,char** argv, char** env)
 }
 void cpu_init()
 {
-	top->pc=0x80000000;
 	top->rst=1;
 	top->clk =0; top->eval();
 	tfp->dump(main_time);
 	main_time++;
 	top->eval();
 	top->clk =1; top->eval();
+	top->rst=0;
 	tfp->dump(main_time);
 	main_time++;
 	top->eval();
-	top->rst=0;
 
 	
 }
 void cpu_exce_once(VerilatedVcdC* tfp)
 {
 		//top->snpc=top->pc;
-		top->inst =pc_read(top->snpc);
 		//top->dnpc=top->snpc;
 
 		top->clk =0; top->eval();
+		top->inst =pc_read(top->pc);
 		tfp->dump(main_time);
 		main_time++;
 		top->eval();

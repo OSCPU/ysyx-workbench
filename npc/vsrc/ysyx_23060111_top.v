@@ -3,74 +3,35 @@ module ysyx_23060111_top(
   input       rst,
   input       clk,
   input[31:0] inst,
-  output[31:0] val,
-  output[31:0] snpc,
-  output[31:0] dnpc,
-  output[31:0] pc,
-  output[31:20] imm,
-  output[19:15] rs1,
-  output[14:12] funct3,
-  output[11:7] rd,
-  output[6:0] opcode,
-  output[31:0] wdata,
-  output[4:0] waddr,
-  output[4:0] raddr,
-  output wen,
-  output[31:0] rout,
-  output[20:1] rbb
-);
+  output reg[31:0] pc,
+  output[9:0] rbb
+ );
+  wire[31:0] dnpc;
+  wire[31:0] snpc;
+  wire[31:20] imm;
+  wire[19:15] rs1;
+  wire[14:12] funct3;
+  wire[11:7] rd;
+  wire[6:0] opcode;
+  wire[31:0] wdata;
+  wire[4:0] waddr;
+  wire[4:0] raddr;
+  wire wen;
+  wire[31:0] rout;
 
-assign val=inst;
-assign snpc=pc;
 
- 
- //init reg
+//init reg
 ysyx_23060111_reg #(5,32) reg_$0(clk,wdata,waddr,raddr,wen,rout);
-assign wdata=0;
-assign waddr=5'd0;
-assign raddr=5'd0;
-assign wen=1'b1;
-/*
-ysyx_23060111_reg #(5,32) reg_$1(clk,0,5'd1,1'b1,out);
-ysyx_23060111_reg #(5,32) reg_$2(clk,0,5'd2,1'b1,out);
-ysyx_23060111_reg #(5,32) reg_$3(clk,0,5'd3,1'b1,out);
-ysyx_23060111_reg #(5,32) reg_$4(clk,0,5'd4,1'b1,out);
-ysyx_23060111_reg #(5,32) reg_$5(clk,0,5'd5,1'b1,out);
-ysyx_23060111_reg #(5,32) reg_$6(clk,0,5'd6,1'b1,out);
-ysyx_23060111_reg #(5,32) reg_$7(clk,0,5'd7,1'b1,out);
-ysyx_23060111_reg #(5,32) reg_$8(clk,0,5'd8,1'b1,out);
-ysyx_23060111_reg #(5,32) reg_$9(clk,0,5'd9,1'b1,out);
-ysyx_23060111_reg #(5,32) reg_$10(clk,0,5'd10,1'b1,out);
-ysyx_23060111_reg #(5,32) reg_$11(clk,0,5'd11,1'b1,out);
-ysyx_23060111_reg #(5,32) reg_$12(clk,0,5'd12,1'b1,out);
-ysyx_23060111_reg #(5,32) reg_$13(clk,0,5'd13,1'b1,out);
-ysyx_23060111_reg #(5,32) reg_$14(clk,0,5'd14,1'b1,out);
-ysyx_23060111_reg #(5,32) reg_$15(clk,0,5'd15,1'b1,out);
-ysyx_23060111_reg #(5,32) reg_$16(clk,0,5'd16,1'b1,out);
-ysyx_23060111_reg #(5,32) reg_$17(clk,0,5'd17,1'b1,out);
-ysyx_23060111_reg #(5,32) reg_$18(clk,0,5'd18,1'b1,out);
-ysyx_23060111_reg #(5,32) reg_$19(clk,0,5'd19,1'b1,out);
-ysyx_23060111_reg #(5,32) reg_$20(clk,0,5'd20,1'b1,out);
-ysyx_23060111_reg #(5,32) reg_$21(clk,0,5'd21,1'b1,out);
-ysyx_23060111_reg #(5,32) reg_$22(clk,0,5'd22,1'b1,out);
-ysyx_23060111_reg #(5,32) reg_$23(clk,0,5'd23,1'b1,out);
-ysyx_23060111_reg #(5,32) reg_$24(clk,0,5'd24,1'b1,out);
-ysyx_23060111_reg #(5,32) reg_$25(clk,0,5'd25,1'b1,out);
-ysyx_23060111_reg #(5,32) reg_$26(clk,0,5'd26,1'b1,out);
-ysyx_23060111_reg #(5,32) reg_$27(clk,0,5'd27,1'b1,out);
-ysyx_23060111_reg #(5,32) reg_$28(clk,0,5'd28,1'b1,out);
-ysyx_23060111_reg #(5,32) reg_$29(clk,0,5'd29,1'b1,out);
-ysyx_23060111_reg #(5,32) reg_$30(clk,0,5'd30,1'b1,out);
-ysyx_23060111_reg #(5,32) reg_$31(clk,0,5'd31,1'b1,out);
-*/
-
-
 
  //init IDU
- ysyx_23060111_IDU init_IDU (snpc,inst,dnpc,imm,funct3,rs1,rd,opcode);
+ysyx_23060111_IDU init_IDU (inst,imm,funct3,rs1,rd,opcode);
 
  //init EXU
- ysyx_23060111_EXU init_EXU (clk,rst,dnpc,imm,rs1,funct3,rd,opcode,pc,rbb,rout,wdata,waddr,raddr,wen);
+ysyx_23060111_EXU init_EXU (dnpc,snpc,imm,rs1,funct3,rd,opcode,rout,wdata,waddr,raddr,rbb,wen);
+
+ysyx_23060111_pc pc_renew (clk,rst,snpc,dnpc,pc);
+
+
 endmodule
 
 

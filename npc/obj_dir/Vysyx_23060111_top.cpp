@@ -14,22 +14,9 @@ Vysyx_23060111_top::Vysyx_23060111_top(VerilatedContext* _vcontextp__, const cha
     , vlSymsp{new Vysyx_23060111_top__Syms(contextp(), _vcname__, this)}
     , clk{vlSymsp->TOP.clk}
     , rst{vlSymsp->TOP.rst}
-    , rs1{vlSymsp->TOP.rs1}
-    , funct3{vlSymsp->TOP.funct3}
-    , rd{vlSymsp->TOP.rd}
-    , opcode{vlSymsp->TOP.opcode}
-    , waddr{vlSymsp->TOP.waddr}
-    , raddr{vlSymsp->TOP.raddr}
-    , wen{vlSymsp->TOP.wen}
-    , imm{vlSymsp->TOP.imm}
-    , inst{vlSymsp->TOP.inst}
-    , val{vlSymsp->TOP.val}
-    , snpc{vlSymsp->TOP.snpc}
-    , dnpc{vlSymsp->TOP.dnpc}
-    , pc{vlSymsp->TOP.pc}
-    , wdata{vlSymsp->TOP.wdata}
-    , rout{vlSymsp->TOP.rout}
     , rbb{vlSymsp->TOP.rbb}
+    , inst{vlSymsp->TOP.inst}
+    , pc{vlSymsp->TOP.pc}
     , __PVT____024unit{vlSymsp->TOP.__PVT____024unit}
     , rootp{&(vlSymsp->TOP)}
 {

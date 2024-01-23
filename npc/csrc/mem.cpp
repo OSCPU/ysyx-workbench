@@ -11,7 +11,7 @@ static uint8_t pmem[0x8000000] __attribute((aligned(4096)))={};
 static uint32_t img[]
 {
 	0x00110123,
-	0x00110123,
+	0x00110008,
 	0x00100073, //ebreak
 };
 
@@ -37,7 +37,6 @@ void init_mem()
 uint32_t pc_read(uint32_t &pc)
 {
 	uint32_t val=pmem_read(pc,4);
-	pc=pc+0x4;
 	return val;
 }
 uint32_t pmem_read(uint32_t &ad,int len)

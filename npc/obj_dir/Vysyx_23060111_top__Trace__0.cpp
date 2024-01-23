@@ -60,22 +60,24 @@ void Vysyx_23060111_top___024root__trace_chg_sub_0(Vysyx_23060111_top___024root*
     bufp->chgBit(oldp+32,(vlSelf->rst));
     bufp->chgBit(oldp+33,(vlSelf->clk));
     bufp->chgIData(oldp+34,(vlSelf->inst),32);
-    bufp->chgIData(oldp+35,(vlSelf->val),32);
-    bufp->chgIData(oldp+36,(vlSelf->snpc),32);
-    bufp->chgIData(oldp+37,(vlSelf->dnpc),32);
-    bufp->chgIData(oldp+38,(vlSelf->pc),32);
-    bufp->chgSData(oldp+39,(vlSelf->imm),12);
-    bufp->chgCData(oldp+40,(vlSelf->rs1),5);
-    bufp->chgCData(oldp+41,(vlSelf->funct3),3);
-    bufp->chgCData(oldp+42,(vlSelf->rd),5);
-    bufp->chgCData(oldp+43,(vlSelf->opcode),7);
-    bufp->chgIData(oldp+44,(vlSelf->wdata),32);
-    bufp->chgCData(oldp+45,(vlSelf->waddr),5);
-    bufp->chgCData(oldp+46,(vlSelf->raddr),5);
-    bufp->chgBit(oldp+47,(vlSelf->wen));
-    bufp->chgIData(oldp+48,(vlSelf->rout),32);
-    bufp->chgIData(oldp+49,(vlSelf->rbb),20);
-    bufp->chgIData(oldp+50,((vlSelf->inst >> 0x14U)),32);
+    bufp->chgIData(oldp+35,(vlSelf->pc),32);
+    bufp->chgSData(oldp+36,(vlSelf->rbb),10);
+    bufp->chgIData(oldp+37,(((IData)(4U) + vlSelf->pc)),32);
+    bufp->chgSData(oldp+38,((vlSelf->inst >> 0x14U)),12);
+    bufp->chgCData(oldp+39,((0x1fU & (vlSelf->inst 
+                                      >> 0xfU))),5);
+    bufp->chgCData(oldp+40,((7U & (vlSelf->inst >> 0xcU))),3);
+    bufp->chgCData(oldp+41,((0x1fU & (vlSelf->inst 
+                                      >> 7U))),5);
+    bufp->chgCData(oldp+42,((0x7fU & vlSelf->inst)),7);
+    bufp->chgIData(oldp+43,((vlSelf->ysyx_23060111_top__DOT__reg___0240__DOT__rf
+                             [(0x1fU & (vlSelf->inst 
+                                        >> 0xfU))] 
+                             + (vlSelf->inst >> 0x14U))),32);
+    bufp->chgIData(oldp+44,(vlSelf->ysyx_23060111_top__DOT__reg___0240__DOT__rf
+                            [(0x1fU & (vlSelf->inst 
+                                       >> 0xfU))]),32);
+    bufp->chgIData(oldp+45,((vlSelf->inst >> 0x14U)),32);
 }
 
 void Vysyx_23060111_top___024root__trace_cleanup(void* voidSelf, VerilatedVcd* /*unused*/) {
