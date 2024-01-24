@@ -9,6 +9,7 @@
 #include"svdpi.h"
 #include"../hsrc/mem.h"
 
+#include "../include/cpu/cpu.h"
 
 
 VerilatedContext* contextp=NULL; 
@@ -114,8 +115,7 @@ void ebreak (int inst)
 {
 	if(inst == 0x00100073 )
 	{
-	printf("error --------- ebreak\n");
-	//assert(0);
+	printf("npc: %s at pc = 0x%x\n",ANSI_FMT("HIT GOOD TRAP",ANSI_FG_GREEN),top->pc);
 	}
 }
 
