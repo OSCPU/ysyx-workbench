@@ -18,9 +18,10 @@ static uint32_t img[]
 void init_mem()
 {
 
-	//long size=load_img();
+	long size=load_img();
 
-	memcpy(pmem,img,sizeof(img));
+	//memcpy(pmem,img,sizeof(img));
+	
 
 	/*   print the pmem
 	uint32_t b=0x80000000;

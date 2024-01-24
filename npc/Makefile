@@ -57,7 +57,7 @@ all:
 sim:$(Vfile) $(Cfile) $(TOPfile) 
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	@echo "Write this Makefile by your self."
-	verilator -Wall --cc --trace --exe --build -top ysyx_23060111_top $(TOPfile) $(subst $(TOPfile),,$^) --CFLAGS -DIMG='\"$(IMG)\"'
+	verilator -Wall --cc --trace --exe --build -Wno-lint -top ysyx_23060111_top $(TOPfile) $(subst $(TOPfile),,$^) --CFLAGS -DIMG='\"$(IMG)\"'
 	./obj_dir/V$(basename $(subst vsrc/,,$(TOPfile))) 
 wave:$(Wavefile)
 	gtkwave $(Wavefile)
