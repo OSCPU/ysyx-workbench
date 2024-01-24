@@ -54,13 +54,13 @@ void iringbuf_display() {
   printf("%s\n",ANSI_FMT("Most Recently Used Instructions:", ANSI_FG_CYAN));
   for (i = 0; i < NR_IRINGBUF; i++) {
     if(strcmp(iringbuf[i],"") == 0) continue;
-    else if(i == ((iringbuf_curidx == NR_IRINGBUF - 1) ? 0 : iringbuf_curidx - 1)) printf("--->\t%s\n",iringbuf[i]);
+    else if(i == ((iringbuf_curidx - 1) % NR_IRINGBUF)) printf("--->\t%s\n",iringbuf[i]);
     else printf("\t%s\n",iringbuf[i]);
   }
 }
 
 void print_current_inst() {
-  int i = ((iringbuf_curidx == NR_IRINGBUF - 1) ? 0 : iringbuf_curidx - 1);
+  int i = (iringbuf_curidx - 2) % NR_IRINGBUF;
 	printf("%s\n",iringbuf[i]);
 }
 #endif /* ifdef CONFIG_IRINGBUF */

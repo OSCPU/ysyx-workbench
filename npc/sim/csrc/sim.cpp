@@ -25,6 +25,8 @@ static VTop* top;
 
 /********** verilater function **********/
 void sim_exec_once();
+void isa_reg_copy();
+void isa_reg_display();
 static void step_and_dump_wave(){
   top->eval();
   contextp->timeInc(1);
@@ -33,16 +35,27 @@ static void step_and_dump_wave(){
 
 static void sim_reset() {
   int sim_time = 0;
-  while(sim_time <= 6) {
-    if(sim_time >=3 && sim_time <= 4) {
-      top->reset = 1;
-    } else {
-      top->reset = 0;
-    }
+  // while(sim_time <= 6) {
+  //   if(sim_time >=3 && sim_time <= 5) {
+  //     top->reset = 1;
+  //   } else {
+  //     top->reset = 0;
+  //   }
+  //   top->clock ^= 1;
+  //   step_and_dump_wave();
+  //   sim_time++;
+  // }
+  // top->clock ^= 1;
+  while(sim_time <= 3) {
+    if(sim_time <= 2) top->reset = 1;
+    else top->reset = 0;
     top->clock ^= 1;
     step_and_dump_wave();
     sim_time++;
   }
+  isa_reg_copy();
+  IFDEF(CONFIG_IRINGBUF, iringbuf_step(top->io_pc, top->io_inst));
+  //sim_exec_once();
 }
 
 void sim_init(){
@@ -133,8 +146,7 @@ void isa_reg_display() {
   for(i = 0;i < ARRLEN(regs); i++){
     printf("%2d\t%-3s\t%#8x%15d\n",i, regs[i], cpu.gpr[i], cpu.gpr[i]);
   }
-  printf("npc status:\n");
-  printf("pc = %#x\n", cpu.pc);
+  printf("pc      = %#x\n", cpu.pc);
   printf("mcause  = %#x\n", cpu.csr.mcause);
   printf("mepc    = %#x\n", cpu.csr.mepc);
   printf("mstatus = %#x\n", cpu.csr.mstatus);
@@ -169,7 +181,7 @@ void npc_trap(word_t pc, int code) {
   npc_state.halt_ret = code;
 }
 
-// isa_exec_once simulation
+/* isa_exec_once simulation */
 void sim_exec_once() {
   // sim poedge
   top->clock ^= 1;

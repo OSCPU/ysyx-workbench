@@ -103,7 +103,8 @@ int trace_wp_step() {
     node->value = expr(node->expr, NULL);
     if(node->value != node->last_value){
       printf("Hit breakpoint:\t%d\t%s\n", node->NO, node->expr);
-      printf("change:%#x(%d) to %#x(%d)\t@%#x\n",node->last_value, node ->last_value, node->value, node->value, cpu.pc);
+      printf("change:%#x(%d) to %#x(%d)\t@ pc = %#x\n",
+        node->last_value, node ->last_value, node->value, node->value, cpu.pc);
 
       node->last_value = node->value;
       return 1;

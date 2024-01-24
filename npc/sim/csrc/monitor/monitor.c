@@ -1,6 +1,4 @@
-#include "macro.h"
 #include <common.h>
-#include <cstddef>
 #include <getopt.h>
 #include <elf.h>
 
@@ -18,8 +16,7 @@ extern "C" void init_disasm(const char *triple);
 static void welcome() {
   Log("Trace: %s", MUXDEF(CONFIG_TRACE, ANSI_FMT("ON", ANSI_FG_GREEN), ANSI_FMT("OFF", ANSI_FG_RED)));
   IFDEF(CONFIG_TRACE, Log("If trace is enabled, a log file will be generated "
-        "to record the trace. This may lead to a large log file. "
-        "If it is not necessary, you can disable it in menuconfig"));
+        "to record the trace. This may lead to a large log file. "));
   Log("Build time: %s, %s", __TIME__, __DATE__);
   printf("Welcome to %s-NPC!\n", ANSI_FMT("riscv32e", ANSI_FG_YELLOW ANSI_BG_RED));
   printf("For help, type \"help\"\n");
@@ -30,14 +27,17 @@ static char *img_file = NULL;
 static char *elf_file = NULL;
 static char *diff_so_file = NULL;
 static int  difftest_port = 1234;
-static uint32_t img[] = {
-  0x80000,0x8002000,0x8051231,0x80006547
+static const uint32_t img [] = {
+  0x00000297,  // auipc t0,0
+  0x00028823,  // sb  zero,16(t0)
+  0x0102c503,  // lbu a0,16(t0)
+  0x00100073,  // ebreak (used as nemu_trap)
+  0xdeadbeef,  // some data
 };
-
 static long load_img() {
   if (img_file == NULL) {
     Log("No image is given. Use the default build-in image.");
-    return sizeof(img);
+    return 4096;
   }
 
   FILE *fp = fopen(img_file, "rb");
@@ -83,24 +83,36 @@ static int parse_args(int argc, char *argv[]) {
 }
 
 void init_monitor(int argc, char *argv[]) {
+  /* Perform some global initialization. */
 
+  /* Parse arguments. */
   parse_args(argc, argv);
 
+  /* Open the log file. */
   init_log(log_file);
-
-  long img_size = load_img();
-
-  IFDEF(CONFIG_DIFFTEST, init_difftest(diff_so_file, img_size, difftest_port));
-
+  
+  /* Initialize memory. */
   init_mem();
 
+  /* Load the image to memory. This will overwrite the built-in image. */
+  long img_size = load_img();
+
+  /* Initialize differential testing. */
+  //IFDEF(CONFIG_DIFFTEST, init_difftest(diff_so_file, img_size, difftest_port));
+
+  /* Initialize the simple debugger. */
 	init_sdb();
 
+  /* Open the elf file */
   init_elf(elf_file);
 
+  /* Initialize disassembler*/
   init_disasm("riscv32-pc-linux-gnu");
 
+  /* Initialize the verilator simulation*/
   sim_init();
+  IFDEF(CONFIG_DIFFTEST, init_difftest(diff_so_file, img_size, difftest_port));
 
+  /* Display welcome message. */
   welcome();
 }

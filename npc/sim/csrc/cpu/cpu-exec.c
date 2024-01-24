@@ -5,7 +5,9 @@
 
 #define MAX_INST_TO_PRINT 10
 
-riscv32_CPU_state cpu = {.pc=CONFIG_MBASE, .npc=CONFIG_MBASE};
+// cpu state = {gpr, csr, pc}
+riscv32_CPU_state cpu = { .pc = CONFIG_MBASE, .npc = CONFIG_MBASE };
+
 uint64_t g_nr_guest_inst = 0;
 static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
