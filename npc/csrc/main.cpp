@@ -7,9 +7,9 @@
 #include"verilated_vcd_c.h"
 #include"Vysyx_23060111_top__Dpi.h"
 #include"svdpi.h"
-#include"../hsrc/mem.h"
 
-#include "../include/cpu/cpu.h"
+#include <mem.h>
+#include <cpu/cpu.h>
 
 
 VerilatedContext* contextp=NULL; 
