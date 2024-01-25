@@ -38,11 +38,16 @@ void Vysyx_23060111_top___024root___eval_triggers__act(Vysyx_23060111_top___024r
                                       & (~ (IData)(vlSelf->__Vtrigrprev__TOP__clk)));
     vlSelf->__VactTriggered.at(1U) = (vlSelf->inst 
                                       != vlSelf->__Vtrigrprev__TOP__inst);
+    vlSelf->__VactTriggered.at(2U) = ((IData)(vlSelf->ysyx_23060111_top__DOT__type_i) 
+                                      != (IData)(vlSelf->__Vtrigrprev__TOP__ysyx_23060111_top__DOT__type_i));
     vlSelf->__Vtrigrprev__TOP__clk = vlSelf->clk;
     vlSelf->__Vtrigrprev__TOP__inst = vlSelf->inst;
+    vlSelf->__Vtrigrprev__TOP__ysyx_23060111_top__DOT__type_i 
+        = vlSelf->ysyx_23060111_top__DOT__type_i;
     if (VL_UNLIKELY((1U & (~ (IData)(vlSelf->__VactDidInit))))) {
         vlSelf->__VactDidInit = 1U;
         vlSelf->__VactTriggered.at(1U) = 1U;
+        vlSelf->__VactTriggered.at(2U) = 1U;
     }
 #ifdef VL_DEBUG
     if (VL_UNLIKELY(vlSymsp->_vm_contextp__->debug())) {

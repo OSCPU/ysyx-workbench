@@ -10,7 +10,7 @@ module ysyx_23060111_top(
  );
 
 //pc
-  //wire[31:0] dnpc;
+  wire[31:0] dnpc;
   wire[31:0] snpc;
 
 //IDU
@@ -32,7 +32,7 @@ module ysyx_23060111_top(
 
 
 //init pc
-ysyx_23060111_pc pc_renew (clk,rst,snpc,pc);
+ysyx_23060111_pc pc_renew (clk,rst,snpc,dnpc,pc);
 
 //init reg
 ysyx_23060111_reg #(5,32) reg_$0(clk,wdata,waddr,raddr,wen,rout,halt_ret);
@@ -41,7 +41,7 @@ ysyx_23060111_reg #(5,32) reg_$0(clk,wdata,waddr,raddr,wen,rout,halt_ret);
 ysyx_23060111_IDU init_IDU (inst,opcode,rd,funct3,rs1,rs2,funct7,type_i,imm,inv_flag);
 
  //init EXU
-ysyx_23060111_EXU init_EXU (rout,pc,snpc,opcode,rd,funct3,rs1,rs2,funct7,type_i,imm,wdata,waddr,raddr,wen);
+ysyx_23060111_EXU init_EXU (rout,pc,dnpc,opcode,rd,funct3,rs1,rs2,funct7,type_i,imm,wdata,waddr,raddr,snpc,wen);
 
 
 
