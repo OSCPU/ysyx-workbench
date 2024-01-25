@@ -1,17 +1,17 @@
 #include <cpu/cpu.h>
 extern unsigned char isa_logo[];
-NEMUState nemu_state ={.state=NEMU_STOP};
+NPCState npc_state ={.state=NPC_STOP};
 
 int is_exit_status_bad() {
-  int good = (nemu_state.state == NEMU_END && nemu_state.halt_ret == 0) ||      (nemu_state.state == NEMU_QUIT);
+  int good = (npc_state.state == NPC_END && npc_state.halt_ret == 0) ||      (npc_state.state == NPC_QUIT);
   return !good;
 }
 
 
-void set_nemu_state(int state,int halt_ret)
+void set_npc_state(int state,int halt_ret)
 {
-	nemu_state.state=state;
-	nemu_state.halt_ret=halt_ret;
+	npc_state.state=state;
+	npc_state.halt_ret=halt_ret;
 }
 
 void invalid_inst()
@@ -26,6 +26,6 @@ void invalid_inst()
         "* The machine is always right!\n"
         "* Every line of untested code is always wrong!\n\n", ANSI_FG_RED),isa_logo);
 
-	set_nemu_state(NEMU_ABORT,-1);
+	set_npc_state(NPC_ABORT,-1);
 }
 

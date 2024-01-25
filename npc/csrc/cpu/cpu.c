@@ -36,25 +36,25 @@ static void execute(uint64_t n)
 	for(;n>0;n--)
 	{
 		cpu_exec_once(tfp);
-		if(nemu_state.state !=NEMU_RUNNING) break;
+		if(npc_state.state !=NPC_RUNNING) break;
 	}
 }
 
 void cpu_exec(uint64_t n)
 {
-   switch (nemu_state.state) {
-     case NEMU_END: case NEMU_ABORT:
+   switch (npc_state.state) {
+     case NPC_END: case NPC_ABORT:
        printf("Program execution has ended. To restart the program, exit npc and run again.\n");
        return;
-     default: nemu_state.state = NEMU_RUNNING;
+     default: npc_state.state = NPC_RUNNING;
 }                                                                           
 	execute(n);
-   switch(nemu_state.state){
-     case NEMU_RUNNING: nemu_state.state =NEMU_STOP;break;
+   switch(npc_state.state){
+     case NPC_RUNNING: npc_state.state =NPC_STOP;break;
 
-     case NEMU_END: case NEMU_ABORT:
+     case NPC_END: case NPC_ABORT:
      printf("npc: %s at pc = 0x%x\n",
-     (nemu_state.state == NEMU_ABORT ? ANSI_FMT("ABORT", ANSI_FG_RED) :           (nemu_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) :        ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED)))  ,top->pc);  
+     (npc_state.state == NPC_ABORT ? ANSI_FMT("ABORT", ANSI_FG_RED) :           (npc_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) :        ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED)))  ,top->pc);  
      }
 
 }
