@@ -44,7 +44,10 @@ extern NPCState npc_state;
 
 #define ANSI_FMT(str, fmt) fmt str ANSI_NONE
 
-
+#define _Log(...) \
+  do { \
+    printf(__VA_ARGS__); \
+  } while (0)
 
 
 
