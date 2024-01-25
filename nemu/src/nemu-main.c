@@ -39,10 +39,6 @@ int main(int argc, char *argv[]) {
 #ifdef CONFIG_TARGET_AM
   am_init_monitor();
 #else
-  for (int i=0;i<argc;i++)
-  {
-  	printf("------%s\n",argv[i]);
-  }
   init_monitor(argc, argv);
 #endif
 
