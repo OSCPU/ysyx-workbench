@@ -8,7 +8,8 @@ module ysyx_23060111_IDU(
   output [24:20] rs2,
   output [31:25] funct7,
   output [3:0] type_i,
-  output [31:0] imm
+  output [31:0] imm,
+  output inv_flag
 
  );
 always @(inst)
@@ -24,14 +25,15 @@ end
   assign funct7=inst[31:25];
 
 
-ysyx_23060111_MuxKeyWithDefault #(5, 7, 36) typeMux ({type_i,imm}, opcode ,36'b0 , {
-     					     //4'd0    type:Can't find the type
-    7'b0010111, {4'b0001,inst[31:12],12'b0}, //auipc   type:UPC   4'd1
-    7'b0110111, {4'b0010,inst[31:12],12'b0}, //lui     type:U   4'd2
-    7'b1101111, {4'b0011,{11{inst[31]}},inst[31],inst[19:12],inst[20],inst[30:21],1'b0}, 
-                                             //jal     type:J  4'd3
-    7'b0010011, {4'b0100,{20{inst[31]}},inst[31:20]}, //addi    type:I  4'd4
-    7'b1100111, {4'b0101,{20{inst[31]}},inst[31:20]}  //jalr    type:JR
+ysyx_23060111_MuxKeyWithDefault #(7, 7, 37) typeMux                                        ({type_i,imm,inv_flag}, opcode ,{36'b0,1'b1} , {
+   //type_i = 4'd0 and the invalid_flags = 1'b1 means Can't find the type
+    7'b0010111, {4'b0001,inst[31:12],12'b0,1'b0}, //auipc   type:UPC   4'd1
+    7'b0110111, {4'b0010,inst[31:12],12'b0,1'b0}, //lui     type:U   4'd2
+    7'b1101111, {4'b0011,{11{inst[31]}},inst[31],inst[19:12],inst[20],inst[30:21],1'b0,1'b0},                                   //jal     type:J  4'd3
+    7'b0010011, {4'b0100,{20{inst[31]}},inst[31:20],1'b0}, //addi    type:I  4'd4
+    7'b1100111, {4'b0101,{20{inst[31]}},inst[31:20],1'b0},  //jalr    type:JR
+    7'b1110011, {4'b0110,33'b0},  //ebreak
+    7'b0100011, {4'b0110,33'b0}  //sw  
   });
 
 

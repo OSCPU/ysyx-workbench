@@ -3,7 +3,10 @@ module ysyx_23060111_top(
   input       rst,
   input       clk,
   input[31:0] inst,
-  output [31:0] pc
+  output [31:0] pc,
+  output [31:0] halt_ret,
+  output inv_flag//invalid_opcode
+  
  );
 
 //pc
@@ -32,10 +35,10 @@ module ysyx_23060111_top(
 ysyx_23060111_pc pc_renew (clk,rst,snpc,pc);
 
 //init reg
-ysyx_23060111_reg #(5,32) reg_$0(clk,wdata,waddr,raddr,wen,rout);
+ysyx_23060111_reg #(5,32) reg_$0(clk,wdata,waddr,raddr,wen,rout,halt_ret);
 
  //init IDU
-ysyx_23060111_IDU init_IDU (inst,opcode,rd,funct3,rs1,rs2,funct7,type_i,imm);
+ysyx_23060111_IDU init_IDU (inst,opcode,rd,funct3,rs1,rs2,funct7,type_i,imm,inv_flag);
 
  //init EXU
 ysyx_23060111_EXU init_EXU (rout,pc,snpc,opcode,rd,funct3,rs1,rs2,funct7,type_i,imm,wdata,waddr,raddr,wen);
