@@ -4,9 +4,9 @@ import chisel3._
 import chisel3.util._
 
 object CSR_INST {
-  val csrrw = 0.U
-  val csrrs = 1.U
-  val csrrc = 2.U
+  val csrrw = 1.U
+  val csrrs = 2.U
+  val csrrc = 3.U
 }
 object CSR_ADDR {
   val mstatus_addr = 0x300.U(12.W)
@@ -62,7 +62,7 @@ class Csr(val xlen: Int) extends Module {
 
   val wdata = MuxLookup(io.inst(13,12), 1.U)(
     Seq(
-      CSR_INST.csrrw -> io.out,
+      CSR_INST.csrrw -> oprand,
       CSR_INST.csrrs -> (io.out | oprand),
       CSR_INST.csrrc -> (io.out & ~oprand),
     )

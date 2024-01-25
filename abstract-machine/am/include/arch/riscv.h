@@ -2,9 +2,11 @@
 #define ARCH_H__
 
 struct Context {
-  // TODO: fix the order of these members to match trap.S
-  // uintptr_t mepc, mcause, gpr[32], mstatus;
+#ifdef __riscv_e
   uintptr_t gpr[16], mcause, mstatus, mepc;
+#else
+  uintptr_t gpr[32], mcause, mstatus, mepc;
+#endif
   void *pdir;
 };
 
