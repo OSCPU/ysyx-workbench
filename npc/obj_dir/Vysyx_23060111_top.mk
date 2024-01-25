@@ -48,12 +48,14 @@ VM_USER_CLASSES = \
 	main \
 	mem \
 	sdb \
+	state \
 
 # User .cpp directories (from .cpp's on Verilator command line)
 VM_USER_DIR = \
 	csrc \
 	csrc/cpu \
 	csrc/monitor/sdb \
+	csrc/utils \
 
 
 ### Default rules...
@@ -72,6 +74,8 @@ main.o: csrc/main.cpp
 mem.o: csrc/mem.cpp
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST) -c -o $@ $<
 sdb.o: csrc/monitor/sdb/sdb.c
+	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST) -c -o $@ $<
+state.o: csrc/utils/state.c
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST) -c -o $@ $<
 
 ### Link rules... (from --exe)

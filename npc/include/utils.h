@@ -1,6 +1,24 @@
 #ifndef __UTILS_H__
 #define __UTILS_H__
 
+#include <common.h>
+#include <cstdint>
+
+void set_nemu_state(int state,int halt_ret);
+int is_exit_status_bad();
+#define NPCTRAP(halt_ret) set_nemu_state( NEMU_END, halt_ret)
+
+// ----------- state -----------
+
+enum { NEMU_RUNNING, NEMU_STOP, NEMU_END, NEMU_ABORT, NEMU_QUIT };
+
+typedef struct {
+   int state;
+   uint32_t halt_ret;
+} NEMUState;
+
+extern NEMUState nemu_state;
+ 
 // ----------- log -----------
  
 #define ANSI_FG_BLACK   "\33[1;30m"

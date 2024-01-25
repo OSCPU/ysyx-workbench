@@ -1,20 +1,4 @@
-/*
-#include <cstdint>
-#include <mem.h>
-#include "Vysyx_23060111_top.h"
-#include"verilated.h"
-#include"verilated_vcd_c.h"
-#include"Vysyx_23060111_top__Dpi.h"
-
-*/
 #include <cpu/cpu.h>
-/*
-extern int main_time;
-extern VerilatedContext* contextp;
-extern Vysyx_23060111_top *top;
-extern VerilatedVcdC* tfp;
-*/
-
 
 void cpu_init()
 {
@@ -52,12 +36,27 @@ static void execute(uint64_t n)
 	for(;n>0;n--)
 	{
 		cpu_exec_once(tfp);
+		if(nemu_state.state !=NEMU_RUNNING) break;
 	}
 }
 
 void cpu_exec(uint64_t n)
 {
+   switch (nemu_state.state) {
+     case NEMU_END: case NEMU_ABORT:
+       printf("Program execution has ended. To restart the program, exit npc and run again.\n");
+       return;
+     default: nemu_state.state = NEMU_RUNNING;
+}                                                                           
 	execute(n);
+   switch(nemu_state.state){
+     case NEMU_RUNNING: nemu_state.state =NEMU_STOP;break;
+
+     case NEMU_END: case NEMU_ABORT:
+     printf("npc: %s at pc = 0x%x\n",
+     (nemu_state.state == NEMU_ABORT ? ANSI_FMT("ABORT", ANSI_FG_RED) :           (nemu_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) :        ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED)))  ,top->pc);  
+     }
+
 }
 
 
