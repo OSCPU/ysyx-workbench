@@ -68,17 +68,21 @@ class Csr(val xlen: Int) extends Module {
     )
   )
   
+  val wen = (io.inst(6,0) === "b1110011".U)
+
   when(io.exception) {
     mepc := io.pc
     mcause := io.in
-  }.elsewhen(csr_addr === CSR_ADDR.mepc_addr) {
-    mepc := wdata
-  }.elsewhen(csr_addr === CSR_ADDR.mcause_addr) {
-    mcause := wdata
-  }.elsewhen(csr_addr === CSR_ADDR.mstatus_addr) {
-    mstatus := wdata
-  }.elsewhen(csr_addr === CSR_ADDR.mtvec_addr) {
-    mtvec := wdata
+  }.elsewhen(wen) {
+    when(csr_addr === CSR_ADDR.mepc_addr) {
+      mepc := wdata
+    }.elsewhen(csr_addr === CSR_ADDR.mcause_addr) {
+      mcause := wdata
+    }.elsewhen(csr_addr === CSR_ADDR.mstatus_addr) {
+      mstatus := wdata
+    }.elsewhen(csr_addr === CSR_ADDR.mtvec_addr) {
+      mtvec := wdata
+    }
   }
 
 }
