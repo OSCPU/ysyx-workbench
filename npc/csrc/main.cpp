@@ -1,7 +1,4 @@
 #include<stdio.h>
-#include<stdlib.h>
-#include<assert.h>
-#include<cstdint>
 #include"svdpi.h"
 
 #include <mem.h>

@@ -1,11 +1,7 @@
 #include<stdio.h>
 #include<string.h>
-#include<stdlib.h>
-#include<assert.h>
-#include<cstdint>
 #include<unistd.h>
 #include<mem.h>
-#include<common.h>
 
 static long load_img();
 static uint8_t pmem[0x8000000] __attribute((aligned(4096)))={};
