@@ -10,9 +10,9 @@ void difftest_step(vaddr_t pc);
 int trace_wp_step();
 
 /*************** trace_and_difftest ***************/
-void trace_and_difftest() {
+void trace_and_difftest(vaddr_t pc) {
   IFDEF(CONFIG_FTRACE,ftrace_once(cpu.pc,cpu.npc));
-  IFDEF(CONFIG_DIFFTEST, difftest_step(cpu.pc));
+  IFDEF(CONFIG_DIFFTEST, difftest_step(pc));
   IFDEF(CONFIG_WATCHPOINT, if(trace_wp_step()){ npc_state.state = NPC_STOP;});
 }
 /******************** iringbuf ********************/

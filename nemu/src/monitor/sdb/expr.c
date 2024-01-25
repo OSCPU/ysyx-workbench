@@ -27,7 +27,7 @@ enum {
   TK_NOTYPE = 256, TK_EQ,
 
   /* TODO: Add more token types */
-  TK_NUM,TK_REG,TK_HEX,TK_NOTEQ,TK_AND,TK_OR,TK_DEREF,TK_MIN,
+  TK_NUM, TK_REG, TK_HEX, TK_NOTEQ, TK_AND, TK_OR, TK_DEREF, TK_MIN,
 };
 
 static struct rule {
@@ -39,20 +39,20 @@ static struct rule {
    * Pay attention to the precedence level of different rules.
    */
 
-  {"( +|u)", TK_NOTYPE},    // spaces
-  {"\\+", '+'},         // plus
-  {"\\-", '-'},         // subtract
-  {"\\*", '*'},         // multiply
-  {"/", '/'},           // divider
-  {"\\(", '('},         // left parantheses
-  {"\\)", ')'},         // right parantheses
-  {"\\$([0-9]+|pc)", TK_REG},  //reg
-  {"(0x|0X)[0-9a-fA-F]+",TK_HEX},  //hex
-  {"==", TK_EQ},        // equal
-  {"!=", TK_NOTEQ},     // not equal
-  {"&&", TK_AND},       // and
-  {"\\|\\|", TK_OR},    // or 
-  {"[0-9]+", TK_NUM},   // number
+  {"( +|u)", TK_NOTYPE},                                  // spaces
+  {"\\+", '+'},                                           // plus
+  {"\\-", '-'},                                           // subtract
+  {"\\*", '*'},                                           // multiply
+  {"/", '/'},                                             // divide
+  {"\\(", '('},                                           // left parantheses
+  {"\\)", ')'},                                           // right parantheses
+  {"\\$([0-9]+|pc|mepc|mcause|mstatus|mtvec)", TK_REG},   // reg
+  {"(0x|0X)[0-9a-fA-F]+",TK_HEX},                         // hex
+  {"==", TK_EQ},                                          // equal
+  {"!=", TK_NOTEQ},                                       // not equal
+  {"&&", TK_AND},                                         // and
+  {"\\|\\|", TK_OR},                                      // or 
+  {"[0-9]+", TK_NUM},                                     // number
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -119,7 +119,20 @@ bool check_parentheses(int p ,int q){
   }
 }
 
-int position_of_mainop(int p,int q){
+static bool pure_op(int c) {
+  int i;
+  int op_list[] = {'+', '-', '*', '/', TK_EQ, TK_NOTEQ, TK_AND, TK_OR};
+
+  for (i = 0; i < sizeof(op_list) / sizeof(int); i++) {
+    if (c == op_list[i]) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+static int primary_op(int p,int q){
   int i;
   int priority[128];
   int op_index = 0;
@@ -138,10 +151,7 @@ int position_of_mainop(int p,int q){
     }
     isInBracket = bracket_cnt > 0;
     // show priority
-    if(isInBracket && (tokens[i].type == '+'||tokens[i].type == '-'||\
-                       tokens[i].type == '*'||tokens[i].type == '/'||\
-                       tokens[i].type == TK_OR||tokens[i].type == TK_AND||\
-                       tokens[i].type == TK_EQ||tokens[i].type == TK_NOTEQ)){
+    if(isInBracket && (pure_op(tokens[i].type))){
       op[op_index] = i;
       priority[op_index] = 1;
       op_index++;
@@ -182,23 +192,21 @@ int position_of_mainop(int p,int q){
   return op[max_index];
 }
 
-uint32_t eval(int p, int q)
-{
+uint32_t eval(int p, int q) {
   int op;
   bool success;
-  uint32_t val1,val2,res = 0;
+  uint32_t val1, val2, res = 0;
 
-  if(p > q){
+  if (p > q) {
     assert(0);
-  }
-  else if(p==q){
+  } else if (p == q) {
     switch (tokens[p].type) {
       case TK_NUM:
         res = atoi(tokens[p].str);
         break;
       case TK_HEX:
         sscanf(tokens[p].str, "%x", &res);
-        break; 
+        break;
       case TK_REG:
         res = isa_reg_str2val(tokens[p].str, &success);
         break;
@@ -210,30 +218,38 @@ uint32_t eval(int p, int q)
         break;
     }
     return res;
-  }
-  else if(check_parentheses(p,q)){
-    return eval(p+1,q-1);
-  }
-  else{
-    op = position_of_mainop(p,q);
-    val1 = eval(p,op-1);
-    val2 = eval(op+1,q);
+  } else if (check_parentheses(p, q)) {
+    return eval(p + 1, q - 1);
+  } else {
+    op   = primary_op(p, q);
+    val1 = eval(p, op - 1);
+    val2 = eval(op + 1, q);
 
     switch (tokens[op].type) {
-      case '+': return val1 + val2;
-      case '-': return val1 - val2;
-      case '*': return val1 * val2;
+      case '+':
+        return val1 + val2;
+      case '-':
+        return val1 - val2;
+      case '*':
+        return val1 * val2;
       case '/':
-        if(val2==0){
-          Log("Warning:divided by zero");
+        if (val2 == 0) {
+          Log("WARNING: Expression that divides by zero!");
           return -1;
+        } else {
+          return val1 / val2;
         }
-        else return val1 / val2;
-      case TK_AND:   return val1 && val2;
-      case TK_OR:    return val1 || val2;
-      case TK_EQ:    return val1 == val2;
-      case TK_NOTEQ: return val1 != val2;
-      default:printf("undefined operation");assert(0);
+      case TK_AND:
+        return val1 && val2;
+      case TK_OR:
+        return val1 || val2;
+      case TK_EQ:
+        return val1 == val2;
+      case TK_NOTEQ:
+        return val1 != val2;
+      default:
+        Log("ERROR: Undefined operator! Please check your expression");
+        return 0;
     }
   }
 }
@@ -345,26 +361,18 @@ static bool make_token(char *e) {
   return true;
 }
 
-
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
     *success = false;
     return 0;
   }
 
-  /* TODO: Insert codes to evaluate the expression. */
+  /* evaluate the expression. */
   uint32_t mem_addr,mem_value;
   int right_parentheses_index = 0;
 
   for (int i = 0; i < nr_token; i ++) {
-    if (tokens[i].type == '*' && (i == 0 || tokens[i - 1].type == '+'||\
-                                            tokens[i - 1].type == '-'||\
-                                            tokens[i - 1].type == '*'||\
-                                            tokens[i - 1].type == '/'||\
-                                            tokens[i - 1].type == TK_EQ||\
-                                            tokens[i - 1].type == TK_NOTEQ||\
-                                            tokens[i - 1].type == TK_AND||\
-                                            tokens[i - 1].type == TK_OR)) {
+    if (tokens[i].type == '*' && (i == 0 || pure_op(tokens[i - 1].type))) {
       tokens[i].type = TK_DEREF;    
       // caculate mem_addr
       switch (tokens[i+1].type) {
@@ -398,14 +406,7 @@ word_t expr(char *e, bool *success) {
         default: assert(0);
       }
     }
-    if (tokens[i].type == '-' && (i == 0 || tokens[i - 1].type == '+'||\
-                                            tokens[i - 1].type == '-'||\
-                                            tokens[i - 1].type == '*'||\
-                                            tokens[i - 1].type == '/'||\
-                                            tokens[i - 1].type == TK_EQ||\
-                                            tokens[i - 1].type == TK_NOTEQ||\
-                                            tokens[i - 1].type == TK_AND||\
-                                            tokens[i - 1].type == TK_OR)) {
+    if (tokens[i].type == '-' && (i == 0 || pure_op(tokens[i - 1].type))) {
       if(tokens[i+1].type == '-') {
         tokens[i].type = TK_NUM;
         strcpy(tokens[i].str, tokens[i+2].str);
@@ -424,8 +425,9 @@ word_t expr(char *e, bool *success) {
       }
     }
   }
-  uint32_t res;
-  res = eval(0, nr_token-1);
+
+  uint32_t res = eval(0, nr_token-1);
+  *success = true;
 
   return res;
 }

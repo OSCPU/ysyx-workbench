@@ -12,16 +12,16 @@ uint64_t g_nr_guest_inst = 0;
 static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
 
-void sim_exec_once();
+vaddr_t sim_exec_once();
 void sim_exit();
 void isa_reg_display();
 void iringbuf_display();
 void print_current_inst();
-void trace_and_difftest();
+void trace_and_difftest(vaddr_t pc);
 
 static void exec_once() {
-  sim_exec_once();
-  trace_and_difftest();
+  vaddr_t pc = sim_exec_once();
+  trace_and_difftest(pc);
 	IFDEF(CONFIG_IRINGBUF, if(g_print_step) print_current_inst();)
 }
 

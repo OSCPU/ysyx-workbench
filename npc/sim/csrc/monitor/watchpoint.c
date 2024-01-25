@@ -9,7 +9,7 @@
 extern riscv32_CPU_state cpu;
 
 word_t expr(char *s, bool *success);
-
+word_t isa_reg_str2val(const char *s);
 // watchpoint pool definition
 typedef struct watchpoint {
   int NO;
@@ -104,7 +104,7 @@ int trace_wp_step() {
     if(node->value != node->last_value){
       printf("Hit breakpoint:\t%d\t%s\n", node->NO, node->expr);
       printf("change:%#x(%d) to %#x(%d)\t@ pc = %#x\n",
-        node->last_value, node ->last_value, node->value, node->value, cpu.pc);
+        node->last_value, node ->last_value, node->value, node->value, isa_reg_str2val("pc"));
 
       node->last_value = node->value;
       return 1;

@@ -15,6 +15,8 @@
 #include <stdlib.h>
 #endif
 
+#define CONFIG_RVE 1
+
 #if CONFIG_MBASE + CONFIG_MSIZE > 0x100000000ul
 #define PMEM64 1
 #endif
@@ -33,5 +35,5 @@ typedef uint16_t ioaddr_t;
 #include <config.h>
 #include <paddr.h>
 
-#define __riscv32_e
+
 #endif

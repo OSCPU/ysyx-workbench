@@ -24,7 +24,6 @@ VerilatedVcdC *tfp = NULL;
 static VTop* top;
 
 /********** verilater function **********/
-void sim_exec_once();
 void isa_reg_copy();
 void isa_reg_display();
 static void step_and_dump_wave(){
@@ -55,7 +54,6 @@ static void sim_reset() {
   }
   isa_reg_copy();
   IFDEF(CONFIG_IRINGBUF, iringbuf_step(top->io_pc, top->io_inst));
-  //sim_exec_once();
 }
 
 void sim_init(){
@@ -80,7 +78,7 @@ extern uint8_t imem[CONFIG_MSIZE];
 /********** regfile **********/
 extern riscv32_CPU_state cpu;
 
-#ifdef __riscv32_e
+#ifdef CONFIG_RVE
 const char *regs[] = {
   "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
   "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5"
@@ -114,7 +112,7 @@ void isa_reg_copy() {
   cpu.gpr[13] = top->rootp->Top__DOT__idu__DOT__regFile__DOT__regfile_13;
   cpu.gpr[14] = top->rootp->Top__DOT__idu__DOT__regFile__DOT__regfile_14;
   cpu.gpr[15] = top->rootp->Top__DOT__idu__DOT__regFile__DOT__regfile_15;
-#ifndef __riscv32_e
+#ifndef CONFIG_RVE
   cpu.gpr[16] = top->rootp->Top__DOT__idu__DOT__regFile__DOT__regfile_16;
   cpu.gpr[17] = top->rootp->Top__DOT__idu__DOT__regFile__DOT__regfile_17;
   cpu.gpr[18] = top->rootp->Top__DOT__idu__DOT__regFile__DOT__regfile_18;
@@ -153,9 +151,17 @@ void isa_reg_display() {
   printf("mtvec   = %#x\n", cpu.csr.mtvec);
 }
 
-word_t isa_reg_str2val(const char *s, bool *success) {
-  if(strcmp(s,"pc") == 0){
+word_t isa_reg_str2val(const char *s) {
+  if(strcmp(s, "pc") == 0){
     return cpu.pc;
+  } else if (strcmp(s, "mcause")) {
+    return cpu.csr.mcause;
+  } else if (strcmp(s, "mepc")) {
+    return cpu.csr.mepc;
+  } else if (strcmp(s, "mstatus")) {
+    return cpu.csr.mstatus;
+  } else if (strcmp(s, "mtvec")) {
+    return cpu.csr.mtvec;
   } else{
     return cpu.gpr[atoi(s)];
   }
@@ -181,16 +187,21 @@ void npc_trap(word_t pc, int code) {
   npc_state.halt_ret = code;
 }
 
-/* isa_exec_once simulation */
-void sim_exec_once() {
-  // sim poedge
+vaddr_t sim_exec_once() {
+  /* isa_exec_once simulation */
+
+  /* sim posedge */
   top->clock ^= 1;
   step_and_dump_wave();
-  // sim negedge
+
+  /* sim negedge */
   top->clock ^= 1;
   step_and_dump_wave();
-  // copy regfile and check halt
+  
+  /* save cpu state*/
   isa_reg_copy();
   IFDEF(CONFIG_IRINGBUF, iringbuf_step(top->io_pc, top->io_inst));
   if(top->io_halt) npc_trap(cpu.pc, cpu.gpr[10]);
+
+  return cpu.pc;
 }

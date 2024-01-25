@@ -117,16 +117,13 @@ static int cmd_x(char *args) {
 }
 
 static int cmd_p(char *args) {
-  bool success;
-  uint32_t res;
+  bool success = NULL;
+  uint32_t res = expr(args, &success);
 
-  res = expr(args, &success);
-
-  if(strcmp(args,"pc")==0){
-    printf("%#x\n", res);
-  }
-  else {
-    printf("%#x\t%u\n", res, res);
+  if(success) {
+    printf("%d\t%u\t%#x\n", res, res, res);
+  } else {
+    printf("ERROR: Undefined expression! Please check your spelling.\n");
   }
 
   return 0;

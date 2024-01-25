@@ -9,7 +9,7 @@
 #include <stdbool.h>
 
 
-word_t isa_reg_str2val(const char *s, bool *success);
+word_t isa_reg_str2val(const char *s);
 word_t isa_csr_val(const char *s);
 
 enum {
@@ -190,7 +190,7 @@ uint32_t eval(int p, int q)
         break; 
       case TK_REG:
         if(strcmp(tokens[p].str, "mepc") == 0) res = isa_csr_val("mepc");
-        else res = isa_reg_str2val(tokens[p].str, &success);
+        else res = isa_reg_str2val(tokens[p].str);
         break;
       case TK_DEREF:
         res = atoi(tokens[p].str);
@@ -357,7 +357,7 @@ word_t expr(char *e, bool *success) {
       tokens[i].type = TK_DEREF;    
       // caculate mem_addr
       switch (tokens[i+1].type) {
-        case TK_REG: mem_addr = isa_reg_str2val(tokens[i+1].str, success); break;
+        case TK_REG: mem_addr = isa_reg_str2val(tokens[i+1].str); break;
         case TK_HEX: mem_addr = (uint32_t)strtol(tokens[i+1].str,NULL,16); break;
         case '(':
           for(int ii = i+1; ii < nr_token; ii++) {

@@ -21,7 +21,7 @@
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   int i;
   // check gpr
-  for(i = 0; i < ARRLEN(cpu.gpr); i++) {
+  for (i = 0; i < MUXDEF(CONFIG_RVE, 16, 32); i++) {
     if(!difftest_check_reg(isa_reg_val2str(i), pc,  ref_r->gpr[i], cpu.gpr[i])) return false;
   }
 

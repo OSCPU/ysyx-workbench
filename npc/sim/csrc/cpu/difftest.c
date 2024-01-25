@@ -22,6 +22,7 @@ void (*ref_difftest_raise_intr)(uint64_t NO) = NULL;
 static bool difftest_check_reg(const char *name, vaddr_t pc, word_t ref, word_t dut) {
   if (ref != dut) {
     printf("%s\n",ANSI_FMT("Difftest Fail", ANSI_FG_RED));
+    printf("NAME: %s",name);
     Log("%s is different after executing instruction at pc = " FMT_WORD
         ", right = " FMT_WORD ", wrong = " FMT_WORD ", diff = " FMT_WORD,
         name, pc, ref, dut, ref ^ dut);
@@ -34,7 +35,7 @@ bool isa_difftest_checkregs(riscv32_CPU_state *ref_r, vaddr_t pc) {
   int i;
 
   // check gpr
-  for(i = 0; i < ARRLEN(cpu.gpr); i++) {
+  for (i = 0; i < MUXDEF(CONFIG_RVE, 16, 32); i++) {
     if(!difftest_check_reg(isa_reg_val2str(i), pc,  ref_r->gpr[i], cpu.gpr[i])) return false;
   }
 
