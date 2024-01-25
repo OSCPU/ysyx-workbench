@@ -5,6 +5,7 @@
 #include<cstdint>
 #include<unistd.h>
 #include<mem.h>
+#include<common.h>
 
 static long load_img();
 static uint8_t pmem[0x8000000] __attribute((aligned(4096)))={};
@@ -81,8 +82,7 @@ static long load_img(){
                
    fseek(fp, 0, SEEK_END);
    long size = ftell(fp);
-               
-   printf("the size =%ld\n",size);           
+   Log("The image is %s, size = %ld", img_file, size); 
    fseek(fp, 0, SEEK_SET);
    int ret = fread(guest_to_host(0x80000000), size, 1, fp);
    assert(ret == 1);
