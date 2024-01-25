@@ -1,8 +1,6 @@
 #include <cpu/cpu.h>
-
+extern unsigned char isa_logo[];
 NEMUState nemu_state ={.state=NEMU_STOP};
-
-unsigned char isa_logo[] ="riscv32e";
 
 int is_exit_status_bad() {
   int good = (nemu_state.state == NEMU_END && nemu_state.halt_ret == 0) ||      (nemu_state.state == NEMU_QUIT);
@@ -26,7 +24,8 @@ void invalid_inst()
   printf(ANSI_FMT("If it is the first case, see\n%s\nfor more details.\n\n"
         "If it is the second case, remember:\n"
         "* The machine is always right!\n"
-        "* Every line of untested code is always wrong!\n\n", ANSI_FG_RED), isa_logo);
+        "* Every line of untested code is always wrong!\n\n", ANSI_FG_RED),isa_logo);
 
 	set_nemu_state(NEMU_ABORT,-1);
 }
+

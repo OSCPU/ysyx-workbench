@@ -48,6 +48,7 @@ VM_USER_CLASSES = \
 	main \
 	mem \
 	sdb \
+	log \
 	state \
 
 # User .cpp directories (from .cpp's on Verilator command line)
@@ -74,6 +75,8 @@ main.o: csrc/main.cpp
 mem.o: csrc/mem.cpp
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST) -c -o $@ $<
 sdb.o: csrc/monitor/sdb/sdb.c
+	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST) -c -o $@ $<
+log.o: csrc/utils/log.c
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST) -c -o $@ $<
 state.o: csrc/utils/state.c
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST) -c -o $@ $<

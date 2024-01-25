@@ -36,7 +36,7 @@ int main(int argc ,char** argv, char** env)
 	delete top;
 	tfp->close();
 	delete contextp;
-	return 0;
+	return is_exit_status_bad();
 }
 void ebreak (int inst)
 {
