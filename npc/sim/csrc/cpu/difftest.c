@@ -1,11 +1,13 @@
 #include <dlfcn.h>
 #include <common.h>
 
-void isa_reg_display();
-char *isa_reg_val2str(int i);
+extern bool skip_one_period;
 
 #define __EXPORT __attribute__((visibility("default")))
-enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
+    enum {
+      DIFFTEST_TO_DUT,
+      DIFFTEST_TO_REF
+    };
 
 // define extern glabal varibles
 extern riscv32_CPU_state cpu;
@@ -17,12 +19,11 @@ void (*ref_difftest_regcpy)(void *dut, bool direction) = NULL;
 void (*ref_difftest_exec)(uint64_t n) = NULL;
 void (*ref_difftest_raise_intr)(uint64_t NO) = NULL;
 
-#ifdef CONFIG_DIFFTEST
-
 /* skip difftest */
-static bool is_skip_ref = false;
+bool is_skip_ref = false;
 static int skip_dut_nr_inst = 0;
 
+#ifdef CONFIG_DIFFTEST
 // this is used to let ref skip instructions which
 // can not produce consistent behavior with NEMU
 void difftest_skip_ref() {
@@ -129,12 +130,14 @@ static void checkregs(riscv32_CPU_state *ref, vaddr_t pc) {
 void difftest_step(vaddr_t pc) {
   riscv32_CPU_state ref_r;
 
-  if (is_skip_ref) {
+  if (is_skip_ref && skip_one_period) {
     // to skip the checking of an instruction, just copy the reg state to
     // reference design
     ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
+    ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
     isa_reg_display();
     is_skip_ref = false;
+    skip_one_period = false;
     return;
   }
 

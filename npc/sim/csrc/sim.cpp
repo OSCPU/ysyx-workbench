@@ -16,12 +16,15 @@
 #include "../build/obj-riscv32e-npc-interpreter/VTop___024root.h"
 
 void iringbuf_step(vaddr_t pc, uint32_t inst);
+extern bool is_skip_ref;
 
 void npc_trap(word_t pc, int code) {
   npc_state.state = NPC_END;
   npc_state.halt_pc = pc;
   npc_state.halt_ret = code;
 }
+
+bool skip_one_period = false;
 
 /* verilator simulation variables */
 static VTop *top;
@@ -78,7 +81,9 @@ void sim_exit(){
 
 vaddr_t sim_exec_once() {
   /* isa_exec_once simulation */
-
+  if (is_skip_ref) {
+    skip_one_period = true;
+  }
   /* sim posedge */
   top->clock ^= 1;
   step_and_dump_wave();

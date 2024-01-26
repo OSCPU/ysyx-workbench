@@ -9,7 +9,7 @@
 /* Debug Options: trace, difftest, watchpoint, wave*/
 
 /* trace */
-#define CONFIG_TRACE 1
+//#define CONFIG_TRACE 1
 
 #ifdef CONFIG_TRACE
 
@@ -20,7 +20,7 @@
 #endif
 
 /* difftest */
-#define CONFIG_DIFFTEST 1
+//#define CONFIG_DIFFTEST 1
 
 /* watchpoint */
 //#define CONFIG_WATCHPOINT 1

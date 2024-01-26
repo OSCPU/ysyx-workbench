@@ -62,7 +62,7 @@ extern "C" void paddr_read(int raddr, int *rdata) {
     *rdata = get_time();
     *(rdata + 4) = get_time() >> 32;
 
-    difftest_skip_ref();
+    //difftest_skip_ref();
   }
   if(raddr == 0xa0000050) {
 
@@ -75,7 +75,7 @@ extern "C" void paddr_read(int raddr, int *rdata) {
     p[2] = tm->tm_hour;
     p[3] = tm->tm_mday;
 
-    difftest_skip_ref();
+    //difftest_skip_ref();
   } else if(raddr == 0xa0000054) {
 
     time_t t = time(NULL);
@@ -85,7 +85,7 @@ extern "C" void paddr_read(int raddr, int *rdata) {
     p[0] = (tm->tm_mon + 1) & 0xff;
     p[1] = (tm->tm_year) & 0xff;
 
-    difftest_skip_ref();
+    //difftest_skip_ref();
   }
 }
 
@@ -103,7 +103,7 @@ extern "C" void paddr_write(int waddr, int wdata, char wmask) {
     return;
   }
   if(waddr == 0xa00003f8) {
-    difftest_skip_ref();
+    //difftest_skip_ref();
     putchar(wdata);
     return;
   }
