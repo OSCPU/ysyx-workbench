@@ -1,4 +1,3 @@
-#include "isa.h"
 #include <common.h>
 #include <assert.h>
 #include <cstdio>

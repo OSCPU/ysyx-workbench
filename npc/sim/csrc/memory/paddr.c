@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <time.h>
 
+void difftest_skip_ref();
 extern riscv32_CPU_state cpu;
 extern uint64_t g_nr_guest_inst;
 
@@ -57,10 +58,14 @@ extern "C" void paddr_read(int raddr, int *rdata) {
   }
   //if(g_nr_guest_inst) out_of_bound(raddr); // skip sim reset
   if(raddr == 0xa0000048) {
+
     *rdata = get_time();
     *(rdata + 4) = get_time() >> 32;
+
+    difftest_skip_ref();
   }
   if(raddr == 0xa0000050) {
+
     time_t t = time(NULL);
     struct tm *tm = localtime(&t);
     
@@ -70,13 +75,17 @@ extern "C" void paddr_read(int raddr, int *rdata) {
     p[2] = tm->tm_hour;
     p[3] = tm->tm_mday;
 
+    difftest_skip_ref();
   } else if(raddr == 0xa0000054) {
+
     time_t t = time(NULL);
     struct tm *tm = localtime(&t);
     
     uint8_t *p = (uint8_t *)(rdata);
     p[0] = (tm->tm_mon + 1) & 0xff;
     p[1] = (tm->tm_year) & 0xff;
+
+    difftest_skip_ref();
   }
 }
 
@@ -94,6 +103,7 @@ extern "C" void paddr_write(int waddr, int wdata, char wmask) {
     return;
   }
   if(waddr == 0xa00003f8) {
+    difftest_skip_ref();
     putchar(wdata);
     return;
   }

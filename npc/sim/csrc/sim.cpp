@@ -6,9 +6,8 @@
 #include <assert.h>
 #include <iostream>
 
-#include "common.h"
-#include "config.h"
-#include "debug.h"
+#include <common.h>
+
 #include "verilated.h"
 #include "verilated_vcd_c.h"
 #include "svdpi.h"
@@ -17,82 +16,86 @@
 #include "../build/obj-riscv32e-npc-interpreter/VTop___024root.h"
 
 void iringbuf_step(vaddr_t pc, uint32_t inst);
-/********** verilater variable **********/
+
+void npc_trap(word_t pc, int code) {
+  npc_state.state = NPC_END;
+  npc_state.halt_pc = pc;
+  npc_state.halt_ret = code;
+}
+
+/* verilator simulation variables */
+static VTop *top;
 VerilatedContext *contextp = NULL;
 VerilatedVcdC *tfp = NULL;
 
-static VTop* top;
-
-/********** verilater function **********/
-void isa_reg_copy();
-void isa_reg_display();
-static void step_and_dump_wave(){
-  top->eval();
-  contextp->timeInc(1);
-  tfp->dump(contextp->time());
-}
-
-static void sim_reset() {
-  int sim_time = 0;
-  // while(sim_time <= 6) {
-  //   if(sim_time >=3 && sim_time <= 5) {
-  //     top->reset = 1;
-  //   } else {
-  //     top->reset = 0;
-  //   }
-  //   top->clock ^= 1;
-  //   step_and_dump_wave();
-  //   sim_time++;
-  // }
-  // top->clock ^= 1;
-  while(sim_time <= 3) {
-    if(sim_time <= 2) top->reset = 1;
-    else top->reset = 0;
-    top->clock ^= 1;
-    step_and_dump_wave();
-    sim_time++;
-  }
-  isa_reg_copy();
-  IFDEF(CONFIG_IRINGBUF, iringbuf_step(top->io_pc, top->io_inst));
-}
+/* verilater simulation api */
+void sim_init();
+void sim_exit();
+static void sim_reset();
+static void step_and_dump_wave();
+static void sim_reg_copy();
+vaddr_t sim_exec_once();
 
 void sim_init(){
+  top = new VTop;
+#ifdef CONFIG_WAVE
   contextp = new VerilatedContext;
   tfp = new VerilatedVcdC;
-  top = new VTop;
-  contextp->traceEverOn(true);
+
   top->trace(tfp, 0);
+  contextp->traceEverOn(true);
   tfp->open("wave.vcd");
+#endif
 
   sim_reset();
 }
 
-void sim_exit(){
-  step_and_dump_wave();
-  tfp->close();
+static void sim_reset() {
+  int sim_time = 0;
+  while (sim_time <= 3) {
+    if (sim_time <= 2)
+      top->reset = 1;
+    else
+      top->reset = 0;
+    top->clock ^= 1;
+    step_and_dump_wave();
+    sim_time++;
+  }
+  sim_reg_copy();
+  IFDEF(CONFIG_IRINGBUF, iringbuf_step(top->io_pc, top->io_inst));
 }
 
-/********** memory **********/
-extern uint8_t imem[CONFIG_MSIZE];
+static void step_and_dump_wave() {
+  top->eval();
+  IFDEF(CONFIG_WAVE, contextp->timeInc(1));
+  IFDEF(CONFIG_WAVE, tfp->dump(contextp->time()));
+}
 
-/********** regfile **********/
-extern riscv32_CPU_state cpu;
+void sim_exit(){
+  step_and_dump_wave();
+  IFDEF(CONFIG_WAVE, tfp->close());
+}
 
-#ifdef CONFIG_RVE
-const char *regs[] = {
-  "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
-  "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5"
-};
-#else
-const char *regs[] = {
-  "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
-  "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5",
-  "a6", "a7", "s2", "s3", "s4", "s5", "s6", "s7",
-  "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
-};
-#endif
+vaddr_t sim_exec_once() {
+  /* isa_exec_once simulation */
 
-void isa_reg_copy() {
+  /* sim posedge */
+  top->clock ^= 1;
+  step_and_dump_wave();
+
+  /* sim negedge */
+  top->clock ^= 1;
+  step_and_dump_wave();
+
+  /* save cpu state*/
+  sim_reg_copy();
+  IFDEF(CONFIG_IRINGBUF, iringbuf_step(top->io_pc, top->io_inst));
+  if (top->io_halt) npc_trap(cpu.pc, cpu.gpr[10]);
+
+  return cpu.pc;
+}
+
+static void sim_reg_copy() {
   // current pc
   cpu.pc = cpu.npc;
   // gpr
@@ -136,72 +139,4 @@ void isa_reg_copy() {
   cpu.csr.mtvec   = top->rootp->Top__DOT__exu__DOT__csr__DOT__mtvec;
   // next pc
   cpu.npc = top->io_pc;
-}
-
-void isa_reg_display() {
-  int i;
-  printf("%s\n",ANSI_FMT("ISA RegFile Display", ANSI_FG_GREEN));
-  for(i = 0;i < ARRLEN(regs); i++){
-    printf("%2d\t%-3s\t%#8x%15d\n",i, regs[i], cpu.gpr[i], cpu.gpr[i]);
-  }
-  printf("pc      = %#x\n", cpu.pc);
-  printf("mcause  = %#x\n", cpu.csr.mcause);
-  printf("mepc    = %#x\n", cpu.csr.mepc);
-  printf("mstatus = %#x\n", cpu.csr.mstatus);
-  printf("mtvec   = %#x\n", cpu.csr.mtvec);
-}
-
-word_t isa_reg_str2val(const char *s) {
-  if(strcmp(s, "pc") == 0){
-    return cpu.pc;
-  } else if (strcmp(s, "mcause")) {
-    return cpu.csr.mcause;
-  } else if (strcmp(s, "mepc")) {
-    return cpu.csr.mepc;
-  } else if (strcmp(s, "mstatus")) {
-    return cpu.csr.mstatus;
-  } else if (strcmp(s, "mtvec")) {
-    return cpu.csr.mtvec;
-  } else{
-    return cpu.gpr[atoi(s)];
-  }
-}
-
-const char *isa_reg_val2str(int i) {
-  return regs[i];
-}
-
-word_t isa_csr_val(const char *s) {
-  if(strcmp(s, "mepc") == 0) return cpu.csr.mepc;
-  else if(strcmp(s, "mstatus") == 0) return cpu.csr.mstatus;
-  else if(strcmp(s, "mcause") == 0) return cpu.csr.mcause;
-  else if(strcmp(s, "mtvec" ) == 0) return cpu.csr.mtvec;
-  else panic("Invalid csr!");
-
-  return 0;
-}
-
-void npc_trap(word_t pc, int code) {
-  npc_state.state = NPC_END;
-  npc_state.halt_pc = pc;
-  npc_state.halt_ret = code;
-}
-
-vaddr_t sim_exec_once() {
-  /* isa_exec_once simulation */
-
-  /* sim posedge */
-  top->clock ^= 1;
-  step_and_dump_wave();
-
-  /* sim negedge */
-  top->clock ^= 1;
-  step_and_dump_wave();
-  
-  /* save cpu state*/
-  isa_reg_copy();
-  IFDEF(CONFIG_IRINGBUF, iringbuf_step(top->io_pc, top->io_inst));
-  if(top->io_halt) npc_trap(cpu.pc, cpu.gpr[10]);
-
-  return cpu.pc;
 }

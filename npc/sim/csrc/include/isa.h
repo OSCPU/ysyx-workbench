@@ -17,4 +17,6 @@ typedef struct {
   vaddr_t npc;
 }riscv32_CPU_state;
 
+extern riscv32_CPU_state cpu;
+
 #endif

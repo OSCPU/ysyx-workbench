@@ -34,6 +34,6 @@ typedef uint16_t ioaddr_t;
 #include <isa.h>
 #include <config.h>
 #include <paddr.h>
-
+#include <reg.h>
 
 #endif

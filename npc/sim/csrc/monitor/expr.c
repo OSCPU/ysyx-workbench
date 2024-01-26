@@ -189,8 +189,7 @@ uint32_t eval(int p, int q)
         sscanf(tokens[p].str, "%x", &res);
         break; 
       case TK_REG:
-        if(strcmp(tokens[p].str, "mepc") == 0) res = isa_csr_val("mepc");
-        else res = isa_reg_str2val(tokens[p].str);
+        res = isa_reg_str2val(tokens[p].str);
         break;
       case TK_DEREF:
         res = atoi(tokens[p].str);
