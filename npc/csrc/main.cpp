@@ -10,7 +10,6 @@ Vysyx_23060111_top *top=NULL;
 VerilatedVcdC* tfp=NULL;
 
 int main_time=0;
-//git try
 
 
 int main(int argc ,char** argv, char** env)
