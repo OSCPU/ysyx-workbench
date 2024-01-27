@@ -5,7 +5,8 @@ import circt.stage._
 
 object Elaborate extends App {
   val xlen = 32
-  def top = new Top(xlen)
+  val arch = "single"
+  def top = new Top(xlen, arch)
   // val generator = Seq(chisel3.stage.ChiselGeneratorAnnotation(() => top))
   // (new ChiselStage).execute(args, generator :+ CIRCTTargetAnnotation(CIRCTTarget.Verilog))
 

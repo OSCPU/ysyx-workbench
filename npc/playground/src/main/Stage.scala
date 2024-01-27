@@ -4,6 +4,8 @@ import chisel3._
 import chisel3.util._
 import core.ControlUnit._
 
+import core.util._
+
 // Messages between different stages
 class MessageIFU_IDU(xlen: Int) extends Bundle {
   val inst = Output(UInt(xlen.W))
@@ -28,9 +30,10 @@ class MessageEXU_WBU(xlen: Int) extends Bundle {
 }
 
 // Stages
-class IFU(xlen: Int) extends Module {
+class IFU(xlen: Int, arch: String) extends Module {
   val io = IO(new Bundle {
     val out           = Decoupled(new MessageIFU_IDU(xlen))
+    val finish        = Input(Bool())
     val branch        = Input(Bool())
     val jal           = Input(Bool())
     val jalr          = Input(Bool())
@@ -44,9 +47,17 @@ class IFU(xlen: Int) extends Module {
   })
 
   val pcGen    = Module(new PCGen(xlen))
-  val iMemUnit = Module(new MemUnit)
+  val iMemUnit = Module(new SRAM)
 
-  io.out.valid := true.B
+  val s_idle :: s_wait_ready :: Nil = Enum(2)
+  val state = RegInit(s_idle)
+  state := MuxLookup(state, s_idle)(
+    Seq(
+      s_idle       -> Mux(io.out.valid, s_wait_ready, s_idle),
+      s_wait_ready -> Mux(io.out.ready, s_idle, s_wait_ready)
+    )
+  )
+  io.out.valid := iMemUnit.io.rdata_ready
 
   // PCGen
   pcGen.io.branch := io.branch
@@ -59,20 +70,22 @@ class IFU(xlen: Int) extends Module {
   pcGen.io.epc := io.epc
   pcGen.io.exception := io.exception
   pcGen.io.evec := io.evec
-  io.out.bits.pc := pcGen.io.pc_in
+  io.out.bits.pc := pcGen.io.npc
 
   // IMem
-  iMemUnit.io.raddr := pcGen.io.pc_in
+  iMemUnit.io.raddr := pcGen.io.npc
   iMemUnit.io.valid := true.B
   iMemUnit.io.wen   := 0.U
   iMemUnit.io.waddr := 0.U
   iMemUnit.io.wdata := 0.U
   iMemUnit.io.wmask := 0.U
   io.out.bits.inst := iMemUnit.io.rdata
+  pcGen.io.en := iMemUnit.io.rdata_ready
+  iMemUnit.io.valid := io.finish
 
 }
 
-class IDU(xlen: Int) extends Module {
+class IDU(xlen: Int, arch: String) extends Module {
   val io = IO(new Bundle {
     val in  = Flipped(Decoupled(new MessageIFU_IDU(xlen)))
     val out = Decoupled(new MessageIDU_EXU(xlen))
@@ -119,7 +132,7 @@ class IDU(xlen: Int) extends Module {
   io.out.bits.pc := io.in.bits.pc
 }
 
-class EXU(xlen: Int) extends Module {
+class EXU(xlen: Int, arch: String) extends Module {
   val io = IO(new Bundle {
     val in     = Flipped(Decoupled(new MessageIDU_EXU(xlen)))
     val out    = Decoupled(new MessageEXU_WBU(xlen))
@@ -137,7 +150,7 @@ class EXU(xlen: Int) extends Module {
   val oprand1 = WireDefault(0.U(xlen.W))
   val oprand2 = WireDefault(0.U(xlen.W))
 
-  io.out.valid := true.B
+  io.out.valid := io.in.valid
   io.in.ready := true.B
 
   // Mux
@@ -200,11 +213,12 @@ class EXU(xlen: Int) extends Module {
   io.out.bits.pc_4 := io.in.bits.pc + 4.U
 }
 
-class WBU(xlen: Int) extends Module {
+class WBU(xlen: Int, arch: String) extends Module {
   val io = IO(new Bundle {
     val in      = Flipped(Decoupled(new MessageEXU_WBU(xlen)))
     val wb_data = Output(UInt(xlen.W))
-    val wb_en   = Output(Bool())  
+    val wb_en   = Output(Bool())
+    val finish  = Output(Bool())
   })
 
   io.in.ready := true.B
@@ -217,5 +231,9 @@ class WBU(xlen: Int) extends Module {
       WB_CSR -> io.in.bits.csr_out
     )
   )
-  io.wb_en := io.in.bits.ctrl.wb_en
+  io.wb_en  := io.in.bits.ctrl.wb_en
+
+  //val wb_over = RegNext(Mux(io.wb_en && io.wb_data.orR, true.B, false.B))
+  //io.finish := wb_over || (~io.wb_en && io.in.valid)
+  io.finish := squareWave(2.U)
 }

@@ -1,6 +1,7 @@
 package core
 
 import chisel3._
+import chisel3.util.RegEnable
 
 class PCGenIO(xlen: Int) extends Bundle {
   val branch        = Input(Bool())
@@ -13,27 +14,30 @@ class PCGenIO(xlen: Int) extends Bundle {
   val jalr_target   = Input(UInt(xlen.W))
   val evec          = Input(UInt(xlen.W))
   val epc           = Input(UInt(xlen.W))
-  val pc_in         = Output(UInt(xlen.W))
+  val npc           = Output(UInt(xlen.W))
+  val en            = Input(Bool())
 }
 
 class PCGen(xlen: Int) extends Module {
   val io = IO(new PCGenIO(xlen))
 
-  val pc = RegInit("x80000000".U(xlen.W))
+  //val pc = RegInit("x80000000".U(xlen.W))
+  val pc_in = Wire(UInt(xlen.W)) 
+  val pc    = RegEnable(pc_in, "x80000000".U(xlen.W), io.en)
 
   when(io.exception) {
-    pc := io.evec
+    pc_in := io.evec
   }.elsewhen(io.eret) {
-    pc := io.epc
+    pc_in := io.epc
   }.elsewhen(io.branch) {
-    pc := io.branch_target
+    pc_in := io.branch_target
   }.elsewhen(io.jal) {
-    pc := io.jal_target
+    pc_in := io.jal_target
   }.elsewhen(io.jalr) {
-    pc := io.jalr_target
+    pc_in := io.jalr_target
   }.otherwise {
-    pc := pc + 4.U(xlen.W)
+    pc_in := pc + 4.U(xlen.W)
   }
 
-  io.pc_in := pc
+  io.npc := pc
 }

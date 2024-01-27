@@ -1,6 +1,7 @@
 package core
 
 import chisel3._
+import chisel3.util.RegEnable
 
 class RegFileIO(xlen: Int) extends Bundle {
   val raddr1 = Input(UInt(5.W))
@@ -28,4 +29,5 @@ class RegFile(xlen: Int) extends Module {
   when(io.wen & io.waddr.orR) {
     regfile(io.waddr) := io.wdata
   }
+
 }

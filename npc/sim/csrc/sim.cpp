@@ -39,16 +39,17 @@ static void step_and_dump_wave();
 static void sim_reg_copy();
 vaddr_t sim_exec_once();
 
-void sim_init(){
-  top = new VTop;
-#ifdef CONFIG_WAVE
+void single_exec_once();
+void multi_exec_once();
+
+void sim_init() {
   contextp = new VerilatedContext;
   tfp = new VerilatedVcdC;
+  top = new VTop;
 
-  top->trace(tfp, 0);
-  contextp->traceEverOn(true);
-  tfp->open("wave.vcd");
-#endif
+  IFDEF(CONFIG_WAVE, contextp->traceEverOn(true);)
+  IFDEF(CONFIG_WAVE, top->trace(tfp, 0);)
+  IFDEF(CONFIG_WAVE, tfp->open("wave.vcd");)
 
   sim_reset();
 }
@@ -84,6 +85,29 @@ vaddr_t sim_exec_once() {
   if (is_skip_ref) {
     skip_one_period = true;
   }
+
+  //single_exec_once();
+  multi_exec_once();
+
+  /* save cpu state*/
+  sim_reg_copy();
+  IFDEF(CONFIG_IRINGBUF, iringbuf_step(top->io_pc, top->io_inst));
+  if (top->io_halt) npc_trap(cpu.pc, cpu.gpr[10]);
+
+  return cpu.pc;
+}
+
+void single_exec_once() {
+  /* sim posedge */
+  top->clock ^= 1;
+  step_and_dump_wave();
+
+  /* sim negedge */
+  top->clock ^= 1;
+  step_and_dump_wave();
+}
+
+void multi_exec_once() {
   /* sim posedge */
   top->clock ^= 1;
   step_and_dump_wave();
@@ -92,12 +116,13 @@ vaddr_t sim_exec_once() {
   top->clock ^= 1;
   step_and_dump_wave();
 
-  /* save cpu state*/
-  sim_reg_copy();
-  IFDEF(CONFIG_IRINGBUF, iringbuf_step(top->io_pc, top->io_inst));
-  if (top->io_halt) npc_trap(cpu.pc, cpu.gpr[10]);
+  /* sim posedge */
+  top->clock ^= 1;
+  step_and_dump_wave();
 
-  return cpu.pc;
+  /* sim negedge */
+  top->clock ^= 1;
+  step_and_dump_wave();
 }
 
 static void sim_reg_copy() {
