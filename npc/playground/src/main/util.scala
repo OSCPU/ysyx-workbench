@@ -19,6 +19,6 @@ object util {
 
   def pulse(n: UInt) = counter(n - 1.U) === 0.U
 
-  def squareWave(period: UInt) = toggle(pulse(period >> 1))
+  def squareWave(period: UInt) = toggle(pulse(period - 1.U))
 
 }

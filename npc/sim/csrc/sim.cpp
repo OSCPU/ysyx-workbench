@@ -123,6 +123,14 @@ void multi_exec_once() {
   /* sim negedge */
   top->clock ^= 1;
   step_and_dump_wave();
+
+  /* sim posedge */
+  top->clock ^= 1;
+  step_and_dump_wave();
+
+  /* sim negedge */
+  top->clock ^= 1;
+  step_and_dump_wave();
 }
 
 static void sim_reg_copy() {

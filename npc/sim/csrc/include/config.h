@@ -23,7 +23,7 @@
 //#define CONFIG_DIFFTEST 1
 
 /* watchpoint */
-//#define CONFIG_WATCHPOINT 1
+#define CONFIG_WATCHPOINT 1
 
 /* wave */
 #define CONFIG_WAVE 1

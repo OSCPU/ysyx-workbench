@@ -8,12 +8,16 @@ import core.ControlUnit._
 object StageConnect {
   def apply[T <: Data](left: DecoupledIO[T], right: DecoupledIO[T]) = {
     // 定义NPC的架构
-    val arch = "single"
+    val arch = "multi"
     // 不同架构下的不同连接方式
     if (arch == "single") {
       right.bits  := left.bits
       left.ready  := right.ready
       right.valid := left.valid
+    } else if(arch == "multi") {
+      right.bits  := RegNext(left.bits)
+      left.ready  := RegNext(right.ready)
+      right.valid := RegNext(left.valid)
     }
   }
 }

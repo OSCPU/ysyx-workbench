@@ -2,8 +2,8 @@ package core
 
 import chisel3._
 import chisel3.util._
-import core.ControlUnit._
 
+import core.ControlUnit._
 import core.util._
 
 // Messages between different stages
@@ -18,7 +18,7 @@ class MessageIDU_EXU(xlen: Int) extends Bundle {
   val imm    = Output(UInt(xlen.W))
   val inst   = Output(UInt(xlen.W))
   val pc     = Output(UInt(xlen.W))
-  val ctrl    = new CtrlSignals(xlen)
+  val ctrl   = new CtrlSignals(xlen)
 }
 
 class MessageEXU_WBU(xlen: Int) extends Bundle {
@@ -46,9 +46,11 @@ class IFU(xlen: Int, arch: String) extends Module {
     val epc           = Input(UInt(xlen.W))
   })
 
+  // Module Instaniation
   val pcGen    = Module(new PCGen(xlen))
   val iMemUnit = Module(new SRAM)
 
+  // State Machine
   val s_idle :: s_wait_ready :: Nil = Enum(2)
   val state = RegInit(s_idle)
   state := MuxLookup(state, s_idle)(
@@ -74,7 +76,6 @@ class IFU(xlen: Int, arch: String) extends Module {
 
   // IMem
   iMemUnit.io.raddr := pcGen.io.npc
-  iMemUnit.io.valid := true.B
   iMemUnit.io.wen   := 0.U
   iMemUnit.io.waddr := 0.U
   iMemUnit.io.wdata := 0.U
@@ -141,6 +142,7 @@ class EXU(xlen: Int, arch: String) extends Module {
     val evec   = Output(UInt(xlen.W))
   })
 
+  // Module Instaniation
   val alu       = Module(new Alu(xlen))
   val branchGen = Module(new BranchGen(xlen))
   val dMemUnit  = Module(new MemUnit)
@@ -150,7 +152,11 @@ class EXU(xlen: Int, arch: String) extends Module {
   val oprand1 = WireDefault(0.U(xlen.W))
   val oprand2 = WireDefault(0.U(xlen.W))
 
-  io.out.valid := io.in.valid
+  // bus
+  val mem_access = io.in.bits.ctrl.ld_type =/= LD_XXX || io.in.bits.ctrl.st_type =/= ST_XXX
+
+  //io.out.valid := mem_access && dMemUnit.io.rdata_ready || ~mem_access
+  io.out.valid := true.B
   io.in.ready := true.B
 
   // Mux
@@ -235,5 +241,6 @@ class WBU(xlen: Int, arch: String) extends Module {
 
   //val wb_over = RegNext(Mux(io.wb_en && io.wb_data.orR, true.B, false.B))
   //io.finish := wb_over || (~io.wb_en && io.in.valid)
-  io.finish := squareWave(2.U)
+  io.finish := squareWave(5.U)
+  //io.finish := RegNext(io.in.valid)
 }
