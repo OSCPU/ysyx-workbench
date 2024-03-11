@@ -6,6 +6,7 @@
 !/nanos-lite/*
 !/navy-apps/*
 !/npc/*
+!/clang-learning/*
 !Makefile
 !README.md
 !.gitignore
