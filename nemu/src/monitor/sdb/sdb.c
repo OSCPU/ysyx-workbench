@@ -17,6 +17,7 @@
 #include <cpu/cpu.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <memory/vaddr.h>
 #include "sdb.h"
 
 static int is_batch_mode = false;
@@ -52,6 +53,58 @@ static int cmd_q(char *args) {
   return -1;
 }
 
+static int cmd_si(char* args) {
+  uint64_t aa = 0;
+  for(; args && *args && *args != ' '; args++) {
+    if(*args >= '0' && *args <= '9') {
+      aa = aa * 10 + *args - '0';
+    }
+  }
+  if (!aa) aa = 1;
+  // printf("steps: %lu\n", aa);
+  cpu_exec(aa);
+  return 0;
+}
+
+static int cmd_x(char* args) {
+  uint64_t aa = 0, bb = 0;
+  for(; args && *args && *args != ' '; args++) {
+    if(*args >= '0' && *args <= '9') {
+      aa = aa * 10 + *args - '0';
+    }
+  }
+  if (args && (*++args != '0' || *++args != 'x')) {
+    printf("Invalid arguments: %s\n", args);
+    return 0;
+  }
+  for(; args && *args && *args != ' '; args++) {
+    if (*args >= '0' && *args <= '9') {
+      bb = (bb << 4) + *args - '0';
+    } else if (*args >= 'A' && *args <= 'F') {
+      bb = (bb << 4) + *args - 'A' + 10;
+    } else if (*args >= 'a' && *args <= 'f') {
+      bb = (bb << 4) + *args - 'a' + 10;
+    }
+  }
+  if (!bb) {
+    printf("Invalid arguments: %s\n", args ? args : "");
+    return 0;
+  }
+  // printf("%ld, %lx\n", aa, bb);
+  for (uint64_t ii = 0; ii < aa; ii += 4) {
+    printf("0x%lx: 0x%08x", bb + ii, vaddr_read((vaddr_t)bb + ii, 4));
+    printf((ii / 4 + 1) % 4 ? " " : "\n");
+  }
+  puts("");
+  return 0;
+}
+
+static int cmd_info(char* args) {
+  if(!args) return 0;
+  if (args[0] == 'r') isa_reg_display();
+  return 0;
+}
+
 static int cmd_help(char *args);
 
 static struct {
@@ -64,7 +117,9 @@ static struct {
   { "q", "Exit NEMU", cmd_q },
 
   /* TODO: Add more commands */
-
+  { "si", "Single step debug", cmd_si },
+  { "info", "Print debug info", cmd_info },
+  { "x", "Scan the memory.", cmd_x }
 };
 
 #define NR_CMD ARRLEN(cmd_table)
