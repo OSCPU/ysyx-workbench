@@ -63,7 +63,7 @@ case $1 in
       echo "chisel repo is already initialized, skipping..."
     else
       rm -rf npc
-      init OpenXiangShan/chisel-playground master npc true NPC_HOME
+      init OSCPU/chisel-playground master npc true NPC_HOME
     fi
     ;;
   npc)
