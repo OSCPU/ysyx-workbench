@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
 		contextp->timeInc(1); //推动仿真时间
 		assert(top->f == (a ^ b));
 		i++;
-		if(i==100)break:
+		if(i==100)break; 
 	}
 	delete top;
 	tfp->close();
