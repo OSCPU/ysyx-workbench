@@ -10,9 +10,9 @@ void nvboard_bind_all_pins(TOP_NAME* top);
 
 int main(int argc, char** argv) {
 
-	VerilatedContext* contextp = new VerilatedContext;
-	contextp->commandArgs(argc, argv);
-	Vtop* top = new Vtop{contextp};
+	//VerilatedContext* contextp = new VerilatedContext;
+	//contextp->commandArgs(argc, argv);
+	//Vtop* top = new Vtop{contextp};
 
 	//VerilatedVcdC* tfp = new VerilatedVcdC; //初始化VCD对象指针
 	//contextp->traceEverOn(true); //打开追踪功能
@@ -23,8 +23,8 @@ int main(int argc, char** argv) {
 
 	nvboard_bind_all_pins(&dut);
 	nvboard_init();
-
-	while (!contextp->gotFinish()) {
+//!contextp->gotFinish()
+	while (1) {
 		//int a = rand() & 1;
 		//int b = rand() & 1;
 		//top->a = a;
@@ -36,9 +36,9 @@ int main(int argc, char** argv) {
 		//assert(top->f == (a ^ b));
 		nvboard_update();
 	}
-	delete top;
+	//delete top;
 	//tfp->close();
-	delete contextp;
+	//delete contextp;
 	nvboard_quit();
 	return 0;
 }
