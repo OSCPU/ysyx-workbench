@@ -6,6 +6,7 @@
 #include "verilated_vcd_c.h"
 #include "verilated.h"
 //static TOP_NAME dut;
+static TOP_NAME top;
 void nvboard_bind_all_pins(TOP_NAME* top);
 
 int main(int argc, char** argv) {
@@ -13,7 +14,7 @@ int main(int argc, char** argv) {
 	//VerilatedContext* contextp = new VerilatedContext;
 	//contextp->commandArgs(argc, argv);
 	//Vtop* top = new Vtop{contextp};
-	Vtop* top ;
+
 
 	//VerilatedVcdC* tfp = new VerilatedVcdC; //初始化VCD对象指针
 	//contextp->traceEverOn(true); //打开追踪功能
@@ -22,7 +23,7 @@ int main(int argc, char** argv) {
 
 
 
-	nvboard_bind_all_pins(top);
+	nvboard_bind_all_pins(&top);
 	nvboard_init();
 //!contextp->gotFinish()
 	while (1) {
