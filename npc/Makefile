@@ -1,6 +1,6 @@
 VERILATOR = verilator
 VFLAGS = -Wall --cc --trace --exe --build
-VSRC = $(shell find $(abspath ./vsrc) -name "*.v")"")
+VSRC = $(shell find $(abspath ./vsrc) -name "*.v")
 CSRC = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
 all:
 	@echo "Write this Makefile by your self."
