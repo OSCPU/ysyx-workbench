@@ -6,8 +6,8 @@
 #include "verilated_vcd_c.h"
 #include "verilated.h"
 //static TOP_NAME dut;
-static TOP_NAME top;
-void nvboard_bind_all_pins(TOP_NAME* top);
+static Vtop top;
+void nvboard_bind_all_pins(Vtop* top);
 
 int main(int argc, char** argv) {
 

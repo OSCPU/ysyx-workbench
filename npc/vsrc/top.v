@@ -3,5 +3,5 @@ module top(
   input b,
   output f
 );
-  assign f = 0;
+  assign f = a||b;
 endmodule
