@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
 	//nvboard_bind_all_pins(&top);
 	nvboard_bind_pin( &top->a, 1, SW0);
 	nvboard_bind_pin( &top->b, 1, SW1);
-	nvboard_bind_pin( &top->f, 1, LD0);
+	nvboard_bind_pin( &top->f, 1, LD5);
 	nvboard_init();
 //!contextp->gotFinish()
 	while (1) {
