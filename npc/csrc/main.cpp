@@ -6,14 +6,14 @@
 #include "verilated_vcd_c.h"
 #include "verilated.h"
 //static TOP_NAME dut;
-static Vtop top;
-void nvboard_bind_all_pins(Vtop* top);
+//static Vtop top;
+//oid nvboard_bind_all_pins(Vtop* top);
 
 int main(int argc, char** argv) {
 
-	//VerilatedContext* contextp = new VerilatedContext;
-	//contextp->commandArgs(argc, argv);
-	//Vtop* top = new Vtop{contextp};
+	VerilatedContext* contextp = new VerilatedContext;
+	contextp->commandArgs(argc, argv);
+	Vtop* top = new Vtop{contextp};
 
 
 	//VerilatedVcdC* tfp = new VerilatedVcdC; //初始化VCD对象指针
@@ -23,7 +23,10 @@ int main(int argc, char** argv) {
 
 
 
-	nvboard_bind_all_pins(&top);
+	//nvboard_bind_all_pins(&top);
+	nvboard_bind_pin( &top->a, 1, SW0);
+	nvboard_bind_pin( &top->b, 1, SW1);
+	nvboard_bind_pin( &top->f, 1, LD0);
 	nvboard_init();
 //!contextp->gotFinish()
 	while (1) {
