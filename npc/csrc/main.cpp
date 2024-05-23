@@ -13,7 +13,7 @@ int main(int argc, char** argv) {
 	//VerilatedContext* contextp = new VerilatedContext;
 	//contextp->commandArgs(argc, argv);
 	//Vtop* top = new Vtop{contextp};
-	Vtop* top = new Vtop;
+	Vtop* top ;
 
 	//VerilatedVcdC* tfp = new VerilatedVcdC; //初始化VCD对象指针
 	//contextp->traceEverOn(true); //打开追踪功能
