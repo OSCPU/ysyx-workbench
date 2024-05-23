@@ -16,3 +16,8 @@ include ../Makefile
 clean:
 	rm -rf obj_dir
 	rm wave.vcd
+
+wave: sim
+	./obj_dir/Vtop
+	gtkwave wave.vcd
+
