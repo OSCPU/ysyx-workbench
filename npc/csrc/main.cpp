@@ -12,7 +12,9 @@ int main(int argc, char** argv) {
 	contextp->traceEverOn(true); //打开追踪功能
 	top->trace(tfp, 0); //
 	tfp->open("wave.vcd"); //设置输出的文件wave.vcd
-	while (!contextp->gotFinish()) { int a = rand() & 1;
+	int i=0;
+	while (!contextp->gotFinish()) {
+		int a = rand() & 1;
 		int b = rand() & 1;
 		top->a = a;
 		top->b = b;
@@ -20,7 +22,10 @@ int main(int argc, char** argv) {
 		printf("a = %d, b = %d, f = %d\n", a, b, top->f);
 		tfp->dump(contextp->time()); //dump wave
 		contextp->timeInc(1); //推动仿真时间
-		assert(top->f == (a ^ b)); }
+		assert(top->f == (a ^ b));
+		i++;
+		if(i==100)break:
+	}
 	delete top;
 	tfp->close();
 	delete contextp;
