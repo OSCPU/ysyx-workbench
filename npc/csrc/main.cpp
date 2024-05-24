@@ -5,19 +5,18 @@
 #include "Vtop.h"
 #include "verilated_vcd_c.h"
 #include "verilated.h"
-//static TOP_NAME dut;
-static Vtop* top;
+static TOP_NAME top;
 void nvboard_bind_all_pins(Vtop* top);
 
 void single_cycle() {
-  top->clk = 0; top->eval();
-  top->clk = 1; top->eval();
+  top.clk = 0; top.eval();
+  top.clk = 1; top.eval();
 }
 
 void reset(int n) {
-  top->rst = 1;
+  top.rst = 1;
   while (n -- > 0) single_cycle();
-  top->rst = 0;
+  top.rst = 0;
 }
 
 int main(int argc, char** argv) {
@@ -36,7 +35,7 @@ int main(int argc, char** argv) {
 
 */
 
-	nvboard_bind_all_pins(top);
+	nvboard_bind_all_pins(&top);
 
 	nvboard_init();
 	reset(10);
@@ -46,7 +45,7 @@ int main(int argc, char** argv) {
 
 
 
-		top->eval();
+		top.eval();
 		//printf("a = %d, b = %d, f = %d\n", top->a, top->b, top->f);
 
 
