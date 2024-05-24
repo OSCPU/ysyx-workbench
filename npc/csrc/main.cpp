@@ -28,12 +28,14 @@ int main(int argc, char** argv) {
 	nvboard_init();
 //!contextp->gotFinish()
 	while (1) {
-		//int a = rand() & 1;
-		//int b = rand() & 1;
-		//top->a = a;
-		//top->b = b;
+
+
+
 		top->eval();
-		printf("a = %d, b = %d, f = %d\n", top->a, top->b, top->f);
+		//printf("a = %d, b = %d, f = %d\n", top->a, top->b, top->f);
+
+
+
 		//tfp->dump(contextp->time()); //dump wave
 		//contextp->timeInc(1); //推动仿真时间
 		//assert(top->f == (a ^ b));
