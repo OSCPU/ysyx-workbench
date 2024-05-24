@@ -7,7 +7,7 @@
 #include "verilated.h"
 //static TOP_NAME dut;
 //static Vtop top;
-//oid nvboard_bind_all_pins(Vtop* top);
+//void nvboard_bind_all_pins(Vtop* top);
 
 int main(int argc, char** argv) {
 
@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
 		//top->a = a;
 		//top->b = b;
 		//top->eval();
-		//printf("a = %d, b = %d, f = %d\n", a, b, top->f);
+		printf("a = %d, b = %d, f = %d\n", top->a, top->b, top->f);
 		//tfp->dump(contextp->time()); //dump wave
 		//contextp->timeInc(1); //推动仿真时间
 		//assert(top->f == (a ^ b));
