@@ -5,29 +5,29 @@
 #include "Vtop.h"
 #include "verilated_vcd_c.h"
 #include "verilated.h"
-static TOP_NAME top;
+//static TOP_NAME top;
 void nvboard_bind_all_pins(Vtop* top);
 
-void single_cycle() {
-  top.clk = 0; top.eval();
-  top.clk = 1; top.eval();
+void single_cycle(Vtop* top) {
+  top->clk = 0; top->eval();
+  top->clk = 1; top->eval();
 }
 
-void reset(int n) {
-  top.rst = 1;
-  while (n -- > 0) single_cycle();
-  top.rst = 0;
+void reset(int n, Vtop* top) {
+  top->rst = 1;
+  while (n -- > 0) single_cycle(top);
+  top->rst = 0;
 }
 
 int main(int argc, char** argv) {
-/*
+
 	VerilatedContext* contextp = new VerilatedContext;
 	contextp->commandArgs(argc, argv);
 	Vtop* top = new Vtop{contextp};
 
 
 
-
+/*
 	VerilatedVcdC* tfp = new VerilatedVcdC; //初始化VCD对象指针
 	contextp->traceEverOn(true); //打开追踪功能
 	top->trace(tfp, 0); //
@@ -35,17 +35,17 @@ int main(int argc, char** argv) {
 
 */
 
-	nvboard_bind_all_pins(&top);
+	nvboard_bind_all_pins(top);
 
 	nvboard_init();
-	reset(10);
+	reset(10, top);
 
 //!contextp->gotFinish()
 	while (1) {
 
 
 
-		top.eval();
+		top->eval();
 		//printf("a = %d, b = %d, f = %d\n", top->a, top->b, top->f);
 
 
@@ -54,7 +54,7 @@ int main(int argc, char** argv) {
 		//contextp->timeInc(1); //推动仿真时间
 		//assert(top->f == (a ^ b));
 		nvboard_update();
-		single_cycle();
+		single_cycle(top);
 	}
 	//delete top;
 	//tfp->close();
