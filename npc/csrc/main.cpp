@@ -34,7 +34,7 @@ int main(int argc, char** argv) {
 		//int b = rand() & 1;
 		//top->a = a;
 		//top->b = b;
-		//top->eval();
+		top->eval();
 		printf("a = %d, b = %d, f = %d\n", top->a, top->b, top->f);
 		//tfp->dump(contextp->time()); //dump wave
 		//contextp->timeInc(1); //推动仿真时间
