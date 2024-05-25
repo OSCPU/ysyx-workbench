@@ -10,7 +10,7 @@ VerilatedContext *contextp = NULL;
 Vtop *top = NULL;
 VerilatedVcdC *tfp = NULL;
 
-void nvboard_bind_all_pins(Vtop *top);
+// void nvboard_bind_all_pins(Vtop *top);
 void sim_init(int argc, char **argv);
 
 /*
@@ -35,16 +35,14 @@ int main(int argc, char **argv)
 
 	// nvboard_init();
 
-	//! contextp->gotFinish()
-	while (1)
+	while (1) //! contextp->gotFinish()
 	{
 
 		// printf("a = %d, b = %d, f = %d\n", top->a, top->b, top->f);
 
 		/**/
-		top->a = rand() % 2;
-		top->b = rand() % 2;
-		top->s = rand() % 2;
+		top->a = rand() % 16;
+		top->s = rand() % 4;
 
 		top->eval();
 		contextp->timeInc(1);		 // 推动仿真时间

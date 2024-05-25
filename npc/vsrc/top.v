@@ -1,25 +1,17 @@
 module top(
-  input clk,
-  input rst,
-  input a,b,s,
-  output reg [15:0] led,
+  input [3:0] a,
+  input [1:0] s,
   output y
 );
-
-m_mux21 my_mux21(
+mux41 mux41_0(
   .a(a),
-  .b(b),
   .s(s),
   .y(y)
 );
 
 
 
-light my_light(
-  .clk(clk),
-  .rst(rst),
-  .led(led)
-);
+
 
 
 endmodule
