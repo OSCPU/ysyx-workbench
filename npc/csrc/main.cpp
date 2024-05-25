@@ -5,14 +5,13 @@
 #include "Vtop.h"
 #include "verilated_vcd_c.h"
 #include "verilated.h"
-//static TOP_NAME top;
-VerilatedContext* contextp=NULL;
-Vtop* top = NULL;
-VerilatedVcdC* tfp = NULL;
+// static TOP_NAME top;
+VerilatedContext *contextp = NULL;
+Vtop *top = NULL;
+VerilatedVcdC *tfp = NULL;
 
-
-void nvboard_bind_all_pins(Vtop* top);
-void sim_init(int argc, char** argv);
+void nvboard_bind_all_pins(Vtop *top);
+void sim_init(int argc, char **argv);
 
 /*
 void single_cycle(Vtop* top) {
@@ -27,60 +26,46 @@ void reset(int n, Vtop* top) {
 }
 */
 
+int main(int argc, char **argv)
+{
 
+	sim_init(argc, argv);
 
-int main(int argc, char** argv) {
+	// nvboard_bind_all_pins(top);
 
-	sim_init(argc,argv);
+	// nvboard_init();
 
-	
+	//! contextp->gotFinish()
+	while (1)
+	{
 
+		// printf("a = %d, b = %d, f = %d\n", top->a, top->b, top->f);
 
-top->a=0;
-top->b=0;
-top->s=1;
-
-
-	
-
-
-	//nvboard_bind_all_pins(top);
-
-	//nvboard_init();
-	
-
-//!contextp->gotFinish()
-	while (1) {
-
-
-
-
+		/**/
+		top->a = rand() % 2;
+		top->b = rand() % 2;
+		top->s = 1;
 
 		top->eval();
-		//printf("a = %d, b = %d, f = %d\n", top->a, top->b, top->f);
+		contextp->timeInc(1);		 // 推动仿真时间
+		tfp->dump(contextp->time()); // dump wave
 
-
-/**/
-
-		tfp->dump(contextp->time()); //dump wave
-		contextp->timeInc(1); //推动仿真时间
-		//assert(top->f == (a ^ b));
-		//nvboard_update();
+		// nvboard_update();
 	}
 	delete top;
 	tfp->close();
 	delete contextp;
-	//nvboard_quit();
+	// nvboard_quit();
 	return 0;
 }
 
-
-void sim_init(int argc, char** argv){
+void sim_init(int argc, char **argv)
+{
 	contextp = new VerilatedContext;
 	contextp->commandArgs(argc, argv);
 	top = new Vtop{contextp};
-	tfp = new VerilatedVcdC; //初始化VCD对象指针
-	contextp->traceEverOn(true); //打开追踪功能
-	top->trace(tfp, 0); //
-	tfp->open("wave.vcd"); //设置输出的文件wave.vcd
+	tfp = new VerilatedVcdC;	 // 初始化VCD对象指针
+	contextp->traceEverOn(true); // 打开追踪功能
+	top->trace(tfp, 0);			 //
+	tfp->open("wave.vcd");		 // 设置输出的文件wave.vcd
 }
