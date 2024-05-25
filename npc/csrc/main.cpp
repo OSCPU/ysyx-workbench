@@ -44,7 +44,7 @@ int main(int argc, char **argv)
 		/**/
 		top->a = rand() % 2;
 		top->b = rand() % 2;
-		top->s = 1;
+		top->s = rand() % 2;
 
 		top->eval();
 		contextp->timeInc(1);		 // 推动仿真时间
