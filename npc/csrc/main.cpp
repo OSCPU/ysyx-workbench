@@ -13,6 +13,8 @@ VerilatedVcdC* tfp = NULL;
 
 void nvboard_bind_all_pins(Vtop* top);
 void sim_init(int argc, char** argv);
+
+/*
 void single_cycle(Vtop* top) {
   top->clk = 0; top->eval();
   top->clk = 1; top->eval();
@@ -23,7 +25,7 @@ void reset(int n, Vtop* top) {
   while (n -- > 0) single_cycle(top);
   top->rst = 0;
 }
-
+*/
 
 
 
@@ -43,10 +45,12 @@ int main(int argc, char** argv) {
 	nvboard_bind_all_pins(top);
 
 	nvboard_init();
-	reset(10, top);
+	
 
 //!contextp->gotFinish()
 	while (1) {
+
+
 
 
 
@@ -54,16 +58,18 @@ int main(int argc, char** argv) {
 		//printf("a = %d, b = %d, f = %d\n", top->a, top->b, top->f);
 
 
-
-		//tfp->dump(contextp->time()); //dump wave
-		//contextp->timeInc(1); //推动仿真时间
+/**/
+top->a=rand()%2;
+top->b=rand()%2;
+top->s=rand()%2;
+		tfp->dump(contextp->time()); //dump wave
+		contextp->timeInc(1); //推动仿真时间
 		//assert(top->f == (a ^ b));
 		nvboard_update();
-		single_cycle(top);
 	}
-	//delete top;
-	//tfp->close();
-	//delete contextp;
+	delete top;
+	tfp->close();
+	delete contextp;
 	nvboard_quit();
 	return 0;
 }
