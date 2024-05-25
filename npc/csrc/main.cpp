@@ -42,9 +42,9 @@ int main(int argc, char** argv) {
 	
 
 
-	nvboard_bind_all_pins(top);
+	//nvboard_bind_all_pins(top);
 
-	nvboard_init();
+	//nvboard_init();
 	
 
 //!contextp->gotFinish()
@@ -61,16 +61,16 @@ int main(int argc, char** argv) {
 /**/
 top->a=rand()%2;
 top->b=rand()%2;
-top->s=rand()%2;
+top->s=1;
 		tfp->dump(contextp->time()); //dump wave
 		contextp->timeInc(1); //推动仿真时间
 		//assert(top->f == (a ^ b));
-		nvboard_update();
+		//nvboard_update();
 	}
 	delete top;
 	tfp->close();
 	delete contextp;
-	nvboard_quit();
+	//nvboard_quit();
 	return 0;
 }
 
