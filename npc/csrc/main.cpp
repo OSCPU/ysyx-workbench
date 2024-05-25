@@ -29,7 +29,6 @@ void reset(int n, Vtop* top) {
 
 
 
-
 int main(int argc, char** argv) {
 
 	sim_init(argc,argv);
@@ -37,6 +36,9 @@ int main(int argc, char** argv) {
 	
 
 
+top->a=0;
+top->b=0;
+top->s=1;
 
 
 	
@@ -59,9 +61,7 @@ int main(int argc, char** argv) {
 
 
 /**/
-top->a=rand()%2;
-top->b=rand()%2;
-top->s=1;
+
 		tfp->dump(contextp->time()); //dump wave
 		contextp->timeInc(1); //推动仿真时间
 		//assert(top->f == (a ^ b));
