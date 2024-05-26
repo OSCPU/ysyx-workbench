@@ -46,6 +46,8 @@ all: default
 sim: default
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	@echo $(VSRCS)
+	$(BIN)
+
 	
 
 
