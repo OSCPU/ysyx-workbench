@@ -10,7 +10,7 @@ VerilatedContext *contextp = NULL;
 Vtop *top = NULL;
 VerilatedVcdC *tfp = NULL;
 
-void nvboard_bind_all_pins(Vtop *top);
+// void nvboard_bind_all_pins(Vtop *top);
 void sim_init(int argc, char **argv);
 
 /*
@@ -31,30 +31,29 @@ int main(int argc, char **argv)
 
 	sim_init(argc, argv);
 
-	nvboard_bind_all_pins(top);
+	// nvboard_bind_all_pins(top);
 
-	nvboard_init();
+	// nvboard_init();
 
 	while (1) //! contextp->gotFinish()
 	{
 
-		/*
-		top->a = rand() % 16;
-		top->s = rand() % 4;
+		/**/
+		top->x = rand() % 4;
+		top->en = 1;
 
 		top->eval();
 		contextp->timeInc(1);		 // 推动仿真时间
 		tfp->dump(contextp->time()); // dump wave
-*/
 
 		top->eval();
-		nvboard_update();
+		// nvboard_update();
 	}
-	 delete top;
-	 tfp->close();
-	 delete contextp;
-	 nvboard_quit();
-	 return 0;
+	delete top;
+	tfp->close();
+	delete contextp;
+	// nvboard_quit();
+	return 0;
 }
 
 void sim_init(int argc, char **argv)
