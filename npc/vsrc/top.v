@@ -1,10 +1,15 @@
 module top(
-input [1:0] x,
-input en,
-output [3:0] y
+  input [3:0] x,
+  input en,
+  output reg [1:0] y
 
 );
-decode24 u1(.x(x),.en(en),.y(y));
+encode42_p enc42(
+  .x(x),
+  .en(en),
+  .y(y)
+);
+
 
 
 
