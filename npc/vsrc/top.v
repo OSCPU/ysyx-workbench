@@ -1,21 +1,12 @@
 module top(
-  input [3:0] x,
+  input [7:0] x,
   input en,
-  output reg [1:0] y
-
+  output reg [6:0] h,
+  output reg dec
 );
-encode42_p enc42(
-  .x(x),
-  .en(en),
-  .y(y)
-);
-
-
-
-
-
-
-
+reg [2:0] y;
+encode83 e83(x,en,y);
+bcd7seg bcd({1'b0,y},h,dec);
 
 
 endmodule

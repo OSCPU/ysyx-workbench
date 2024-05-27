@@ -5,12 +5,11 @@
 #include "Vtop.h"
 #include "verilated_vcd_c.h"
 #include "verilated.h"
-// static TOP_NAME top;
 VerilatedContext *contextp = NULL;
 Vtop *top = NULL;
 VerilatedVcdC *tfp = NULL;
 
-// void nvboard_bind_all_pins(Vtop *top);
+void nvboard_bind_all_pins(Vtop *top);
 void sim_init(int argc, char **argv);
 
 /*
@@ -31,28 +30,28 @@ int main(int argc, char **argv)
 
 	sim_init(argc, argv);
 
-	// nvboard_bind_all_pins(top);
+	nvboard_bind_all_pins(top);
 
-	// nvboard_init();
+	nvboard_init();
 
-	while (1) //! contextp->gotFinish()
-	{
+	 while (1) //! contextp->gotFinish()
+	 {
 
-		/**/
-		top->x = rand() % 16;
-		top->en = 1;
+		 /*
+		 top->x = rand() % 16;
+		 top->en = 1;
 
-		top->eval();
-		contextp->timeInc(1);		 // 推动仿真时间
-		tfp->dump(contextp->time()); // dump wave
-
-		top->eval();
-		// nvboard_update();
+		 top->eval();
+		 contextp->timeInc(1);		 // 推动仿真时间
+		 tfp->dump(contextp->time()); // dump wave
+ */
+		 top->eval();
+		nvboard_update();
 	}
 	delete top;
 	tfp->close();
 	delete contextp;
-	// nvboard_quit();
+	nvboard_quit();
 	return 0;
 }
 
