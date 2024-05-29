@@ -36,9 +36,9 @@ int main(int argc, char **argv)
 
 	while (1) //! contextp->gotFinish()
 	{
-		top->a = 0;
-		top->b = 0;
-		top->add_sub = 0;
+		top->a = 45;
+		top->b = 22;
+		top->add_sub = 1;
 
 		top->eval();
 		contextp->timeInc(1);		 // 推动仿真时间
