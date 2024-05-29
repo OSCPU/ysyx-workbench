@@ -5,7 +5,8 @@ module top(
     output carry,
     output zero,
     output overflow,
-    output [31:0]result
+    output [31:0] result,
+    output [31:0] B_eff
 );
 addsub addsub1(
     .a(a),
@@ -14,7 +15,8 @@ addsub addsub1(
     .carry(carry),
     .zero(zero),
     .overflow(overflow),
-    .result(result)
+    .result(result),
+    .B_eff(B_eff)
 );
 
 
