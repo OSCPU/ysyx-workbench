@@ -1,12 +1,22 @@
 module top(
-  input [7:0] x,
-  input en,
-  output reg [6:0] h,
-  output reg dec
+    input [31:0]a,
+    input [31:0]b,
+    input add_sub,
+    output carry,
+    output zero,
+    output overflow,
+    output [31:0]result
 );
-reg [2:0] y;
-encode83 e83(x,en,y);
-bcd7seg bcd({1'b0,y},h,dec);
+addsub addsub1(
+    .a(a),
+    .b(b),
+    .add_sub(add_sub),
+    .carry(carry),
+    .zero(zero),
+    .overflow(overflow),
+    .result(result)
+);
+
 
 
 endmodule
