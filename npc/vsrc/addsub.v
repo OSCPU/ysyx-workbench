@@ -11,8 +11,8 @@ module addsub (
     wire [31:0]B_eff;
     wire [32:0]mid ;
     assign Cin = add_sub;
-    assign B_eff = b^{32{add_sub}};
-    assign mid = a + B_eff+ {31'b0,Cin};
+    assign B_eff = b^{32{add_sub}}+{30'b0,Cin};
+    assign mid = a + B_eff;
 
 
     assign {carry,result} = mid;
