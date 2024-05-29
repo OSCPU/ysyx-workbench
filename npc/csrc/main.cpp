@@ -36,16 +36,16 @@ int main(int argc, char **argv)
 
 	while (1) //! contextp->gotFinish()
 	{
-		 top->a = 6;
-		 top->b = 7;
-		 top->add_sub = 1;
+		top->a = 6;
+		top->b = 7;
+		top->add_sub = 0;
 
-		 top->eval();
-		 contextp->timeInc(1);		  // 推动仿真时间
-		 tfp->dump(contextp->time()); // dump wave
-									  /*
-											 top->eval();
-											nvboard_update();*/
+		top->eval();
+		contextp->timeInc(1);		 // 推动仿真时间
+		tfp->dump(contextp->time()); // dump wave
+									 /*
+											top->eval();
+										   nvboard_update();*/
 	}
 	delete top;
 	tfp->close();
