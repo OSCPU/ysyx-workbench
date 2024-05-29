@@ -1,11 +1,11 @@
 module top(
-    input [31:0]a,
-    input [31:0]b,
+    input [3:0]a,
+    input [3:0]b,
     input add_sub,
     output carry,
     output zero,
     output overflow,
-    output [31:0] result
+    output [3:0] result
 );
 addsub addsub1(
     .a(a),
