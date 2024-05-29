@@ -5,11 +5,10 @@ module addsub (
     output carry,
     output zero,
     output overflow,
-    output [31:0] result,
-    output [31:0] B_eff
+    output [31:0] result
 );
     wire Cin;
-    
+    wire [31:0]B_eff;
     assign Cin = add_sub;
     assign B_eff = b^{32{add_sub}};
 

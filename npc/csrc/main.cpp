@@ -37,7 +37,7 @@ int main(int argc, char **argv)
 	while (1) //! contextp->gotFinish()
 	{
 		top->a = 45;
-		top->b = 22;
+		top->b = 45;
 		top->add_sub = 1;
 
 		top->eval();
