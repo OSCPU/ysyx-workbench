@@ -15,8 +15,8 @@ module addsub (
     assign mid = a + B_eff+ {31'b0,Cin};
 
 
-    assign {carry,result} = add_sub?{1'b0,mid[31:0]}:mid[32:0];
-    assign zero= (result==0&&carry==0);
+    assign {carry,result} = mid;
+    assign zero= (result==0);
     assign overflow = (a[31]==B_eff[31]&&a[31]!=result[31]);
 
 endmodule
