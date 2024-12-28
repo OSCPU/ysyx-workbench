@@ -47,6 +47,13 @@ static int cmd_c(char *args) {
   return 0;
 }
 
+static int cmd_info_r(char *args) {
+    // 当用户输入 "info r" 时，调用打印寄存器值的函数
+    isa_reg_display();
+    return 0;  // 返回成功
+}
+
+
 
 static int cmd_q(char *args) {
 	exit(0);
@@ -54,6 +61,9 @@ static int cmd_q(char *args) {
 }
 
 static int cmd_help(char *args);
+
+static int cmd_si(char *args);
+
 
 static struct {
   const char *name;
@@ -63,10 +73,28 @@ static struct {
   { "help", "Display information about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
+	{ "si", "Execute one or more instructions step by step", cmd_si },
+ { "info_r", "Display register values", cmd_info_r}
+
 
   /* TODO: Add more commands */
 
 };
+
+
+static int cmd_si(char *args) {
+  int n = 1; // 默认执行1条指令
+  if (args != NULL) {
+    n = atoi(args); // 将参数转换为整数，表示执行的指令数量
+    if (n <= 0) {
+      printf("Invalid argument. Please provide a positive integer.\n");
+      return 0;
+    }
+  }
+  cpu_exec(n); // 调用cpu_exec执行n条指令
+  return 0;
+}
+
 
 #define NR_CMD ARRLEN(cmd_table)
 
