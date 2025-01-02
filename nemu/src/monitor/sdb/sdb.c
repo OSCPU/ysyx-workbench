@@ -64,6 +64,10 @@ static int cmd_help(char *args);
 
 static int cmd_si(char *args);
 
+static int cmd_x(char *args);
+
+void mem_scan(char *args);
+
 
 static struct {
   const char *name;
@@ -74,13 +78,18 @@ static struct {
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
 	{ "si", "Execute one or more instructions step by step", cmd_si },
- { "info_r", "Display register values", cmd_info_r}
+ { "info_r", "Display register values", cmd_info_r},
 
-
+  { "x", "Scan memory (usage: x <num> <address>)", cmd_x }
   /* TODO: Add more commands */
 
 };
 
+
+static int cmd_x(char *args) {
+    mem_scan(args);
+    return 0;
+}
 
 static int cmd_si(char *args) {
   int n = 1; // 默认执行1条指令

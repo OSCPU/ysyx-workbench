@@ -17,6 +17,9 @@
 #include <cpu/decode.h>
 #include <cpu/difftest.h>
 #include <locale.h>
+#include <memory/vaddr.h>
+
+
 
 /* The assembly code of instructions executed is only output to the screen
  * when the number of instructions executed is less than this value.
@@ -95,6 +98,35 @@ void assert_fail_msg() {
   isa_reg_display();
   statistic();
 }
+
+
+void mem_scan(char *args) {
+    if (args == NULL) {
+        printf("Usage: x <num> <address>\n");
+        return;
+    }
+
+    // 解析参数
+    char *num_str = strtok(args, " ");
+    char *addr_str = strtok(NULL, " ");
+    if (num_str == NULL || addr_str == NULL) {
+        printf("Usage: x <num> <address>\n");
+        return;
+    }
+
+    int num = atoi(num_str); // 要读取的内存单元数
+    vaddr_t addr = strtol(addr_str, NULL, 16); // 起始地址（十六进制）
+
+    printf("Scanning memory from address 0x%08x, %d units:\n", addr, num);
+
+    // 读取并打印内存内容
+    for (int i = 0; i < num; i++) {
+        word_t data = vaddr_read(addr, 4); // 假设每个单元为 4 字节
+        printf("0x%08x: 0x%08x\n", addr, data);
+        addr += 4; // 下一个单元地址
+    }
+}
+
 
 /* Simulate how the CPU works. */
 void cpu_exec(uint64_t n) {
