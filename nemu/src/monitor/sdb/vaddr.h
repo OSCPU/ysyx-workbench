@@ -13,29 +13,17 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
+#ifndef __MEMORY_VADDR_H__
+#define __MEMORY_VADDR_H__
+
 #include <common.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdbool.h>
 
-void init_monitor(int, char *[]);
-void am_init_monitor();
-void engine_start();
-int is_exit_status_bad();
-word_t expr(char *e, bool *success);
+word_t vaddr_ifetch(vaddr_t addr, int len);
+word_t vaddr_read(vaddr_t addr, int len);
+void vaddr_write(vaddr_t addr, int len, word_t data);
 
-int main(int argc, char *argv[]) {
-  /* Initialize the monitor. */
-#ifdef CONFIG_TARGET_AM
-  am_init_monitor();
-#else
-  init_monitor(argc, argv);
+#define PAGE_SHIFT        12
+#define PAGE_SIZE         (1ul << PAGE_SHIFT)
+#define PAGE_MASK         (PAGE_SIZE - 1)
+
 #endif
-
-  /* Start engine. */
-  engine_start();
-
-  return is_exit_status_bad();
-}
-

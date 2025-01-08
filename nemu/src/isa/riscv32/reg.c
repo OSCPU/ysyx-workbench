@@ -34,10 +34,15 @@ void isa_reg_display()
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
-  
+ 
+ if (s[0] == '$') {
+        s++;  // 去掉前导的 '$'
+    }
+  printf("Requesting register value for: %s\n", s);
+
 	 for (int i = 0; i < 32; i++) {
     if (strcmp(s, regs[i]) == 0) {  // 如果名称匹配
-      *success = true;
+	    *success = true;
       return cpu.gpr[i];  // 返回对应的寄存器值
     }
   }

@@ -139,8 +139,10 @@ int get_priority(int type) {
       return 3;  // 与运算符的优先级
     case TK_OR: 
       return 4;  // 或运算符的优先级
-    case TK_EQ: case TK_NEQ: 
+    case TK_EQ:  
       return 5;  // 比较运算符的优先级
+	 case TK_NEQ:
+		return 6;
     default:
       return INT_MAX; // 非运算符的优先级
   }
@@ -163,10 +165,26 @@ EvalResult eval(int p, int q) {
             result.success = true;
             result.value = atoi(tokens[p].str);  // 将字符串转为整数
             return result;
-        } else {
+        }else  if(tokens[p].type == TK_REG)
+        {
+                bool success = false;
+            result.value = isa_reg_str2val(tokens[p].str + 1, &success);  // 去>掉 '$' 符号
+            if (!success) {
+                printf("Invalid register at position %d: %s\n", p, tokens[p].str);
+                return result;
+            }
+            result.success = true;
+            return result;
+
+
+
+	}	
+	else {
             printf("Invalid token type at position %d: %d\n", p, tokens[p].type);
             return result;
         }
+    
+	
     }
 
     // 括号匹配检测
@@ -208,6 +226,17 @@ EvalResult eval(int p, int q) {
             }
             result.value = left.value / right.value;
             break;
+	    case TK_EQ: result.value = (left.value == right.value);
+///		printf(" %c\n", tokens[op].type);
+       		printf("%d ",TK_EQ);
+			break;
+	    case TK_NEQ:result.value = (left.value != right.value);
+			printf("%d ",TK_NEQ);
+			break;
+case TK_AND:result.value = (left.value &&  right.value);
+                        
+                        break;
+
         default:
             printf("Unsupported operator at position %d: %c\n", op, tokens[op].type);
             return result;
@@ -354,6 +383,29 @@ case TK_MUL: {
             matched = true;
             break;
           }
+case TK_NEQ: {
+            // Equals '=='
+            tokens[nr_token].type = TK_NEQ;
+            strncpy(tokens[nr_token].str, substr_start, substr_len);
+            tokens[nr_token].str[substr_len] = '\0';
+            nr_token++;
+            matched = true;
+            break;
+          }
+
+case TK_AND: {
+            // Equals '=='
+            tokens[nr_token].type = TK_AND;
+            strncpy(tokens[nr_token].str, substr_start, substr_len);
+            tokens[nr_token].str[substr_len] = '\0';
+            nr_token++;
+            matched = true;
+            break;
+          }
+
+
+
+
          // case '+':
           case '-':
           case '*':
@@ -391,6 +443,7 @@ case TK_MUL: {
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
+	 // printf("Error: Failed to tokenize expression: %s\n", e);
     *success = false;
     return 0;
   }
