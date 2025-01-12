@@ -19,7 +19,7 @@
  * Type 'man regex' for more information about POSIX regex functions.
  */
 #include <limits.h>
-
+#include <stdint.h>  // 引入 uintptr_t
 #include <regex.h>
 #include <assert.h>
 enum {
@@ -62,7 +62,7 @@ static struct rule {
   {"[0-9]+", TK_DEC},          // 十进制数字
   {"\\$[a-zA-Z_][a-zA-Z0-9_]*", TK_REG}, // 寄存器
   {"[a-zA-Z_][a-zA-Z0-9_]*", TK_VAR},   // 变量名
-
+         // 指针解引用
   {" +", TK_NOTYPE},    // spaces
   {"\\+", TK_PLUS},         // plus
   {"==", TK_EQ},        // equal
@@ -74,6 +74,8 @@ static regex_t re[NR_REGEX] = {};
 bool matched = false;
 // 在文件的顶部或者调用前添加声明
 int get_priority(int type);
+int n=5;
+int *p=&n;
 
 bool check_parentheses(int p, int q);
 int min_priority = INT_MAX; // 当前最低优先级
@@ -185,7 +187,13 @@ EvalResult eval(int p, int q) {
         }
     
 	
+    
     }
+
+
+
+ 
+
 
     // 括号匹配检测
     if (tokens[p].type == '(' && tokens[q].type == ')') {
@@ -198,6 +206,24 @@ EvalResult eval(int p, int q) {
             printf("Mismatched parentheses from %d to %d\n", p, q);
             return result;
         }
+    }
+ if (tokens[p].type == TK_DEREF) {
+	 printf("%d ",TK_DEREF);
+	printf("%d ",TK_MUL);
+
+	printf("tokens[%d].type = %d, tokens[%d].str = %s\n", p, tokens[p].type, p, tokens[p].str);
+
+
+        EvalResult deref_result = eval(p + 1, q);  // 递归解析 * 后的内容
+        if (!deref_result.success) {
+            printf("Failed to evaluate dereference at position %d\n", p);
+            return result;
+        }
+
+ uintptr_t address = deref_result.value;  // 将解引用值存为地址
+        result.value = *(int*)address;  // 将地址转换为指针并解引用
+        result.success = true;
+        return result;
     }
 
     // 找到主操作符（优先级最低的）
@@ -241,6 +267,7 @@ case TK_AND:result.value = (left.value &&  right.value);
             printf("Unsupported operator at position %d: %c\n", op, tokens[op].type);
             return result;
     }
+   
 
     result.success = true;
     return result;
@@ -282,6 +309,25 @@ static bool make_token(char *e) {
          * to record the token in the array `tokens'. For certain types
          * of tokens, some extra actions should be performed.
          */
+
+for (int i = 0; i < nr_token; i++) {
+    // 如果当前 token 是 '*'
+    if (tokens[i].type == TK_MUL) {
+        // 如果 '*' 前是寄存器或者数字，且 '*' 是第一个 token 或前一个 token 是运算符
+        if (i == 0 || tokens[i - 1].type == TK_PLUS || tokens[i - 1].type == TK_MINUS ||
+                 tokens[i - 1].type == TK_MUL || tokens[i - 1].type == TK_DIV) {
+            // 认为 '*' 是指针解引用操作符
+            tokens[i].type = TK_DEREF;
+            printf("Detected dereference: *\n");
+        }
+        // 如果 '*' 前是加号或减号，或者是其他操作符，则认为是乘法操作符
+        else 
+	{
+            printf("Detected multiplication: *\n");
+        }
+    }
+}
+
 
         switch (rules[i].token_type) {
 
@@ -375,13 +421,13 @@ case TK_MUL: {
             break;
           }
           case TK_DEREF: {
-            // Dereference symbol *
-            tokens[nr_token].type = TK_DEREF;
+         tokens[nr_token].type = TK_DEREF;
             strncpy(tokens[nr_token].str, substr_start, substr_len);
             tokens[nr_token].str[substr_len] = '\0';
             nr_token++;
             matched = true;
             break;
+
           }
 case TK_NEQ: {
             // Equals '=='
@@ -446,9 +492,11 @@ word_t expr(char *e, bool *success) {
 	 // printf("Error: Failed to tokenize expression: %s\n", e);
     *success = false;
     return 0;
-  }
+  }	
 
-  /* TODO: Insert codes to evaluate the expression. */
+
+
+  /* TODO: Insert codes to evaluate the exression. */
    EvalResult result = eval(0, nr_token - 1);
   if (result.success) {
     *success = true;
