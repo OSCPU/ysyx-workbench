@@ -18,6 +18,7 @@
 #include <cpu/difftest.h>
 #include <locale.h>
 #include <memory/vaddr.h>
+#include "../monitor/sdb/watchpoint.h"
 
 
 
@@ -40,6 +41,14 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   if (ITRACE_COND) { log_write("%s\n", _this->logbuf); }
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
+
+//check_watchpoints();
+
+#ifdef CONFIG_WATCHPOINT
+  // 在每次执行时检查监视点
+  check_watchpoints();
+#endif
+
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
 }
 
@@ -138,12 +147,16 @@ void cpu_exec(uint64_t n) {
     default: nemu_state.state = NEMU_RUNNING;
   }
 
+
+
   uint64_t timer_start = get_time();
 
   execute(n);
 
   uint64_t timer_end = get_time();
   g_timer += timer_end - timer_start;
+
+ check_watchpoints();  // 在每次执行指令后检查监视点
 
   switch (nemu_state.state) {
     case NEMU_RUNNING: nemu_state.state = NEMU_STOP; break;

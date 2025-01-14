@@ -18,6 +18,9 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "sdb.h"
+#include "watchpoint.h"  // 包含监视点相关函数和结构
+
+
 
 static int is_batch_mode = false;
 
@@ -66,6 +69,12 @@ static int cmd_si(char *args);
 
 static int cmd_x(char *args);
 
+static int cmd_watch(char *args);
+static int cmd_info_w(char *args);
+static int cmd_d(char *args);
+
+
+
 void mem_scan(char *args);
 static int cmd_p(char *args);
 
@@ -82,7 +91,10 @@ static struct {
 
   { "x", "Scan memory (usage: x <num> <address>)", cmd_x },
   /* TODO: Add more commands */
-  {"p","the machine is reading file..",cmd_p}
+  {"p","the machine is reading file..",cmd_p},
+   { "watch", "Set a watchpoint (usage: watch <expression>)", cmd_watch },
+  { "info_w", "Display all watchpoints", cmd_info_w },
+  { "d", "Delete a watchpoint (usage: d <watchpoint_number>)", cmd_d }
 };
 
 
@@ -161,6 +173,69 @@ static int cmd_p(char *args)
 
   fclose(file);
  return 0;
+}
+
+// 设置监视点
+static int cmd_watch(char *args) {
+
+ if (args == NULL || strlen(args) == 0) {
+        printf("Usage: watch <expression>\n");
+        return 0;
+    }
+
+    WP *wp = new_wp();  // 申请一个新的监视点
+    if (wp == NULL) {
+        printf("No free watchpoint slots available.\n");
+        return 0;
+    }
+
+    bool success = true;
+    wp->value = expr(args, &success);  // 计算表达式的初始值
+    if (!success) {
+        printf("Failed to evaluate expression: %s\n", args);
+        free_wp(wp);  // 如果表达式无效，释放监视点
+        return 0;
+    }
+
+    // 动态分配内存以存储表达式
+    wp->expr = malloc(strlen(args) + 1);  // 分配空间，+1 用于 '\0'
+    if (wp->expr == NULL) {
+        printf("Memory allocation failed.\n");
+        free_wp(wp);
+        return 0;
+    }
+    strcpy(wp->expr, args);  // 复制表达式内容到监视点
+
+    printf("Watchpoint %d set: %s\n", wp->NO, wp->expr);
+    return 0;	
+	/*    if (args == NULL) {
+        printf("Usage: watch <expression>\n");
+        return 0;
+    }
+    WP *wp = new_wp(args);  // 创建一个新的监视点
+    if (wp) {
+        printf("Watchpoint %d set: %s\n", wp->NO, wp->expr);
+    }
+    return 0;*/
+}
+
+// 显示所有监视点
+static int cmd_info_w(char *args) {
+    info_watchpoints();  // 显示所有监视点
+    return 0;
+}
+
+// 删除指定的监视点
+static int cmd_d(char *args) {
+    if (args == NULL) {
+        printf("Usage: d <watchpoint_number>\n");
+        return 0;
+    }
+    int no = atoi(args);  // 获取监视点编号
+	print_watchpoints();
+    delete_watchpoint(no);  // 删除监视点
+	print_watchpoints();
+    return 0;
 }
 
 static int cmd_si(char *args) {

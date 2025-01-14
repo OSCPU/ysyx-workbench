@@ -178,6 +178,14 @@ config DIFFTEST_REF_KVM
 endif
 endchoice
 
+config WATCHPOINT
+    bool "Enable Watchpoint Feature"
+    default y
+    help
+      If you enable this option, watchpoints will be checked during each
+      CPU execution cycle, which may incur some performance overhead. You can
+      disable this feature to improve performance if you don't need it.
+
 config DIFFTEST_REF_PATH
   string
   default "tools/qemu-diff" if DIFFTEST_REF_QEMU
