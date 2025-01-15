@@ -22,6 +22,11 @@
 #include <stdint.h>  // 引入 uintptr_t
 #include <regex.h>
 #include <assert.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <memory/vaddr.h>
+#include <memory/paddr.h>
+
 enum {
   TK_NOTYPE = 256,
   TK_EQ,
@@ -62,7 +67,7 @@ static struct rule {
   {"[0-9]+", TK_DEC},          // 十进制数字
   {"\\$[a-zA-Z_][a-zA-Z0-9_]*", TK_REG}, // 寄存器
   {"[a-zA-Z_][a-zA-Z0-9_]*", TK_VAR},   // 变量名
-         // 指针解引用
+ {"\\*", TK_DEREF},      // 指针解引用
   {" +", TK_NOTYPE},    // spaces
   {"\\+", TK_PLUS},         // plus
   {"==", TK_EQ},        // equal
@@ -150,6 +155,19 @@ int get_priority(int type) {
   }
 }
 
+// 假设物理内存的范围是 0x80000000 到 0x8FFFFFFF 
+#define MEM_BASE 0x80000000 
+#define MEM_SIZE 0x10000000 
+ 
+bool is_address_mapped(uintptr_t addr) { 
+    return addr >= MEM_BASE && addr < MEM_BASE + MEM_SIZE; 
+} 
+ 
+
+
+
+
+
 EvalResult eval(int p, int q) {
     EvalResult result;
     result.success = false;
@@ -180,21 +198,12 @@ EvalResult eval(int p, int q) {
 
 
 
-	}	
-	else {
-            printf("Invalid token type at position %d: %d\n", p, tokens[p].type);
-            return result;
-        }
-    
+	}
+   
+           
 	
     
     }
-
-
-
- 
-
-
     // 括号匹配检测
     if (tokens[p].type == '(' && tokens[q].type == ')') {
         // 检查括号是否匹配
@@ -208,23 +217,31 @@ EvalResult eval(int p, int q) {
         }
     }
  if (tokens[p].type == TK_DEREF) {
-	 printf("%d ",TK_DEREF);
-	printf("%d ",TK_MUL);
+	 if (tokens[p+1].type==TK_HEX)
+	 {
+		// printf("fuckyoufuck ytouajikshjdoah");
+		 uintptr_t addr = (uintptr_t)strtol(tokens[p+1].str, NULL, 16); // 将字符串转换为十六进制地址
+    printf("Resolved address: 0x%lx\n", addr);
 
-	printf("tokens[%d].type = %d, tokens[%d].str = %s\n", p, tokens[p].type, p, tokens[p].str);
-
-
-        EvalResult deref_result = eval(p + 1, q);  // 递归解析 * 后的内容
-        if (!deref_result.success) {
-            printf("Failed to evaluate dereference at position %d\n", p);
-            return result;
-        }
-
- uintptr_t address = deref_result.value;  // 将解引用值存为地址
-        result.value = *(int*)address;  // 将地址转换为指针并解引用
-        result.success = true;
+    // 检查地址是否有效
+    if (addr == 0) {
+        printf("Error: NULL pointer dereference!\n");
+        result.success = false;
         return result;
     }
+
+    // 使用 vaddr_ifetch 从虚拟地址中获取指令内容
+     printf("Reading content at address 0x%lx...\n", addr);
+    int value = paddr_read(addr, 4);  // 读取该地址内容
+    printf("Content at address 0x%lx: 0x%x\n", addr, value);
+
+    // 设置结果
+    result.success = true;
+    result.value = value; // 将读取的内容作为结果返回
+    return result;
+	 }
+        }
+
 
     // 找到主操作符（优先级最低的）
     int op = find_main_operator(p, q);
@@ -262,6 +279,8 @@ EvalResult eval(int p, int q) {
 case TK_AND:result.value = (left.value &&  right.value);
                         
                         break;
+	  
+
 
         default:
             printf("Unsupported operator at position %d: %c\n", op, tokens[op].type);
@@ -310,24 +329,14 @@ static bool make_token(char *e) {
          * of tokens, some extra actions should be performed.
          */
 
-for (int i = 0; i < nr_token; i++) {
-    // 如果当前 token 是 '*'
-    if (tokens[i].type == TK_MUL) {
-        // 如果 '*' 前是寄存器或者数字，且 '*' 是第一个 token 或前一个 token 是运算符
-        if (i == 0 || tokens[i - 1].type == TK_PLUS || tokens[i - 1].type == TK_MINUS ||
-                 tokens[i - 1].type == TK_MUL || tokens[i - 1].type == TK_DIV) {
-            // 认为 '*' 是指针解引用操作符
-            tokens[i].type = TK_DEREF;
-            printf("Detected dereference: *\n");
-        }
-        // 如果 '*' 前是加号或减号，或者是其他操作符，则认为是乘法操作符
-        else 
-	{
-            printf("Detected multiplication: *\n");
-        }
-    }
-}
-
+/*for (i = 0; i < nr_token; i ++) {
+  if (tokens[i].type == '*' && (i == 0 || tokens[i - 1].type != TK_NUM) ) {
+    tokens[i].type = TK_DEREF;
+  }  if((i!=0)&&(tokens[i - 1].type == TK_NUM))  tokens[i].type = TK_MUL;
+printf("%d ",tokens[i].type);
+  
+}*/
+	
 
         switch (rules[i].token_type) {
 
@@ -493,6 +502,21 @@ word_t expr(char *e, bool *success) {
     *success = false;
     return 0;
   }	
+
+/*for (i = 0; i < nr_token; i ++) {
+  if (tokens[i].type == '*' && (i == 0 || tokens[i - 1].type == certain type) ) {
+    tokens[i].type = TK_DEREF;
+  }
+}*/
+        /* 遍历所有 token */
+for (int i = 0; i < nr_token; i ++) {
+  if (tokens[i].type == TK_MUL && (i == 0 || tokens[i - 1].type != TK_NUM )) {
+   printf("wodiaonimade success:%d ",TK_DEREF);
+    printf("wodiaonimade success:%d ",TK_HEX);
+
+	 tokens[i].type = TK_DEREF;
+  }
+}
 
 
 

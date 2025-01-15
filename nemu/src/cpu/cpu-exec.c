@@ -151,12 +151,25 @@ void cpu_exec(uint64_t n) {
 
   uint64_t timer_start = get_time();
 
-  execute(n);
+//  execute(n);
+
+
+   for (uint64_t i = 0; i < n; i++) {
+    execute(1); // 执行单个指令
+    check_watchpoints(); // 每执行一步就检查监视点
+	if(nemu_state.state == NEMU_STOP)
+	{
+		 printf("NEMU is paused. Waiting for further instructions...\n");
+        	break;
+        
+
+	}
+  }
 
   uint64_t timer_end = get_time();
   g_timer += timer_end - timer_start;
 
- check_watchpoints();  // 在每次执行指令后检查监视点
+// check_watchpoints();  // 在每次执行指令后检查监视点
 
   switch (nemu_state.state) {
     case NEMU_RUNNING: nemu_state.state = NEMU_STOP; break;
