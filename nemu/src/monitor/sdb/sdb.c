@@ -19,13 +19,15 @@
 #include <readline/history.h>
 #include "sdb.h"
 #include "watchpoint.h"  // 包含监视点相关函数和结构
-
+#include <stdlib.h>  // 引入 exit 函数的头文件
 
 
 static int is_batch_mode = false;
+int exit_flag = 0;  // 标记是否退出主循环
 
 void init_regex();
 void init_wp_pool();
+int is_exit_status_bad();
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
@@ -59,8 +61,26 @@ static int cmd_info_r(char *args) {
 
 
 static int cmd_q(char *args) {
-	exit(0);
-  return 0;
+//	exit(0);
+//
+//nemu_state.state = NEMU_END;
+ // return 0;
+ 
+    // 更新 nemu_state 状态为退出状态
+//return   nemu_state.state = NEMU_QUIT;  // 设置退出状态
+   // nemu_state.halt_ret = 0;       // 退出返回值可以设置为 0，表示正常退出
+ nemu_state.state = NEMU_QUIT;  // 设置退出状态
+    nemu_state.halt_ret = 0;       // 退出返回值可以设置为 0，表示正常退出
+
+    // 打印退出信息
+    printf("Exiting the program...\n");
+
+    // 设置 exit_flag 为 true，通知主循环退出
+    exit_flag = 1;
+
+    return 1 ;	
+
+
 }
 
 static int cmd_help(char *args);
@@ -286,6 +306,7 @@ void sdb_mainloop() {
     cmd_c(NULL);
     return;
   }
+  
 
   for (char *str; (str = rl_gets()) != NULL; ) {
     char *str_end = str + strlen(str);
@@ -293,6 +314,7 @@ void sdb_mainloop() {
     /* extract the first token as the command */
     char *cmd = strtok(str, " ");
     if (cmd == NULL) { continue; }
+
 
     /* treat the remaining string as the arguments,
      * which may need further parsing
@@ -316,6 +338,11 @@ void sdb_mainloop() {
     }
 
     if (i == NR_CMD) { printf("Unknown command '%s'\n", cmd); }
+    if (exit_flag==1) {
+   		 return;
+  	}
+
+
   }
 }
 

@@ -132,6 +132,7 @@ int find_main_operator(int p, int q) {
             main_op = i;
         }
     }
+    printf("the return is %d ",main_op);
     return main_op;
 }
 
