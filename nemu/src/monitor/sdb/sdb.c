@@ -171,13 +171,16 @@ static int cmd_p(char *args)
             printf("Invalid format in line: %s\n", line);
             continue;
         }
+	
+	 char wrapped_expression[1024];
+        snprintf(wrapped_expression, sizeof(wrapped_expression), "(%s)", expression);
 
         // 转换预期结果为整数
         word_t expected_result = strtol(expected_result_str, NULL, 10);
 
         // 调用 expr() 计算表达式结果
         bool success = false;
-        word_t result = expr(expression, &success);
+        word_t result = expr(wrapped_expression, &success);
         if (!success) {
             printf("Failed to evaluate expression: %s\n", expression);
             continue;

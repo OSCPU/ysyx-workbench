@@ -62,7 +62,7 @@ static struct rule {
   {"\\)", ')'},                // 右括号
   {"&&", TK_AND},              // 逻辑与
   {"\\|\\|", TK_OR},           // 逻辑或               
-  {"!=", TK_NEQ},              // 不等于
+  {"!=", TK_NEQ},              /// 不等于
   {"0[xX][0-9a-fA-F]+", TK_HEX},  // 十六进制数字
   {"[0-9]+", TK_DEC},          // 十进制数字
   {"\\$[a-zA-Z_][a-zA-Z0-9_]*", TK_REG}, // 寄存器
@@ -116,26 +116,34 @@ typedef struct {
 static Token tokens[32] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
+// 找到最外层的主运算符
 int find_main_operator(int p, int q) {
     int min_priority = INT_MAX;
     int main_op = -1;
     int balance = 0;
 
     for (int i = p; i <= q; i++) {
-        if (tokens[i].type == '(') balance++;
-        else if (tokens[i].type == ')') balance--;
-        if (balance > 0) continue;  // 括号内的操作符跳过
-
+	printf("%d ",i);    
+    if (tokens[i].type == '(') {
+            balance++;  // 遇到左括号时增加平衡
+        } else if (tokens[i].type == ')') {
+            balance--;  // 遇到右括号时减少平衡
+        }
+	
+        if (balance > 0) continue;  // 跳过括号内的运算符
+//        printf("%d %d %d %d\n",TK_NOTYPE ,TK_PLUS,TK_MINUS,TK_MUL);
+        // 获取当前运算符的优先级
         int priority = get_priority(tokens[i].type);
-        if (priority >= 0 && priority <= min_priority) {
+	printf("%d :%d  %d\n ",i,tokens[i].type,priority);
+        // 如果是运算符且优先级较低，更新主运算符
+        if (priority < min_priority && priority != INT_MAX) {
             min_priority = priority;
             main_op = i;
         }
     }
-    printf("the return is %d ",main_op);
+    printf("Main operator index: %d\n", main_op);
     return main_op;
 }
-
 
 int get_priority(int type) {
   switch (type) {
@@ -172,7 +180,7 @@ bool is_address_mapped(uintptr_t addr) {
 EvalResult eval(int p, int q) {
     EvalResult result;
     result.success = false;
-
+	printf("%d %d\n",p,q);
     if (p > q) {
         // 无效表达式
         printf("Invalid expression from %d to %d\n", p, q);
@@ -208,15 +216,15 @@ EvalResult eval(int p, int q) {
     // 括号匹配检测
     if (tokens[p].type == '(' && tokens[q].type == ')') {
         // 检查括号是否匹配
+	printf("count");
         int match = check_parentheses(p, q);
         if (match) {
+		int op=find_main_operator(p+1,q-1);
+		if(op == -1)
+		{ return eval(p+1, q-1);}
             // 括号匹配，递归解析内部表达式
-            return eval(p + 1, q - 1);
-        } else {
-            printf("Mismatched parentheses from %d to %d\n", p, q);
-            return result;
-        }
-    }
+		else{
+		
  if (tokens[p].type == TK_DEREF) {
 	 if (tokens[p+1].type==TK_HEX)
 	 {
@@ -242,21 +250,13 @@ EvalResult eval(int p, int q) {
     return result;
 	 }
         }
-
-
-    // 找到主操作符（优先级最低的）
-    int op = find_main_operator(p, q);
-    if (op == -1) {
-        printf("No valid operator found from %d to %d\n", p, q);
-        return result;
-    }
-
-    // 递归计算左右子表达式
-    EvalResult left = eval(p, op - 1);
-    EvalResult right = eval(op + 1, q);
+ 	
+   EvalResult left = eval(p+1, op - 1);
+    EvalResult right = eval(op + 1, q-1);
     if (!left.success || !right.success) {
         return result;
     }
+
 
     // 根据操作符计算结果
     switch (tokens[op].type) {
@@ -288,9 +288,82 @@ case TK_AND:result.value = (left.value &&  right.value);
             return result;
     }
    
+  
+		}
+        } else {
+            printf("Mismatched parentheses from %d to %d\n", p, q);
+            return result;
+        }
+    }
+if (tokens[p].type != '(' ) {
 
+ if (tokens[p].type == TK_DEREF) {
+	 if (tokens[p+1].type==TK_HEX)
+	 {
+		// printf("fuckyoufuck ytouajikshjdoah");
+		 uintptr_t addr = (uintptr_t)strtol(tokens[p+1].str, NULL, 16); // 将字符串转换为十六进制地址
+    printf("Resolved address: 0x%lx\n", addr);
+
+    // 检查地址是否有效
+    if (addr == 0) {
+        printf("Error: NULL pointer dereference!\n");
+        result.success = false;
+        return result;
+    }
+
+    // 使用 vaddr_ifetch 从虚拟地址中获取指令内容
+     printf("Reading content at address 0x%lx...\n", addr);
+    int value = paddr_read(addr, 4);  // 读取该地址内容
+    printf("Content at address 0x%lx: 0x%x\n", addr, value);
+
+    // 设置结果
     result.success = true;
+    result.value = value; // 将读取的内容作为结果返回
     return result;
+	 }
+        }
+	int op=find_main_operator(p+1,q-1); 	
+   EvalResult left = eval(p, op - 1);
+    EvalResult right = eval(op + 1, q);
+    if (!left.success || !right.success) {
+        return result;
+    }
+
+
+    // 根据操作符计算结果
+    switch (tokens[op].type) {
+        case TK_PLUS: result.value = left.value + right.value; break;
+        case TK_MINUS: result.value = left.value - right.value; break;
+        case TK_MUL: result.value = left.value * right.value; break;
+        case TK_DIV:
+            if (right.value == 0) {
+                printf("Division by zero!\n");
+                return result;
+            }
+            result.value = left.value / right.value;
+            break;
+	    case TK_EQ: result.value = (left.value == right.value);
+///		printf(" %c\n", tokens[op].type);
+       		printf("%d ",TK_EQ);
+			break;
+	    case TK_NEQ:result.value = (left.value != right.value);
+			printf("%d ",TK_NEQ);
+			break;
+case TK_AND:result.value = (left.value &&  right.value);
+                        
+                        break;
+	  
+
+
+        default:
+            printf("Unsupported operator at position %d: %c\n", op, tokens[op].type);
+            return result;
+    }
+}
+ 
+      result.success = true;
+    return result;
+
 }
 
 bool check_parentheses(int p, int q) {
@@ -298,11 +371,12 @@ bool check_parentheses(int p, int q) {
     for (int i = p; i <= q; i++) {
         if (tokens[i].type == '(') balance++;
         else if (tokens[i].type == ')') balance--;
-        if (balance < 0) return 0;  // 遇到未匹配的右括号
+        if (balance < 0) return 0;  // 如果右括号数量多于左括号，返回 false
     }
-    return balance == 0;
-}
+     if(balance >0) return 0;
 
+    return balance == 0;  // 检查是否所有括号都匹配
+}
 
 static bool make_token(char *e) {
   int position = 0;
@@ -511,9 +585,10 @@ word_t expr(char *e, bool *success) {
 }*/
         /* 遍历所有 token */
 for (int i = 0; i < nr_token; i ++) {
-  if (tokens[i].type == TK_MUL && (i == 0 || tokens[i - 1].type != TK_NUM )) {
-   printf("wodiaonimade success:%d ",TK_DEREF);
-    printf("wodiaonimade success:%d ",TK_HEX);
+  if (tokens[i].type == TK_MUL && (i == 0 )) {
+	  
+//   printf("wodiaonimade success:%d ",TK_DEREF);
+  //  printf("wodiaonimade success:%d ",TK_HEX);
 
 	 tokens[i].type = TK_DEREF;
   }
