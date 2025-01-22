@@ -74,7 +74,7 @@ static struct rule {
 };
 
 #define NR_REGEX ARRLEN(rules)
-#define MAX_TOKEN_LENGTH 32
+#define MAX_TOKEN_LENGTH 1000
 static regex_t re[NR_REGEX] = {};
 bool matched = false;
 // 在文件的顶部或者调用前添加声明
@@ -104,7 +104,7 @@ void init_regex() {
 
 typedef struct token {
   int type;
-  char str[32];
+  char str[128];
 } Token;
 
 typedef struct {
@@ -113,7 +113,7 @@ typedef struct {
 } EvalResult;
 
 
-static Token tokens[32] __attribute__((used)) = {};
+static Token tokens[128] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
 // 找到最外层的主运算符

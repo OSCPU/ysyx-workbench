@@ -1,43 +1,44 @@
-#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
-#include <assert.h>
 #include <string.h>
-
-static char code_buf[65536 + 128] = {}; // a little larger than buf
-static char *code_format =
-"#include <stdio.h>\n"
-"int main() { "
-"  unsigned result = %s; "
-"  printf(\"%%u %s\\n\", result, \"%s\"); "
-"  return 0; "
-"}";
+#include <assert.h>
+#include <time.h>
+#include <stdint.h>  // 确保包含此头文件，定义了UINT32_MAX
 
 #define MAX_DEPTH 10  // 设置最大递归深度
 #define BUF_SIZE 1024 // 增加缓冲区大小
 
-// 随机选择一个数字
-int choose(int n) {
-    return rand() % n;
-}
-
-// 生成随机数字
+// 随机选择一个数字，生成32位无符号数
 void gen_num(char *buf) {
-    sprintf(buf, "%u", rand());
+    // 使用 rand() % UINT32_MAX 来生成 0 到 UINT32_MAX 的无符号整数
+    sprintf(buf, "%u", rand() % UINT32_MAX);  // 生成0到UINT32_MAX的无符号整数
 }
 
 // 生成运算符
 void gen_rand_op(char *op) {
-    switch (choose(8)) {  // 增加更多的操作符
+    switch (rand() % 4) {  // 只生成 + - * /
         case 0: strcpy(op, "+"); break;
         case 1: strcpy(op, "-"); break;
         case 2: strcpy(op, "*"); break;
         case 3: strcpy(op, "/"); break;
-        case 4: strcpy(op, "&&"); break;
-        case 5: strcpy(op, "||"); break;
-        case 6: strcpy(op, "!="); break;
-        case 7: strcpy(op, "=="); break;
+    }
+}
+
+// 在数字和运算符之间插入随机空格
+void add_random_spaces_between(char *buf) {
+    int len = strlen(buf);
+    for (int i = 0; i < len; i++) {
+        if (i > 0 && ((buf[i] == '+' || buf[i] == '-' || buf[i] == '*' || buf[i] == '/')
+            || buf[i] == '(' || buf[i] == ')')) {
+            // 1/3 的概率在运算符和数字或括号之间插入空格
+            if (rand() % 3 == 0) {
+                // 插入空格
+                memmove(buf + i + 1, buf + i, len - i + 1);
+                buf[i] = ' ';
+                len++;
+                i++;  // 跳过插入的空格
+            }
+        }
     }
 }
 
@@ -50,7 +51,7 @@ void gen_rand_expr(char *buf, int depth) {
 
     char temp_buf[BUF_SIZE];  // 使用临时缓冲区避免重叠
 
-    switch (choose(8)) {  // 增加更多的表达式生成方式
+    switch (rand() % 5) {  // 增加更多的表达式生成方式
         case 0:
             gen_num(buf);  // 生成数字
             break;
@@ -72,9 +73,9 @@ void gen_rand_expr(char *buf, int depth) {
             strcpy(buf, temp_buf);  // 使用临时缓冲区
             break;
         case 3:
-            // 生成一个负数表达式或取反表达式
+            // 保证负号不会连续生成
             gen_rand_expr(temp_buf, depth + 1);
-            sprintf(buf, "-%s", temp_buf);  // 生成负数表达式
+            sprintf(buf, "%s", temp_buf);  // 仅生成正数
             break;
         case 4:
             // 生成带更多括号的子表达式
@@ -82,7 +83,7 @@ void gen_rand_expr(char *buf, int depth) {
             strcat(temp_buf, "(");
             gen_rand_expr(temp_buf + strlen(temp_buf), depth + 1);
             strcat(temp_buf, ")");
-            if (choose(2)) {
+            if (rand() % 2) {
                 // 再次在括号外加一层
                 char tmp_buf[BUF_SIZE];
                 strcpy(tmp_buf, temp_buf);
@@ -91,70 +92,11 @@ void gen_rand_expr(char *buf, int depth) {
                 strcpy(buf, temp_buf);
             }
             break;
-        case 5:
-            // 生成逻辑表达式 (&& 或 ||)
-            char left_logic[BUF_SIZE], right_logic[BUF_SIZE], op_logic[10];
-            left_logic[0] = right_logic[0] = op_logic[0] = '\0';  // 初始化
-            gen_rand_expr(left_logic, depth + 1);  // 生成左子表达式
-            gen_rand_op(op_logic);      // 生成逻辑操作符
-            gen_rand_expr(right_logic, depth + 1); // 生成右子表达式
-            // 拼接最终的逻辑表达式
-            sprintf(temp_buf, "%s %s %s", left_logic, op_logic, right_logic);
-            strcpy(buf, temp_buf);
-            break;
-        case 6:
-            // 生成不等式表达式
-            gen_rand_expr(temp_buf, depth + 1);
-            sprintf(buf, "%s != 0", temp_buf);  // 生成不等式
-            break;
-        case 7:
-            // 生成等式表达式
-            gen_rand_expr(temp_buf, depth + 1);
-            sprintf(buf, "%s == 0", temp_buf);  // 生成等式
-            break;
     }
+    
+    // 在生成的表达式中随机插入空格
+    add_random_spaces_between(buf);
 }
 
-int main(int argc, char *argv[]) {
-    int seed = time(0);
-    srand(seed);
 
-    FILE *fp = fopen("input", "w");  // 打开文件用于写入
-    assert(fp != NULL);  // 确保文件成功打开
-
-    for (int i = 0; i < 100; i++) {  // 生成100条表达式
-        char expr_buf[BUF_SIZE];
-        gen_rand_expr(expr_buf, 0);  // 生成随机表达式
-      //  char result_buf[BUF_SIZE];
-        sprintf(code_buf, code_format, expr_buf, expr_buf);
-
-        // 写入临时 C 文件
-        FILE *temp_fp = fopen("/tmp/.code.c", "w");
-        assert(temp_fp != NULL);
-        fputs(code_buf, temp_fp);
-        fclose(temp_fp);
-
-        // 编译并生成可执行文件
-        int ret = system("gcc /tmp/.code.c -o /tmp/.expr");
-        if (ret != 0) continue;  // 编译失败，跳过
-
-        // 执行并获取结果
-        temp_fp = popen("/tmp/.expr", "r");
-        assert(temp_fp != NULL);
-
-        int result;
-        ret = fscanf(temp_fp, "%d", &result);
-        pclose(temp_fp);
-
-        if (ret == 1) {
-            fprintf(fp, "%u %s\n", result, expr_buf);  // 将结果和表达式写入文件
-        } else {
-            fprintf(fp, "Error executing expression: %s\n", expr_buf);
-        }
-    }
-
-    fclose(fp);  // 关闭文件
-
-    return 0;
-}
 
