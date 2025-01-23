@@ -69,7 +69,7 @@ static int cmd_q(char *args) {
     // 更新 nemu_state 状态为退出状态
 //return   nemu_state.state = NEMU_QUIT;  // 设置退出状态
    // nemu_state.halt_ret = 0;       // 退出返回值可以设置为 0，表示正常退出
- nemu_state.state = NEMU_QUIT;  // 设置退出状态
+ nemu_state.state = NEMU_END;  // 设置退出状态
     nemu_state.halt_ret = 0;       // 退出返回值可以设置为 0，表示正常退出
 
     // 打印退出信息
