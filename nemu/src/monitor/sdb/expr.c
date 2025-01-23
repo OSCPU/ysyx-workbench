@@ -136,9 +136,10 @@ int find_main_operator(int p, int q) {
         int priority = get_priority(tokens[i].type);
 	printf("%d :%d  %d\n ",i,tokens[i].type,priority);
         // 如果是运算符且优先级较低，更新主运算符
-        if (priority < min_priority && priority != INT_MAX) {
+        if ((priority < min_priority && priority != INT_MAX)||(priority == min_priority && main_op != -1)) {
             min_priority = priority;
             main_op = i;
+
         }
     }
     printf("Main operator index: %d\n", main_op);
@@ -219,7 +220,7 @@ EvalResult eval(int p, int q) {
 	printf("count");
         int match = check_parentheses(p, q);
         if (match) {
-		int op=find_main_operator(p+1,q-1);
+		int op=find_main_operator(p,q);
 		if(op == -1)
 		{ return eval(p+1, q-1);}
             // 括号匹配，递归解析内部表达式
@@ -251,8 +252,8 @@ EvalResult eval(int p, int q) {
 	 }
         }
  	
-   EvalResult left = eval(p+1, op - 1);
-    EvalResult right = eval(op + 1, q-1);
+   EvalResult left = eval(p, op - 1);
+    EvalResult right = eval(op + 1, q);
     if (!left.success || !right.success) {
         return result;
     }
@@ -295,8 +296,8 @@ case TK_AND:result.value = (left.value &&  right.value);
             return result;
         }
     }
-if (tokens[p].type != '(' ) {
-
+    if(tokens[p].type!='('||tokens[q].type!=')'){
+  
  if (tokens[p].type == TK_DEREF) {
 	 if (tokens[p+1].type==TK_HEX)
 	 {
@@ -322,7 +323,7 @@ if (tokens[p].type != '(' ) {
     return result;
 	 }
         }
-	int op=find_main_operator(p+1,q-1); 	
+	int op=find_main_operator(p,q); 	
    EvalResult left = eval(p, op - 1);
     EvalResult right = eval(op + 1, q);
     if (!left.success || !right.success) {
@@ -333,7 +334,10 @@ if (tokens[p].type != '(' ) {
     // 根据操作符计算结果
     switch (tokens[op].type) {
         case TK_PLUS: result.value = left.value + right.value; break;
-        case TK_MINUS: result.value = left.value - right.value; break;
+        case TK_MINUS:
+		      result.value = left.value - right.value;
+		     printf("the minus result is %d=%d-%d ", result.value,left.value , right.value);
+		      break;
         case TK_MUL: result.value = left.value * right.value; break;
         case TK_DIV:
             if (right.value == 0) {
