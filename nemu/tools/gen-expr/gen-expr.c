@@ -5,15 +5,14 @@
 #include <time.h>
 #include <stdint.h>  // 确保包含此头文件，定义了UINT32_MAX
 
-#define MAX_DEPTH 10  // 设置最大递归深度
-#define BUF_SIZE 1024 // 增加缓冲区大小
+#define MAX_DEPTH 60  // 设置最大递归深度
+#define BUF_SIZE 8192 // 增加缓冲区大小
 
 // 随机选择一个数字，生成32位无符号数
 void gen_num(char *buf) {
     // 使用 rand() % UINT32_MAX 来生成 0 到 UINT32_MAX 的无符号整数
-    sprintf(buf, "%u", rand() % UINT32_MAX);  // 生成0到UINT32_MAX的无符号整数
+    snprintf(buf, BUF_SIZE, "%u", rand() % UINT32_MAX);
 }
-
 // 生成运算符
 void gen_rand_op(char *op) {
     switch (rand() % 4) {  // 只生成 + - * /
@@ -23,7 +22,6 @@ void gen_rand_op(char *op) {
         case 3: strcpy(op, "/"); break;
     }
 }
-
 // 在数字和运算符之间插入随机空格
 void add_random_spaces_between(char *buf) {
     int len = strlen(buf);
@@ -31,7 +29,7 @@ void add_random_spaces_between(char *buf) {
         if (i > 0 && ((buf[i] == '+' || buf[i] == '-' || buf[i] == '*' || buf[i] == '/')
             || buf[i] == '(' || buf[i] == ')')) {
             // 1/3 的概率在运算符和数字或括号之间插入空格
-            if (rand() % 3 == 0) {
+            if (rand() % 5 == 0) {
                 // 插入空格
                 memmove(buf + i + 1, buf + i, len - i + 1);
                 buf[i] = ' ';
@@ -68,9 +66,17 @@ void gen_rand_expr(char *buf, int depth) {
             gen_rand_expr(left, depth + 1);  // 生成左子表达式
             gen_rand_op(op);      // 生成操作符
             gen_rand_expr(right, depth + 1); // 生成右子表达式
+	    // 如果是除法操作，确保右子表达式不为零
+            if (strcmp(op, "/") == 0) {
+                if (atoi(right) == 0) { // 如果右子表达式的值为零
+                    do {
+                        gen_rand_expr(right, depth + 1);  // 重新生成右子表达式
+                    } while (atoi(right) == 0); // 检查是否仍为零
+                }
+            }
             // 拼接最终的表达式到临时缓冲区
-            sprintf(temp_buf, "%s %s %s", left, op, right);
-            strcpy(buf, temp_buf);  // 使用临时缓冲区
+            snprintf(temp_buf, BUF_SIZE, "%s %s %s", left, op, right);
+	    strcpy(buf, temp_buf);  // 使用临时缓冲区
             break;
         case 3:
             // 保证负号不会连续生成
@@ -87,7 +93,7 @@ void gen_rand_expr(char *buf, int depth) {
                 // 再次在括号外加一层
                 char tmp_buf[BUF_SIZE];
                 strcpy(tmp_buf, temp_buf);
-                sprintf(buf, "(%s)", tmp_buf);
+		snprintf(buf, BUF_SIZE, "(%s)", tmp_buf);  // 修复：传递缓冲区大小
             } else {
                 strcpy(buf, temp_buf);
             }
@@ -97,6 +103,4 @@ void gen_rand_expr(char *buf, int depth) {
     // 在生成的表达式中随机插入空格
     add_random_spaces_between(buf);
 }
-
-
 

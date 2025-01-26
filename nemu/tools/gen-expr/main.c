@@ -3,7 +3,7 @@
 #include <time.h>
 #include <string.h>
 
-#define BUF_SIZE 1024
+#define BUF_SIZE 8192
 
 void gen_rand_expr(char *buf, int depth);
 
@@ -25,8 +25,9 @@ void generate_and_run_program(const char *expr) {
 
     fclose(fp);
 
-    // 2. 编译生成的 C 文件
-    if (system("gcc temp.c -o temp.out") != 0) {
+      // 2. 编译生成的 C 文件
+    int compile_result = system("gcc temp.c -o temp.out");
+    if (compile_result != 0) {
         fprintf(stderr, "Compilation failed!\n");
         exit(1);
     }
@@ -39,21 +40,30 @@ void generate_and_run_program(const char *expr) {
     }
 
     char result_buf[BUF_SIZE] = {0};
-    fgets(result_buf, BUF_SIZE, pipe);
+    if (!fgets(result_buf, BUF_SIZE, pipe)) {
+        perror("fgets");
+        pclose(pipe);
+        exit(1);
+    }
     pclose(pipe);
 
     // 输出表达式和结果
    
     printf("%s %s\n",result_buf, expr);
 
+
     // 4. 清理临时文件
-    system("rm -f temp.c temp.out");
+    int remove_result = system("rm -f temp.c temp.out");
+    if (remove_result != 0) {
+        fprintf(stderr, "Failed to remove temporary files!\n");
+        exit(1);
+    }
 }
 
 int main() {
     srand(time(0));
 
-    for (int i = 0; i < 1000; i++) {  // 生成 100 条测试用例
+    for (int i = 0; i < 100; i++) {  // 生成 100 条测试用例
         char expr_buf[BUF_SIZE] = {0};
         gen_rand_expr(expr_buf, 0);
 

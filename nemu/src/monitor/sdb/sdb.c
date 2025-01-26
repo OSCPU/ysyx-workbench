@@ -78,7 +78,7 @@ static int cmd_q(char *args) {
     // 设置 exit_flag 为 true，通知主循环退出
     exit_flag = 1;
 
-    return 1 ;	
+    return 0 ;	
 
 
 }
@@ -156,7 +156,7 @@ static int cmd_p(char *args)
         return 1;
     }
 
-    char line[1024]; // 用于存储每行表达式
+    char line[2048]; // 用于存储每行表达式
     printf("Reading expressions from %s...\n", filename);
 
     while (fgets(line, sizeof(line), file)) {
@@ -172,7 +172,7 @@ static int cmd_p(char *args)
             continue;
         }
 	
-	 char wrapped_expression[1024];
+	 char wrapped_expression[2048];
         snprintf(wrapped_expression, sizeof(wrapped_expression), "(%s)", expression);
 
         // 转换预期结果为整数

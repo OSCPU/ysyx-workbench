@@ -74,7 +74,7 @@ static struct rule {
 };
 
 #define NR_REGEX ARRLEN(rules)
-#define MAX_TOKEN_LENGTH 1000
+#define MAX_TOKEN_LENGTH 10000
 static regex_t re[NR_REGEX] = {};
 bool matched = false;
 // 在文件的顶部或者调用前添加声明
@@ -104,7 +104,7 @@ void init_regex() {
 
 typedef struct token {
   int type;
-  char str[128];
+  char str[2048];
 } Token;
 
 typedef struct {
@@ -113,7 +113,7 @@ typedef struct {
 } EvalResult;
 
 
-static Token tokens[128] __attribute__((used)) = {};
+static Token tokens[2048] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
 // 找到最外层的主运算符
@@ -229,7 +229,7 @@ EvalResult eval(int p, int q) {
  if (tokens[p].type == TK_DEREF) {
 	 if (tokens[p+1].type==TK_HEX)
 	 {
-		// printf("fuckyoufuck ytouajikshjdoah");
+		
 		 uintptr_t addr = (uintptr_t)strtol(tokens[p+1].str, NULL, 16); // 将字符串转换为十六进制地址
     printf("Resolved address: 0x%lx\n", addr);
 
@@ -301,7 +301,7 @@ case TK_AND:result.value = (left.value &&  right.value);
  if (tokens[p].type == TK_DEREF) {
 	 if (tokens[p+1].type==TK_HEX)
 	 {
-		// printf("fuckyoufuck ytouajikshjdoah");
+		// printf("ytouajikshjdoah");
 		 uintptr_t addr = (uintptr_t)strtol(tokens[p+1].str, NULL, 16); // 将字符串转换为十六进制地址
     printf("Resolved address: 0x%lx\n", addr);
 
