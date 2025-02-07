@@ -17,6 +17,10 @@
 #include <cpu/decode.h>
 #include <cpu/difftest.h>
 #include <locale.h>
+#include <memory/vaddr.h>
+#include "../monitor/sdb/watchpoint.h"
+
+
 
 /* The assembly code of instructions executed is only output to the screen
  * when the number of instructions executed is less than this value.
@@ -37,6 +41,14 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   if (ITRACE_COND) { log_write("%s\n", _this->logbuf); }
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
+
+//check_watchpoints();
+
+
+  // 在每次执行时检查监视点
+  check_watchpoints();
+
+
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
 }
 
@@ -96,6 +108,35 @@ void assert_fail_msg() {
   statistic();
 }
 
+
+void mem_scan(char *args) {
+    if (args == NULL) {
+        printf("Usage: x <num> <address>\n");
+        return;
+    }
+
+    // 解析参数
+    char *num_str = strtok(args, " ");
+    char *addr_str = strtok(NULL, " ");
+    if (num_str == NULL || addr_str == NULL) {
+        printf("Usage: x <num> <address>\n");
+        return;
+    }
+
+    int num = atoi(num_str); // 要读取的内存单元数
+    vaddr_t addr = strtol(addr_str, NULL, 16); // 起始地址（十六进制）
+
+    printf("Scanning memory from address 0x%08x, %d units:\n", addr, num);
+
+    // 读取并打印内存内容
+    for (int i = 0; i < num; i++) {
+        word_t data = vaddr_read(addr, 4); // 假设每个单元为 4 字节
+        printf("0x%08x: 0x%08x\n", addr, data);
+        addr += 4; // 下一个单元地址
+    }
+}
+
+
 /* Simulate how the CPU works. */
 void cpu_exec(uint64_t n) {
   g_print_step = (n < MAX_INST_TO_PRINT);
@@ -106,12 +147,28 @@ void cpu_exec(uint64_t n) {
     default: nemu_state.state = NEMU_RUNNING;
   }
 
+
+
   uint64_t timer_start = get_time();
 
   execute(n);
 
+
+ /*  for (uint64_t i = 0; i < n; i++) {
+    execute(1); // 执行单个指令
+    check_watchpoints(); // 每执行一步就检查监视点
+	if(nemu_state.state == NEMU_STOP)
+	{
+		 printf("NEMU is paused. Waiting for further instructions...\n");
+        	break;
+        
+
+	}
+  }*/
   uint64_t timer_end = get_time();
   g_timer += timer_end - timer_start;
+
+// check_watchpoints();  // 在每次执行指令后检查监视点
 
   switch (nemu_state.state) {
     case NEMU_RUNNING: nemu_state.state = NEMU_STOP; break;

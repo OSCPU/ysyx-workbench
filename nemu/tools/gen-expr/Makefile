@@ -14,5 +14,5 @@
 #**************************************************************************************/
 
 NAME = gen-expr
-SRCS = gen-expr.c
+SRCS = main.c gen-expr.c  # 添加 main.c 和 gen-expr.c
 include $(NEMU_HOME)/scripts/build.mk

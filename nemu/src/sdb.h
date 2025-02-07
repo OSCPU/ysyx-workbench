@@ -13,33 +13,11 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
-#include "monitor/sdb/watchpoint.h"  // 引入 watchpoint.h 头文件
+#ifndef __SDB_H__
+#define __SDB_H__
 
 #include <common.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdbool.h>
 
-#include <assert.h>
-void init_monitor(int, char *[]);
-void am_init_monitor();
-void engine_start();
-
-int is_exit_status_bad();
 word_t expr(char *e, bool *success);
 
-int main(int argc, char *argv[]) {
-  /* Initialize the monitor. */
-#ifdef CONFIG_TARGET_AM
-  am_init_monitor();
-#else
-  init_monitor(argc, argv);
 #endif
-   
- /* Start engine. */
-  engine_start();
-
-  return is_exit_status_bad();
-}
-
