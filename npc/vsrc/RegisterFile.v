@@ -21,8 +21,12 @@ module RegisterFile #(ADDR_WIDTH = 5, DATA_WIDTH = 32) (
       integer i;
       for (i = 0; i < 32; i = i + 1)
         rf[i] <= 0;
-    end else if (wen && waddr != 0) begin // 0号寄存器不能写入
-      rf[waddr] <= wdata;
+    end else if (wen && waddr != 0&&wdata!=0) begin // 0号寄存器不能写入
+      
+      rf[waddr] = wdata;
+      $display("final register written: R1 = %d, wdata=%d", rf[waddr], wdata);
+      
+   
     end
   end
 endmodule
