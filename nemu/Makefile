@@ -62,14 +62,14 @@ else
 include $(NEMU_HOME)/scripts/native.mk
 endif
 # 默认启动批处理模式
-NEMU_FLAGS += -b
+#NEMU_FLAGS += -b
 
 # 如果需要，你也可以根据其他条件来选择是否启用批处理模式
-ifeq ($(CONFIG_BATCH_MODE),y)
-  NEMU_FLAGS += -b
-endif
+#ifeq ($(CONFIG_BATCH_MODE),y)
+#  NEMU_FLAGS += -b
+#endif
 
 # 在运行 NEMU 时加上启动参数
-run: $(NEMU_HOME)/src/nemu-main.c
-	$(NEMU_HOME)/build/$(NAME) $(NEMU_FLAGS)
+#run: $(NEMU_HOME)/src/nemu-main.c
+#	$(NEMU_HOME)/build/$(NAME) $(NEMU_FLAGS)
 
