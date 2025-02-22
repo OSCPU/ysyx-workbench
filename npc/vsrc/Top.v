@@ -2,7 +2,7 @@ module Top (
   input clk,
   input rst,
   reg [31:0] inst,
-  reg [31:0]pc
+  output reg [31:0]pc
   
 );
 
@@ -16,6 +16,7 @@ module Top (
   wire [2:0] func3;
   wire [31:0]instruction_out;
   wire wen;
+  wire ebreak_signal;
 
   // 寄存器文件实例
   RegisterFile rf (
@@ -34,7 +35,8 @@ module Top (
     .clk(clk),
     .rst(rst),
     .inst_in(inst),
-    .instruction_out(instruction_out)
+    .instruction_out(instruction_out),
+    .ebreak(ebreak_signal)
   );
   
   IDU idu (
@@ -57,14 +59,29 @@ module Top (
 
   // 控制逻辑（简化版）
   assign wen = (opcode == 7'b0010011);  // 对应addi指令
-always @(posedge clk) begin
+ 
+import "DPI-C" context function void ebreak_trigger();
+
+    always @(posedge clk) begin
+    if (rst) begin
+            pc = 32'h0;  // 复位时将 PC 清零
+            
+        end else begin
+            pc = pc + 4;  // 每个时钟周期，PC 自增 4
+            $display("0x%08x:0x%08x",pc,inst);
+        end
+        if (ebreak_signal) begin
+            ebreak_trigger();  // 触发 C++ 中的结束仿真函数
+        end
+    end
+/*always @(posedge clk) begin
     $display("Executing ADDI: R1 = %b, Immediate = %b, Result = %b", inst, imm, alu_result);
-end
+end*/
 
      // 更新程序计数器
     /*always @(posedge clk or posedge rst) begin
         if (rst) begin
-            pc <= 32'h80000000;  // 如果 reset 为高电平，pc 重新初始化
+            pc <= 0;  // 如果 reset 为高电平，pc 重新初始化
         end else begin
             // 这里使用 pc + 4 作为默认更新方式
             // 你可以在这里根据控制信号（如跳转、分支）来更新 pc

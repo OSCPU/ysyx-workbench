@@ -5,7 +5,6 @@ module RegisterFile #(ADDR_WIDTH = 5, DATA_WIDTH = 32) (
   input [ADDR_WIDTH-1:0] waddr,
   input wen,
   output reg [DATA_WIDTH-1:0] rdata1,
-  
   input [ADDR_WIDTH-1:0] raddr1
  
 );
@@ -24,7 +23,7 @@ module RegisterFile #(ADDR_WIDTH = 5, DATA_WIDTH = 32) (
     end else if (wen && waddr != 0&&wdata!=0) begin // 0号寄存器不能写入
       
       rf[waddr] = wdata;
-      $display("final register written: R1 = %d, wdata=%d", rf[waddr], wdata);
+      $display("final register written: rgister number:%d R1 = %d, wdata=%d", waddr,rf[waddr], wdata);
       
    
     end

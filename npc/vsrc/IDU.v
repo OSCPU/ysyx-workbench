@@ -14,9 +14,9 @@ input clk,
   assign imm =  instr[31:20];  // 立即数扩展
   assign opcode = instr[6:0];
   assign func3 =  instr[14:12];  // 扩展为 4 位
-always @(posedge clk) begin
+/*always @(posedge clk) begin
     $display("RS1: %b, RD: %b,fun:%b Imm: %b, Opcode: %b", rs1, rd,func3 ,imm, opcode);
-end
+end*/
 //	assign func7 = instr[31:25];
 endmodule
 
