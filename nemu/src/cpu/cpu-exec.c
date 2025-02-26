@@ -19,7 +19,7 @@
 #include <locale.h>
 #include <memory/vaddr.h>
 #include "../monitor/sdb/watchpoint.h"
-
+#include "../utils/trace.h"
 
 
 /* The assembly code of instructions executed is only output to the screen
@@ -56,7 +56,11 @@ static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = pc;
   s->snpc = pc;
   isa_exec_once(s);
+	//printf("%08x ",s->isa.inst);
   cpu.pc = s->dnpc;
+
+//	trace_inst(pc, s->isa.inst);
+
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;
   p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);
@@ -104,8 +108,11 @@ static void statistic() {
 }
 
 void assert_fail_msg() {
-  isa_reg_display();
-  statistic();
+//	printf("Entering assert_fail_msg...\n");
+//  isa_reg_display();
+//	printf("welcome1");
+	IFDEF(CONFIG_IRINGBUF,display_inst());
+ // statistic();
 }
 
 
