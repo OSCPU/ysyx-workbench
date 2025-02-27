@@ -145,6 +145,12 @@ config ITRACE
   depends on TRACE && TARGET_NATIVE_ELF && ENGINE_INTERPRETER
   bool "Enable instruction tracer"
   default y
+  
+
+config MTRACE
+     bool "Enable the memory trace"
+     default y
+
 
 config ITRACE_COND
   depends on ITRACE
@@ -154,7 +160,9 @@ config ITRACE_COND
 config IRINGBUF
     bool "Enable instruction ring buffer"
     default y
-
+config FTRACE
+    bool "Enable  FTRACE"
+    default y
 config DIFFTEST
   depends on TARGET_NATIVE_ELF
   bool "Enable differential testing"

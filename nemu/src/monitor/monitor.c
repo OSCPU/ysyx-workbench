@@ -15,7 +15,11 @@
 
 #include <isa.h>
 #include <memory/paddr.h>
-
+#include <../../../include/common.h>
+#include <elf.h>
+//#include <../../monitor.h>
+int func_num=0;
+const char *elf_file;
 void init_rand();
 void init_log(const char *log_file);
 void init_mem();
@@ -23,6 +27,15 @@ void init_difftest(char *ref_so_file, long img_size, int port);
 void init_device();
 void init_sdb();
 void init_disasm();
+
+typedef struct {
+    char name[64];
+    paddr_t addr;      //the function head address
+    Elf32_Xword size;
+} Symbol;
+
+Symbol *symbol = NULL;  //dynamic allocate memory  or direct allocate memory (Symbol symbol[NUM])
+
 
 static void welcome() {
   Log("Trace: %s", MUXDEF(CONFIG_TRACE, ANSI_FMT("ON", ANSI_FG_GREEN), ANSI_FMT("OFF", ANSI_FG_RED)));
@@ -33,6 +46,103 @@ static void welcome() {
   printf("Welcome to %s-NEMU!\n", ANSI_FMT(str(__GUEST_ISA__), ANSI_FG_YELLOW ANSI_BG_RED));
   printf("For help, type \"help\"\n");
   
+}
+void parse_elf(const char *elf_file)
+{
+    
+    if(elf_file == NULL) return;
+    
+    FILE *fp;
+    fp = fopen(elf_file, "rb");
+    
+    if(fp == NULL)
+    {
+        printf("failed to open the elf file!\n");
+        exit(0);
+    }
+	
+    Elf32_Ehdr edhr;
+	//读取elf头
+    if(fread(&edhr, sizeof(Elf32_Ehdr), 1, fp) <= 0)
+    {
+        printf("fail to read the elf_head!\n");
+        exit(0);
+    }
+
+    if(edhr.e_ident[0] != 0x7f || edhr.e_ident[1] != 'E' || 
+       edhr.e_ident[2] != 'L' ||edhr.e_ident[3] != 'F')
+    {
+        printf("The opened file isn't a elf file!\n");
+        exit(0);
+    }
+    
+    fseek(fp, edhr.e_shoff, SEEK_SET);
+
+    Elf32_Shdr shdr;
+    char *string_table = NULL;
+    //寻找字符串表
+    for(int i = 0; i < edhr.e_shnum; i++)
+    {
+        if(fread(&shdr, sizeof(Elf32_Shdr), 1, fp) <= 0)
+        {
+            printf("fail to read the shdr\n");
+            exit(0);
+        }
+        
+        if(shdr.sh_type == SHT_STRTAB)
+        {
+            //获取字符串表
+            string_table = malloc(shdr.sh_size);
+            fseek(fp, shdr.sh_offset, SEEK_SET);
+            if(fread(string_table, shdr.sh_size, 1, fp) <= 0)
+            {
+                printf("fail to read the strtab\n");
+                exit(0);
+            }
+        }
+    }
+    
+    //寻找符号表
+    fseek(fp, edhr.e_shoff, SEEK_SET);
+    
+    for(int i = 0; i < edhr.e_shnum; i++)
+    {
+        if(fread(&shdr, sizeof(Elf32_Shdr), 1, fp) <= 0)
+        {
+            printf("fail to read the shdr\n");
+            exit(0);
+        }
+
+        if(shdr.sh_type == SHT_SYMTAB)
+        {
+            fseek(fp, shdr.sh_offset, SEEK_SET);
+
+            Elf32_Sym sym;
+
+            size_t sym_count = shdr.sh_size / shdr.sh_entsize;
+            symbol = malloc(sizeof(Symbol) * sym_count);
+
+            for(size_t j = 0; j < sym_count; j++)
+            {
+                if(fread(&sym, sizeof(Elf32_Sym), 1, fp) <= 0)
+                {
+                    printf("fail to read the symtab\n");
+                    exit(0);
+                }
+
+                if(ELF32_ST_TYPE(sym.st_info) == STT_FUNC)
+                {
+                    const char *name = string_table + sym.st_name;
+                    strncpy(symbol[func_num].name, name, sizeof(symbol[func_num].name) - 1);
+                    symbol[func_num].addr = sym.st_value;
+                    symbol[func_num].size = sym.st_size;
+                    func_num++;
+                }
+            }
+        }
+    }
+    fclose(fp);
+    free(string_table);
 }
 
 #ifndef CONFIG_TARGET_AM
@@ -72,16 +182,18 @@ static int parse_args(int argc, char *argv[]) {
     {"batch"    , no_argument      , NULL, 'b'},
     {"log"      , required_argument, NULL, 'l'},
     {"diff"     , required_argument, NULL, 'd'},
+		{"elf"      , required_argument, NULL, 'e'},
     {"port"     , required_argument, NULL, 'p'},
     {"help"     , no_argument      , NULL, 'h'},
     {0          , 0                , NULL,  0 },
   };
   int o;
-  while ( (o = getopt_long(argc, argv, "-bhl:d:p:", table, NULL)) != -1) {
+  while ( (o = getopt_long(argc, argv, "-bhl:d:p:e", table, NULL)) != -1) {
     switch (o) {
       case 'b': sdb_set_batch_mode(); break;
       case 'p': sscanf(optarg, "%d", &difftest_port); break;
       case 'l': log_file = optarg; break;
+			case 'e': elf_file = optarg; break;
       case 'd': diff_so_file = optarg; break;
       case 1: img_file = optarg; return 0;
       default:
@@ -90,6 +202,7 @@ static int parse_args(int argc, char *argv[]) {
         printf("\t-l,--log=FILE           output log to FILE\n");
         printf("\t-d,--diff=REF_SO        run DiffTest with reference REF_SO\n");
         printf("\t-p,--port=PORT          run DiffTest with port PORT\n");
+				printf("\t-e,--elf=FILE           parse the elf file\n");
         printf("\n");
         exit(0);
     }
@@ -102,7 +215,7 @@ void init_monitor(int argc, char *argv[]) {
 
   /* Parse arguments. */
   parse_args(argc, argv);
-
+	parse_elf(elf_file);
   /* Set random seed. */
   init_rand();
 
