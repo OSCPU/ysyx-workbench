@@ -1,7 +1,7 @@
 #include <common.h>
 #include <elf.h>
 #include <device/map.h>
-//#include <../../monitor.h>
+#include <../../monitor.h>
 #define INST_NUM 16
 
 // iringbuf
@@ -61,7 +61,7 @@ void display_memory_write(paddr_t addr, int len, word_t data)
     printf(ANSI_FMT("write memory: ", ANSI_FG_YELLOW) FMT_PADDR ", the len is %d, the written data is " FMT_WORD "\n", addr, len, data);
 }
 int rec_depth = 1;
-/*void display_call_func(word_t pc, word_t func_addr)
+void display_call_func(word_t pc, word_t func_addr)
 {
     int i = 0;
     for(; i < func_num; i++)
@@ -79,8 +79,7 @@ int rec_depth = 1;
 
     printf("call  [%s@0x%08x]\n", symbol[i].name, func_addr);
 }
-*/
-/*void display_ret_func(word_t pc)
+void display_ret_func(word_t pc)
 {
     int i = 0;
     for(; i < func_num; i++)
@@ -98,4 +97,4 @@ int rec_depth = 1;
 
     printf("ret  [%s]\n", symbol[i].name);
 }
-*/
+
