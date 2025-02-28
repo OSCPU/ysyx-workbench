@@ -19,6 +19,7 @@
 
 static inline uint32_t inst_fetch(vaddr_t *pc, int len) {
   uint32_t inst = vaddr_ifetch(*pc, len);
+	printf("0x%09x",inst);
   (*pc) += len;
   return inst;
 }

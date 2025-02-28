@@ -155,7 +155,7 @@ int isa_exec_once(Decode *s) {
 //	trace_inst(s->pc, s->isa.inst);
   s->isa.inst = inst_fetch(&s->snpc, 4);
 //	printf("cnmcn");
-	#ifdef CONFIG_MTRACE
+	#ifdef CONFIG_IRINGBUF
 	trace_inst(s->pc, s->isa.inst); 
 #endif
   return decode_exec(s);
