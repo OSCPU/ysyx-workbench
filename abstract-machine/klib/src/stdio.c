@@ -4,13 +4,82 @@
 #include <stdarg.h>
 #include <stddef.h>
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
+// 辅助函数：整数转换为字符串
+static void itoa(int num, char *str) {
+  char buf[16];
+  int i = 0, j = 0;
+  bool is_negative = false;
+  
+  if (num < 0) {
+    is_negative = true;
+    num = -num;
+  }
+  
+  do {
+    buf[i++] = (num % 10) + '0';
+    num /= 10;
+  } while (num > 0);
+  
+  if (is_negative) {
+    buf[i++] = '-';
+  }
+  
+  while (i > 0) {
+    str[j++] = buf[--i];
+  }
+  str[j] = '\0';
+}
 
 int printf(const char *fmt, ...) {
-  panic("Not implemented");
+//  panic("Not implemented");
+  char buf[1024];  // 临时缓冲区
+  va_list args;
+  va_start(args, fmt);
+  int len = vsprintf(buf, fmt, args);
+  va_end(args);
+
+  for (int i = 0; i < len; i++) {
+    putch(buf[i]); // 逐个输出
+  }
+  return len;
 }
 
 int vsprintf(char *out, const char *fmt, va_list ap) {
-  panic("Not implemented");
+//  panic("Not implemented");
+  char *s;
+  char num_buf[16];
+  int d;
+  char *p = out;
+  
+  while (*fmt) {
+    if (*fmt == '%') {
+      fmt++;
+      switch (*fmt) {
+        case 's': // 处理字符串
+          s = va_arg(ap, char *);
+          while (*s) {
+            *p++ = *s++;
+          }
+          break;
+        case 'd': // 处理整数
+          d = va_arg(ap, int);
+          itoa(d, num_buf);
+          s = num_buf;
+          while (*s) {
+            *p++ = *s++;
+          }
+          break;
+        default:
+          *p++ = '%';
+          *p++ = *fmt;
+      }
+    } else {
+      *p++ = *fmt;
+    }
+    fmt++;
+  }
+  *p = '\0'; // 确保字符串以 `\0` 结尾
+  return p - out; // 返回写入的字符数
 }
 
 int sprintf(char *out, const char *fmt, ...) {
