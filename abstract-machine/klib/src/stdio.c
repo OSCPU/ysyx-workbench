@@ -5,31 +5,49 @@
 #include <stddef.h>
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 // 辅助函数：整数转换为字符串
-static void itoa(int num, char *str) {
-  char buf[16];
-  int i = 0, j = 0;
-  bool is_negative = false;
-  
-  if (num < 0) {
-    is_negative = true;
-    num = -num;
-  }
-  
-  do {
-    buf[i++] = (num % 10) + '0';
-    num /= 10;
-  } while (num > 0);
-  
-  if (is_negative) {
-    buf[i++] = '-';
-  }
-  
-  while (i > 0) {
-    str[j++] = buf[--i];
-  }
-  str[j] = '\0';
-}
+// 辅助函数：整数转换为字符串
+static void itoa(int num, char *str, int base) {
+    static char digits[] = "0123456789abcdef";
+    char buf[32];
+    int i = 0, j = 0;
+    bool is_negative = false;
 
+    if (base == 10 && num < 0) { // 只对10进制数处理负号
+        is_negative = true;
+        num = -num;
+    }
+
+    do {
+        buf[i++] = digits[num % base];
+        num /= base;
+    } while (num > 0);
+
+    if (is_negative) {
+        buf[i++] = '-';
+    }
+
+    // 逆序拷贝到str
+    while (i > 0) {
+        str[j++] = buf[--i];
+    }
+    str[j] = '\0';
+}
+// 浮点数转换为字符串，保留两位小数
+static void ftoa(float num, char *str) {
+    int integer_part = (int) num;
+    int decimal_part = (int)((num - integer_part) * 100);  // 保留两位小数
+
+    // 将整数部分转换为字符串
+    itoa(integer_part, str, 10);
+    while (*str) {
+        str++;
+    }
+
+    *str++ = '.';  // 小数点
+
+    // 将小数部分转换为字符串
+    itoa(decimal_part, str, 10);
+}
 int printf(const char *fmt, ...) {
 //  panic("Not implemented");
   char buf[1024];  // 临时缓冲区
@@ -43,105 +61,125 @@ int printf(const char *fmt, ...) {
   }
   return len;
 }
-
+// vsprintf 实现
 int vsprintf(char *out, const char *fmt, va_list ap) {
-//  panic("Not implemented");
-  char *s;
-  char num_buf[16];
-  int d;
-  char *p = out;
-  
-  while (*fmt) {
-    if (*fmt == '%') {
-      fmt++;
-      switch (*fmt) {
-        case 's': // 处理字符串
-          s = va_arg(ap, char *);
-          while (*s) {
-            *p++ = *s++;
-          }
-          break;
-        case 'd': // 处理整数
-          d = va_arg(ap, int);
-          itoa(d, num_buf);
-          s = num_buf;
-          while (*s) {
-            *p++ = *s++;
-          }
-          break;
-        default:
-          *p++ = '%';
-          *p++ = *fmt;
-      }
-    } else {
-      *p++ = *fmt;
+    char *s;
+    char num_buf[32]; // 用于存储转换后的数字
+    int d;
+    char *p = out;
+
+    while (*fmt) {
+        if (*fmt == '%') {
+            fmt++;
+            switch (*fmt) {
+                case 's':  // 处理字符串
+                    s = va_arg(ap, char *);
+                    while (*s) {
+                        *p++ = *s++;
+                    }
+                    break;
+                case 'd':  // 处理整数
+                    d = va_arg(ap, int);
+                    itoa(d, num_buf, 10);
+                    s = num_buf;
+                    while (*s) {
+                        *p++ = *s++;
+                    }
+                    break;
+                case 'x':  // 处理十六进制
+                    d = va_arg(ap, int);
+                    *p++ = '0';
+                    *p++ = 'x';
+                    itoa(d, num_buf, 16);
+                    s = num_buf;
+                    while (*s) {
+                        *p++ = *s++;
+                    }
+                    break;
+								case 'c':  // 处理字符
+
+                    d = va_arg(ap, int);  // 字符作为整数处理
+                    *p++ = (char) d;
+                    break;
+                case 'f':  // 处理浮点数
+                    {
+                        float f = va_arg(ap, double);  // 浮点数作为双精度处理
+                        ftoa(f, num_buf);
+                        s = num_buf;
+                        while (*s) {
+                            *p++ = *s++;
+                        }
+                    }
+                    break;
+                default:  // 处理未知格式
+                    *p++ = '%';
+                    *p++ = *fmt;
+            }
+        } else {
+            *p++ = *fmt;
+        }
+        fmt++;
     }
-    fmt++;
-  }
-  *p = '\0'; // 确保字符串以 `\0` 结尾
-  return p - out; // 返回写入的字符数
+
+    *p = '\0'; // 确保字符串以 `\0` 结尾
+    return p - out; // 返回写入的字符数
 }
 
 int sprintf(char *out, const char *fmt, ...) {
-      va_list args;
+    va_list args;
     const char *ptr;
     char *str_ptr = out;
-    int num;
+    char buffer[32]; // 临时缓冲区用于存储转换后的字符串
 
-    // 初始化可变参数列表
     va_start(args, fmt);
 
-    // 遍历格式字符串
     for (ptr = fmt; *ptr != '\0'; ptr++) {
-        if (*ptr == '%' && (*(ptr + 1) == 's' || *(ptr + 1) == 'd')) {
-            // 处理 %s (字符串)
-            if (*(ptr + 1) == 's') {
+        if (*ptr == '%' && (*(ptr + 1) == 's' || *(ptr + 1) == 'd' || *(ptr + 1) == 'x'|| *(ptr + 1) == 'c' || *(ptr + 1) == 'f')) {
+            ptr++; // 跳过 '%'
+
+            if (*ptr == 's') {  // 处理字符串
                 char *str_arg = va_arg(args, char*);
-                while (*str_arg != '\0') {
+                while (*str_arg) {
                     *str_ptr++ = *str_arg++;
                 }
-            }
-            // 处理 %d (整数)
-            else if (*(ptr + 1) == 'd') {
-                num = va_arg(args, int);
-                if (num < 0) {
-                    *str_ptr++ = '-';
-                    num = -num;
+            } 
+            else if (*ptr == 'd') {  // 处理整数
+                int num = va_arg(args, int);
+                itoa(num, buffer, 10);
+                char *buf_ptr = buffer;
+                while (*buf_ptr) {
+                    *str_ptr++ = *buf_ptr++;
                 }
-                // 将整数转换为字符串
-                int n = num, len = 0;
-                while (n > 0) {
-                    len++;
-                    n /= 10;
-                }
-                if (num == 0) {
-                    *str_ptr++ = '0';
-                } else {
-                    char temp[len];
-                    int i = 0;
-                    while (num > 0) {
-                        temp[i++] = (num % 10) + '0';
-                        num /= 10;
-                    }
-                    // 反转数字并拷贝到结果字符串
-                    for (int j = i - 1; j >= 0; j--) {
-                        *str_ptr++ = temp[j];
-                    }
+            } 
+            else if (*ptr == 'x') {  // 处理十六进制
+                int num = va_arg(args, int);
+          //      *str_ptr++ = '0';
+            //    *str_ptr++ = 'x';
+                itoa(num, buffer, 16);
+                char *buf_ptr = buffer;
+                while (*buf_ptr) {
+                    *str_ptr++ = *buf_ptr++;
                 }
             }
-            ptr++;  // 跳过格式说明符
-        } else {
-            // 普通字符，直接复制
+						else if (*ptr == 'c') {  // 处理字符
+                int c = va_arg(args, int);
+                *str_ptr++ = (char)c;
+            }
+            else if (*ptr == 'f') {  // 处理浮点数
+                double f = va_arg(args, double);
+                ftoa(f, buffer);
+                char *buf_ptr = buffer;
+                while (*buf_ptr) {
+                    *str_ptr++ = *buf_ptr++;
+                }
+            }
+        } else {  // 直接拷贝普通字符
             *str_ptr++ = *ptr;
         }
     }
 
-    // 结束可变参数列表
     va_end(args);
-
-    // 以 '\0' 结束字符串
-    *str_ptr = '\0';
-
+    *str_ptr = '\0'; // 结束字符串
     return str_ptr - out;
 }
 

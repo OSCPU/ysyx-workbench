@@ -67,8 +67,8 @@ import "DPI-C" context function void ebreak_trigger();
             pc = 32'h0;  // 复位时将 PC 清零
             
         end else begin
-            pc = pc + 4;  // 每个时钟周期，PC 自增 4
-            $display("0x%08x:0x%08x",pc,inst);
+            
+            $display("0x%08x:0x%08x",pc,inst);pc = pc + 4;  // 每个时钟周期，PC 自增 4
         end
         if (ebreak_signal) begin
             ebreak_trigger();  // 触发 C++ 中的结束仿真函数
