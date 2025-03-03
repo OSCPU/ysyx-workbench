@@ -33,7 +33,7 @@ $(BIN): $(VSRCS) $(CSRCS)
 all: default
 
 run: $(BIN)
-	@$^
+	@$^ $(IMG)
 
 clean:
 	rm -rf $(BUILD_DIR)

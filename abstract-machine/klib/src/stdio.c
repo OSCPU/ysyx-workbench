@@ -33,7 +33,7 @@ static void itoa(int num, char *str, int base) {
     str[j] = '\0';
 }
 // 浮点数转换为字符串，保留两位小数
-static void ftoa(float num, char *str) {
+/*static void ftoa(float num, char *str) {
     int integer_part = (int) num;
     int decimal_part = (int)((num - integer_part) * 100);  // 保留两位小数
 
@@ -47,7 +47,7 @@ static void ftoa(float num, char *str) {
 
     // 将小数部分转换为字符串
     itoa(decimal_part, str, 10);
-}
+}*/
 int printf(const char *fmt, ...) {
 //  panic("Not implemented");
   char buf[1024];  // 临时缓冲区
@@ -101,7 +101,7 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
                     d = va_arg(ap, int);  // 字符作为整数处理
                     *p++ = (char) d;
                     break;
-                case 'f':  // 处理浮点数
+                /*case 'f':  // 处理浮点数
                     {
                         float f = va_arg(ap, double);  // 浮点数作为双精度处理
                         ftoa(f, num_buf);
@@ -109,7 +109,7 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
                         while (*s) {
                             *p++ = *s++;
                         }
-                    }
+										}*/
                     break;
                 default:  // 处理未知格式
                     *p++ = '%';
@@ -165,14 +165,14 @@ int sprintf(char *out, const char *fmt, ...) {
                 int c = va_arg(args, int);
                 *str_ptr++ = (char)c;
             }
-            else if (*ptr == 'f') {  // 处理浮点数
+           /* else if (*ptr == 'f') {  // 处理浮点数
                 double f = va_arg(args, double);
                 ftoa(f, buffer);
                 char *buf_ptr = buffer;
                 while (*buf_ptr) {
                     *str_ptr++ = *buf_ptr++;
                 }
-            }
+            }*/
         } else {  // 直接拷贝普通字符
             *str_ptr++ = *ptr;
         }
