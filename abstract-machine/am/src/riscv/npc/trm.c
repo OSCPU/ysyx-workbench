@@ -1,6 +1,6 @@
 #include <am.h>
 #include <klib-macros.h>
-
+#include "npc.h"
 extern char _heap_start;
 int main(const char *args);
 
@@ -15,7 +15,9 @@ void putch(char ch) {
 }
 
 void halt(int code) {
-  while (1);
+	 npc_trap(code);
+	 while(1);
+
 }
 
 void _trm_init() {
