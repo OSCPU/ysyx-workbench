@@ -73,16 +73,20 @@ parse_args(argc, argv);
         top->rst = 0;
 
    long size= load_img();
+	 
     while (!Verilated::gotFinish())  {
- top->inst=mem.read(top->pc);
+
+		 
+		
 //	std::cout << "PC:0x" << std::hex << top->pc << " Instruction: " << top->inst << std::dec << std::endl;
 
     
 
         // 在仿真过程中将复位信号设置为低（解除复位）
  top->clk = !top->clk;      
-      
+       top->inst=mem.read(top->pc);  
 				top->eval();
+	//			 top->inst=mem.read(top->pc);
 		//		assert(0);
     }
        

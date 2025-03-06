@@ -3,7 +3,8 @@ INC_PATH ?=
 
 VERILATOR = verilator
 VERILATOR_CFLAGS += -MMD --build -cc  \
-				-O3 --x-assign fast --x-initial fast --noassert
+				-O3 --x-assign fast --x-initial fast --noassert \
+				 --trace-fst  # 使 Verilator 生成 FST 格式波形
 
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
@@ -37,5 +38,9 @@ run: $(BIN)
 
 clean:
 	rm -rf $(BUILD_DIR)
+sim: $(BIN)
+	@ARCH=$(ARCH) ALL=$(ALL) $^ $(IMG) +trace  # 运行时传递 ARCH 和 ALL 变量
+	@echo "Simulation complete. Waveform saved as dump.fst."
+	@echo "Use 'gtkwave dump.fst' to view waveform."
 
 .PHONY: default all clean run

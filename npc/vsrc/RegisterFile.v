@@ -7,12 +7,12 @@ module RegisterFile #(ADDR_WIDTH = 5, DATA_WIDTH = 32) (
   output reg [DATA_WIDTH-1:0] rdata1,
   output reg [DATA_WIDTH-1:0] rdata2,
   input [ADDR_WIDTH-1:0] raddr1,
-  input [ADDR_WIDTH-1:0] raddr2
-  
- 
+  input [ADDR_WIDTH-1:0] raddr2,
+	output reg [31:0]pc,  
+ output reg [31:0] ins
 );
   reg [DATA_WIDTH-1:0] rf [2**ADDR_WIDTH-1:0];
-
+	reg [31:0]imm;
   // 读寄存器
   assign rdata1 = (raddr1 == 0) ? 0 : rf[raddr1]; // 0号寄存器始终为0
   assign rdata2 = (raddr2 == 0) ? 0 : rf[raddr2]; // 0号寄存器始终为0
@@ -29,6 +29,11 @@ module RegisterFile #(ADDR_WIDTH = 5, DATA_WIDTH = 32) (
       $display("final register written: rgister number:rf[%d], wdata=%h, result: %h", waddr,wdata,rf[waddr]);
      	
     end
+		if(ins[6:0]==7'b1100111)begin
+			assign imm = {{20{ins[31]}}, ins[31:20]}; // I 型指令的符号扩展
+
+			pc<=(rf[1]+imm)&~1;
+		end
   end
 endmodule
 

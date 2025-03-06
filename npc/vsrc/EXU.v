@@ -5,20 +5,19 @@ module EXU (
   input [31:0] imm,
   input [6:0] alu_op,
   input [2:0] func3,
-  input [31:0]pc,
+  output reg [31:0]pc,
   output reg [31:0] alu_result,
   //output reg [31:0]pc_out
-  output reg [31:0] pc_result,
-  output pc_jump
-  
+  output reg [31:0] pc_result
+ // output pc_jump
  
 );
 
 reg [31:0] old_pc;
 
-/*always @(posedge clk) begin
-   // old_pc <= pc;  // 记录当前 PC
-end*/
+always @(posedge clk) begin
+    old_pc <= pc;  // 记录当前 PC
+end
   always @(posedge clk) begin
   
     case (alu_op)
@@ -33,7 +32,7 @@ end*/
       // pc_jump=0;
       end
       7'b0010111: begin // AUIPC 操作
-        alu_result = pc + imm; // AUIPC 将立即数加到当前 PC 值
+        alu_result = old_pc + imm; // AUIPC 将立即数加到当前 PC 值
         $display("0x%8x ",alu_result);
         //$stop;
         //pc_result = pc+4;
@@ -42,16 +41,22 @@ end*/
     
       7'b1101111: begin // J 型指令（如 jal 和 jalr）
       $display("entering a jal command\n");
-   	pc_result = pc + imm; // JAL 跳转并保存返回地址
-   	pc_jump = 1;
-   	$display("0x%8x",pc_result);
+			 alu_result = old_pc + 4;
+   	//pc_result = old_pc + imm; // JAL 跳转并保存返回地址
+   //	pc_jump = 1;
+   //	$display("0x%8x",pc_result);
    end
       7'b1100111:begin
         $display("entering a jalr command\n");
-      pc_result = (rs1_data + imm) & ~1; // JALR 计算新的跳转地址，并清除最低位
+     // pc_result = (rs1_data + imm) & ~1; // JALR 计算新的跳转地址，并清除最低位
       alu_result = old_pc + 4;
+			//$stop;
+		//	pc<=pc_result;
+	//		 $display("Jump to: 0x%08x", pc_result);
+
+	//		$stop;
      // pc_jump = 1;
-        $display("0x%8x",pc_result);
+     //   $display("0x%8x",pc_result);
     end 
 
 
@@ -61,7 +66,6 @@ end*/
       default: begin
         alu_result = 32'b0;
         ///pc_result = 32'b0;
-       
       end
       endcase
       
