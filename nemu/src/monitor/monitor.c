@@ -215,8 +215,9 @@ void init_monitor(int argc, char *argv[]) {
 
   /* Parse arguments. */
   parse_args(argc, argv);
-	printf("Trying to open ELF file: %s\n", "recursion-riscv32-nemu.elf");
-parse_elf("/home/jason/ssh/ysyx-workbench/ics2024/am-kernels/tests/cpu-tests/build/recursion-riscv32-nemu.elf");   
+//	printf("Trying to open ELF file: %s\n", "recursion-riscv32-nemu.elf");
+//parse_elf("/home/jason/ssh/ysyx-workbench/ics2024/am-kernels/tests/cpu-tests/build/recursion-riscv32-nemu.elf");   
+
   /* Set random seed. */
   init_rand();
 

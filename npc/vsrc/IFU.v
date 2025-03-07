@@ -33,16 +33,16 @@ end
         end else begin
 					instruction_out <= inst_in;  // 更新指令
         if (inst_in == 32'h00100073) begin
-                ebreak = 1;  // ebreak指令，设置ebreak信号
+                ebreak <= 1;  // ebreak指令，设置ebreak信号
             end else begin
-                ebreak = 0;
+                ebreak <= 0;
             end
 					 if (inst_in[6:0]==7'b1101111) begin
 						 assign imm= {{11{inst_in[31]}}, inst_in[31], inst_in[19:12], inst_in[20], inst_in[30:21], 1'b0};
             pc <= pc+imm;  // 跳转指令
             pc_out <= pc+imm;
             $display("Jump to: 0x%08x", pc+imm);
-           // $stop;
+          //  $stop;
 				 end
 				  else if(inst_in[6:0]!=7'b1100111) begin
             pc <= next_pc;  // PC 正常递增

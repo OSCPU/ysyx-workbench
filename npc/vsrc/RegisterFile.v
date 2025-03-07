@@ -19,6 +19,11 @@ module RegisterFile #(ADDR_WIDTH = 5, DATA_WIDTH = 32) (
 
   // 写寄存器
   always @(posedge clk) begin
+  if(ins[6:0]==7'b1100111)begin
+			assign imm = {{20{ins[31]}}, ins[31:20]}; // I 型指令的符号扩展
+			
+			pc<=(rf[1]+imm)&~1;
+		end
     if (rst) begin
       integer i;
       for (i = 0; i < 32; i = i + 1)
@@ -29,11 +34,7 @@ module RegisterFile #(ADDR_WIDTH = 5, DATA_WIDTH = 32) (
       $display("final register written: rgister number:rf[%d], wdata=%h, result: %h", waddr,wdata,rf[waddr]);
      	
     end
-		if(ins[6:0]==7'b1100111)begin
-			assign imm = {{20{ins[31]}}, ins[31:20]}; // I 型指令的符号扩展
-
-			pc<=(rf[1]+imm)&~1;
-		end
+		
   end
 endmodule
 

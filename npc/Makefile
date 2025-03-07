@@ -32,15 +32,11 @@ $(BIN): $(VSRCS) $(CSRCS)
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
 
 all: default
-
+simi:
+	@echo dhaodhs
+	$(MAKE) -C $(NPC_HOME) ISA=$(ISA) run ARGS="$(NPCFLAGS)" IMG=dummy-riscv32e-npc.bin
 run: $(BIN)
 	@$^ $(IMG)
-
 clean:
 	rm -rf $(BUILD_DIR)
-sim: $(BIN)
-	@ARCH=$(ARCH) ALL=$(ALL) $^ $(IMG) +trace  # 运行时传递 ARCH 和 ALL 变量
-	@echo "Simulation complete. Waveform saved as dump.fst."
-	@echo "Use 'gtkwave dump.fst' to view waveform."
-
 .PHONY: default all clean run

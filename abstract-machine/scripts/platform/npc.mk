@@ -15,7 +15,7 @@ LDFLAGS   += --gc-sections -e _start
 NPCFLAGS += -l $(shell dirname $(IMAGE).elf)/npc-log.txt
 NPCFLAGS += -e $(IMAGE).elf
 CFLAGS    += -I$(AM_HOME)/am/src/riscv/npc/include
-
+NPCFLAGS += +trace  # 添加+trace
 MAINARGS_MAX_LEN = 64
 MAINARGS_PLACEHOLDER = The insert-arg rule in Makefile will insert mainargs here.
 CFLAGS += -DMAINARGS_MAX_LEN=$(MAINARGS_MAX_LEN) -DMAINARGS_PLACEHOLDER=\""$(MAINARGS_PLACEHOLDER)"\"
