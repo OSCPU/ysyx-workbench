@@ -13,11 +13,9 @@ module EXU (
  
 );
 
-reg [31:0] old_pc;
 
-always @(posedge clk) begin
-    old_pc <= pc;  // 记录当前 PC
-end
+
+
   always @(posedge clk) begin
   
     case (alu_op)
@@ -32,24 +30,24 @@ end
       // pc_jump=0;
       end
       7'b0010111: begin // AUIPC 操作
-        alu_result = old_pc + imm; // AUIPC 将立即数加到当前 PC 值
-        $display("0x%8x ",alu_result);
+        alu_result = pc + imm; // AUIPC 将立即数加到当前 PC 值
+       // $display("0x%8x ",alu_result);
         //$stop;
         //pc_result = pc+4;
     // pc_jump=0;
       end
     
       7'b1101111: begin // J 型指令（如 jal 和 jalr）
-      $display("entering a jal command\n");
-			 alu_result = old_pc + 4;
+      //$display("entering a jal command\n");
+			 alu_result = pc + 4;
    	//pc_result = old_pc + imm; // JAL 跳转并保存返回地址
    //	pc_jump = 1;
    //	$display("0x%8x",pc_result);
    end
       7'b1100111:begin
-        $display("entering a jalr command\n");
+       // $display("entering a jalr command\n");
      // pc_result = (rs1_data + imm) & ~1; // JALR 计算新的跳转地址，并清除最低位
-      alu_result = old_pc + 4;
+      alu_result = pc + 4;
 			//$stop;
 		//	pc<=pc_result;
 	//		 $display("Jump to: 0x%08x", pc_result);

@@ -1,12 +1,14 @@
+import "DPI-C" function void set_pc(input int pc);
+import "DPI-C" function void set_inst(input int inst);
+
 module Top (
   input clk,
   input rst,
- output reg [31:0] inst,
+// output reg [31:0] inst,
    output reg [31:0]pc
   
 );
 
- 
  
   reg [4:0] rs1, rs2, rd;
   reg [31:0] rdata1, rdata2;
@@ -37,7 +39,7 @@ module Top (
     .raddr2(rs2),
     .rdata1(rdata1),
 		.pc(pc),
-		.ins(inst),
+	//	.ins(inst),
    .rdata2(rdata2)
   );
 
@@ -45,7 +47,7 @@ module Top (
   IFU ifu (
     .clk(clk),
     .rst(rst),
-    .inst_in(inst),
+    //.inst_in(inst),
     .instruction_out(instruction_out),
     .ebreak(ebreak_signal),
     .pc(pc),
@@ -93,8 +95,13 @@ module Top (
 						$display("the pc value is: 0x%08x ", pc);
     end
 	end*/
-import "DPI-C" context function void ebreak_trigger();
+import "DPI-C"  function void ebreak_trigger();
 
+always @(posedge clk) begin
+    set_pc(pc);
+    set_inst(instruction_out);
+end
+//export "DPI-C" function void get_gpr;
   always @(posedge clk) begin
     
         if (ebreak_signal) begin
