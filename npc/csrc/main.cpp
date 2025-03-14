@@ -346,7 +346,7 @@ while (std::getline(std::cin, cmd)) {
 	  if (compare_cpu_state()) {
                 printf("DiffTest mismatch detected!\n");
                 print_cpu_state();
-             //   exit(1);
+                exit(1);
             } else {
                 printf("DiffTest check passed.\n");
             }
