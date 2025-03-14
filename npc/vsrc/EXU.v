@@ -1,3 +1,4 @@
+
 module EXU (
 	input clk,
   input [31:0] rs1_data,
@@ -13,7 +14,7 @@ module EXU (
  
 );
 
-
+reg [31:0]middle;
 
 
   always @(posedge clk) begin
@@ -48,14 +49,14 @@ module EXU (
        // $display("entering a jalr command\n");
      // pc_result = (rs1_data + imm) & ~1; // JALR 计算新的跳转地址，并清除最低位
       alu_result = pc + 4;
-			//$stop;
-		//	pc<=pc_result;
-	//		 $display("Jump to: 0x%08x", pc_result);
-
-	//		$stop;
-     // pc_jump = 1;
-     //   $display("0x%8x",pc_result);
+	
     end 
+    7'b0100011:begin
+			alu_result=0;
+    		middle=rs1_data+imm;
+    	mem_write(middle,rs2_data);
+    end
+    	
 
 
       /*3'b010: begin // SW 操作

@@ -10,17 +10,55 @@
 #include <verilated.h>
 #include <stdio.h>
 #include <cstdio>
+#include <elf.h>
+#include <dlfcn.h>
+#include <stdlib.h>
 #include <verilated_vcd_c.h>
-//#include "memory.h"
+#include "difftest.h"
+#define CONFIG_MBASE 0x80000000  // 示例地址
+// 假设这些是你项目中定义的配置
+constexpr size_t MEMORY_SIZEE = 1024;  // 4GB
+#define MEM_SIZE  (128 * 1024 * 1024)  // 比如128MB内存
+#define MEMORY_BASE 0x80000000         // guest侧的起始地址
+
+uint8_t npc_memory[MEM_SIZE];
+
+// 模拟的物理内存
 #include "VTop___024root.h"
 #include <verilated_fst_c.h>  // 添加Verilator FST波形头文件
 VerilatedFstC* tfp = NULL;  // 波形文件指针
-static bool enable_trace = false;
 Memory mem;
 vluint64_t main_time = 0;   // 定义 main_time 变量，用于表示仿真时间
 #define MEM_BASE 0x80000000  // 代码加载到的起始地址
 uint32_t npc_pc = 0;
 uint32_t npc_inst = 0;
+difftest_memcpy_t difftest_memcpy;
+difftest_regcpy_t difftest_regcpy;
+difftest_exec_t  difftest_exec;
+difftest_raise_intr_t difftest_raise_intr;
+void (*ref_difftest_memcpy)(paddr_t addr, void *buf, size_t n, bool direction);
+void (*ref_difftest_regcpy)(void *dut, bool direction);
+void (*ref_difftest_exec)(uint64_t n);
+void (*ref_difftest_raise_intr)(uint64_t NO);
+
+CPU_state cpu;
+CPU_state ref_cpu;
+
+    const char* reg_names[32] = {
+        "zero", "ra",  "sp",  "gp",  "tp",  "t0",  "t1",  "t2",  
+        "s0",   "s1",  "a0",  "a1",  "a2",  "a3",  "a4",  "a5",  
+        "a6",   "a7",  "s2",  "s3",  "s4",  "s5",  "s6",  "s7",  
+        "s8",   "s9",  "s10", "s11", "t3",  "t4",  "t5",  "t6"
+    };
+
+bool isa_difftest_checkregs(const CPU_state *ref, const CPU_state *dut) {
+  if (ref->pc != dut->pc) return false;
+  for (int i = 0; i < 32; i++) {
+    if (ref->gpr[i] != dut->gpr[i])
+      return false;
+  }
+  return true;
+}
 extern "C" {
     void ebreak_trigger() {
 				std::cout << "EBREAK encountered, ending simulation." << std::endl;
@@ -54,9 +92,11 @@ extern "C" void set_inst(int inst) {
      npc_inst = inst;
 }
 extern "C" {
+// 初始化动态库链接
 
 void dasm(char *asm_str, int size, uint32_t inst, uint32_t pc);
 }
+/////////////////////////////////////////////////////////////////////////////////加载程序img_file,同时加载difftest的内存//////////////
 static long load_img() {
     FILE *fp = fopen(img_file, "rb");
     if (!fp) {
@@ -72,6 +112,8 @@ static long load_img() {
 		 	//printf("writing data into memory....");
       //printf("0x%08x: 0x%08x\n", addr, data);  
 			mem.write(addr, data);
+			printf("Copying data to NEMU: addr = 0x%08x, data = 0x%08x, size = %zu\n", addr, data, sizeof(data));
+			ref_difftest_memcpy(addr , &data,sizeof(data),DIFFTEST_TO_REF);
 				//printf("0x%08x: 0x%08x\n", addr, data);  // 打印地址和对应的指令
         addr += 4;
     }
@@ -79,12 +121,78 @@ static long load_img() {
     return size;
 }
 
+////////////////////////////////////////////////////////////////////////初始化difftest，difftest的比较逻辑和打印函数///////////////////////////////////////
+void init_difftest() {
+  void *handle = dlopen("/home/jason/ssh/ysyx-workbench/nemu/build/riscv32-nemu-interpreter-so", RTLD_LAZY);
+    if (!handle) {
+        std::cerr << "Failed to open shared library: " << dlerror() << std::endl;
+        assert(handle);  // 确保打开成功，否则终止
+    } else {
+        std::cout << "Shared library opened successfully!" << std::endl;
+    }
+// 获取并转换为正确的函数指针类型
+     ref_difftest_memcpy = (void (*)(paddr_t, void*, size_t, bool)) dlsym(handle, "difftest_memcpy");
+if (!ref_difftest_memcpy) {
+        std::cerr << "Failed to find 'difftest_memcpy' function: " << dlerror() << std::endl;
+        assert(ref_difftest_memcpy);  // 确保获取成功
+    } else {
+        std::cout << "'difftest_memcpy' function loaded successfully!" << std::endl;
+    }
 
+     ref_difftest_regcpy = (void (*)(void*, bool)) dlsym(handle, "difftest_regcpy");
+
+     ref_difftest_exec = (void (*)(uint64_t)) dlsym(handle, "difftest_exec");
+if (!ref_difftest_exec) {
+        std::cerr << "Failed to find 'difftest_exec' function: " << dlerror() << std::endl;
+        assert(ref_difftest_exec);  // 确保获取成功
+    } else {
+        std::cout << "'difftest_exec' function loaded successfully!" << std::endl;
+    }
+    auto ref_difftest_raise_intr = (void (*)(uint64_t)) dlsym(handle, "difftest_raise_intr");
+		if (!ref_difftest_raise_intr) {
+        std::cerr << "Failed to find 'difftest_raise_intr' function: " << dlerror() << std::endl;
+        assert(ref_difftest_raise_intr);  // 确保获取成功
+    } else {
+        std::cout << "'difftest_raise_intr' function loaded successfully!" << std::endl;
+    }
+}
+// 比较两个CPU状态，不匹配返回1，否则返回0
+int compare_cpu_state() {
+    int mismatch = 0;
+    if (cpu.pc != ref_cpu.pc) {
+        printf("Mismatch: PC: DUT = 0x%08x, REF = 0x%08x\n", cpu.pc, ref_cpu.pc);
+        mismatch = 1;
+    }
+    for (int i = 0; i < 32; i++) {
+        if (cpu.gpr[i] != ref_cpu.gpr[i]) {
+					 printf("Mismatch: PC: DUT = 0x%08x, REF = 0x%08x\n", (cpu.pc-4), (ref_cpu.pc-4));
+            printf("Mismatch: Register %-4s: DUT = 0x%08x, REF = 0x%08x\n", reg_names[i], cpu.gpr[i], ref_cpu.gpr[i]);
+            mismatch = 1;
+        }
+    }
+    return mismatch;
+}
+void print_cpu_state() {
+    int i;
+    printf("---- DUT CPU State ----\n");
+    printf("PC: 0x%08x\n", cpu.pc-4);
+    for (i = 0; i < 32; i++) {
+        printf("%-4s: 0x%08x\n", reg_names[i], cpu.gpr[i]);
+    }
+    printf("---- REF CPU State ----\n");
+    printf("PC: 0x%08x\n", ref_cpu.pc-4);
+    for (i = 0; i < 32; i++) {
+        printf("%-4s: 0x%08x\n", reg_names[i], ref_cpu.gpr[i]);
+    }
+}
+
+
+//////////////////////////////////////////////////////////解析img——file////////////////////////
 static int parse_args(int argc, char *argv[]) { 
   // 处理剩余参数
 if (optind <  argc) {
       img_file = argv[optind];  // 获取第一个无选项的参数
-    }  
+    }   
   return 0;
 }
 /*void sdb_print_registers(VTop* top) {
@@ -116,6 +224,12 @@ void sdb_print_registers(VTop* top) {
                reg_val);
     }
 }
+///////////////////////////////////////////////////////////////////sdb 以及 寄存器打印 以及内存打印（dpi-c）机制////////////////
+void print_ref_memory(uint8_t* ref_memory, size_t size) {
+    for (size_t i = 0; i < size; i++) {
+        printf("ref_memory[%zu]: %08x\n", i, ref_memory[i]);
+    }
+}
 void sdb_print_memory(VTop* top, uint32_t start_addr, int n) {
     printf("Scanning memory from 0x%08x (%d words):\n", start_addr, n);
 
@@ -131,9 +245,11 @@ char asm_str[128]; // 存储反汇编结果
 
     printf("PC: 0x%08x | INST: 0x%08x | %s\n", npc_pc, npc_inst, asm_str);
 }
-
+/////////////////////////////////////////////////////////////////////////////////////主函数/////////////////////////////////////////////////////////////
 int main(int argc, char* argv[]) {
-parse_args(argc, argv);
+	  init_difftest(); 
+	parse_args(argc, argv);
+
 	if (img_file == NULL) {
         std::cerr << "Usage: " << argv[1] << " <program.bin>" << std::endl;
 		//		printf("%s ",img_file);
@@ -147,14 +263,27 @@ parse_args(argc, argv);
         top->trace(tfp, 99);
         tfp->open("dump.fst");  // 生成的波形文件
     
-
+///////////////////////////////////////////////////rst初始化始终同步///////
     top->pc=0x80000000 ;
-
+		top->rst=1;
+		top->eval();
+		top->rst=0;
+		top->eval();
+			
+		
 				
 uint64_t max_cycles = 100000;  // 设置最大仿真时钟周期
  bool interactive = true;  // 是否启用单步调试
    long size= load_img();
-   /* while (!Verilated::gotFinish()&& main_time < max_cycles)  {
+	 ////////////////////////////////////////////////////////初始化difftest的ref寄存器//////////////
+	 for(int i=0;i<32;i++)
+	 {
+		 cpu.gpr[i]= top->rootp->Top__DOT__rf__DOT__rf[i];
+	 }
+  ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
+	
+	 //   print_ref_memory(ref_memory, size);
+	 /* while (!Verilated::gotFinish()&& main_time < max_cycles)  {
 
 
 
@@ -184,8 +313,7 @@ while (std::getline(std::cin, cmd)) {
     if (cmd == "quit" || cmd == "q") {
         break;
     } else if (cmd == "si") {
-		
-//		 std::cout << " PC = 0x" << std::hex << mem.read(top->pc) << std::dec << std::endl;  
+		 
 		top->clk = 1;
     top->eval();
     if (tfp) tfp->dump(main_time++);
@@ -194,14 +322,35 @@ while (std::getline(std::cin, cmd)) {
     top->eval();
     if (tfp) tfp->dump(main_time++);
     itrace_log();
-    // 更新 PC 后再打印
+		cpu.pc=top->pc;
+		for(int i=0;i<32;i++)
+		{
+      cpu.gpr[i]= top->rootp->Top__DOT__rf__DOT__rf[i];
+    }
+ for (int i = 0; i < 32; i++) {
+     printf("%-4s: 0x%08x ", reg_names[i], cpu.gpr[i]);
+     if (i % 4 == 3) {
+       printf("\n");  // 每 4 个寄存器换行
+     }
+   }
 
+	ref_difftest_exec(1);
+	ref_difftest_regcpy(&ref_cpu,DIFFTEST_TO_DUT);
+	 printf("REF Register state (after regcpy):\n");
+  for (int i = 0; i < 32; i++) {
+    printf("%-4s: 0x%08x ", reg_names[i], ref_cpu.gpr[i]);
+    if (i % 4 == 3) {
+      printf("\n");  // 每 4 个寄存器换行
+    }
+  }
+	  if (compare_cpu_state()) {
+                printf("DiffTest mismatch detected!\n");
+                print_cpu_state();
+             //   exit(1);
+            } else {
+                printf("DiffTest check passed.\n");
+            }
 }
-
-
-				// 更新PC
-//        std::cout << "Single step executed. PC = 0x" 
-  //                << std::hex << top->pc << std::dec << std::endl;
      else if (cmd == "info_r") {
         // 打印寄存器状态
         sdb_print_registers(top);

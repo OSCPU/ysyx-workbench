@@ -25,7 +25,7 @@ LLVM_LDFLAGS = $(shell $(LLVM_CONFIG) --ldflags)
 LLVM_LIBS = $(shell $(LLVM_CONFIG) --libs)
 LLVM_LIBDIR = $(shell $(LLVM_CONFIG) --libdir)
   LDFLAGS += $(shell llvm-config --ldflags --libs all)
-
+LDFLAGS += -L$(NEMU_HOME)/build -l:riscv32-nemu-interpreter-so
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\"" $(LLVM_CXXFLAGS)
 #LDFLAGS += -L$(shell llvm-config --libdir) -lLLVMRISCVDisassembler
 # rules for verilator

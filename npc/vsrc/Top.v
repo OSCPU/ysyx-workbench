@@ -97,7 +97,7 @@ module Top (
 	end*/
 import "DPI-C"  function void ebreak_trigger();
 
-always @(posedge clk) begin
+always @(posedge clk or posedge rst) begin
     set_pc(pc);
     set_inst(instruction_out);
 end

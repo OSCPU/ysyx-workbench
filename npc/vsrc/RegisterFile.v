@@ -18,7 +18,7 @@ module RegisterFile #(ADDR_WIDTH = 5, DATA_WIDTH = 32) (
   // 读寄存器
   assign rdata1 = (raddr1 == 0) ? 0 : rf[raddr1]; // 0号寄存器始终为0
   assign rdata2 = (raddr2 == 0) ? 0 : rf[raddr2]; // 0号寄存器始终为0
-
+	//assign wdata = (waddr == 0)? 0:wdata;
 /*
  function void get_regs(output logic [31:0] regs[32]);
         for (int i = 0; i < 32; i++) begin
@@ -37,7 +37,7 @@ assign ins=mem_read(pc);
       integer i;
       for (i = 0; i < 32; i = i + 1)
         rf[i] <= 0;
-    end else  begin // 0号寄存器不能写入
+    end else if(waddr != 0)  begin // 0号寄存器不能写入
      
       rf[waddr] = wdata;
       

@@ -22,14 +22,13 @@ reg [31:0] imm;
 reg [4:0] rs1_jalr;
  // 组合逻辑计算 next_pc（无需 always @*，直接赋值）
     assign next_pc = (rst) ? 32'h80000000 : pc + 4;
-		assign instruction_out = mem_read(pc);  // 更新指令 
+ 	assign instruction_out= (rst)?mem_read(pc):mem_read(pc);
+		
     always @(posedge clk ) begin
         if (rst) begin
-			//		pc <= 32'h80000000;
-				//		ebreak<=0;
-	//					valid <=0;
-            instruction_out = 32'b0;
-						pc <= 32'h80000000;       // 复位时 PC 初始化
+		pc <= 32'h80000000;       // 复位时 PC 初始化
+           
+						
 						pc_out <= 32'h80000000;   // 确保 pc_out 也是 80000000
         end else begin
 			//			$display("%8x ",instruction_out);
