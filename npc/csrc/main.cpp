@@ -312,7 +312,12 @@ std::cout << "Enter command (si: step, info_r: print registers, quit: exit)" << 
 while (std::getline(std::cin, cmd)) {
     if (cmd == "quit" || cmd == "q") {
         break;
-    } else if (cmd == "si") {
+    } else if (cmd.substr(0,2) == "si") {
+			int n=1;
+			if (cmd.length() > 3) { // 判断是否带参数
+        n = std::stoi(cmd.substr(3)); // 解析 n
+    }
+			 for (int step = 0; step < n; step++) {
 		 
 		top->clk = 1;
     top->eval();
@@ -350,6 +355,7 @@ while (std::getline(std::cin, cmd)) {
             } else {
                 printf("DiffTest check passed.\n");
             }
+			 }
 }
      else if (cmd == "info_r") {
         // 打印寄存器状态

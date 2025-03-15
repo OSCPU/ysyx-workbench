@@ -1,6 +1,8 @@
+`ifndef SYNTHESIS
 import "DPI-C" function void set_pc(input int pc);
 import "DPI-C" function void set_inst(input int inst);
-
+import "DPI-C"  function void ebreak_trigger();
+`endif
 module Top (
   input clk,
   input rst,
@@ -21,6 +23,7 @@ module Top (
   wire pc_valid;
   reg [31:0]instruction_out;
   wire wen;
+  wire wan;
   wire ebreak_signal;
    reg [31:0]pc_result;
 	 reg [31:0]rs_jalr;
@@ -38,9 +41,12 @@ module Top (
     .raddr1(rs1),
     .raddr2(rs2),
     .rdata1(rdata1),
+    .imm(imm),
 		.pc(pc),
 	//	.ins(inst),
-   .rdata2(rdata2)
+	.func3(func3),
+   .rdata2(rdata2),
+   .wan(wan)
   );
 
   // IFU实例
@@ -53,7 +59,8 @@ module Top (
     .pc(pc),
    // .pc_out(pc_out),
    // .valid(valid),
-    .pc_jal(pc_result)
+    .pc_jal(pc_result),
+    .wan(wan)
    // .pc_jump(pc_jump)
   );
   
@@ -80,6 +87,7 @@ module Top (
     .func3(func3),
     .alu_op(opcode),  // ADDI 操作
     .alu_result(alu_result),
+    .instr(instruction_out),
     //.pc_out(pc_result)
     .pc_result(pc_result)
     //.pc_jump(valid)
@@ -95,12 +103,14 @@ module Top (
 						$display("the pc value is: 0x%08x ", pc);
     end
 	end*/
-import "DPI-C"  function void ebreak_trigger();
 
+`ifndef SYNTHESIS
 always @(posedge clk or posedge rst) begin
     set_pc(pc);
     set_inst(instruction_out);
 end
+
+
 //export "DPI-C" function void get_gpr;
   always @(posedge clk) begin
     
@@ -108,6 +118,6 @@ end
             ebreak_trigger();  // 触发 C++ 中的结束仿真函数
         end
     end
-  
+`endif  
 endmodule
 

@@ -6,6 +6,7 @@ module EXU (
   input [31:0] imm,
   input [6:0] alu_op,
   input [2:0] func3,
+	input [31:0] instr,
   output reg [31:0]pc,
   output reg [31:0] alu_result,
   //output reg [31:0]pc_out
@@ -20,10 +21,18 @@ reg [31:0]middle;
   always @(posedge clk) begin
   
     case (alu_op)
+			7'b0110011:begin
+				if(instr[31:25]==7'b0000000)begin
+					alu_result=rs1_data+rs2_data;
+				end else begin
+					alu_result=rs1_data-rs2_data; 
+				end
+			end
       7'b0010011: begin
       alu_result = rs1_data +imm;
-      //pc_result = pc+4; // 对于 ADDI, 不改变 PC
-      //pc_jump=0;
+			if(func3==3'b011)begin
+					alu_result=(rs1_data<imm)?1:0;
+			end	
      end
      7'b0110111: begin // LUI 操作
         alu_result = imm; // LUI 直接使用立即数
@@ -44,7 +53,11 @@ reg [31:0]middle;
    	//pc_result = old_pc + imm; // JAL 跳转并保存返回地址
    //	pc_jump = 1;
    //	$display("0x%8x",pc_result);
-   end
+   end 
+   	7'b0000011:begin
+		alu_result=mem_read(rs1_data+imm);
+	end
+	
       7'b1100111:begin
        // $display("entering a jalr command\n");
      // pc_result = (rs1_data + imm) & ~1; // JALR 计算新的跳转地址，并清除最低位
@@ -54,7 +67,9 @@ reg [31:0]middle;
     7'b0100011:begin
 			alu_result=0;
     		middle=rs1_data+imm;
+    	`ifndef SYNTHESIS
     	mem_write(middle,rs2_data);
+    	`endif
     end
     	
 

@@ -41,8 +41,8 @@ $(BIN): $(VSRCS) $(CSRCS)
 
 
 sim:
-	@echo dhaodhs
-	$(MAKE) -C $(NPC_HOME) ISA=$(ISA) run ARGS="$(NPCFLAGS)" IMG=dummy-riscv32e-npc.bin
+	@echo 
+	$(MAKE) -C $(NPC_HOME) ISA=$(ISA) run ARGS="$(NPCFLAGS)" IMG=add-riscv32e-npc.bin
 run: $(BIN)
 	@$^ $(IMG)
 clean:
