@@ -16,24 +16,49 @@ module EXU (
 );
 
 reg [31:0]middle;
-
-
+reg [31:0] mem_two;
+reg [31:0]mem_data;
   always @(posedge clk) begin
   
     case (alu_op)
 			7'b0110011:begin
 				if(instr[31:25]==7'b0000000)begin
-					alu_result=rs1_data+rs2_data;
+					alu_result=rs1_data+rs2_data;//add
+					 if (func3 == 3'b011) begin//sltu
+        alu_result = ($unsigned(rs1_data) < $unsigned(rs2_data)) ? 1 : 0;
+    end
+					if(func3 == 3'b100)begin
+						alu_result = rs1_data ^ rs2_data;
+					end
+					if(func3 == 3'b110)begin
+						alu_result = rs1_data | rs2_data;
+					end
+					if(func3 == 3'b111)begin
+						alu_result=rs1_data&rs2_data;
+					end
+					if(func3 == 3'b011)begin
+						alu_result=(rs1_data<$unsigned(rs2_data))? 1 : 0;
+					end
+					if(func3 == 3'b001)begin
+						alu_result=rs1_data<<rs2_data;
+					end
 				end else begin
 					alu_result=rs1_data-rs2_data; 
 				end
 			end
-      7'b0010011: begin
+      7'b0010011: begin  //addi sltiu
       alu_result = rs1_data +imm;
 			if(func3==3'b011)begin
 					alu_result=(rs1_data<imm)?1:0;
+			end
+			if(func3==3'b101&&instr[31:26]==6'b010000)begin
+				alu_result= $signed(rs1_data) >>>$signed(instr[24:20]);
+			end
+			if(func3==3'b111)begin
+					alu_result= rs1_data & imm;
 			end	
      end
+
      7'b0110111: begin // LUI 操作
         alu_result = imm; // LUI 直接使用立即数
         //pc_result = pc+4;
@@ -54,8 +79,16 @@ reg [31:0]middle;
    //	pc_jump = 1;
    //	$display("0x%8x",pc_result);
    end 
-   	7'b0000011:begin
+   	7'b0000011:begin  //lbu
+			if(func3==3'b010)begin
 		alu_result=mem_read(rs1_data+imm);
+	end 
+			if(func3==3'b100)begin
+			 mem_data = mem_read(rs1_data + imm);
+
+    // 提取 mem_data 中的低 8 位字节并转换为无符号数
+		 alu_result = {24'b0, mem_data[7:0]};
+			end
 	end
 	
       7'b1100111:begin
@@ -65,11 +98,20 @@ reg [31:0]middle;
 	
     end 
     7'b0100011:begin
+			if(func3==3'b010)begin
 			alu_result=0;
     		middle=rs1_data+imm;
     	`ifndef SYNTHESIS
-    	mem_write(middle,rs2_data);
-    	`endif
+    	mem_write(middle, rs2_data, 15);
+			`endif
+		end
+			if(func3==3'b001)begin
+				alu_result=0;
+					middle=rs1_data+imm;
+					mem_write(middle,rs2_data, 3);
+				//mem_write(middle, {16'b0 ,rs2_data[15:0]});          // 写入低 8 位
+    //mem_write(middle + 1, {16'b0 ,rs2_data[15:0]});     // 写入高 8 位	
+			end
     end
     	
 

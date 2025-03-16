@@ -24,7 +24,7 @@ module IDU (
 always @(posedge clk) begin	
     // 根据指令格式解码立即数
     case (opcode)
-      7'b0110011: begin // R 型指令
+      7'b0110011: begin // R 型指令add sltu
         imm = 32'b0; // R 型指令没有立即数
         wen =1;
       end
@@ -32,7 +32,11 @@ always @(posedge clk) begin
         imm = {{20{instr[31]}}, instr[31:20]}; // 符号扩展
       		if(func3==3'b011)begin
       			imm={20'b0,instr[31:20]};
+						if(func3==3'b100)begin
+							imm={20'b0,instr[31:20]};
+						end
       		end
+					
         //$display("Instr: %h, RS1: %d, RS2: %d, RD: %d, Imm: %h, Opcode: %b, Func3: %b, Func7: %b",instr, rs1, rs2, rd, imm, opcode, func3, func7);
         wen =1;
       end

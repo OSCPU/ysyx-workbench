@@ -40,9 +40,9 @@ $(BIN): $(VSRCS) $(CSRCS)
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
 
 
-sim:
-	@echo 
-	$(MAKE) -C $(NPC_HOME) ISA=$(ISA) run ARGS="$(NPCFLAGS)" IMG=add-riscv32e-npc.bin
+#sim:
+#	@echo 
+#	$(MAKE) -C $(NPC_HOME) ISA=$(ISA) run ARGS="$(NPCFLAGS)" IMG=add-longlong-riscv32e-npc.bin
 run: $(BIN)
 	@$^ $(IMG)
 clean:

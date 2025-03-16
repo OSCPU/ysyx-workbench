@@ -202,7 +202,7 @@ static int parse_args(int argc, char *argv[]) {
         printf("\t-l,--log=FILE           output log to FILE\n");
         printf("\t-d,--diff=REF_SO        run DiffTest with reference REF_SO\n");
         printf("\t-p,--port=PORT          run DiffTest with port PORT\n");
-	//			printf("\t-e,--elf=FILE           parse the elf file\n");
+				printf("\t-e,--elf=FILE           parse the elf file\n");
         printf("\n");
         exit(0);
     }
@@ -216,7 +216,7 @@ void init_monitor(int argc, char *argv[]) {
   /* Parse arguments. */
   parse_args(argc, argv);
 //	printf("Trying to open ELF file: %s\n", "recursion-riscv32-nemu.elf");
-//parse_elf("/home/jason/ssh/ysyx-workbench/ics2024/am-kernels/tests/cpu-tests/build/recursion-riscv32-nemu.elf");   
+//	parse_elf("/home/jason/ssh/ysyx-workbench/ics2024/am-kernels/tests/cpu-tests/build/recursion-riscv32-nemu.elf");   
 
   /* Set random seed. */
   init_rand();

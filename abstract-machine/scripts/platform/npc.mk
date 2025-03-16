@@ -7,6 +7,8 @@ AM_SRCS := riscv/npc/start.S \
            riscv/npc/trap.S \
            platform/dummy/vme.c \
            platform/dummy/mpe.c
+CFLAGS += -I$(NPC_HOME)/include
+OBJS += $(NPC_HOME)/disasm.o
 
 CFLAGS    += -fdata-sections -ffunction-sections
 LDSCRIPTS += $(AM_HOME)/scripts/linker.ld
@@ -30,5 +32,7 @@ image: image-dep
 
 run: insert-arg
 	$(MAKE) -C $(NPC_HOME) ISA=$(ISA) run ARGS="$(NPCFLAGS)" IMG=$(IMAGE).bin
+HIT_STATUS := $(shell cat simulation_status.txt)
+
 
 .PHONY: insert-arg

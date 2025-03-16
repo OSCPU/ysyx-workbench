@@ -3,7 +3,6 @@
 #include <device/map.h>
 #include <../../monitor.h>
 #define INST_NUM 16
-
 // iringbuf
 typedef struct
 {

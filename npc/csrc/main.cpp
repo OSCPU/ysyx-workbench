@@ -76,13 +76,14 @@ static char *img_file = NULL;
   
   // DPI-C 兼容的 C 接口 
   extern "C" { 
-      uint32_t mem_read(uint32_t addr) { 
-          return mem.read(addr); 
+      uint32_t mem_read(uint32_t raddr) { 
+          return mem.pmem_read(raddr); 
       } 
    
-     void mem_write(uint32_t addr, uint32_t data) { 
-          mem.write(addr, data); 
+     void mem_write(uint32_t waddr, uint32_t wdata,int wmask) { 
+          mem.pmem_write(waddr, wdata, wmask); 
      } 
+
   }
 extern "C" void set_pc(int pc) {
 	   npc_pc = pc;
@@ -111,7 +112,7 @@ static long load_img() {
     while (fread(&data, sizeof(uint32_t), 1, fp) == 1) { 
 		 	//printf("writing data into memory....");
       //printf("0x%08x: 0x%08x\n", addr, data);  
-			mem.write(addr, data);
+			mem.pmem_write(addr, data, 15);
 			printf("Copying data to NEMU: addr = 0x%08x, data = 0x%08x, size = %zu\n", addr, data, sizeof(data));
 			ref_difftest_memcpy(addr , &data,sizeof(data),DIFFTEST_TO_REF);
 				//printf("0x%08x: 0x%08x\n", addr, data);  // 打印地址和对应的指令
@@ -230,12 +231,13 @@ void print_ref_memory(uint8_t* ref_memory, size_t size) {
         printf("ref_memory[%zu]: %08x\n", i, ref_memory[i]);
     }
 }
-void sdb_print_memory(VTop* top, uint32_t start_addr, int n) {
+void sdb_print_memory(VTop* top, uint32_t start_addr, int n) {//读取不太需要对齐，写入需要严格按照对齐，一般出现高位或者低位乱码不需要太在意,因为不是按照对齐读的可能会读到其它信息，
     printf("Scanning memory from 0x%08x (%d words):\n", start_addr, n);
 
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++) { 
         uint32_t addr = start_addr + i * 4;  // 每个地址间隔 4 字节
-        uint32_t value = mem.read(addr);  // 读取内存
+				
+        uint32_t value = mem.pmem_read(addr);  // 读取内存
         printf("0x%08x: 0x%08x\n", addr, value);
     }
 }
@@ -363,7 +365,7 @@ while (std::getline(std::cin, cmd)) {
     }else if(cmd.rfind("x ", 0) == 0){
 				int n;
     uint32_t addr;
-    
+   // int  rmask;  // 增加一个 rmask 变量
     // 解析命令格式: "x <n> <addr>"
     if (sscanf(cmd.c_str(), "x %d 0x%x", &n, &addr) == 2) {
         sdb_print_memory(top, addr, n);
