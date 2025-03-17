@@ -44,11 +44,7 @@ assign next_pc = (rst) ? 32'h80000000 : pc+4;
 
         if (mem_read(pc)==32'h00100073) begin
                 ebreak <= 1;  // ebreak指令，设置ebreak信号
-								if(pc==32'h80000030)begin
-									$display("HIT GOOD TRAP:pc:0x%8x",pc);
-								end else begin
-									$display("HIT BAD TRAP:pc:0x%8x",pc);
-								end
+								
             end else begin
                 ebreak <= 0;
             end

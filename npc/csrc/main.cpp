@@ -274,7 +274,7 @@ int main(int argc, char* argv[]) {
 			
 		
 				
-uint64_t max_cycles = 100000;  // 设置最大仿真时钟周期
+uint64_t max_cycles = 1000000;  // 设置最大仿真时钟周期
  bool interactive = true;  // 是否启用单步调试
    long size= load_img();
 	 ////////////////////////////////////////////////////////初始化difftest的ref寄存器//////////////

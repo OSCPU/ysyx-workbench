@@ -27,23 +27,29 @@ reg [31:0]mem_data;
 					 if (func3 == 3'b011) begin//sltu
         alu_result = ($unsigned(rs1_data) < $unsigned(rs2_data)) ? 1 : 0;
     end
-					if(func3 == 3'b100)begin
+					if(func3 == 3'b100)begin // xor
 						alu_result = rs1_data ^ rs2_data;
 					end
-					if(func3 == 3'b110)begin
+					if(func3 == 3'b110)begin//or
 						alu_result = rs1_data | rs2_data;
 					end
-					if(func3 == 3'b111)begin
+					if(func3 == 3'b111)begin//and
 						alu_result=rs1_data&rs2_data;
 					end
-					if(func3 == 3'b011)begin
+					if(func3 == 3'b011)begin//sltu
 						alu_result=(rs1_data<$unsigned(rs2_data))? 1 : 0;
 					end
-					if(func3 == 3'b001)begin
+					if(func3 == 3'b001)begin//sll
 						alu_result=rs1_data<<rs2_data;
 					end
+						if(func3 == 3'b101)begin
+							alu_result=rs1_data>>$unsigned(rs2_data);
+						end	
 				end else begin
-					alu_result=rs1_data-rs2_data; 
+					alu_result=rs1_data-rs2_data;
+					if(func3 == 3'b101)begin
+									alu_result=$signed(rs1_data) >>> $signed(rs2_data);
+					end
 				end
 			end
       7'b0010011: begin  //addi sltiu
@@ -51,11 +57,20 @@ reg [31:0]mem_data;
 			if(func3==3'b011)begin
 					alu_result=(rs1_data<imm)?1:0;
 			end
-			if(func3==3'b101&&instr[31:26]==6'b010000)begin
-				alu_result= $signed(rs1_data) >>>$signed(instr[24:20]);
+			if(func3==3'b101&&instr[31:26]==6'b010000)begin//srai
+				alu_result= $signed(rs1_data) >>>$signed(instr[25:20]);
+			end
+	if(func3==3'b101&&instr[31:26]==6'b000000)begin//srai
+				alu_result= $unsigned(rs1_data) >>$unsigned(imm);
 			end
 			if(func3==3'b111)begin
 					alu_result= rs1_data & imm;
+			end
+			if(func3==3'b100)begin
+					alu_result=rs1_data ^ imm;
+			end
+			if(func3==3'b001)begin
+					alu_result=rs1_data<<imm;
 			end	
      end
 
@@ -85,10 +100,16 @@ reg [31:0]mem_data;
 	end 
 			if(func3==3'b100)begin
 			 mem_data = mem_read(rs1_data + imm);
-
+			//		$display("%08x",mem_data[7:0]);
     // 提取 mem_data 中的低 8 位字节并转换为无符号数
 		 alu_result = {24'b0, mem_data[7:0]};
 			end
+		if(func3==3'b001)begin
+			 mem_data = mem_read(rs1_data + imm);
+			//		$display("%08x",mem_data[7:0]);
+    // 提取 mem_data 中的低 8 位字节并转换为无符号数
+	alu_result = {{16{mem_data[15]}}, mem_data[15:0]};		
+					end
 	end
 	
       7'b1100111:begin
@@ -111,6 +132,11 @@ reg [31:0]mem_data;
 					mem_write(middle,rs2_data, 3);
 				//mem_write(middle, {16'b0 ,rs2_data[15:0]});          // 写入低 8 位
     //mem_write(middle + 1, {16'b0 ,rs2_data[15:0]});     // 写入高 8 位	
+			end
+			if(func3==3'b000)begin
+			alu_result=0;
+					middle=rs1_data+imm;
+					mem_write(middle,rs2_data, 1);
 			end
     end
     	

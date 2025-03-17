@@ -38,7 +38,7 @@ module RegisterFile #(ADDR_WIDTH = 5, DATA_WIDTH = 32) (
   always @(posedge clk) begin
   if(ins[6:0]==7'b1100111)begin
 //assign imm = {{20{ins[31]}}, ins[31:20]}; // I 型指令的符号扩展   			
-			pc<=(rf[1]+imm)&~1;
+			pc<=(rf[raddr1]+imm)&~1;
 		end
 	if(ins[6:0]==7'b1100011)begin
 	if(func3==3'b000)begin
@@ -55,7 +55,37 @@ module RegisterFile #(ADDR_WIDTH = 5, DATA_WIDTH = 32) (
 	end else begin
 									pc<=pc+4;
 						end
-	end
+					end else if(func3==3'b101)begin
+								if ($signed(rf[raddr1]) >= $signed(rf[raddr2])) begin
+      pc <= pc + imm;
+    end else begin
+      pc <= pc + 4;
+    end
+					end  else if(func3==3'b111)begin
+								if ($unsigned(rf[raddr1]) >= $unsigned(rf[raddr2])) begin
+      pc <= pc + imm;
+    end else begin
+      pc <= pc + 4;
+    end
+					end  else if(func3==3'b100)begin
+								if ($signed(rf[raddr1]) < $signed(rf[raddr2])) begin
+      pc <= pc + imm;
+    end else begin
+      pc <= pc + 4;
+    end
+					end  else if(func3==3'b111)begin
+								if ($unsigned(rf[raddr1]) >= $unsigned(rf[raddr2])) begin
+      pc <= pc + imm;
+    end else begin
+      pc <= pc + 4;
+    end
+					end  else if(func3==3'b110)begin
+								if ($unsigned(rf[raddr1]) < $unsigned(rf[raddr2])) begin
+      pc <= pc + imm;
+    end else begin
+      pc <= pc + 4;
+    end
+					end 
 end 
     if (rst) begin
       integer i;

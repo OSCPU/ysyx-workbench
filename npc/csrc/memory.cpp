@@ -30,8 +30,8 @@ public:
            (memory[aligned_addr + 2] << 16) | (memory[aligned_addr + 3] << 24);
 }
 
-		 void pmem_write(int waddr, int wdata, int wmask) {
-    uint32_t aligned_addr = waddr & ~0x3u;  // 4字节对齐
+void pmem_write(int waddr, int wdata, int wmask) {
+    uint32_t aligned_addr = waddr ;  // 4字节对齐
     if (aligned_addr >= MEMORY_SIZE) {
         std::cerr << "Memory write error: address out of range!" << std::endl;
         return;
@@ -40,10 +40,11 @@ public:
         aligned_addr = waddr & ~0x1u;  // 2 字节对齐
 				printf("SH write operation: address=%d, data=%x, mask=%x\n", waddr, wdata, wmask);
 		}
-if (wmask == 15) {  // SH 操作，要求地址 2 字节对齐
-        aligned_addr = waddr & ~0x3u;  // 2 字节对齐
+if (wmask == 15) {  // 要求地址 4 字节对齐
+        aligned_addr = waddr & ~0x3u;  // 4字节对齐
 				printf("SH write operation: address=%d, data=%x, mask=%x\n", waddr, wdata, wmask);
 		}
+	
     // 遍历 wmask 控制写入的字节
     for (int i = 0; i < 4; i++) {
         if (wmask & (1 << i)) {

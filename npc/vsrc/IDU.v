@@ -29,11 +29,17 @@ always @(posedge clk) begin
         wen =1;
       end
       7'b0010011, 7'b0000011: begin // I 型指令（如 addi, lw, jalr）
-        imm = {{20{instr[31]}}, instr[31:20]}; // 符号扩展
-      		if(func3==3'b011)begin
+        imm = {{20{instr[31]}}, instr[31:20]}; // 符号扩展addi
+      		if(func3==3'b011)begin//lw
       			imm={20'b0,instr[31:20]};
-						if(func3==3'b100)begin
+						if(func3==3'b100)begin//xori
 							imm={20'b0,instr[31:20]};
+						end
+						if(func3==3'b001)begin//slli
+							imm={26'b0,instr[25:20]};
+						end
+						if(func3==3'b101)begin//srli srai除外
+							imm={26'b0,instr[25:20]};
 						end
       		end
 					
