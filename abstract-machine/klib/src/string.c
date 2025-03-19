@@ -22,7 +22,7 @@ char *strcpy(char *dst, const char *src) {
 }
 
 char *strncpy(char *dst, const char *src, size_t n) {
-  panic("Not implemented");
+  panic("cnmmstrncpyNot implemented");
 }
 
 char *strcat(char *dst, const char *src) {
@@ -47,7 +47,7 @@ int strcmp(const char *s1, const char *s2) {
 }
 
 int strncmp(const char *s1, const char *s2, size_t n) {
-  panic("Not implemented");
+  panic("cnmNot implemented");
 }
 
 void *memset(void *s, int c, size_t n) {
@@ -59,7 +59,26 @@ void *memset(void *s, int c, size_t n) {
 }
 
 void *memmove(void *dst, const void *src, size_t n) {
-  panic("Not implemented");
+unsigned char *d = (unsigned char *)dst;
+  const unsigned char *s = (const unsigned char *)src;
+
+  if (d == s || n == 0) return dst; // 如果源和目标相同，或者 n == 0，则直接返回
+
+  if (d < s || d >= s + n) {
+    // 无重叠，可以像 `memcpy()` 一样从头到尾复制
+    while (n--) {
+      *d++ = *s++;
+    }
+  } else {
+    // 有重叠，必须从后往前复制
+    d += n;
+    s += n;
+    while (n--) {
+      *(--d) = *(--s);
+    }
+  }
+  
+  return dst;
 }
 
 void *memcpy(void *out, const void *in, size_t n) {

@@ -6,7 +6,7 @@
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 // 辅助函数：整数转换为字符串
 // 辅助函数：整数转换为字符串
-static void itoa(int num, char *str, int base) {
+static void itoa(int num, char *str, int base, int width, char pad) {
     static char digits[] = "0123456789abcdef";
     char buf[32];
     int i = 0, j = 0;
@@ -26,31 +26,20 @@ static void itoa(int num, char *str, int base) {
         buf[i++] = '-';
     }
 
+		while (i < width) {
+        buf[i++] = pad;  // 补零或空格
+    }
+
     // 逆序拷贝到str
     while (i > 0) {
         str[j++] = buf[--i];
     }
     str[j] = '\0';
 }
-// 浮点数转换为字符串，保留两位小数
-/*static void ftoa(float num, char *str) {
-    int integer_part = (int) num;
-    int decimal_part = (int)((num - integer_part) * 100);  // 保留两位小数
 
-    // 将整数部分转换为字符串
-    itoa(integer_part, str, 10);
-    while (*str) {
-        str++;
-    }
-
-    *str++ = '.';  // 小数点
-
-    // 将小数部分转换为字符串
-    itoa(decimal_part, str, 10);
-}*/
 int printf(const char *fmt, ...) {
 //  panic("Not implemented");
-  char buf[1024];  // 临时缓冲区
+  char buf[1000];  // 临时缓冲区
   va_list args;
   va_start(args, fmt);
   int len = vsprintf(buf, fmt, args);
@@ -71,7 +60,20 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
     while (*fmt) {
         if (*fmt == '%') {
             fmt++;
-            switch (*fmt) {
+						 // 解析格式化标志
+            char pad = ' ';  // 默认补空格
+            if (*fmt == '0') {
+                pad = '0';  // 0前缀表示补零
+                fmt++;
+            }
+
+            // 解析最小宽度
+            int width = 0;
+            while (*fmt >= '0' && *fmt <= '9') {
+                width = width * 10 + (*fmt - '0');
+                fmt++;
+            }
+						switch (*fmt) {
                 case 's':  // 处理字符串
                     s = va_arg(ap, char *);
                     while (*s) {
@@ -80,18 +82,18 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
                     break;
                 case 'd':  // 处理整数
                     d = va_arg(ap, int);
-                    itoa(d, num_buf, 10);
-                    s = num_buf;
+                     itoa(d, num_buf, 10, width, pad);
+										s = num_buf;
                     while (*s) {
                         *p++ = *s++;
                     }
                     break;
                 case 'x':  // 处理十六进制
                     d = va_arg(ap, int);
-                    *p++ = '0';
-                    *p++ = 'x';
-                    itoa(d, num_buf, 16);
-                    s = num_buf;
+                   // *p++ = '0';
+                    //*p++ = 'x';
+                     itoa(d, num_buf, 16, width, pad);
+										s = num_buf;
                     while (*s) {
                         *p++ = *s++;
                     }
@@ -110,7 +112,6 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
                             *p++ = *s++;
                         }
 										}*/
-                    break;
                 default:  // 处理未知格式
                     *p++ = '%';
                     *p++ = *fmt;
@@ -125,7 +126,15 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
     return p - out; // 返回写入的字符数
 }
 
-int sprintf(char *out, const char *fmt, ...) {
+int sprintf(char *out, const char *fmt, ...) 
+	{
+    va_list args;
+    va_start(args, fmt);
+    int len = vsprintf(out, fmt, args);
+    va_end(args);
+    return len;
+}
+/*{
     va_list args;
     const char *ptr;
     char *str_ptr = out;
@@ -149,7 +158,7 @@ int sprintf(char *out, const char *fmt, ...) {
                 char *buf_ptr = buffer;
                 while (*buf_ptr) {
                     *str_ptr++ = *buf_ptr++;
-                }
+   itoa(d, num_buf, 16, width, pad);              }
             } 
             else if (*ptr == 'x') {  // 处理十六进制
                 int num = va_arg(args, int);
@@ -165,14 +174,14 @@ int sprintf(char *out, const char *fmt, ...) {
                 int c = va_arg(args, int);
                 *str_ptr++ = (char)c;
             }
-           /* else if (*ptr == 'f') {  // 处理浮点数
+            else if (*ptr == 'f') {  // 处理浮点数
                 double f = va_arg(args, double);
                 ftoa(f, buffer);
                 char *buf_ptr = buffer;
                 while (*buf_ptr) {
                     *str_ptr++ = *buf_ptr++;
                 }
-            }*/
+								}
         } else {  // 直接拷贝普通字符
             *str_ptr++ = *ptr;
         }
@@ -181,7 +190,7 @@ int sprintf(char *out, const char *fmt, ...) {
     va_end(args);
     *str_ptr = '\0'; // 结束字符串
     return str_ptr - out;
-}
+}*/
 
 int snprintf(char *out, size_t n, const char *fmt, ...) {
   panic("Not implemented");

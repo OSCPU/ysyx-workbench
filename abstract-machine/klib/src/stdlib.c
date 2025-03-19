@@ -34,7 +34,22 @@ void *malloc(size_t size) {
   // Therefore do not call panic() here, else it will yield a dead recursion:
   //   panic() -> putchar() -> (glibc) -> malloc() -> panic()
 #if !(defined(__ISA_NATIVE__) && defined(__NATIVE_USE_KLIB__))
-  panic("Not implemented");
+  static char *heap_ptr = NULL;
+	if (!heap_ptr) {
+    heap_ptr = (char *)heap.start; // 初始化堆指针
+  }
+
+  size = (size_t)ROUNDUP(size, 8); // 8 字节对齐
+  char *old_ptr = heap_ptr;
+  heap_ptr += size;
+
+  // 确保分配的内存没有超出 heap.end
+  if ((uintptr_t)heap_ptr > (uintptr_t)heap.end) {
+    panic("Out of memory!\n");
+    return NULL;
+  }
+
+  return old_ptr;
 #endif
   return NULL;
 }
