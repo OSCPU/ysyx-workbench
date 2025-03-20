@@ -151,6 +151,10 @@ config MTRACE
      bool "Enable the memory trace"
      default y
 
+config DTRACE
+     bool "Enable the device trace"
+     default y
+
 
 config ITRACE_COND
   depends on ITRACE
