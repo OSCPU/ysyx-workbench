@@ -52,7 +52,7 @@ assign next_pc = (rst) ? 32'h80000000 : pc+4;
 
 					 if (instruction_out[6:0]==7'b1101111) begin
             pc <= pc+imm;  // 跳转指令
-            $display("Jump to: 0x%08x", pc+imm);
+           // $display("Jump to: 0x%08x", pc+imm);
             //$stop;
 				 end
 				  else if(instruction_out[6:0]!=7'b1100111&&instruction_out[6:0]!=7'b1100011) begin

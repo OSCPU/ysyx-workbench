@@ -57,6 +57,12 @@ config MODE_SYSTEM
     Support full-system functionality, including privileged instructions, MMU and devices.
 endchoice
 
+config BATCH_MODE
+  bool "Enable batch mode"
+  default y
+  help
+    Enable batch mode for automatic execution without requiring manual input.
+
 choice
   prompt "Build target"
   default TARGET_NATIVE_ELF

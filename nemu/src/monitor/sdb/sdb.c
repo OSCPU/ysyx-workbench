@@ -305,7 +305,10 @@ void sdb_set_batch_mode() {
 }
 
 void sdb_mainloop() {
-  if (is_batch_mode) {
+  #ifdef CONFIG_BATCH_MODE
+  sdb_set_batch_mode();  // 设置批处理模式
+#endif
+	if (is_batch_mode) {
     cmd_c(NULL);
     return;
   }

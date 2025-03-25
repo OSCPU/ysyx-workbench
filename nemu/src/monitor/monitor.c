@@ -17,6 +17,8 @@
 #include <memory/paddr.h>
 #include <../../../include/common.h>
 #include <elf.h>
+#include <stdlib.h>
+
 //#include <../../monitor.h>
 int func_num=0;
 const char *elf_file;

@@ -20,6 +20,7 @@
 #include <memory/vaddr.h>
 #include "../monitor/sdb/watchpoint.h"
 #include "../utils/trace.h"
+#include <stdlib.h>
 
 
 /* The assembly code of instructions executed is only output to the screen
@@ -46,7 +47,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 
 
   // 在每次执行时检查监视点
-  check_watchpoints();
+  //check_watchpoints();
 
 
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));

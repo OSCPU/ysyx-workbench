@@ -14,7 +14,12 @@ BIN = $(BUILD_DIR)/$(TOPNAME)
 default: $(BIN)
 $(call git_commit, "sim RTL")
 $(shell mkdir -p $(BUILD_DIR))
-
+KLIB_PATH := $(NPC_PATH)/../abstract-machine/klib
+CFLAGS += -I$(KLIB_PATH)/include -D__NATIVE_USE_KLIB__
+VPATH += $(KLIB_PATH)/src
+SRCS += $(wildcard $(KLIB_PATH)/src/*.c)
+KLIB_PATH := /home/jason/ssh/ysyx-workbench/abstract-machine/klib
+CFLAGS += -I$(KLIB_PATH)/include -D__NATIVE_USE_KLIB__
 
 # project source
 VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")

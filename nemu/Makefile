@@ -69,7 +69,4 @@ ifeq ($(CONFIG_BATCH_MODE),y)
   NEMU_FLAGS += -b
 endif
 
-# 在运行 NEMU 时加上启动参数
-#run: $(NEMU_HOME)/src/nemu-main.c
-#	$(NEMU_HOME)/build/$(NAME) $(NEMU_FLAGS)
 

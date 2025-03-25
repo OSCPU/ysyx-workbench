@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include <common.h>
 #include <elf.h>
 #include <device/map.h>

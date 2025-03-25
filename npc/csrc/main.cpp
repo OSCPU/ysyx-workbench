@@ -15,6 +15,9 @@
 #include <stdlib.h>
 #include <verilated_vcd_c.h>
 #include "difftest.h"
+#include <klib.h>
+#include <klib-macros.h>
+
 #define CONFIG_MBASE 0x80000000  // 示例地址
 // 假设这些是你项目中定义的配置
 constexpr size_t MEMORY_SIZEE = 1024;  // 4GB
@@ -279,7 +282,7 @@ uint64_t max_cycles = 1000000;  // 设置最大仿真时钟周期
    long size= load_img();
 	 ////////////////////////////////////////////////////////初始化difftest的ref寄存器//////////////
 	 for(int i=0;i<32;i++)
-	 {
+ 	 {
 		 cpu.gpr[i]= top->rootp->Top__DOT__rf__DOT__rf[i];
 	 }
   ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
@@ -311,15 +314,28 @@ uint64_t max_cycles = 1000000;  // 设置最大仿真时钟周期
 
 std::string cmd;
 std::cout << "Enter command (si: step, info_r: print registers, quit: exit)" << std::endl;
-while (std::getline(std::cin, cmd)) {
-    if (cmd == "quit" || cmd == "q") {
+while (std::getline(std::cin, cmd)) { 
+    if (cmd == "quit" || cmd == "q") { 
         break;
-    } else if (cmd.substr(0,2) == "si") {
+    }else if(cmd == "c"){
+			 while(1){
+ top->clk = 1;
+        top->eval();  // 执行一时钟周期
+        if (tfp) tfp->dump(main_time++);
+
+        top->clk = 0;
+        top->eval();  // 执行另一时钟周期
+        if (tfp) tfp->dump(main_time++);
+
+
+			 }
+		}	
+		else if (cmd.substr(0,2) == "si") {
 			int n=1;
 			if (cmd.length() > 3) { // 判断是否带参数
         n = std::stoi(cmd.substr(3)); // 解析 n
-    }
-			 for (int step = 0; step < n; step++) {
+    } 
+			  for (int step = 0; step < n; step++) {
 		 
 		top->clk = 1;
     top->eval();
@@ -331,15 +347,15 @@ while (std::getline(std::cin, cmd)) {
     itrace_log();
 		cpu.pc=top->pc;
 		for(int i=0;i<32;i++)
-		{
+		{ 
       cpu.gpr[i]= top->rootp->Top__DOT__rf__DOT__rf[i];
     }
  for (int i = 0; i < 32; i++) {
      printf("%-4s: 0x%08x ", reg_names[i], cpu.gpr[i]);
      if (i % 4 == 3) {
        printf("\n");  // 每 4 个寄存器换行
-     }
-   }
+      }
+   } 
 
 	ref_difftest_exec(1);
 	ref_difftest_regcpy(&ref_cpu,DIFFTEST_TO_DUT);
@@ -348,9 +364,9 @@ while (std::getline(std::cin, cmd)) {
     printf("%-4s: 0x%08x ", reg_names[i], ref_cpu.gpr[i]);
     if (i % 4 == 3) {
       printf("\n");  // 每 4 个寄存器换行
-    }
-  }
-	  if (compare_cpu_state()) {
+     }
+  } 
+	   if (compare_cpu_state()) {
                 printf("DiffTest mismatch detected!\n");
                 print_cpu_state();
                 exit(1);
