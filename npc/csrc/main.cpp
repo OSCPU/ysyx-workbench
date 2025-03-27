@@ -15,8 +15,8 @@
 #include <stdlib.h>
 #include <verilated_vcd_c.h>
 #include "difftest.h"
-#include <klib.h>
-#include <klib-macros.h>
+//#include <klib.h>
+//#include <klib-macros.h>
 
 #define CONFIG_MBASE 0x80000000  // 示例地址
 // 假设这些是你项目中定义的配置
@@ -34,6 +34,7 @@ Memory mem;
 vluint64_t main_time = 0;   // 定义 main_time 变量，用于表示仿真时间
 #define MEM_BASE 0x80000000  // 代码加载到的起始地址
 uint32_t npc_pc = 0;
+uint32_t npc_skip = 0;
 uint32_t npc_inst = 0;
 difftest_memcpy_t difftest_memcpy;
 difftest_regcpy_t difftest_regcpy;
@@ -43,7 +44,7 @@ void (*ref_difftest_memcpy)(paddr_t addr, void *buf, size_t n, bool direction);
 void (*ref_difftest_regcpy)(void *dut, bool direction);
 void (*ref_difftest_exec)(uint64_t n);
 void (*ref_difftest_raise_intr)(uint64_t NO);
-
+static inline void difftest_skip_ref() {}  ; 
 CPU_state cpu;
 CPU_state ref_cpu;
 
@@ -80,7 +81,8 @@ static char *img_file = NULL;
   // DPI-C 兼容的 C 接口 
   extern "C" { 
       uint32_t mem_read(uint32_t raddr) { 
-          return mem.pmem_read(raddr); 
+          
+				return mem.pmem_read(raddr); 
       } 
    
      void mem_write(uint32_t waddr, uint32_t wdata,int wmask) { 
@@ -91,10 +93,13 @@ static char *img_file = NULL;
 extern "C" void set_pc(int pc) {
 	   npc_pc = pc;
 }
-
+extern "C" void set_skip(int skip) {
+	   npc_skip = skip;
+}
 extern "C" void set_inst(int inst) {
      npc_inst = inst;
 }
+
 extern "C" {
 // 初始化动态库链接
 
@@ -116,8 +121,8 @@ static long load_img() {
 		 	//printf("writing data into memory....");
       //printf("0x%08x: 0x%08x\n", addr, data);  
 			mem.pmem_write(addr, data, 15);
-			printf("Copying data to NEMU: addr = 0x%08x, data = 0x%08x, size = %zu\n", addr, data, sizeof(data));
-			ref_difftest_memcpy(addr , &data,sizeof(data),DIFFTEST_TO_REF);
+	//		printf("Copying data to NEMU: addr = 0x%08x, data = 0x%08x, size = %zu\n", addr, data, sizeof(data));
+		//	ref_difftest_memcpy(addr , &data,sizeof(data),DIFFTEST_TO_REF);
 				//printf("0x%08x: 0x%08x\n", addr, data);  // 打印地址和对应的指令
         addr += 4;
     }
@@ -126,7 +131,7 @@ static long load_img() {
 }
 
 ////////////////////////////////////////////////////////////////////////初始化difftest，difftest的比较逻辑和打印函数///////////////////////////////////////
-void init_difftest() {
+/*void init_difftest() {
   void *handle = dlopen("/home/jason/ssh/ysyx-workbench/nemu/build/riscv32-nemu-interpreter-so", RTLD_LAZY);
     if (!handle) {
         std::cerr << "Failed to open shared library: " << dlerror() << std::endl;
@@ -189,7 +194,7 @@ void print_cpu_state() {
         printf("%-4s: 0x%08x\n", reg_names[i], ref_cpu.gpr[i]);
     }
 }
-
+*/
 
 //////////////////////////////////////////////////////////解析img——file////////////////////////
 static int parse_args(int argc, char *argv[]) { 
@@ -199,18 +204,7 @@ if (optind <  argc) {
     }   
   return 0;
 }
-/*void sdb_print_registers(VTop* top) {
-	    // 获取当前写使能信号和写地址
 
-    for (int i = 0; i < 32; i++) {
-        // 模拟前递逻辑：如果正在写入该寄存器，则显示即将写入的值
-        uint32_t reg_val =top->rootp->Top__DOT__rf__DOT__rf[i];
-        
-        printf("x%d = 0x%08x\n", 
-              i, 
-              reg_val);
-    }
-}*/
 void sdb_print_registers(VTop* top) {
     // RISC-V 的 32 个通用寄存器名称
     const char* reg_names[32] = {
@@ -252,7 +246,7 @@ char asm_str[128]; // 存储反汇编结果
 }
 /////////////////////////////////////////////////////////////////////////////////////主函数/////////////////////////////////////////////////////////////
 int main(int argc, char* argv[]) {
-	  init_difftest(); 
+	//init_difftest(); 
 	parse_args(argc, argv);
 
 	if (img_file == NULL) {
@@ -281,11 +275,11 @@ uint64_t max_cycles = 1000000;  // 设置最大仿真时钟周期
  bool interactive = true;  // 是否启用单步调试
    long size= load_img();
 	 ////////////////////////////////////////////////////////初始化difftest的ref寄存器//////////////
-	 for(int i=0;i<32;i++)
+	/* for(int i=0;i<32;i++)
  	 {
 		 cpu.gpr[i]= top->rootp->Top__DOT__rf__DOT__rf[i];
 	 }
-  ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
+  ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);*/
 	
 	 //   print_ref_memory(ref_memory, size);
 	 /* while (!Verilated::gotFinish()&& main_time < max_cycles)  {
@@ -321,11 +315,11 @@ while (std::getline(std::cin, cmd)) {
 			 while(1){
  top->clk = 1;
         top->eval();  // 执行一时钟周期
-        if (tfp) tfp->dump(main_time++);
+       // if (tfp) tfp->dump(main_time++);
 
         top->clk = 0;
         top->eval();  // 执行另一时钟周期
-        if (tfp) tfp->dump(main_time++);
+     //   if (tfp) tfp->dump(main_time++);
 
 
 			 }
@@ -344,8 +338,8 @@ while (std::getline(std::cin, cmd)) {
     top->clk = 0;
     top->eval();
     if (tfp) tfp->dump(main_time++);
-    itrace_log();
-		cpu.pc=top->pc;
+    //itrace_log();
+		/*cpu.pc=top->pc;
 		for(int i=0;i<32;i++)
 		{ 
       cpu.gpr[i]= top->rootp->Top__DOT__rf__DOT__rf[i];
@@ -355,25 +349,43 @@ while (std::getline(std::cin, cmd)) {
      if (i % 4 == 3) {
        printf("\n");  // 每 4 个寄存器换行
       }
-   } 
+ }
+ if(npc_skip==1){
 
-	ref_difftest_exec(1);
+	 printf("entering the fucking devices");
+	 ref_difftest_regcpy(&cpu,DIFFTEST_TO_REF);
+ npc_skip=0; 
+ printf("%8x",cpu.pc);
+printf("%8x",ref_cpu.pc);
+
+ }else{
+//	 printf("%8x",cpu.pc);
+// printf("%8x",ref_cpu.pc);
+
+ref_difftest_exec(1);
+//printf("%8x",cpu.pc);
+// printf("%8x",ref_cpu.pc); 
 	ref_difftest_regcpy(&ref_cpu,DIFFTEST_TO_DUT);
+//	printf("%8x",cpu.pc);
+//  printf("%8x",ref_cpu.pc); 
 	 printf("REF Register state (after regcpy):\n");
   for (int i = 0; i < 32; i++) {
     printf("%-4s: 0x%08x ", reg_names[i], ref_cpu.gpr[i]);
     if (i % 4 == 3) {
       printf("\n");  // 每 4 个寄存器换行
      }
-  } 
-	   if (compare_cpu_state()) {
+  }
+if (compare_cpu_state()) {
                 printf("DiffTest mismatch detected!\n");
                 print_cpu_state();
                 exit(1);
             } else {
                 printf("DiffTest check passed.\n");
             }
+ }	*/
+	   
 			 }
+				
 }
      else if (cmd == "info_r") {
         // 打印寄存器状态

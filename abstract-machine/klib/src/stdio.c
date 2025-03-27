@@ -47,6 +47,8 @@ int printf(const char *fmt, ...) {
 
   for (int i = 0; i < len; i++) {
     putch(buf[i]); // 逐个输出
+	//	putch('P');
+	 // putch('C'); 
   }
   return len;
 }

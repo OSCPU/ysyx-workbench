@@ -10,16 +10,11 @@ VERILATOR_CFLAGS += -MMD --build -cc  \
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
 BIN = $(BUILD_DIR)/$(TOPNAME)
-
+CFLAGS += -I/home/jason/ssh/ysyx-workbench/abstract-machine/klib/include
+CFLAGS += -I/home/jason/ssh/ysyx-workbench/abstract-machine/am/include
 default: $(BIN)
 $(call git_commit, "sim RTL")
 $(shell mkdir -p $(BUILD_DIR))
-KLIB_PATH := $(NPC_PATH)/../abstract-machine/klib
-CFLAGS += -I$(KLIB_PATH)/include -D__NATIVE_USE_KLIB__
-VPATH += $(KLIB_PATH)/src
-SRCS += $(wildcard $(KLIB_PATH)/src/*.c)
-KLIB_PATH := /home/jason/ssh/ysyx-workbench/abstract-machine/klib
-CFLAGS += -I$(KLIB_PATH)/include -D__NATIVE_USE_KLIB__
 
 # project source
 VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")
@@ -36,6 +31,7 @@ CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\"" $(LLVM_CXXFLAGS)
 # rules for verilator
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 #CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
+$(info CFLAGS: $(CFLAGS))
 
 $(BIN): $(VSRCS) $(CSRCS) 
 	@rm -rf $(OBJ_DIR)

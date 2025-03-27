@@ -3,12 +3,12 @@
 #define __MEMORY_H__
 
 #include <stdint.h>
+// memory.h
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-int mem_read(uint32_t addr, uint32_t *data);
+extern bool skip_ref;  // 声明 skip_ref 变量为 bool 类型
 
 #ifdef __cplusplus
 }

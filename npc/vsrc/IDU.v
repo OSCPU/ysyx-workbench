@@ -28,23 +28,32 @@ always @(posedge clk) begin
         imm = 32'b0; // R 型指令没有立即数
         wen =1;
       end
-      7'b0010011, 7'b0000011: begin // I 型指令（如 addi, lw, jalr）
+      7'b0010011: begin // I 型指令（如 addi, lw, jalr）
         imm = {{20{instr[31]}}, instr[31:20]}; // 符号扩展addi
-      		if(func3==3'b011)begin//lw
-      			imm={20'b0,instr[31:20]};
+      		if(func3==3'b011)begin//sltiu
+      			imm={{20{instr[31]}},instr[31:20]};
+					end
 						if(func3==3'b100)begin//xori
-							imm={20'b0,instr[31:20]};
+							imm={{20{instr[31]}},instr[31:20]};
+						end
+						if(func3==3'b110)begin//ori
+							imm={{20{instr[31]}},instr[31:20]};
 						end
 						if(func3==3'b001)begin//slli
 							imm={26'b0,instr[25:20]};
 						end
-						if(func3==3'b101)begin//srli srai除外
+						if(func3==3'b101)begin//srli srai
 							imm={26'b0,instr[25:20]};
 						end
-      		end
+
+      		
 					
         //$display("Instr: %h, RS1: %d, RS2: %d, RD: %d, Imm: %h, Opcode: %b, Func3: %b, Func7: %b",instr, rs1, rs2, rd, imm, opcode, func3, func7);
         wen =1;
+      end
+				 7'b0000011: begin // I 型指令（如 lhu lw lbu lb）
+        imm = {{20{instr[31]}}, instr[31:20]}; // lbu lb lw lhu lh 100 000
+        wen=1;
       end
       7'b0100011: begin // S 型指令（如 sw, sh, sb）
         imm = {{20{instr[31]}}, instr[31:25], instr[11:7]}; // 符号扩展

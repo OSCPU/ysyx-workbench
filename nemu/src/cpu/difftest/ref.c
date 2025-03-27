@@ -45,7 +45,7 @@ __EXPORT void difftest_regcpy(void *dut, bool direction) {
 // direction=0: DUT->REF ; direction=1: REF->DUT
   CPU_state *ref_regs = &cpu;
   if (direction == DIFFTEST_TO_REF) 
-	{
+	{ 
     memcpy(ref_regs, dut, sizeof(CPU_state));
   } else {
     memcpy(dut, ref_regs, sizeof(CPU_state));
@@ -59,7 +59,12 @@ if (cpu.pc == 0) {
     cpu.pc = 0x80000000;
     printf("Starting execution at PC = 0x%08x\n", cpu.pc);
   }
+printf("cnjsnkandka");
+printf("         0x%8x         ",cpu.pc);
+
 	cpu_exec(n);
+	printf("         0x%8x         ",cpu.pc);
+
    // 执行完成后，你可以打印或查看 PC 的状态
   printf("\n");
 }

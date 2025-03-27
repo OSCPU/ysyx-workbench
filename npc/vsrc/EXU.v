@@ -27,6 +27,9 @@ reg [31:0]mem_data;
 					 if (func3 == 3'b011) begin//sltu
         alu_result = ($unsigned(rs1_data) < $unsigned(rs2_data)) ? 1 : 0;
     end
+						if(func3 == 3'b010)begin//slt
+							alu_result=(rs1_data<$signed(rs2_data))? 1 : 0;
+					end
 					if(func3 == 3'b100)begin // xor
 						alu_result = rs1_data ^ rs2_data;
 					end
@@ -42,35 +45,41 @@ reg [31:0]mem_data;
 					if(func3 == 3'b001)begin//sll
 						alu_result=rs1_data<<rs2_data;
 					end
-						if(func3 == 3'b101)begin
+						if(func3 == 3'b101)begin//srl
 							alu_result=rs1_data>>$unsigned(rs2_data);
 						end	
 				end else begin
 					alu_result=rs1_data-rs2_data;
-					if(func3 == 3'b101)begin
+					if(func3 == 3'b101)begin//sra
 									alu_result=$signed(rs1_data) >>> $signed(rs2_data);
 					end
 				end
 			end
       7'b0010011: begin  //addi sltiu
       alu_result = rs1_data +imm;
-			if(func3==3'b011)begin
-					alu_result=(rs1_data<imm)?1:0;
+			if(func3==3'b010)begin//slti
+					alu_result=(rs1_data<$signed(imm))?1:0;
+			end
+			if(func3==3'b011)begin//sltiu
+					alu_result=(rs1_data<$unsigned(imm))?1:0;
 			end
 			if(func3==3'b101&&instr[31:26]==6'b010000)begin//srai
 				alu_result= $signed(rs1_data) >>>$signed(instr[25:20]);
 			end
-	if(func3==3'b101&&instr[31:26]==6'b000000)begin//srai
-				alu_result= $unsigned(rs1_data) >>$unsigned(imm);
+	if(func3==3'b101&&instr[31:26]==6'b000000)begin//srli
+				alu_result= (rs1_data) >>$unsigned(imm);
 			end
-			if(func3==3'b111)begin
+			if(func3==3'b111)begin//and
 					alu_result= rs1_data & imm;
 			end
-			if(func3==3'b100)begin
+			if(func3==3'b100)begin//xori
 					alu_result=rs1_data ^ imm;
 			end
-			if(func3==3'b001)begin
+			if(func3==3'b001)begin//slli
 					alu_result=rs1_data<<imm;
+			end
+			if(func3==3'b110)begin//or
+          alu_result = rs1_data | imm;
 			end	
      end
 
@@ -94,21 +103,35 @@ reg [31:0]mem_data;
    //	pc_jump = 1;
    //	$display("0x%8x",pc_result);
    end 
-   	7'b0000011:begin  //lbu
+   	7'b0000011:begin  //lw
 			if(func3==3'b010)begin
-		alu_result=mem_read(rs1_data+imm);
-	end 
+						alu_result=mem_read(rs1_data+imm);
+	end
+		if(func3==3'b000)begin
+  mem_data = mem_read(rs1_data + imm);
+      alu_result = {{24{mem_data[7]}}, mem_data[7:0]};
+
+		end	
 			if(func3==3'b100)begin
+
 			 mem_data = mem_read(rs1_data + imm);
 			//		$display("%08x",mem_data[7:0]);
     // 提取 mem_data 中的低 8 位字节并转换为无符号数
 		 alu_result = {24'b0, mem_data[7:0]};
 			end
 		if(func3==3'b001)begin
-			 mem_data = mem_read(rs1_data + imm);
+
+		 mem_data = mem_read(rs1_data + imm);
 			//		$display("%08x",mem_data[7:0]);
     // 提取 mem_data 中的低 8 位字节并转换为无符号数
 	alu_result = {{16{mem_data[15]}}, mem_data[15:0]};		
+					end
+	if(func3==3'b101)begin
+
+		 mem_data = mem_read(rs1_data + imm);
+			//		$display("%08x",mem_data[7:0]);
+    // 提取 mem_data 中的低 8 位字节并转换为无符号数
+	alu_result = {16'b0, mem_data[15:0]};		
 					end
 	end
 	
@@ -123,20 +146,39 @@ reg [31:0]mem_data;
 			alu_result=0;
     		middle=rs1_data+imm;
     	`ifndef SYNTHESIS
+				if(middle>=32'ha00003f8&&middle<=32'ha2000000)begin
+						set_skip(1);
+					end else begin
+					        set_skip(0);
+					end
     	mem_write(middle, rs2_data, 15);
+    	
 			`endif
 		end
 			if(func3==3'b001)begin
 				alu_result=0;
 					middle=rs1_data+imm;
+if(middle>=32'ha00003f8&&middle<=32'ha2000000)begin
+						set_skip(1);
+					end else begin
+					        set_skip(0);
+					end
 					mem_write(middle,rs2_data, 3);
+						
 				//mem_write(middle, {16'b0 ,rs2_data[15:0]});          // 写入低 8 位
     //mem_write(middle + 1, {16'b0 ,rs2_data[15:0]});     // 写入高 8 位	
 			end
 			if(func3==3'b000)begin
 			alu_result=0;
 					middle=rs1_data+imm;
+	if(middle>=32'ha00003f8&&middle<=32'ha2000000)begin
+						
+						set_skip(1);
+					end else begin
+					        set_skip(0);
+					end
 					mem_write(middle,rs2_data, 1);
+				
 			end
     end
     	

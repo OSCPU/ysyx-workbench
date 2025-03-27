@@ -1,7 +1,7 @@
 `ifndef SYNTHESIS
 import "DPI-C" function int mem_read(input int addr);
 import "DPI-C" function void mem_write(input int addr,input int data,input int wmask);
-
+import "DPI-C" function void set_skip(input int skip);
 `endif
 module IFU (
     input clk,
