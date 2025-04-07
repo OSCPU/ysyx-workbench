@@ -15,16 +15,35 @@
 
 #ifndef __RISCV_REG_H__
 #define __RISCV_REG_H__
-
 #include <common.h>
-
+#include "isa-def.h"
+extern riscv32_CPU_state cpu;  // 确保可以访问 CPU 状态
 static inline int check_reg_idx(int idx) {
   IFDEF(CONFIG_RT_CHECK, assert(idx >= 0 && idx < MUXDEF(CONFIG_RVE, 16, 32)));
   return idx;
 }
-
+static inline word_t *check_csrs_idx(word_t idx){
+  switch (idx)
+  {
+  case 0x305:
+		printf("%8x:mtvec",cpu.pc);
+    return &cpu.csrs.mtvec;
+  case 0x341:
+		printf("%8x:mepc",cpu.pc); 
+    return &cpu.csrs.mepc;
+  case 0x300:
+		printf("%8x:mstatus",cpu.pc); 
+    return &cpu.csrs.mstatus;
+  case 0x342:
+		printf("%8x:mcause",cpu.pc); 
+    return &cpu.csrs.mcause;
+  default:
+    assert(0);
+    break;
+  }
+}
 #define gpr(idx) (cpu.gpr[check_reg_idx(idx)])
-
+#define csrs(idx) *(check_csrs_idx(idx))
 static inline const char* reg_name(int idx) {
   extern const char* regs[];
   return regs[check_reg_idx(idx)];

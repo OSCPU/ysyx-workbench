@@ -17,10 +17,21 @@
 #define __ISA_RISCV_H__
 
 #include <common.h>
+typedef struct {
 
+  word_t mtvec;
+
+  vaddr_t mepc; 
+
+  word_t mstatus;
+
+  word_t mcause;
+
+} MUXDEF(CONFIG_RV64, riscv64_CSRS, riscv32_CSRS);
 typedef struct {
   word_t gpr[MUXDEF(CONFIG_RVE, 16, 32)];
   vaddr_t pc;
+	 MUXDEF(CONFIG_RV64, riscv64_CSRS, riscv32_CSRS) csrs;
 } MUXDEF(CONFIG_RV64, riscv64_CPU_state, riscv32_CPU_state);
 
 // decode

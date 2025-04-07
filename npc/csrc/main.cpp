@@ -320,7 +320,7 @@ while (std::getline(std::cin, cmd)) {
         top->clk = 0;
         top->eval();  // 执行另一时钟周期
      //   if (tfp) tfp->dump(main_time++);
-
+//				vga_update_screen();
 
 			 }
 		}	
