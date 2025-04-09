@@ -161,7 +161,10 @@ config DTRACE
      bool "Enable the device trace"
      default y
 
-
+config ETRACE
+     bool "Enable the interruption trace"
+     default y
+     
 config ITRACE_COND
   depends on ITRACE
   string "Only trace instructions when the condition is true"

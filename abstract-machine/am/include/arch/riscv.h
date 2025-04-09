@@ -9,7 +9,11 @@
 
 struct Context {
   // TODO: fix the order of these members to match trap.S
-  uintptr_t mepc, mcause, gpr[NR_REGS], mstatus;
+//  uintptr_t mepc, mcause, gpr[NR_REGS], mstatus;
+	 uintptr_t gpr[NR_REGS];   // 先保存通用寄存器
+  uintptr_t mcause;         // 然后是异常原因
+  uintptr_t mstatus;        // 然后是机器状态
+  uintptr_t mepc;           // 最后是异常返回地址
   void *pdir;
 };
 

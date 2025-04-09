@@ -26,16 +26,16 @@ static inline word_t *check_csrs_idx(word_t idx){
   switch (idx)
   {
   case 0x305:
-		printf("%8x:mtvec",cpu.pc);
+//		printf("%8x:mtvec",cpu.pc);
     return &cpu.csrs.mtvec;
   case 0x341:
-		printf("%8x:mepc",cpu.pc); 
+	//	printf("%8x:mepc",cpu.pc); 
     return &cpu.csrs.mepc;
   case 0x300:
-		printf("%8x:mstatus",cpu.pc); 
+	//	printf("%8x:mstatus",cpu.pc); 
     return &cpu.csrs.mstatus;
   case 0x342:
-		printf("%8x:mcause",cpu.pc); 
+		//printf("%8x:mcause",cpu.pc); 
     return &cpu.csrs.mcause;
   default:
     assert(0);
