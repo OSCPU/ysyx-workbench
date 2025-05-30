@@ -10,7 +10,7 @@
 [1;34m[src/monitor/monitor.c:61 load_img] The image is /home/meowth/ysyx/ysyx-workbench/am-kernels/kernels/hello/build/hello-riscv32-nemu.bin, size = 1676[0m
 [1;34m[src/monitor/monitor.c:29 welcome] Trace: [1;32mON[0m[0m
 [1;34m[src/monitor/monitor.c:30 welcome] If trace is enabled, a log file will be generated to record the trace. This may lead to a large log file. If it is not necessary, you can disable it in menuconfig[0m
-[1;34m[src/monitor/monitor.c:33 welcome] Build time: 15:51:23, May 29 2025[0m
+[1;34m[src/monitor/monitor.c:33 welcome] Build time: 14:20:38, May 30 2025[0m
 0x80000000: 00 00 04 13 mv	s0, zero
 0x80000004: 00 00 91 17 auipc	sp, 9
 0x80000008: ff c1 01 13 addi	sp, sp, -4
@@ -764,6 +764,6 @@
 0x800000d4: 00 05 05 13 mv	a0, a0
 0x800000d8: 00 10 00 73 ebreak
 [1;34m[src/cpu/cpu-exec.c:154 cpu_exec] nemu: [1;32mHIT GOOD TRAP[0m at pc = 0x800000d8[0m
-[1;34m[src/cpu/cpu-exec.c:104 statistic] host time spent = 2,510 us[0m
+[1;34m[src/cpu/cpu-exec.c:104 statistic] host time spent = 3,485 us[0m
 [1;34m[src/cpu/cpu-exec.c:105 statistic] total guest instructions = 752[0m
-[1;34m[src/cpu/cpu-exec.c:106 statistic] simulation frequency = 299,601 inst/s[0m
+[1;34m[src/cpu/cpu-exec.c:106 statistic] simulation frequency = 215,781 inst/s[0m
