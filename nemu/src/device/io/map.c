@@ -53,7 +53,7 @@ void init_map() {
 }
 
 word_t map_read(paddr_t addr, int len, IOMap *map) {
-  printf("map: %s\n", map ? map->name : "NULL");
+  printf("read map: %s\n", map ? map->name : "NULL");
   assert(len >= 1 && len <= 8);
   check_bound(map, addr);
   paddr_t offset = addr - map->low;
@@ -63,7 +63,7 @@ word_t map_read(paddr_t addr, int len, IOMap *map) {
 }
 
 void map_write(paddr_t addr, int len, word_t data, IOMap *map) {
-  printf("map_read addr: " FMT_PADDR ", len: %d, map: %s\n", addr, len, map ? map->name : "NULL");
+  printf("write map: %s\n", map ? map->name : "NULL");
   assert(len >= 1 && len <= 8);
   check_bound(map, addr);
   paddr_t offset = addr - map->low;
