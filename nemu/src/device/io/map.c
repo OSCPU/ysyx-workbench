@@ -23,6 +23,8 @@
 static uint8_t *io_space = NULL;
 static uint8_t *p_space = NULL;
 
+FILE *dtrace_Write;
+
 uint8_t* new_space(int size) {
   uint8_t *p = p_space;
   // page aligned;
@@ -53,7 +55,11 @@ void init_map() {
 }
 
 word_t map_read(paddr_t addr, int len, IOMap *map) {
-  
+  if(CONFIG_MTRACE){
+    dtrace_Write=fopen("outputs/device_trace.txt","a");
+    fprintf(dtrace_Write, "read   %s\n", map->name);
+    fclose(dtrace_Write);
+  }
   assert(len >= 1 && len <= 8);
   check_bound(map, addr);
   paddr_t offset = addr - map->low;
@@ -63,7 +69,11 @@ word_t map_read(paddr_t addr, int len, IOMap *map) {
 }
 
 void map_write(paddr_t addr, int len, word_t data, IOMap *map) {
-  
+  if(CONFIG_MTRACE){
+    dtrace_Write=fopen("outputs/device_trace.txt","a");
+    fprintf(dtrace_Write, "write   %s\n", map->name);
+    fclose(dtrace_Write);
+  }
   assert(len >= 1 && len <= 8);
   check_bound(map, addr);
   paddr_t offset = addr - map->low;
