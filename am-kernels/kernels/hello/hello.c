@@ -10,8 +10,5 @@ int main(const char *args) {
   for (const char *p = fmt; *p; p++) {
     (*p == '%') ? putstr(args) : putch(*p);
   }
-  char *str = "meowth!";
-  int a = 1 * 7 *5;
-  printf("11111  %s  %d\n", str, 10 + a);
   return 0;
 }
