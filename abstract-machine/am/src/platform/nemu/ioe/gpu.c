@@ -23,7 +23,7 @@ void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
 void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
   int i,j;
   if (ctl->sync) {
-    outl(SYNC_ADDR, 1);
+    outl(SYNC_ADDR, 1); //向vgactl_port_base[1]中写入1,更新画面
   }
   uint32_t *p = (uint32_t *)ctl->pixels; 
   uint32_t *fb = (uint32_t *)(uintptr_t)(FB_ADDR + (ctl->y*WIDTH + ctl->x) * sizeof(uint32_t));

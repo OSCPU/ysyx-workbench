@@ -1,6 +1,6 @@
 #ifndef __DRAW_H__
 
-//#define HAS_GUI
+#define HAS_GUI
 
 #include <stdio.h>
 #include <am.h>
