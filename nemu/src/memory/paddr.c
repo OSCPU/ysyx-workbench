@@ -54,6 +54,7 @@ word_t paddr_read(paddr_t addr, int len) {
   if(CONFIG_MTRACE){
     mtrace_Write=fopen("outputs/memory_trace.txt","a");
     fprintf(mtrace_Write, "read   %x\n", addr);
+    fclose(mtrace_Write);
   }
   if (likely(in_pmem(addr))) return pmem_read(addr, len);
   IFDEF(CONFIG_DEVICE, return mmio_read(addr, len));
@@ -65,6 +66,7 @@ void paddr_write(paddr_t addr, int len, word_t data) {
   if(CONFIG_MTRACE){
     mtrace_Write=fopen("outputs/memory_trace.txt","a");
     fprintf(mtrace_Write, "write   %x\n", addr);
+    fclose(mtrace_Write);
   }
   if (likely(in_pmem(addr))) { pmem_write(addr, len, data); return; }
   IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);
