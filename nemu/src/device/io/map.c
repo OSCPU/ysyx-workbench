@@ -55,7 +55,7 @@ void init_map() {
 }
 
 word_t map_read(paddr_t addr, int len, IOMap *map) {
-  if(CONFIG_MTRACE){
+  if(CONFIG_DTRACE){
     dtrace_Write=fopen("outputs/device_trace.txt","a");
     fprintf(dtrace_Write, "read   %s\n", map->name);
     fclose(dtrace_Write);
@@ -69,7 +69,7 @@ word_t map_read(paddr_t addr, int len, IOMap *map) {
 }
 
 void map_write(paddr_t addr, int len, word_t data, IOMap *map) {
-  if(CONFIG_MTRACE){
+  if(CONFIG_DTRACE){
     dtrace_Write=fopen("outputs/device_trace.txt","a");
     fprintf(dtrace_Write, "write   %s\n", map->name);
     fclose(dtrace_Write);
