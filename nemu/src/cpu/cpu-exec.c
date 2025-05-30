@@ -17,6 +17,7 @@
 #include <cpu/decode.h>
 #include <cpu/difftest.h>
 #include <locale.h>
+#include </home/meowth/ysyx/ysyx-workbench/nemu/src/monitor/sdb/sdb.h>
 
 /* The assembly code of instructions executed is only output to the screen
  * when the number of instructions executed is less than this value.
@@ -29,50 +30,65 @@ CPU_state cpu = {};
 uint64_t g_nr_guest_inst = 0;
 static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
-
+char *iringbuf[30];
+uint32_t iringbuf_pc[30];
+int ring_id = 0;
+int instruction_count = 0;
 void device_update();
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
-#ifdef CONFIG_ITRACE_COND
-  if (ITRACE_COND) { log_write("%s\n", _this->logbuf); }
-#endif
-  if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
-  IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
+  #ifdef CONFIG_ITRACE_COND
+    if (ITRACE_COND) { log_write("%s\n", _this->logbuf); }
+  #endif
+    if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
+    IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
+    if(watchpoint_check() == 1)
+    {nemu_state.state = NEMU_STOP;}
 }
 
 static void exec_once(Decode *s, vaddr_t pc) {
-  s->pc = pc;
-  s->snpc = pc;
-  isa_exec_once(s);
-  cpu.pc = s->dnpc;
-#ifdef CONFIG_ITRACE
-  char *p = s->logbuf;
-  p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);
-  int ilen = s->snpc - s->pc;
-  int i;
-  uint8_t *inst = (uint8_t *)&s->isa.inst;
-#ifdef CONFIG_ISA_x86
-  for (i = 0; i < ilen; i ++) {
-#else
-  for (i = ilen - 1; i >= 0; i --) {
-#endif
-    p += snprintf(p, 4, " %02x", inst[i]);
-  }
-  int ilen_max = MUXDEF(CONFIG_ISA_x86, 8, 4);
-  int space_len = ilen_max - ilen;
-  if (space_len < 0) space_len = 0;
-  space_len = space_len * 3 + 1;
-  memset(p, ' ', space_len);
-  p += space_len;
-
-  void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
-  disassemble(p, s->logbuf + sizeof(s->logbuf) - p,
-      MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc), (uint8_t *)&s->isa.inst, ilen);
-#endif
+    s->pc = pc;
+    s->snpc = pc;
+    isa_exec_once(s);
+    // printf("%d\n",ff);
+    cpu.pc = s->dnpc;
+  #ifdef CONFIG_ITRACE
+    char *p = s->logbuf;
+    p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);//sprintf将格式化字符串输出到指定缓冲区当中，且有最大字节数限制
+    int ilen = s->snpc - s->pc;
+    int i;
+    uint8_t *inst = (uint8_t *)&s->isa.inst;
+  #ifdef CONFIG_ISA_x86
+    for (i = 0; i < ilen; i ++)
+  #else
+    for (i = ilen - 1; i >= 0; i --) {
+  #endif
+      p += snprintf(p, 4, " %02x", inst[i]);
+    }
+    int ilen_max = MUXDEF(CONFIG_ISA_x86, 8, 4);
+    int space_len = ilen_max - ilen;
+    if (space_len < 0) space_len = 0;
+    space_len = space_len * 3 + 1;
+    memset(p, ' ', space_len);
+    p += space_len;
+    void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
+    disassemble(p, s->logbuf + sizeof(s->logbuf) - p,
+        MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc), (uint8_t *)&s->isa.inst, ilen);
+    //实现itrace
+    iringbuf_pc[ring_id] = s -> pc;
+    strcpy(iringbuf[ring_id], p);
+    ring_id ++;
+    if(ring_id == 25)
+      ring_id = 0;
+    instruction_count++;
+    //p即为反汇编出的指令
+    
+  #endif
 }
 
 static void execute(uint64_t n) {
   Decode s;
+ 
   for (;n > 0; n --) {
     exec_once(&s, cpu.pc);
     g_nr_guest_inst ++;
@@ -98,6 +114,8 @@ void assert_fail_msg() {
 
 /* Simulate how the CPU works. */
 void cpu_exec(uint64_t n) {
+  FILE *mtrace_Write;
+  mtrace_Write=fopen("outputs/memory_trace.txt","w");
   g_print_step = (n < MAX_INST_TO_PRINT);
   switch (nemu_state.state) {
     case NEMU_END: case NEMU_ABORT: case NEMU_QUIT:
@@ -108,8 +126,24 @@ void cpu_exec(uint64_t n) {
 
   uint64_t timer_start = get_time();
 
+  for(int i = 0; i < 25; i++){
+    iringbuf[i] = malloc(sizeof(char) * 50);
+  }
   execute(n);
-
+  FILE *iringbuf_Write=fopen("outputs/iringbuf.txt","w");
+  if(instruction_count < 25){
+    for(int i = 0; i < instruction_count; i++){
+      fprintf(iringbuf_Write,"0x%x  %s\n", iringbuf_pc[i], iringbuf[i]);
+    }
+  }
+  else{
+    for(int i = ring_id,j = 0; j < 25; j++){
+      fprintf(iringbuf_Write,"0x%x  %s\n", iringbuf_pc[i], iringbuf[i]);
+      i ++;
+      if(i == 25) i = 0;
+    }
+  }
+  fclose(iringbuf_Write);
   uint64_t timer_end = get_time();
   g_timer += timer_end - timer_start;
 
@@ -125,4 +159,5 @@ void cpu_exec(uint64_t n) {
       // fall through
     case NEMU_QUIT: statistic();
   }
+  fclose(mtrace_Write);
 }

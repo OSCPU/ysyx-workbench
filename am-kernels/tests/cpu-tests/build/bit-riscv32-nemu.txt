@@ -1,0 +1,156 @@
+
+/home/meowth/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests/build/bit-riscv32-nemu.elf:     file format elf32-littleriscv
+
+
+Disassembly of section .text:
+
+80000000 <_start>:
+80000000:	00000413          	li	s0,0
+80000004:	00009117          	auipc	sp,0x9
+80000008:	ffc10113          	addi	sp,sp,-4 # 80009000 <_end>
+8000000c:	1f8000ef          	jal	ra,80000204 <_trm_init>
+
+80000010 <check>:
+80000010:	00050463          	beqz	a0,80000018 <check+0x8>
+80000014:	00008067          	ret
+80000018:	ff010113          	addi	sp,sp,-16
+8000001c:	00100513          	li	a0,1
+80000020:	00112623          	sw	ra,12(sp)
+80000024:	1d4000ef          	jal	ra,800001f8 <halt>
+
+80000028 <getbit>:
+80000028:	4035d793          	srai	a5,a1,0x3
+8000002c:	00f50533          	add	a0,a0,a5
+80000030:	00054503          	lbu	a0,0(a0)
+80000034:	0075f593          	andi	a1,a1,7
+80000038:	00100793          	li	a5,1
+8000003c:	00b797b3          	sll	a5,a5,a1
+80000040:	00f57533          	and	a0,a0,a5
+80000044:	00a03533          	snez	a0,a0
+80000048:	00008067          	ret
+
+8000004c <setbit>:
+8000004c:	4035d793          	srai	a5,a1,0x3
+80000050:	ff010113          	addi	sp,sp,-16
+80000054:	00f50533          	add	a0,a0,a5
+80000058:	00a12623          	sw	a0,12(sp)
+8000005c:	00c12783          	lw	a5,12(sp)
+80000060:	0075f593          	andi	a1,a1,7
+80000064:	00100713          	li	a4,1
+80000068:	00b71733          	sll	a4,a4,a1
+8000006c:	02061063          	bnez	a2,8000008c <setbit+0x40>
+80000070:	0007c783          	lbu	a5,0(a5)
+80000074:	fff74713          	not	a4,a4
+80000078:	00e7f7b3          	and	a5,a5,a4
+8000007c:	00c12703          	lw	a4,12(sp)
+80000080:	00f70023          	sb	a5,0(a4)
+80000084:	01010113          	addi	sp,sp,16
+80000088:	00008067          	ret
+8000008c:	0007c783          	lbu	a5,0(a5)
+80000090:	00e7e7b3          	or	a5,a5,a4
+80000094:	00c12703          	lw	a4,12(sp)
+80000098:	0ff7f793          	zext.b	a5,a5
+8000009c:	00f70023          	sb	a5,0(a4)
+800000a0:	01010113          	addi	sp,sp,16
+800000a4:	00008067          	ret
+
+800000a8 <main>:
+800000a8:	fe010113          	addi	sp,sp,-32
+800000ac:	0aa00793          	li	a5,170
+800000b0:	00000593          	li	a1,0
+800000b4:	00c10513          	addi	a0,sp,12
+800000b8:	00112e23          	sw	ra,28(sp)
+800000bc:	00f11623          	sh	a5,12(sp)
+800000c0:	f69ff0ef          	jal	ra,80000028 <getbit>
+800000c4:	00154513          	xori	a0,a0,1
+800000c8:	0ff57513          	zext.b	a0,a0
+800000cc:	f45ff0ef          	jal	ra,80000010 <check>
+800000d0:	00100593          	li	a1,1
+800000d4:	00c10513          	addi	a0,sp,12
+800000d8:	f51ff0ef          	jal	ra,80000028 <getbit>
+800000dc:	f35ff0ef          	jal	ra,80000010 <check>
+800000e0:	00200593          	li	a1,2
+800000e4:	00c10513          	addi	a0,sp,12
+800000e8:	f41ff0ef          	jal	ra,80000028 <getbit>
+800000ec:	00154513          	xori	a0,a0,1
+800000f0:	0ff57513          	zext.b	a0,a0
+800000f4:	f1dff0ef          	jal	ra,80000010 <check>
+800000f8:	00300593          	li	a1,3
+800000fc:	00c10513          	addi	a0,sp,12
+80000100:	f29ff0ef          	jal	ra,80000028 <getbit>
+80000104:	f0dff0ef          	jal	ra,80000010 <check>
+80000108:	00400593          	li	a1,4
+8000010c:	00c10513          	addi	a0,sp,12
+80000110:	f19ff0ef          	jal	ra,80000028 <getbit>
+80000114:	00154513          	xori	a0,a0,1
+80000118:	0ff57513          	zext.b	a0,a0
+8000011c:	ef5ff0ef          	jal	ra,80000010 <check>
+80000120:	00500593          	li	a1,5
+80000124:	00c10513          	addi	a0,sp,12
+80000128:	f01ff0ef          	jal	ra,80000028 <getbit>
+8000012c:	ee5ff0ef          	jal	ra,80000010 <check>
+80000130:	00600593          	li	a1,6
+80000134:	00c10513          	addi	a0,sp,12
+80000138:	ef1ff0ef          	jal	ra,80000028 <getbit>
+8000013c:	00154513          	xori	a0,a0,1
+80000140:	0ff57513          	zext.b	a0,a0
+80000144:	ecdff0ef          	jal	ra,80000010 <check>
+80000148:	00700593          	li	a1,7
+8000014c:	00c10513          	addi	a0,sp,12
+80000150:	ed9ff0ef          	jal	ra,80000028 <getbit>
+80000154:	ebdff0ef          	jal	ra,80000010 <check>
+80000158:	00c10513          	addi	a0,sp,12
+8000015c:	00100613          	li	a2,1
+80000160:	00800593          	li	a1,8
+80000164:	ee9ff0ef          	jal	ra,8000004c <setbit>
+80000168:	00c10513          	addi	a0,sp,12
+8000016c:	00000613          	li	a2,0
+80000170:	00900593          	li	a1,9
+80000174:	ed9ff0ef          	jal	ra,8000004c <setbit>
+80000178:	00c10513          	addi	a0,sp,12
+8000017c:	00100613          	li	a2,1
+80000180:	00a00593          	li	a1,10
+80000184:	ec9ff0ef          	jal	ra,8000004c <setbit>
+80000188:	00c10513          	addi	a0,sp,12
+8000018c:	00000613          	li	a2,0
+80000190:	00b00593          	li	a1,11
+80000194:	eb9ff0ef          	jal	ra,8000004c <setbit>
+80000198:	00c10513          	addi	a0,sp,12
+8000019c:	00100613          	li	a2,1
+800001a0:	00c00593          	li	a1,12
+800001a4:	ea9ff0ef          	jal	ra,8000004c <setbit>
+800001a8:	00c10513          	addi	a0,sp,12
+800001ac:	00000613          	li	a2,0
+800001b0:	00d00593          	li	a1,13
+800001b4:	e99ff0ef          	jal	ra,8000004c <setbit>
+800001b8:	00c10513          	addi	a0,sp,12
+800001bc:	00100613          	li	a2,1
+800001c0:	00e00593          	li	a1,14
+800001c4:	e89ff0ef          	jal	ra,8000004c <setbit>
+800001c8:	00c10513          	addi	a0,sp,12
+800001cc:	00000613          	li	a2,0
+800001d0:	00f00593          	li	a1,15
+800001d4:	e79ff0ef          	jal	ra,8000004c <setbit>
+800001d8:	00d14503          	lbu	a0,13(sp)
+800001dc:	fab50513          	addi	a0,a0,-85
+800001e0:	00153513          	seqz	a0,a0
+800001e4:	e2dff0ef          	jal	ra,80000010 <check>
+800001e8:	01c12083          	lw	ra,28(sp)
+800001ec:	00000513          	li	a0,0
+800001f0:	02010113          	addi	sp,sp,32
+800001f4:	00008067          	ret
+
+800001f8 <halt>:
+800001f8:	00050513          	mv	a0,a0
+800001fc:	00100073          	ebreak
+80000200:	0000006f          	j	80000200 <halt+0x8>
+
+80000204 <_trm_init>:
+80000204:	ff010113          	addi	sp,sp,-16
+80000208:	00000517          	auipc	a0,0x0
+8000020c:	01c50513          	addi	a0,a0,28 # 80000224 <_etext>
+80000210:	00112623          	sw	ra,12(sp)
+80000214:	e95ff0ef          	jal	ra,800000a8 <main>
+80000218:	00050513          	mv	a0,a0
+8000021c:	00100073          	ebreak
+80000220:	0000006f          	j	80000220 <_trm_init+0x1c>

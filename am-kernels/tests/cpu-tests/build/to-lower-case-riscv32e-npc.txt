@@ -1,0 +1,64 @@
+
+/home/meowth/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests/build/to-lower-case-riscv32e-npc.elf:     file format elf32-littleriscv
+
+
+Disassembly of section .text:
+
+80000000 <_start>:
+80000000:	00000413          	li	s0,0
+80000004:	00009117          	auipc	sp,0x9
+80000008:	ffc10113          	addi	sp,sp,-4 # 80009000 <_end>
+8000000c:	09c000ef          	jal	ra,800000a8 <_trm_init>
+
+80000010 <check>:
+80000010:	00050463          	beqz	a0,80000018 <check+0x8>
+80000014:	00008067          	ret
+80000018:	ff410113          	addi	sp,sp,-12
+8000001c:	00100513          	li	a0,1
+80000020:	00112423          	sw	ra,8(sp)
+80000024:	07c000ef          	jal	ra,800000a0 <halt>
+
+80000028 <main>:
+80000028:	ff410113          	addi	sp,sp,-12
+8000002c:	00812223          	sw	s0,4(sp)
+80000030:	00912023          	sw	s1,0(sp)
+80000034:	00112423          	sw	ra,8(sp)
+80000038:	00000413          	li	s0,0
+8000003c:	00000713          	li	a4,0
+80000040:	00000497          	auipc	s1,0x0
+80000044:	0c448493          	addi	s1,s1,196 # 80000104 <ans>
+80000048:	008486b3          	add	a3,s1,s0
+8000004c:	0006c503          	lbu	a0,0(a3)
+80000050:	00140413          	addi	s0,s0,1
+80000054:	40e50533          	sub	a0,a0,a4
+80000058:	00153513          	seqz	a0,a0
+8000005c:	fb5ff0ef          	jal	ra,80000010 <check>
+80000060:	0ff47713          	zext.b	a4,s0
+80000064:	fbf70693          	addi	a3,a4,-65
+80000068:	08000793          	li	a5,128
+8000006c:	0ff6f693          	zext.b	a3,a3
+80000070:	01900613          	li	a2,25
+80000074:	02070593          	addi	a1,a4,32
+80000078:	00f40863          	beq	s0,a5,80000088 <main+0x60>
+8000007c:	fcd666e3          	bltu	a2,a3,80000048 <main+0x20>
+80000080:	0ff5f713          	zext.b	a4,a1
+80000084:	fc5ff06f          	j	80000048 <main+0x20>
+80000088:	00812083          	lw	ra,8(sp)
+8000008c:	00412403          	lw	s0,4(sp)
+80000090:	00012483          	lw	s1,0(sp)
+80000094:	00000513          	li	a0,0
+80000098:	00c10113          	addi	sp,sp,12
+8000009c:	00008067          	ret
+
+800000a0 <halt>:
+800000a0:	00100073          	ebreak
+800000a4:	0000006f          	j	800000a4 <halt+0x4>
+
+800000a8 <_trm_init>:
+800000a8:	ff410113          	addi	sp,sp,-12
+800000ac:	00000517          	auipc	a0,0x0
+800000b0:	01850513          	addi	a0,a0,24 # 800000c4 <_etext>
+800000b4:	00112423          	sw	ra,8(sp)
+800000b8:	f71ff0ef          	jal	ra,80000028 <main>
+800000bc:	00100073          	ebreak
+800000c0:	0000006f          	j	800000c0 <_trm_init+0x18>

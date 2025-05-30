@@ -1,0 +1,95 @@
+
+/home/meowth/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests/build/bubble-sort-riscv32e-npc.elf:     file format elf32-littleriscv
+
+
+Disassembly of section .text:
+
+80000000 <_start>:
+80000000:	00000413          	li	s0,0
+80000004:	00009117          	auipc	sp,0x9
+80000008:	ffc10113          	addi	sp,sp,-4 # 80009000 <_end>
+8000000c:	110000ef          	jal	ra,8000011c <_trm_init>
+
+80000010 <check>:
+80000010:	00050463          	beqz	a0,80000018 <check+0x8>
+80000014:	00008067          	ret
+80000018:	ff410113          	addi	sp,sp,-12
+8000001c:	00100513          	li	a0,1
+80000020:	00112423          	sw	ra,8(sp)
+80000024:	0f0000ef          	jal	ra,80000114 <halt>
+
+80000028 <bubble_sort>:
+80000028:	00000517          	auipc	a0,0x0
+8000002c:	15050513          	addi	a0,a0,336 # 80000178 <a>
+80000030:	00000617          	auipc	a2,0x0
+80000034:	19460613          	addi	a2,a2,404 # 800001c4 <a+0x4c>
+80000038:	01300593          	li	a1,19
+8000003c:	00050793          	mv	a5,a0
+80000040:	02b05063          	blez	a1,80000060 <bubble_sort+0x38>
+80000044:	0007a703          	lw	a4,0(a5)
+80000048:	0047a683          	lw	a3,4(a5)
+8000004c:	00e6d663          	bge	a3,a4,80000058 <bubble_sort+0x30>
+80000050:	00d7a023          	sw	a3,0(a5)
+80000054:	00e7a223          	sw	a4,4(a5)
+80000058:	00478793          	addi	a5,a5,4
+8000005c:	fec794e3          	bne	a5,a2,80000044 <bubble_sort+0x1c>
+80000060:	fff58593          	addi	a1,a1,-1
+80000064:	ffc60793          	addi	a5,a2,-4
+80000068:	00a60663          	beq	a2,a0,80000074 <bubble_sort+0x4c>
+8000006c:	00078613          	mv	a2,a5
+80000070:	fcdff06f          	j	8000003c <bubble_sort+0x14>
+80000074:	00008067          	ret
+
+80000078 <main>:
+80000078:	ff010113          	addi	sp,sp,-16
+8000007c:	00812423          	sw	s0,8(sp)
+80000080:	00912223          	sw	s1,4(sp)
+80000084:	00112623          	sw	ra,12(sp)
+80000088:	00000417          	auipc	s0,0x0
+8000008c:	0f040413          	addi	s0,s0,240 # 80000178 <a>
+80000090:	f99ff0ef          	jal	ra,80000028 <bubble_sort>
+80000094:	00040713          	mv	a4,s0
+80000098:	00000493          	li	s1,0
+8000009c:	00072503          	lw	a0,0(a4)
+800000a0:	00470713          	addi	a4,a4,4
+800000a4:	00e12023          	sw	a4,0(sp)
+800000a8:	40950533          	sub	a0,a0,s1
+800000ac:	00153513          	seqz	a0,a0
+800000b0:	f61ff0ef          	jal	ra,80000010 <check>
+800000b4:	00148493          	addi	s1,s1,1
+800000b8:	01400793          	li	a5,20
+800000bc:	00012703          	lw	a4,0(sp)
+800000c0:	fcf49ee3          	bne	s1,a5,8000009c <main+0x24>
+800000c4:	00100513          	li	a0,1
+800000c8:	f49ff0ef          	jal	ra,80000010 <check>
+800000cc:	00000493          	li	s1,0
+800000d0:	f59ff0ef          	jal	ra,80000028 <bubble_sort>
+800000d4:	00042503          	lw	a0,0(s0)
+800000d8:	00440413          	addi	s0,s0,4
+800000dc:	40950533          	sub	a0,a0,s1
+800000e0:	00153513          	seqz	a0,a0
+800000e4:	f2dff0ef          	jal	ra,80000010 <check>
+800000e8:	00148493          	addi	s1,s1,1
+800000ec:	01400793          	li	a5,20
+800000f0:	fef492e3          	bne	s1,a5,800000d4 <main+0x5c>
+800000f4:	00100513          	li	a0,1
+800000f8:	f19ff0ef          	jal	ra,80000010 <check>
+800000fc:	00c12083          	lw	ra,12(sp)
+80000100:	00812403          	lw	s0,8(sp)
+80000104:	00412483          	lw	s1,4(sp)
+80000108:	00000513          	li	a0,0
+8000010c:	01010113          	addi	sp,sp,16
+80000110:	00008067          	ret
+
+80000114 <halt>:
+80000114:	00100073          	ebreak
+80000118:	0000006f          	j	80000118 <halt+0x4>
+
+8000011c <_trm_init>:
+8000011c:	ff410113          	addi	sp,sp,-12
+80000120:	00000517          	auipc	a0,0x0
+80000124:	01850513          	addi	a0,a0,24 # 80000138 <_etext>
+80000128:	00112423          	sw	ra,8(sp)
+8000012c:	f4dff0ef          	jal	ra,80000078 <main>
+80000130:	00100073          	ebreak
+80000134:	0000006f          	j	80000134 <_trm_init+0x18>

@@ -1,0 +1,67 @@
+
+/home/meowth/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests/build/switch-riscv32e-npc.elf:     file format elf32-littleriscv
+
+
+Disassembly of section .text:
+
+80000000 <_start>:
+80000000:	00000413          	li	s0,0
+80000004:	00009117          	auipc	sp,0x9
+80000008:	ffc10113          	addi	sp,sp,-4 # 80009000 <_end>
+8000000c:	0a8000ef          	jal	ra,800000b4 <_trm_init>
+
+80000010 <check>:
+80000010:	00050463          	beqz	a0,80000018 <check+0x8>
+80000014:	00008067          	ret
+80000018:	ff410113          	addi	sp,sp,-12
+8000001c:	00100513          	li	a0,1
+80000020:	00112423          	sw	ra,8(sp)
+80000024:	088000ef          	jal	ra,800000ac <halt>
+
+80000028 <main>:
+80000028:	ff410113          	addi	sp,sp,-12
+8000002c:	00812223          	sw	s0,4(sp)
+80000030:	00912023          	sw	s1,0(sp)
+80000034:	00112423          	sw	ra,8(sp)
+80000038:	00000497          	auipc	s1,0x0
+8000003c:	10c48493          	addi	s1,s1,268 # 80000144 <ans>
+80000040:	00000413          	li	s0,0
+80000044:	fff00693          	li	a3,-1
+80000048:	0004a503          	lw	a0,0(s1)
+8000004c:	00448493          	addi	s1,s1,4
+80000050:	40d50533          	sub	a0,a0,a3
+80000054:	00153513          	seqz	a0,a0
+80000058:	fb9ff0ef          	jal	ra,80000010 <check>
+8000005c:	00241793          	slli	a5,s0,0x2
+80000060:	00000717          	auipc	a4,0x0
+80000064:	07070713          	addi	a4,a4,112 # 800000d0 <_etext>
+80000068:	00e00693          	li	a3,14
+8000006c:	00f707b3          	add	a5,a4,a5
+80000070:	00d00613          	li	a2,13
+80000074:	00d40c63          	beq	s0,a3,8000008c <main+0x64>
+80000078:	fff00693          	li	a3,-1
+8000007c:	00c40463          	beq	s0,a2,80000084 <main+0x5c>
+80000080:	0007a683          	lw	a3,0(a5)
+80000084:	00140413          	addi	s0,s0,1
+80000088:	fc1ff06f          	j	80000048 <main+0x20>
+8000008c:	00100513          	li	a0,1
+80000090:	f81ff0ef          	jal	ra,80000010 <check>
+80000094:	00812083          	lw	ra,8(sp)
+80000098:	00412403          	lw	s0,4(sp)
+8000009c:	00012483          	lw	s1,0(sp)
+800000a0:	00000513          	li	a0,0
+800000a4:	00c10113          	addi	sp,sp,12
+800000a8:	00008067          	ret
+
+800000ac <halt>:
+800000ac:	00100073          	ebreak
+800000b0:	0000006f          	j	800000b0 <halt+0x4>
+
+800000b4 <_trm_init>:
+800000b4:	ff410113          	addi	sp,sp,-12
+800000b8:	00000517          	auipc	a0,0x0
+800000bc:	04c50513          	addi	a0,a0,76 # 80000104 <mainargs>
+800000c0:	00112423          	sw	ra,8(sp)
+800000c4:	f65ff0ef          	jal	ra,80000028 <main>
+800000c8:	00100073          	ebreak
+800000cc:	0000006f          	j	800000cc <_trm_init+0x18>

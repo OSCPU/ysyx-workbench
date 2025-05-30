@@ -23,7 +23,7 @@ static uint8_t *pmem = NULL;
 #else // CONFIG_PMEM_GARRAY
 static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 #endif
-
+FILE *mtrace_Write;
 uint8_t* guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
 paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
 
@@ -51,6 +51,10 @@ void init_mem() {
 }
 
 word_t paddr_read(paddr_t addr, int len) {
+  if(CONFIG_MTRACE){
+    mtrace_Write=fopen("outputs/memory_trace.txt","a");
+    fprintf(mtrace_Write, "read   %x\n", addr);
+  }
   if (likely(in_pmem(addr))) return pmem_read(addr, len);
   IFDEF(CONFIG_DEVICE, return mmio_read(addr, len));
   out_of_bound(addr);
@@ -58,6 +62,10 @@ word_t paddr_read(paddr_t addr, int len) {
 }
 
 void paddr_write(paddr_t addr, int len, word_t data) {
+  if(CONFIG_MTRACE){
+    mtrace_Write=fopen("outputs/memory_trace.txt","a");
+    fprintf(mtrace_Write, "write   %x\n", addr);
+  }
   if (likely(in_pmem(addr))) { pmem_write(addr, len, data); return; }
   IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);
   out_of_bound(addr);

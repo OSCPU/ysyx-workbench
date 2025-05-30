@@ -1,0 +1,2 @@
+This is the AbstractMachine port of mynes (https://github.com/yaglo/mynes).
+Emulates "Super Mario Bros" on NES (CPU, PPU, and peripherals).

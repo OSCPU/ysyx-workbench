@@ -1,0 +1,94 @@
+
+/home/meowth/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests/build/crc32-riscv32-nemu.elf:     file format elf32-littleriscv
+
+
+Disassembly of section .text:
+
+80000000 <_start>:
+80000000:	00000413          	li	s0,0
+80000004:	00009117          	auipc	sp,0x9
+80000008:	ffc10113          	addi	sp,sp,-4 # 80009000 <_end>
+8000000c:	108000ef          	jal	ra,80000114 <_trm_init>
+
+80000010 <check>:
+80000010:	00050463          	beqz	a0,80000018 <check+0x8>
+80000014:	00008067          	ret
+80000018:	ff010113          	addi	sp,sp,-16
+8000001c:	00100513          	li	a0,1
+80000020:	00112623          	sw	ra,12(sp)
+80000024:	0e4000ef          	jal	ra,80000108 <halt>
+
+80000028 <rc_crc32>:
+80000028:	00000e97          	auipc	t4,0x0
+8000002c:	578e8e93          	addi	t4,t4,1400 # 800005a0 <have_table.1>
+80000030:	000ea803          	lw	a6,0(t4)
+80000034:	04081863          	bnez	a6,80000084 <rc_crc32+0x5c>
+80000038:	edb888b7          	lui	a7,0xedb88
+8000003c:	00000317          	auipc	t1,0x0
+80000040:	16430313          	addi	t1,t1,356 # 800001a0 <table.0>
+80000044:	32088893          	addi	a7,a7,800 # edb88320 <_end+0x6db7f320>
+80000048:	10000e13          	li	t3,256
+8000004c:	00080793          	mv	a5,a6
+80000050:	00800713          	li	a4,8
+80000054:	0017f693          	andi	a3,a5,1
+80000058:	fff70713          	addi	a4,a4,-1
+8000005c:	0017d793          	srli	a5,a5,0x1
+80000060:	00068463          	beqz	a3,80000068 <rc_crc32+0x40>
+80000064:	0117c7b3          	xor	a5,a5,a7
+80000068:	fe0716e3          	bnez	a4,80000054 <rc_crc32+0x2c>
+8000006c:	00f32023          	sw	a5,0(t1)
+80000070:	00180813          	addi	a6,a6,1
+80000074:	00430313          	addi	t1,t1,4
+80000078:	fdc81ae3          	bne	a6,t3,8000004c <rc_crc32+0x24>
+8000007c:	00100793          	li	a5,1
+80000080:	00fea023          	sw	a5,0(t4)
+80000084:	00c58633          	add	a2,a1,a2
+80000088:	fff54713          	not	a4,a0
+8000008c:	02c5fc63          	bgeu	a1,a2,800000c4 <rc_crc32+0x9c>
+80000090:	00000517          	auipc	a0,0x0
+80000094:	11050513          	addi	a0,a0,272 # 800001a0 <table.0>
+80000098:	0005c683          	lbu	a3,0(a1)
+8000009c:	0ff77793          	zext.b	a5,a4
+800000a0:	00158593          	addi	a1,a1,1
+800000a4:	00d7c7b3          	xor	a5,a5,a3
+800000a8:	00279793          	slli	a5,a5,0x2
+800000ac:	00f507b3          	add	a5,a0,a5
+800000b0:	0007a783          	lw	a5,0(a5)
+800000b4:	00875713          	srli	a4,a4,0x8
+800000b8:	00f74733          	xor	a4,a4,a5
+800000bc:	fcb61ee3          	bne	a2,a1,80000098 <rc_crc32+0x70>
+800000c0:	fff74513          	not	a0,a4
+800000c4:	00008067          	ret
+
+800000c8 <main>:
+800000c8:	ff010113          	addi	sp,sp,-16
+800000cc:	02b00613          	li	a2,43
+800000d0:	00000597          	auipc	a1,0x0
+800000d4:	06458593          	addi	a1,a1,100 # 80000134 <_etext>
+800000d8:	00000513          	li	a0,0
+800000dc:	00112623          	sw	ra,12(sp)
+800000e0:	f49ff0ef          	jal	ra,80000028 <rc_crc32>
+800000e4:	beb067b7          	lui	a5,0xbeb06
+800000e8:	cc778793          	addi	a5,a5,-825 # beb05cc7 <_end+0x3eafccc7>
+800000ec:	00f50533          	add	a0,a0,a5
+800000f0:	00153513          	seqz	a0,a0
+800000f4:	f1dff0ef          	jal	ra,80000010 <check>
+800000f8:	00c12083          	lw	ra,12(sp)
+800000fc:	00000513          	li	a0,0
+80000100:	01010113          	addi	sp,sp,16
+80000104:	00008067          	ret
+
+80000108 <halt>:
+80000108:	00050513          	mv	a0,a0
+8000010c:	00100073          	ebreak
+80000110:	0000006f          	j	80000110 <halt+0x8>
+
+80000114 <_trm_init>:
+80000114:	ff010113          	addi	sp,sp,-16
+80000118:	00000517          	auipc	a0,0x0
+8000011c:	04850513          	addi	a0,a0,72 # 80000160 <mainargs>
+80000120:	00112623          	sw	ra,12(sp)
+80000124:	fa5ff0ef          	jal	ra,800000c8 <main>
+80000128:	00050513          	mv	a0,a0
+8000012c:	00100073          	ebreak
+80000130:	0000006f          	j	80000130 <_trm_init+0x1c>

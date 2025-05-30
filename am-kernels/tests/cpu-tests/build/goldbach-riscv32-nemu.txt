@@ -1,0 +1,89 @@
+
+/home/meowth/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests/build/goldbach-riscv32-nemu.elf:     file format elf32-littleriscv
+
+
+Disassembly of section .text:
+
+80000000 <_start>:
+80000000:	00000413          	li	s0,0
+80000004:	00009117          	auipc	sp,0x9
+80000008:	ffc10113          	addi	sp,sp,-4 # 80009000 <_end>
+8000000c:	0f4000ef          	jal	ra,80000100 <_trm_init>
+
+80000010 <check>:
+80000010:	00050463          	beqz	a0,80000018 <check+0x8>
+80000014:	00008067          	ret
+80000018:	ff010113          	addi	sp,sp,-16
+8000001c:	00100513          	li	a0,1
+80000020:	00112623          	sw	ra,12(sp)
+80000024:	0d0000ef          	jal	ra,800000f4 <halt>
+
+80000028 <goldbach>:
+80000028:	00200793          	li	a5,2
+8000002c:	06a7da63          	bge	a5,a0,800000a0 <goldbach+0x78>
+80000030:	ffe50613          	addi	a2,a0,-2
+80000034:	00200713          	li	a4,2
+80000038:	00200593          	li	a1,2
+8000003c:	00100813          	li	a6,1
+80000040:	02b70263          	beq	a4,a1,80000064 <goldbach+0x3c>
+80000044:	00177793          	andi	a5,a4,1
+80000048:	04078663          	beqz	a5,80000094 <goldbach+0x6c>
+8000004c:	00200793          	li	a5,2
+80000050:	00c0006f          	j	8000005c <goldbach+0x34>
+80000054:	02f766b3          	rem	a3,a4,a5
+80000058:	02068e63          	beqz	a3,80000094 <goldbach+0x6c>
+8000005c:	00178793          	addi	a5,a5,1
+80000060:	fee79ae3          	bne	a5,a4,80000054 <goldbach+0x2c>
+80000064:	03060863          	beq	a2,a6,80000094 <goldbach+0x6c>
+80000068:	02b60263          	beq	a2,a1,8000008c <goldbach+0x64>
+8000006c:	00167793          	andi	a5,a2,1
+80000070:	02078263          	beqz	a5,80000094 <goldbach+0x6c>
+80000074:	00200793          	li	a5,2
+80000078:	00c0006f          	j	80000084 <goldbach+0x5c>
+8000007c:	02f666b3          	rem	a3,a2,a5
+80000080:	00068a63          	beqz	a3,80000094 <goldbach+0x6c>
+80000084:	00178793          	addi	a5,a5,1
+80000088:	fef61ae3          	bne	a2,a5,8000007c <goldbach+0x54>
+8000008c:	00100513          	li	a0,1
+80000090:	00008067          	ret
+80000094:	00170713          	addi	a4,a4,1
+80000098:	fff60613          	addi	a2,a2,-1
+8000009c:	fae512e3          	bne	a0,a4,80000040 <goldbach+0x18>
+800000a0:	00000513          	li	a0,0
+800000a4:	00008067          	ret
+
+800000a8 <main>:
+800000a8:	ff010113          	addi	sp,sp,-16
+800000ac:	00812423          	sw	s0,8(sp)
+800000b0:	00912223          	sw	s1,4(sp)
+800000b4:	00112623          	sw	ra,12(sp)
+800000b8:	00400413          	li	s0,4
+800000bc:	02000493          	li	s1,32
+800000c0:	00040513          	mv	a0,s0
+800000c4:	f65ff0ef          	jal	ra,80000028 <goldbach>
+800000c8:	fff50513          	addi	a0,a0,-1
+800000cc:	00240413          	addi	s0,s0,2
+800000d0:	00153513          	seqz	a0,a0
+800000d4:	f3dff0ef          	jal	ra,80000010 <check>
+800000d8:	fe9414e3          	bne	s0,s1,800000c0 <main+0x18>
+800000dc:	00c12083          	lw	ra,12(sp)
+800000e0:	00812403          	lw	s0,8(sp)
+800000e4:	00412483          	lw	s1,4(sp)
+800000e8:	00000513          	li	a0,0
+800000ec:	01010113          	addi	sp,sp,16
+800000f0:	00008067          	ret
+
+800000f4 <halt>:
+800000f4:	00050513          	mv	a0,a0
+800000f8:	00100073          	ebreak
+800000fc:	0000006f          	j	800000fc <halt+0x8>
+
+80000100 <_trm_init>:
+80000100:	ff010113          	addi	sp,sp,-16
+80000104:	00000517          	auipc	a0,0x0
+80000108:	01c50513          	addi	a0,a0,28 # 80000120 <_etext>
+8000010c:	00112623          	sw	ra,12(sp)
+80000110:	f99ff0ef          	jal	ra,800000a8 <main>
+80000114:	00050513          	mv	a0,a0
+80000118:	00100073          	ebreak
+8000011c:	0000006f          	j	8000011c <_trm_init+0x1c>

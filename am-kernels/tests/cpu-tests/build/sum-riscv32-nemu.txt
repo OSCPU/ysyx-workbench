@@ -1,0 +1,56 @@
+
+/home/meowth/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests/build/sum-riscv32-nemu.elf:     file format elf32-littleriscv
+
+
+Disassembly of section .text:
+
+80000000 <_start>:
+80000000:	00000413          	li	s0,0
+80000004:	00009117          	auipc	sp,0x9
+80000008:	ffc10113          	addi	sp,sp,-4 # 80009000 <_end>
+8000000c:	078000ef          	jal	ra,80000084 <_trm_init>
+
+80000010 <check>:
+80000010:	00050463          	beqz	a0,80000018 <check+0x8>
+80000014:	00008067          	ret
+80000018:	ff010113          	addi	sp,sp,-16
+8000001c:	00100513          	li	a0,1
+80000020:	00112623          	sw	ra,12(sp)
+80000024:	054000ef          	jal	ra,80000078 <halt>
+
+80000028 <main>:
+80000028:	fe010113          	addi	sp,sp,-32
+8000002c:	00112e23          	sw	ra,28(sp)
+80000030:	00012623          	sw	zero,12(sp)
+80000034:	00100793          	li	a5,1
+80000038:	06500693          	li	a3,101
+8000003c:	00c12703          	lw	a4,12(sp)
+80000040:	00f70733          	add	a4,a4,a5
+80000044:	00e12623          	sw	a4,12(sp)
+80000048:	00178793          	addi	a5,a5,1
+8000004c:	fed798e3          	bne	a5,a3,8000003c <main+0x14>
+80000050:	00c12503          	lw	a0,12(sp)
+80000054:	fffff7b7          	lui	a5,0xfffff
+80000058:	c4678793          	addi	a5,a5,-954 # ffffec46 <_end+0x7fff5c46>
+8000005c:	00f50533          	add	a0,a0,a5
+80000060:	00153513          	seqz	a0,a0
+80000064:	fadff0ef          	jal	ra,80000010 <check>
+80000068:	01c12083          	lw	ra,28(sp)
+8000006c:	00000513          	li	a0,0
+80000070:	02010113          	addi	sp,sp,32
+80000074:	00008067          	ret
+
+80000078 <halt>:
+80000078:	00050513          	mv	a0,a0
+8000007c:	00100073          	ebreak
+80000080:	0000006f          	j	80000080 <halt+0x8>
+
+80000084 <_trm_init>:
+80000084:	ff010113          	addi	sp,sp,-16
+80000088:	00000517          	auipc	a0,0x0
+8000008c:	01c50513          	addi	a0,a0,28 # 800000a4 <_etext>
+80000090:	00112623          	sw	ra,12(sp)
+80000094:	f95ff0ef          	jal	ra,80000028 <main>
+80000098:	00050513          	mv	a0,a0
+8000009c:	00100073          	ebreak
+800000a0:	0000006f          	j	800000a0 <_trm_init+0x1c>
