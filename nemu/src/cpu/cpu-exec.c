@@ -116,6 +116,8 @@ void assert_fail_msg() {
 void cpu_exec(uint64_t n) {
   FILE *mtrace_Write;
   mtrace_Write=fopen("outputs/memory_trace.txt","w");
+  FILE *dtrace_Write;
+  dtrace_Write=fopen("outputs/device_trace.txt","w");
   g_print_step = (n < MAX_INST_TO_PRINT);
   switch (nemu_state.state) {
     case NEMU_END: case NEMU_ABORT: case NEMU_QUIT:
@@ -160,4 +162,5 @@ void cpu_exec(uint64_t n) {
     case NEMU_QUIT: statistic();
   }
   fclose(mtrace_Write);
+  fclose(dtrace_Write);
 }
