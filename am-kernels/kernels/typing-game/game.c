@@ -52,7 +52,8 @@ void game_logic_update(int frame) {
         if (--c->t == 0) {
           c->ch = '\0';
         }
-      } else {
+      } 
+      else {
         c->y += c->v;
         if (c->y < 0) {
           c->ch = '\0';
