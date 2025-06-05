@@ -20,7 +20,7 @@ uint8_t* guest_to_host(uint32_t paddr) {
 }
 
 void write_addr(uint32_t paddr, uint32_t data, int size) {
-	printf("write addr: %x, data: %x\n", paddr, data);
+	printf("write_addr: paddr = %x, data = %x, size = %d\n", paddr, data, size);
 	if(MTRACE){
 		mtrace_Write=fopen("outputs/mtrace.txt","a");
 		fprintf(mtrace_Write, "write   %x\n", paddr);
@@ -29,7 +29,6 @@ void write_addr(uint32_t paddr, uint32_t data, int size) {
 	for(int i = 0; i < size; i++){
 		(pmem)[paddr - RESET_VECTOR  + i] = BITS(data, (i + 1) * 8 - 1 , i * 8);
 	}
-	 
 	return; 
 }
 

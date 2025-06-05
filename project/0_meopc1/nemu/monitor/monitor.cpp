@@ -68,7 +68,7 @@ void init_monitor(int argc, char *argv[]) {
   
     // init_elf(elf_file);
       
-    init_mem(0x8000000);
+    init_mem(0x80000000);
   
     // init_isa();
   
