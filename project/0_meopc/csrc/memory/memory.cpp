@@ -28,6 +28,7 @@ void write_addr(uint32_t paddr, uint32_t data, int size) {
 	for(int i = 0; i < size; i++){
 		(pmem)[paddr - RESET_VECTOR  + i] = BITS(data, (i + 1) * 8 - 1 , i * 8);
 	}
+	// printf("write addr: %x, data: %x\n", paddr, data);
 	return; 
 }
 

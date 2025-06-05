@@ -30,7 +30,7 @@
 #define RESET_VECTOR (PMEM_LEFT + 0)
 //#include <debug.h>
 
-#define ITRACE 1
+#define ITRACE 0
 #define FTRACE 0
 #define MTRACE 0
 
