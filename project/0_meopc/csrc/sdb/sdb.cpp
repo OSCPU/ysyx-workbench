@@ -64,7 +64,7 @@ static int cmd_token(char *args) {
 }
 
 static int cmd_c(char *args) {
-    cpu_exec(860000);
+    cpu_exec(-1);
     return 0;
 }
 

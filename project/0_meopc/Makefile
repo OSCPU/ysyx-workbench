@@ -71,7 +71,7 @@ sim:
 			 -I  /home/meowth/ysyx/ysyx-workbench/project/0_meopc/tools/capstone/repo/include" \
 	-LDFLAGS "-lreadline -lncurses" \
 	$(CSRCS_SIM)  vsrc/*.v 
-	obj_dir/Vtop -e $(IMAGE).elf $(IMAGE).bin mainargs=t
+	obj_dir/Vtop -e $(IMAGE).elf $(IMAGE).bin mainargs=h
 	gtkwave obj_dir/wave.fst
 
 test:

@@ -2,12 +2,19 @@
 #include <cstdint>
 #include <cstdlib>
 #include <cstdio>
+#include <time.h>
+#include "../include/common.h"
+
+extern "C" {
+	#include <sys/time.h>
+}
+
 #define PG_ALIGN __attribute((aligned(4096)))
 static uint8_t *pmem = NULL;
 static uint8_t *img = NULL;
 
 FILE *mtrace_Write;
-
+static uint64_t boot_time = 0;
 void init_mem(size_t size){ 
 	pmem = (uint8_t *)malloc(size * sizeof(uint8_t));
 	//memcpy(pmem , img , sizeof(img));
@@ -20,7 +27,12 @@ uint8_t* guest_to_host(uint32_t paddr) {
 }
 
 void write_addr(uint32_t paddr, uint32_t data, int size) {
-	printf("write_addr: paddr = %x, data = %x, size = %d\n", paddr, data, size);
+	if(paddr == 0xa00003f8){
+		putchar(data);
+		//printf("write_addr: paddr = %x, data = %x, size = %d\n", paddr, data, size);
+		return;
+	}
+	
 	if(MTRACE){
 		mtrace_Write=fopen("outputs/mtrace.txt","a");
 		fprintf(mtrace_Write, "write   %x\n", paddr);
@@ -73,13 +85,31 @@ int is_L(int x){ //取字节指令判断
 		return 0;
 	}
 }
-
+static uint64_t get_time_internal() {
+	struct timeval now;
+	gettimeofday(&now, NULL);
+	uint64_t us = now.tv_sec * 1000000 + now.tv_usec;
+	return us;
+}
+uint64_t get_time() {
+	if (boot_time == 0) boot_time = get_time_internal();
+	uint64_t now = get_time_internal();
+	return now - boot_time;
+}
 svBitVecVal mem_data_read(const svBitVecVal* instruction_in, const svBitVecVal* rs1_data_in, const svBitVecVal* rs2_data_in, const svBitVecVal*  imm_data_in){
 	int mem_addr, mem_data;
+	mem_addr = *rs1_data_in + *imm_data_in;
+	if(mem_addr == 0xa0000048 || mem_addr == 0xa000004C){
+		uint64_t time_now = get_time();
+		if(mem_addr == 0xa0000048){
+			return (uint32_t)(time_now & 0xFFFFFFFFu);
+		}
+		return (uint32_t)(time_now >> 32);
+	}
 	switch (is_L(*instruction_in))
 	{
 		case 1:
-			mem_addr = *rs1_data_in + *imm_data_in;
+			//printf("read addr = %x\n", mem_addr);
 			if(MTRACE){
 				mtrace_Write=fopen("outputs/mtrace.txt","a");
 				fprintf(mtrace_Write, "read    %x\n", mem_addr);
@@ -92,7 +122,6 @@ svBitVecVal mem_data_read(const svBitVecVal* instruction_in, const svBitVecVal* 
 			return mem_data;
 			break;
 		case 2:
-			mem_addr = *rs1_data_in + *imm_data_in;
 			if(MTRACE){
 				mtrace_Write=fopen("outputs/mtrace.txt","a");
 				fprintf(mtrace_Write, "read    %x\n", mem_addr);
@@ -106,7 +135,6 @@ svBitVecVal mem_data_read(const svBitVecVal* instruction_in, const svBitVecVal* 
 			return mem_data;
 			break;
 		case 3:
-			mem_addr = *rs1_data_in + *imm_data_in;
 			if(MTRACE){
 				mtrace_Write=fopen("outputs/mtrace.txt","a");
 				fprintf(mtrace_Write, "read    %x\n", mem_addr);
@@ -117,7 +145,6 @@ svBitVecVal mem_data_read(const svBitVecVal* instruction_in, const svBitVecVal* 
 			return mem_data;
 			break;
 		case 4:
-			mem_addr = *rs1_data_in + *imm_data_in;
 			if(MTRACE){
 				mtrace_Write=fopen("outputs/mtrace.txt","a");
 				fprintf(mtrace_Write, "read    %x\n", mem_addr);
@@ -131,7 +158,7 @@ svBitVecVal mem_data_read(const svBitVecVal* instruction_in, const svBitVecVal* 
 			return mem_data;
 			break;
 		default:
-			return 0;
+			return 0; // 如果不是取字节指令，返回0
 			break;
 	}
 }

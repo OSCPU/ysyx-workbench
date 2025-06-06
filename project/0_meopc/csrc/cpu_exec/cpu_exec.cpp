@@ -77,7 +77,7 @@ int cpu_exec(int n){
 		FILE *mtrace_Write=fopen("outputs/mtrace.txt","w");
 		fclose(mtrace_Write);
 	} 
-	for(int i = 0; i < 2 * n; i++){
+	for(int i = -3; i < 2 * n; i++){
 		//printf("i = %d\n", i);
 		if(top -> clock){
 			int pc_data = new_reg();
@@ -102,7 +102,7 @@ int cpu_exec(int n){
 				default:
 					break;
 			}
-			if(i >= 1 && insn32 != 0 && ITRACE){
+			if(insn32 != 0 && ITRACE){
 				print_itrace(itrace, pc_data, insn32);
 			}
 			uint32_t dnpc_data;
@@ -118,6 +118,9 @@ int cpu_exec(int n){
 		step_and_dump_wave();
 		if(flag){
 			break;
+		}
+		if (n < 0){
+			i = i - 1; // 如果n < 0，表示一直执行
 		}
 	} 
 	fclose(itrace);          

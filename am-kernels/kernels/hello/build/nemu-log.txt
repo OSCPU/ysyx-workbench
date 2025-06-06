@@ -1,0 +1,365 @@
+[1;34m[src/utils/log.c:30 init_log] Log is written to /home/meowth/ysyx/ysyx-workbench/am-kernels/kernels/hello/build/nemu-log.txt[0m
+[1;34m[src/memory/paddr.c:50 init_mem] physical memory area [0x80000000, 0x87ffffff][0m
+[1;34m[src/device/io/mmio.c:50 add_mmio_map] Add mmio map 'serial' at [0xa00003f8, 0xa00003ff][0m
+[1;34m[src/device/io/mmio.c:50 add_mmio_map] Add mmio map 'rtc' at [0xa0000048, 0xa000004f][0m
+[1;34m[src/device/io/mmio.c:50 add_mmio_map] Add mmio map 'vgactl' at [0xa0000100, 0xa0000107][0m
+[1;34m[src/device/io/mmio.c:50 add_mmio_map] Add mmio map 'vmem' at [0xa1000000, 0xa10752ff][0m
+[1;34m[src/device/io/mmio.c:50 add_mmio_map] Add mmio map 'keyboard' at [0xa0000060, 0xa0000063][0m
+[1;34m[src/device/io/mmio.c:50 add_mmio_map] Add mmio map 'audio' at [0xa0000200, 0xa0000217][0m
+[1;34m[src/device/io/mmio.c:50 add_mmio_map] Add mmio map 'audio-sbuf' at [0xa1200000, 0xa120ffff][0m
+[1;34m[src/monitor/monitor.c:61 load_img] The image is /home/meowth/ysyx/ysyx-workbench/am-kernels/kernels/hello/build/hello-riscv32-nemu.bin, size = 292[0m
+[1;34m[src/monitor/monitor.c:29 welcome] Trace: [1;32mON[0m[0m
+[1;34m[src/monitor/monitor.c:30 welcome] If trace is enabled, a log file will be generated to record the trace. This may lead to a large log file. If it is not necessary, you can disable it in menuconfig[0m
+[1;34m[src/monitor/monitor.c:33 welcome] Build time: 15:31:32, Jun  5 2025[0m
+0x80000000: 00 00 04 13 mv	s0, zero
+0x80000004: 00 00 91 17 auipc	sp, 9
+0x80000008: ff c1 01 13 addi	sp, sp, -4
+0x8000000c: 08 c0 00 ef jal	0x8c
+0x80000098: ff 01 01 13 addi	sp, sp, -0x10
+0x8000009c: 00 00 05 17 auipc	a0, 0
+0x800000a0: 04 85 05 13 addi	a0, a0, 0x48
+0x800000a4: 00 11 26 23 sw	ra, 0xc(sp)
+0x800000a8: f6 9f f0 ef jal	-0x98
+0x80000010: fe 01 01 13 addi	sp, sp, -0x20
+0x80000014: 00 91 2a 23 sw	s1, 0x14(sp)
+0x80000018: 01 21 28 23 sw	s2, 0x10(sp)
+0x8000001c: 01 31 26 23 sw	s3, 0xc(sp)
+0x80000020: 00 11 2e 23 sw	ra, 0x1c(sp)
+0x80000024: 00 05 09 93 mv	s3, a0
+0x80000028: 00 81 2c 23 sw	s0, 0x18(sp)
+0x8000002c: 00 00 04 97 auipc	s1, 0
+0x80000030: 08 c4 84 93 addi	s1, s1, 0x8c
+0x80000034: 04 80 05 13 addi	a0, zero, 0x48
+0x80000038: 02 50 09 13 addi	s2, zero, 0x25
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x8000006c: 00 09 c5 03 lbu	a0, 0(s3)
+0x80000070: 00 09 84 13 mv	s0, s3
+0x80000074: fc 05 08 e3 beqz	a0, -0x30
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x8000003c: 03 25 08 63 beq	a0, s2, 0x30
+0x80000040: 04 c0 00 ef jal	0x4c
+0x8000008c: a0 00 07 b7 lui	a5, 0xa0000
+0x80000090: 3e a7 8c 23 sb	a0, 0x3f8(a5)
+0x80000094: 00 00 80 67 ret
+0x80000044: 00 14 c5 03 lbu	a0, 1(s1)
+0x80000048: 00 14 84 93 addi	s1, s1, 1
+0x8000004c: fe 05 18 e3 bnez	a0, -0x10
+0x80000050: 01 c1 20 83 lw	ra, 0x1c(sp)
+0x80000054: 01 81 24 03 lw	s0, 0x18(sp)
+0x80000058: 01 41 24 83 lw	s1, 0x14(sp)
+0x8000005c: 01 01 29 03 lw	s2, 0x10(sp)
+0x80000060: 00 c1 29 83 lw	s3, 0xc(sp)
+0x80000064: 02 01 01 13 addi	sp, sp, 0x20
+0x80000068: 00 00 80 67 ret
+0x800000ac: 00 05 05 13 mv	a0, a0
+0x800000b0: 00 10 00 73 ebreak
+[1;34m[src/cpu/cpu-exec.c:156 cpu_exec] nemu: [1;32mHIT GOOD TRAP[0m at pc = 0x800000b0[0m
+[1;34m[src/cpu/cpu-exec.c:104 statistic] host time spent = 2,292 us[0m
+[1;34m[src/cpu/cpu-exec.c:105 statistic] total guest instructions = 348[0m
+[1;34m[src/cpu/cpu-exec.c:106 statistic] simulation frequency = 151,832 inst/s[0m
