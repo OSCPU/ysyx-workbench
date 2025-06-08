@@ -33,18 +33,6 @@ VL_INLINE_OPT void Vtop___024root___nba_sequent__TOP__0(Vtop___024root* vlSelf) 
     Vtop__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     auto& vlSelfRef = std::ref(*vlSelf).get();
     // Body
-    if (VL_UNLIKELY((((IData)(vlSelfRef.ysyx_25030077_top__DOT__is_break_out) 
-                      & (~ (IData)(vlSelfRef.reset)))))) {
-        VL_WRITEF_NX("\346\243\200\346\265\213\345\210\260break\346\214\207\344\273\244,\344\273\277\347\234\237\351\200\200\345\207\272!\n",0);
-        VL_FINISH_MT("vsrc/ysyx_25030077_EXIT.v", 11, "");
-        VL_FINISH_MT("vsrc/ysyx_25030077_EXIT.v", 12, "");
-    }
-    if (VL_UNLIKELY((((3U == (IData)(vlSelfRef.ysyx_25030077_top__DOT__pc_next_type)) 
-                      & (~ (IData)(vlSelfRef.reset)))))) {
-        VL_WRITEF_NX("\346\243\200\346\265\213\345\210\260\346\234\252\347\237\245\346\214\207\344\273\244,\344\273\277\347\234\237\351\200\200\345\207\272!\n",0);
-        VL_FINISH_MT("vsrc/ysyx_25030077_EXIT.v", 19, "");
-        VL_FINISH_MT("vsrc/ysyx_25030077_EXIT.v", 20, "");
-    }
     if (vlSelfRef.reset) {
         vlSelfRef.ysyx_25030077_top__DOT__i4__DOT__regs_24 = 0U;
         vlSelfRef.ysyx_25030077_top__DOT__i4__DOT__regs_28 = 0U;

@@ -82,7 +82,7 @@ int cpu_exec(int n){
 		if(top -> clock){
 			int pc_data = new_reg();
 			svScope scope;
-			if(is_S(insn32) == 1 || is_S(insn32) == 2 || is_S(insn32) == 3){
+			if(is_S(insn32) > 0){
 				uint32_t rs1_data, rs2_data, imm_data;
 				scope = svGetScopeFromName("TOP.ysyx_25030077_top.i5");
 				svSetScope(scope);

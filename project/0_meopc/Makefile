@@ -72,7 +72,7 @@ sim:
 	-LDFLAGS "-lreadline -lncurses" \
 	$(CSRCS_SIM)  vsrc/*.v 
 	obj_dir/Vtop -e $(IMAGE).elf $(IMAGE).bin mainargs=1
-	gtkwave obj_dir/wave.fst
+#	gtkwave obj_dir/wave.fst
 
 test:
 	verilator --cc --exe --trace-fst --build -j 0 $(CSRCS_SIM)  vsrc/*.v 
