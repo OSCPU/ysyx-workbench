@@ -81,6 +81,9 @@ int is_L(int x){ //取字节指令判断
 	if (result == 643){
 		return 4;
 	}
+	if (result == 3){
+		return 5;
+	}
 	else{
 		return 0;
 	}
@@ -141,6 +144,16 @@ svBitVecVal mem_data_read(const svBitVecVal* instruction_in, const svBitVecVal* 
 				fclose(mtrace_Write);
 			} 
 			mem_data = SEXT((int64_t)((static_cast<uint8_t>(guest_to_host(0)[mem_addr + 1]) <<  8)|static_cast<uint8_t>(guest_to_host(0)[mem_addr])), 16);
+			//printf("-----%x  %x  %x-----\n",guest_to_host(RESET_VECTOR)[mem_addr + 1], guest_to_host(RESET_VECTOR)[mem_addr], mem_data);
+			return mem_data;
+			break;
+		case 5:
+			if(MTRACE){
+				mtrace_Write=fopen("outputs/mtrace.txt","a");
+				fprintf(mtrace_Write, "read    %x\n", mem_addr);
+				fclose(mtrace_Write);
+			} 
+			mem_data = SEXT((int64_t)(static_cast<uint8_t>(guest_to_host(0)[mem_addr])), 8);
 			//printf("-----%x  %x  %x-----\n",guest_to_host(RESET_VECTOR)[mem_addr + 1], guest_to_host(RESET_VECTOR)[mem_addr], mem_data);
 			return mem_data;
 			break;

@@ -63,7 +63,7 @@ wave_build:
 wave_display:
 	gtkwave obj_dir/wave.fst
 
-IMAGE = /home/meowth/ysyx/ysyx-workbench/am-kernels/tests/am-tests/build/amtest-riscv32e-npc
+IMAGE = /home/meowth/ysyx/ysyx-workbench/am-kernels/kernels/demo/build/demo-riscv32e-npc
 
 sim:
 	verilator --cc --exe --trace-fst --build -j 0 \
@@ -71,7 +71,7 @@ sim:
 			 -I  /home/meowth/ysyx/ysyx-workbench/project/0_meopc/tools/capstone/repo/include" \
 	-LDFLAGS "-lreadline -lncurses" \
 	$(CSRCS_SIM)  vsrc/*.v 
-	obj_dir/Vtop -e $(IMAGE).elf $(IMAGE).bin mainargs=h
+	obj_dir/Vtop -e $(IMAGE).elf $(IMAGE).bin mainargs=1
 	gtkwave obj_dir/wave.fst
 
 test:
