@@ -30,9 +30,9 @@
 #define RESET_VECTOR (PMEM_LEFT + 0)
 //#include <debug.h>
 
-#define ITRACE 1
+#define ITRACE 0
 #define FTRACE 0
-#define MTRACE 1
+#define MTRACE 0
 
 typedef uint32_t word_t;
 typedef int32_t  sword_t;
