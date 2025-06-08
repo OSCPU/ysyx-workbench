@@ -32,7 +32,7 @@
 
 #define ITRACE 1
 #define FTRACE 0
-#define MTRACE 0
+#define MTRACE 1
 
 typedef uint32_t word_t;
 typedef int32_t  sword_t;
