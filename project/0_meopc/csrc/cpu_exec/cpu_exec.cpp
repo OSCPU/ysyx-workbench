@@ -81,35 +81,40 @@ int cpu_exec(int n){
 		//printf("i = %d\n", i);
 		if(top -> clock){
 			int pc_data = new_reg();
-			uint32_t rs1_data, rs2_data, imm_data;
-			svScope scope = svGetScopeFromName("TOP.ysyx_25030077_top.i5");
-			svSetScope(scope);
-			rs1_data = (uint32_t)reg_read_rs1();
-			rs2_data = (uint32_t)reg_read_rs2();
-			imm_data = (SEXT((int64_t)BITS(insn32, 31, 25), 7) << 5) | BITS(insn32, 11, 7);
-			switch(is_S(insn32))
-			{
-				case 1:
-					// printf("%x %x\n", rs1_data + imm_data, rs2_data);
-					write_addr(rs1_data + imm_data, rs2_data, 4);
-					break;
-				case 2:
-					write_addr(rs1_data + imm_data, rs2_data, 2);
-					break;
-				case 3:
-					write_addr(rs1_data + imm_data, rs2_data, 1);
-					break;
-				default:
-					break;
+			svScope scope;
+			if(is_S(insn32) == 1 || is_S(insn32) == 2 || is_S(insn32) == 3){
+				uint32_t rs1_data, rs2_data, imm_data;
+				scope = svGetScopeFromName("TOP.ysyx_25030077_top.i5");
+				svSetScope(scope);
+				rs1_data = (uint32_t)reg_read_rs1();
+				rs2_data = (uint32_t)reg_read_rs2();
+				imm_data = (SEXT((int64_t)BITS(insn32, 31, 25), 7) << 5) | BITS(insn32, 11, 7);
+				switch(is_S(insn32))
+				{
+					case 1:
+						// printf("%x %x\n", rs1_data + imm_data, rs2_data);
+						write_addr(rs1_data + imm_data, rs2_data, 4);
+						break;
+					case 2:
+						write_addr(rs1_data + imm_data, rs2_data, 2);
+						break;
+					case 3:
+						write_addr(rs1_data + imm_data, rs2_data, 1);
+						break;
+					default:
+						break;
+				}
 			}
 			if(insn32 != 0 && ITRACE){
 				print_itrace(itrace, pc_data, insn32);
 			}
-			uint32_t dnpc_data;
-			scope = svGetScopeFromName("TOP.ysyx_25030077_top.i7");
-			svSetScope(scope);
-			dnpc_data = (uint32_t)dnpc_read_data();
-			ftrace_check(pc_data, dnpc_data, insn32);
+			if(FTRACE){
+				uint32_t dnpc_data;
+				scope = svGetScopeFromName("TOP.ysyx_25030077_top.i7");
+				svSetScope(scope);
+				dnpc_data = (uint32_t)dnpc_read_data();
+				ftrace_check(pc_data, dnpc_data, insn32);
+			}
 		}
 		if(i == 3){
 			top -> reset = 0;
