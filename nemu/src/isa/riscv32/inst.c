@@ -37,7 +37,7 @@ enum {
   TYPE_L,
   TYPE_M,
   TYPE_B,
-  TYPE_SR,
+  TYPE_SR0,
   TYPE_LU,
   TYPE_C,
 };
@@ -53,7 +53,7 @@ enum {
 #define immJ() do { *imm = (SEXT(BITS(i, 31, 31), 1) << 20) | (BITS(i, 19, 12) << 12) | (BITS(i, 20, 20) << 11) | (BITS(i, 30, 21) << 1);} while(0)
 #define immSW()do { *imm = (SEXT(BITS(i, 31, 25), 7) << 5) | BITS(i, 11, 7);} while(0)
 #define immB() do { *imm = (SEXT(BITS(i, 31, 31), 1) << 12) | (BITS(i, 7, 7) << 11) | (BITS(i, 30, 25) << 5) | (BITS(i, 11, 8) << 1);} while(0)
-#define immSR()do { *imm = SEXT(BITS(i, 25, 20), 6);} while(0)
+#define immSR0()do { *imm = SEXT(BITS(i, 25, 20), 6);} while(0)
 #define immLU()do { *imm = (SEXT(BITS(i, 31, 12), 20) << 12);} while(0)
 #define CSRC() do { *imm = BITS(i, 31, 20);} while(0)
 
@@ -93,7 +93,7 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
     case TYPE_C: src1R();          CSRC(); break;
     case TYPE_M: src1R(); src2R();         break;
     case TYPE_B: src1R(); src2R(); immB(); break;
-    case TYPE_SR:src1R();          immSR(); break;
+    case TYPE_SR0:src1R();          immSR0(); break;
     case TYPE_LU:                  immLU(); break;
     default: panic("unsupported type = %d", type);
   }
@@ -146,10 +146,10 @@ static int decode_exec(Decode *s) {
     INSTPAT("0000000 ????? ????? 011 ????? 01100 11", sltu ,M,   R(rd) = src1 < src2 ? 1 : 0);
     INSTPAT("??????? ????? ????? 001 ????? 01000 11", sh,   SW,  Mw(src1 + imm, 2, src2));
     INSTPAT("000000? ????? ????? 101 ????? 01100 11", srl , M,   R(rd) = src1 >> BITS(src2, 4, 0));
-    INSTPAT("000000? ????? ????? 001 ????? 00100 11", slli ,SR,  if(imm < 0) assert("Wrong shmat!!"); R(rd) = src1 << BITS(imm, 4, 0));
+    INSTPAT("000000? ????? ????? 001 ????? 00100 11", slli ,SR0,  if(imm < 0) assert("Wrong shmat!!"); R(rd) = src1 << BITS(imm, 4, 0));
     INSTPAT("010000? ????? ????? 101 ????? 01100 11", sra , M,   R(rd) = (int32_t)src1 >> BITS(src2, 4, 0));
-    INSTPAT("010000? ????? ????? 101 ????? 00100 11", srai ,SR,  if(imm < 0) assert("Wrong shmat!!"); R(rd) = (int32_t)src1 >> BITS(imm, 4, 0));
-    INSTPAT("000000? ????? ????? 101 ????? 00100 11", srli ,SR,  if(imm < 0) assert("Wrong shmat!!"); R(rd) = src1 >> BITS(imm, 4, 0));
+    INSTPAT("010000? ????? ????? 101 ????? 00100 11", srai ,SR0,  if(imm < 0) assert("Wrong shmat!!"); R(rd) = (int32_t)src1 >> BITS(imm, 4, 0));
+    INSTPAT("000000? ????? ????? 101 ????? 00100 11", srli ,SR0,  if(imm < 0) assert("Wrong shmat!!"); R(rd) = src1 >> BITS(imm, 4, 0));
     INSTPAT("??????? ????? ????? 000 ????? 11000 11", beq , B,   s->dnpc = (src1 == src2)? s->pc + imm : s->dnpc);//跳转指令
     INSTPAT("??????? ????? ????? 001 ????? 11000 11", bne , B,   s->dnpc = (src1 != src2)? s->pc + imm : s->dnpc);//跳转指令
     INSTPAT("??????? ????? ????? 100 ????? 11000 11", blt , B,   s->dnpc = ((int32_t)src1 <  (int32_t)src2)? s->pc + imm : s->dnpc);//跳转指令
@@ -158,6 +158,7 @@ static int decode_exec(Decode *s) {
     INSTPAT("??????? ????? ????? 101 ????? 11000 11", bge , B,   s->dnpc = ((int32_t)src1 >= (int32_t)src2)? s->pc + imm : s->dnpc);//跳转指令
     INSTPAT("??????? ????? ????? 111 ????? 11000 11", bgeu ,B,   s->dnpc = (src1 >= src2)? s->pc + imm : s->dnpc);//跳转指令
     INSTPAT("??????? ????? ????? 001 ????? 11100 11", csrrw,C,   int t = SR(imm); SR(imm) = src1;R(rd) = t;);
+    INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall,C,   int t = SR(imm); SR(imm) = src1;R(rd) = t;);
     //添加第一处：匹配规则
 
     INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv    , N, INV(s->pc));
