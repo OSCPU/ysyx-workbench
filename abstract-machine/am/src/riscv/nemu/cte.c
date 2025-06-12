@@ -7,8 +7,11 @@ static Context* (*user_handler)(Event, Context*) = NULL;
 Context* __am_irq_handle(Context *c) {
   if (user_handler) {
     Event ev = {0};
-    printf("Handling IRQ: mcause = %x\n", c->mcause);
     switch (c->mcause) {
+      case 11:
+        ev.event = c->GPR1 == -1 ? EVENT_YIELD : EVENT_SYSCALL;
+        c->mepc += 4;
+        break;
       default: ev.event = EVENT_ERROR; break;
     }
 
