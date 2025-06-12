@@ -93,7 +93,7 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
     case TYPE_C: src1R();          CSRC(); break;
     case TYPE_M: src1R(); src2R();         break;
     case TYPE_B: src1R(); src2R(); immB(); break;
-    case TYPE_SR0:src1R();          immSR0(); break;
+    case TYPE_SR0:src1R();         immSR0(); break;
     case TYPE_LU:                  immLU(); break;
     default: panic("unsupported type = %d", type);
   }
