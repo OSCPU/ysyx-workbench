@@ -633,7 +633,7 @@ Disassembly of section .text:
 8000096c:	00f12623          	sw	a5,12(sp)
 80000970:	00c12783          	lw	a5,12(sp)
 80000974:	fef758e3          	bge	a4,a5,80000964 <vm_handler+0x50>
-80000978:	00842583          	lw	a1,8(s0)
+80000978:	00042583          	lw	a1,0(s0)
 8000097c:	00002517          	auipc	a0,0x2
 80000980:	87450513          	addi	a0,a0,-1932 # 800021f0 <dy.0+0x1c8>
 80000984:	15c010ef          	jal	ra,80001ae0 <printf>
