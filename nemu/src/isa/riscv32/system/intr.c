@@ -19,6 +19,7 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
   csr(MEPC) = epc;
   csr(MCAUSE) = NO;
   assert(csr(MTVEC) != 0);
+  printf("mtvec = %x\n", csr(MTVEC));
   return csr(MTVEC);
 }
 
