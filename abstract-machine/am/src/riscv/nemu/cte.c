@@ -12,7 +12,7 @@ Context* __am_irq_handle(Context *c) {
       //   ev.event = c->GPR1 == -1 ? EVENT_YIELD : EVENT_SYSCALL;
       //   c->mepc += 4;
       //   break;
-      default: ev.event = EVENT_IRQ_IODEV; break;
+      default: ev.event = EVENT_ERROR; break;
     }
 
     c = user_handler(ev, c);
