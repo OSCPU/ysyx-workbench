@@ -8,7 +8,7 @@ Context* __am_irq_handle(Context *c) {
   if (user_handler) {
     Event ev = {0};
     switch (c->mcause) {
-      case 11:
+      case ENVIRONMENT_CALL_FROM_M_MODE:
         ev.event = c->GPR1 == -1 ? EVENT_YIELD : EVENT_SYSCALL;
         c->mepc += 4;
         break;
