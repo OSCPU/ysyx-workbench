@@ -19,6 +19,7 @@
 #include <cpu/decode.h>
 #include <stdint.h>
 #include <string.h>
+#include <isa.h>
 
 #define R(i)  gpr(i)
 #define SR(i) csr(i)
@@ -70,6 +71,20 @@ void ftrace_check(int type,Decode *s,word_t imm, int rd){
         elf_print(1,prev_fname,s->dnpc,s->pc);
       else 
         elf_print(0,now_fname,s->dnpc,s->pc);
+    }
+  }
+}
+
+void etrace(word_t NO, vaddr_t epc){
+  if(CONFIG_ETRACE){
+    switch (NO)
+    {
+    case EVENT_YIELD:
+      printf("ETRACE: YIELD   pc = %#x\n",epc);
+      break;
+    default:
+      printf("ETRACE: Unknown pc = %#x\n",epc);
+      break;
     }
   }
 }
@@ -159,7 +174,7 @@ static int decode_exec(Decode *s) {
     INSTPAT("??????? ????? ????? 111 ????? 11000 11", bgeu ,B,   s->dnpc = (src1 >= src2)? s->pc + imm : s->dnpc);//跳转指令
     INSTPAT("??????? ????? ????? 001 ????? 11100 11", csrrw,C,   int t = SR(imm); SR(imm) = src1; R(rd) = t;);
     INSTPAT("??????? ????? ????? 010 ????? 11100 11", csrrs,C,   int t = SR(imm); SR(imm) = src1 | t;R(rd) = t;);
-    INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall,N,   s->dnpc = isa_raise_intr(ENVIRONMENT_CALL_FROM_M_MODE, s->pc););
+    INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall,N,   etrace(EVENT_YIELD,s->pc); s->dnpc = isa_raise_intr(ENVIRONMENT_CALL_FROM_M_MODE, s->pc););
     INSTPAT("0011000 00010 00000 000 00000 11100 11", mret ,M,   s->dnpc = SR(MEPC););
     //添加第一处：匹配规则
 

@@ -24,6 +24,16 @@
 typedef concat(__GUEST_ISA__, _CPU_state) CPU_state;
 typedef concat(__GUEST_ISA__, _ISADecodeInfo) ISADecodeInfo;
 
+typedef struct {
+    enum {
+      EVENT_NULL = 0,
+      EVENT_YIELD, EVENT_SYSCALL, EVENT_PAGEFAULT, EVENT_ERROR,
+      EVENT_IRQ_TIMER, EVENT_IRQ_IODEV,
+    } event;
+    uintptr_t cause, ref;
+    const char *msg;
+  } Event;
+
 // monitor
 extern unsigned char isa_logo[];
 void init_isa();

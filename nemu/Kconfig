@@ -150,6 +150,10 @@ config MTRACE
   hex "Memory Trace Print"
   default 0
 
+config ETRACE
+  hex "Exception Trace Print"
+  default 0
+
 config DTRACE
   hex "Device Trace Print"
   default 0
