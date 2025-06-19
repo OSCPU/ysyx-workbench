@@ -65,15 +65,15 @@ svBitVecVal addr_read(const svBitVecVal* pc){
 
 svBitVecVal ecall_read(const svBitVecVal* pc, const svBitVecVal* type_p){
 	if(*type_p == 11){
-		printf("ecall: %x\n", *pc);
+		// printf("ecall: %x\n", *pc);
 		csr[MEPC] = (uint32_t)*pc;
 		csr[MCAUSE] = 11;
 		assert(csr[MTVEC] != 0);
 		return csr[MTVEC];
 	}
 	if(*type_p == 12){
-		printf("mret: %x\n", *pc);
-		printf("%x\n", csr[MEPC]);
+		// printf("mret: %x\n", *pc);
+		// printf("%x\n", csr[MEPC]);
 		return csr[MEPC];
 	}
 	return 0;
