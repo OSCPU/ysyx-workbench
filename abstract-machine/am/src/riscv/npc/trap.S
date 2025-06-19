@@ -54,7 +54,8 @@ __am_asm_trap:
 
   mv a0, sp
   call __am_irq_handle
-
+  mv sp, a0
+  
   LOAD t1, OFFSET_STATUS(sp)
   LOAD t2, OFFSET_EPC(sp)
   csrw mstatus, t1
