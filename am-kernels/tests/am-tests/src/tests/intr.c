@@ -21,7 +21,7 @@ void hello_intr() {
   io_read(AM_INPUT_CONFIG);
   iset(1);
   while (1) {
-    printf("Press any key to continue...\n");
+    //printf("Press any key to continue...\n");
     for (volatile int i = 0; i < 100000; i++) ;
     yield();
   }
