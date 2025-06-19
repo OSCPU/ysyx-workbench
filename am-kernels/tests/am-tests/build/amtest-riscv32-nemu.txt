@@ -388,11 +388,11 @@ Disassembly of section .text:
 800005c0:	00700513          	li	a0,7
 800005c4:	395000ef          	jal	ra,80001158 <ioe_read>
 800005c8:	00100513          	li	a0,1
-800005cc:	00002437          	lui	s0,0x2
+800005cc:	00989437          	lui	s0,0x989
 800005d0:	661000ef          	jal	ra,80001430 <iset>
 800005d4:	00002497          	auipc	s1,0x2
 800005d8:	b8848493          	addi	s1,s1,-1144 # 8000215c <dy.0+0xc4>
-800005dc:	70f40413          	addi	s0,s0,1807 # 270f <_entry_offset+0x270f>
+800005dc:	67f40413          	addi	s0,s0,1663 # 98967f <_entry_offset+0x98967f>
 800005e0:	00048513          	mv	a0,s1
 800005e4:	56c010ef          	jal	ra,80001b50 <printf>
 800005e8:	00012623          	sw	zero,12(sp)
