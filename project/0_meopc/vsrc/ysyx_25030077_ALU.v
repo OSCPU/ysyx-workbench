@@ -6,6 +6,9 @@ module ysyx_25030077_ALU(
   output        io_carry,
   output        io_overflow
 );
+  import "DPI-C" function bit[31:0] csr_read(input bit[31:0] rs1, input bit[31:0] imm, input bit[3:0] sw);
+  wire [31:0] csr_data = csr_read(io_in_a, io_in_b, io_sw);
+
   wire [15:0] oneHot = 16'h1 << io_sw; // @[OneHot.scala 64:12]
   wire [32:0] addResult = io_in_a + io_in_b; // @[module.scala 17:28]
   wire [32:0] subResult = io_in_a - io_in_b; // @[module.scala 18:28]
@@ -47,7 +50,7 @@ module ysyx_25030077_ALU(
   wire [62:0] _io_out_T_41 = _io_out_T_40 | _GEN_7; // @[Mux.scala 27:73]
   wire  _io_overflow_T_7 = io_in_a[31] == io_in_b[31] & io_in_a[31] != addResult[31]; // @[module.scala 70:49]
   wire  _io_overflow_T_15 = io_in_a[31] != io_in_b[31] & io_in_a[31] != subResult[31]; // @[module.scala 71:49]
-  assign io_out = _io_out_T_41[31:0]; // @[module.scala 30:10]
+  assign io_out = oneHot[11] ? csr_data :_io_out_T_41[31:0]; // @[module.scala 30:10]
   assign io_carry = oneHot[0] & addResult[32] | oneHot[1] & subResult[32]; // @[Mux.scala 27:73]
   assign io_overflow = oneHot[0] & _io_overflow_T_7 | oneHot[1] & _io_overflow_T_15; // @[Mux.scala 27:73]
 endmodule

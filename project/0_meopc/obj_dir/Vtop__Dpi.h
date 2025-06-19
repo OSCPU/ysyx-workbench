@@ -32,6 +32,10 @@ extern "C" {
     // DPI IMPORTS
     // DPI import at vsrc/ysyx_25030077_IFU.v:5:35
     extern svBitVecVal addr_read(const svBitVecVal* pc);
+    // DPI import at vsrc/ysyx_25030077_ALU.v:9:37
+    extern svBitVecVal csr_read(const svBitVecVal* rs1, const svBitVecVal* imm, const svBitVecVal* sw);
+    // DPI import at vsrc/ysyx_25030077_PC_next.v:15:37
+    extern svBitVecVal ecall_read(const svBitVecVal* pc, const svBitVecVal* type_p);
     // DPI import at vsrc/ysyx_25030077_IDU.v:13:31
     extern svBit is_break(const svBitVecVal* instruction_in);
     // DPI import at vsrc/ysyx_25030077_MEM_read.v:9:37

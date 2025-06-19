@@ -5,6 +5,7 @@
 #include "../include/common.h"
 
 int flag = 0;
+uint32_t csr[4096];
 VerilatedContext* contextp = new VerilatedContext;
 VerilatedFstC* tfp = new VerilatedFstC;
 Vtop* top = new Vtop{contextp};
@@ -62,6 +63,35 @@ svBitVecVal addr_read(const svBitVecVal* pc){
 	return instruction;
 }
 
+svBitVecVal ecall_read(const svBitVecVal* pc, const svBitVecVal* type_p){
+	if(*type_p == 11){
+		printf("ecall: %x\n", *pc);
+		csr[MEPC] = (uint32_t)*pc;
+		csr[MCAUSE] = 11;
+		assert(csr[MTVEC] != 0);
+		printf("ecall: %x\n", csr[MTVEC]);
+		return csr[MTVEC];
+	}
+	if(*type_p == 12){
+		printf("%x\n", csr[MEPC]);
+		return csr[MEPC];
+	}
+	return 0;
+}
+
+svBitVecVal csr_read(const svBitVecVal* rs1, const svBitVecVal* imm, const svBitVecVal* sw){
+	if(*sw == 11){
+		svBitVecVal t = csr[*imm];
+		csr[*imm] = *rs1;
+		return t;
+	}
+	if(*sw == 12){
+		svBitVecVal t = csr[*imm];
+		csr[*imm] = t | *rs1;
+		return t;
+	}
+	return 0;
+}
 
 int cpu_init(int argc, char** argv){
     contextp->commandArgs(argc, argv);

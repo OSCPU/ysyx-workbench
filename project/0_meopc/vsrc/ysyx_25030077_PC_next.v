@@ -11,6 +11,10 @@ module ysyx_25030077_PC_next(
   function int dnpc_read_data();
     return {io_pc_next};
   endfunction
+
+  import "DPI-C" function bit[31:0] ecall_read(input bit[31:0] pc, input bit[3:0] type_p);
+  wire [31:0] ecall_dnpc = ecall_read(io_pc_count, io_pc_next_type);
+
   wire [31:0] default_pc_next = io_pc_count + 32'h4; // @[module.scala 15:37]
   wire  is_type1 = io_pc_next_type == 4'h1; // @[module.scala 18:34]
   wire  is_type2 = io_pc_next_type == 4'h2; // @[module.scala 19:34]
@@ -21,6 +25,7 @@ module ysyx_25030077_PC_next(
   wire  is_type8 = io_pc_next_type == 4'h8; // @[module.scala 25:34]
   wire  is_type9 = io_pc_next_type == 4'h9; // @[module.scala 26:34]
   wire  is_type10 = io_pc_next_type == 4'ha; // @[module.scala 27:34]
+  wire  is_type11 = io_pc_next_type == 4'hb; // @[module.scala 27:34]
   wire  is_eql = io_rs1_data == io_rs2_data; // @[module.scala 29:28]
   wire  is_more_equ = $signed(io_rs1_data) >= $signed(io_rs2_data); // @[module.scala 30:40]
   wire  is_less = $signed(io_rs1_data) < $signed(io_rs2_data); // @[module.scala 31:36]
@@ -53,6 +58,7 @@ module ysyx_25030077_PC_next(
   wire [31:0] _io_pc_next_T_24 = is_type6 ? beq_result : _io_pc_next_T_23; // @[Mux.scala 101:16]
   wire [31:0] _io_pc_next_T_25 = is_type4 ? io_pc_count : _io_pc_next_T_24; // @[Mux.scala 101:16]
   wire [31:0] _io_pc_next_T_26 = is_type2 ? _io_pc_next_T_18 : _io_pc_next_T_25; // @[Mux.scala 101:16]
-  assign io_pc_next = is_type1 ? _io_pc_next_T_9 : _io_pc_next_T_26; // @[Mux.scala 101:16]
+  wire [31:0] _io_pc_next_T_27 = is_type1 ? _io_pc_next_T_9 : _io_pc_next_T_26; // @[Mux.scala 101:16]
+  assign io_pc_next = is_type11 ? ecall_dnpc : _io_pc_next_T_27; // @[Mux.scala 101:16]
   assign io_is_unknown_instruction = io_pc_next_type == 4'h3; // @[module.scala 20:34]
 endmodule

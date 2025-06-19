@@ -1,7 +1,7 @@
 #include <amtest.h>
 
 Context *simple_trap(Event ev, Context *ctx) {
-  //printf("Event: %d\n", ev.event);
+  // printf("Event: %d\n", ev.event);
   switch(ev.event) {
     case EVENT_IRQ_TIMER:
       putch('t'); break;
@@ -21,7 +21,8 @@ void hello_intr() {
   io_read(AM_INPUT_CONFIG);
   iset(1);
   while (1) {
-    for (volatile int i = 0; i < 10000000; i++) ;
+    printf("Press any key to continue...\n");
+    for (volatile int i = 0; i < 100; i++) ;
     yield();
   }
 }

@@ -30,9 +30,20 @@
 #define RESET_VECTOR (PMEM_LEFT + 0)
 //#include <debug.h>
 
+#define NUM_CSR 4096
+extern uint32_t csr[NUM_CSR];
+
 #define ITRACE 0
 #define FTRACE 0
 #define MTRACE 0
+
+#define MSTATUS   0x300
+#define MTVEC     0x305
+#define MEPC      0x341
+#define MCAUSE    0x342
+#define MVENDORID 0xF11
+#define MARCHID   0xF12
+#define SR(i) csr(i)
 
 typedef uint32_t word_t;
 typedef int32_t  sword_t;
