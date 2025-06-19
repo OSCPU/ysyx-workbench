@@ -448,7 +448,8 @@ VL_ATTR_COLD void Vtop___024root__trace_full_0_sub_0(Vtop___024root* vlSelf, Ver
     bufp->fullBit(oldp+128,((8U == (IData)(vlSelfRef.ysyx_25030077_top__DOT__pc_next_type))));
     bufp->fullBit(oldp+129,((9U == (IData)(vlSelfRef.ysyx_25030077_top__DOT__pc_next_type))));
     bufp->fullBit(oldp+130,((0xaU == (IData)(vlSelfRef.ysyx_25030077_top__DOT__pc_next_type))));
-    bufp->fullBit(oldp+131,((0xbU == (IData)(vlSelfRef.ysyx_25030077_top__DOT__pc_next_type))));
+    bufp->fullBit(oldp+131,(((0xbU == (IData)(vlSelfRef.ysyx_25030077_top__DOT__pc_next_type)) 
+                             | (0xcU == (IData)(vlSelfRef.ysyx_25030077_top__DOT__pc_next_type)))));
     bufp->fullBit(oldp+132,(vlSelfRef.ysyx_25030077_top__DOT__i7__DOT__is_eql));
     bufp->fullIData(oldp+133,(((IData)(vlSelfRef.ysyx_25030077_top__DOT__i7__DOT__is_eql)
                                 ? vlSelfRef.ysyx_25030077_top__DOT__i7__DOT___beq_result_T_9

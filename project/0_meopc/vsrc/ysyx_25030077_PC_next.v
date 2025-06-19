@@ -25,7 +25,7 @@ module ysyx_25030077_PC_next(
   wire  is_type8 = io_pc_next_type == 4'h8; // @[module.scala 25:34]
   wire  is_type9 = io_pc_next_type == 4'h9; // @[module.scala 26:34]
   wire  is_type10 = io_pc_next_type == 4'ha; // @[module.scala 27:34]
-  wire  is_type11 = io_pc_next_type == 4'hb; // @[module.scala 27:34]
+  wire  is_type11 = (io_pc_next_type == 4'hb || io_pc_next_type == 4'hc); // @[module.scala 27:34]
   wire  is_eql = io_rs1_data == io_rs2_data; // @[module.scala 29:28]
   wire  is_more_equ = $signed(io_rs1_data) >= $signed(io_rs2_data); // @[module.scala 30:40]
   wire  is_less = $signed(io_rs1_data) < $signed(io_rs2_data); // @[module.scala 31:36]

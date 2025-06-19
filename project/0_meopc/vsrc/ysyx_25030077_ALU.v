@@ -50,7 +50,7 @@ module ysyx_25030077_ALU(
   wire [62:0] _io_out_T_41 = _io_out_T_40 | _GEN_7; // @[Mux.scala 27:73]
   wire  _io_overflow_T_7 = io_in_a[31] == io_in_b[31] & io_in_a[31] != addResult[31]; // @[module.scala 70:49]
   wire  _io_overflow_T_15 = io_in_a[31] != io_in_b[31] & io_in_a[31] != subResult[31]; // @[module.scala 71:49]
-  assign io_out = oneHot[11] ? csr_data :_io_out_T_41[31:0]; // @[module.scala 30:10]
+  assign io_out = (oneHot[11] || oneHot[12]) ? csr_data :_io_out_T_41[31:0]; // @[module.scala 30:10]
   assign io_carry = oneHot[0] & addResult[32] | oneHot[1] & subResult[32]; // @[Mux.scala 27:73]
   assign io_overflow = oneHot[0] & _io_overflow_T_7 | oneHot[1] & _io_overflow_T_15; // @[Mux.scala 27:73]
 endmodule

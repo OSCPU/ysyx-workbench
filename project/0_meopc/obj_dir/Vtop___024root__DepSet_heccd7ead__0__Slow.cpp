@@ -1242,8 +1242,10 @@ VL_ATTR_COLD void Vtop___024root___stl_sequent__TOP__0(Vtop___024root* vlSelf) {
     vlSelfRef.ysyx_25030077_top__DOT__ALU_data_2 = 
         ((2U == (IData)(vlSelfRef.ysyx_25030077_top__DOT__data_control))
           ? 0U : vlSelfRef.ysyx_25030077_top__DOT__i5__DOT___io_data_2_T);
-    vlSelfRef.ysyx_25030077_top__DOT__Pc_next = ((0xbU 
-                                                  == (IData)(vlSelfRef.ysyx_25030077_top__DOT__pc_next_type))
+    vlSelfRef.ysyx_25030077_top__DOT__Pc_next = (((0xbU 
+                                                   == (IData)(vlSelfRef.ysyx_25030077_top__DOT__pc_next_type)) 
+                                                  | (0xcU 
+                                                     == (IData)(vlSelfRef.ysyx_25030077_top__DOT__pc_next_type)))
                                                   ? vlSelfRef.ysyx_25030077_top__DOT__i7__DOT__ecall_dnpc
                                                   : 
                                                  ((1U 
@@ -1439,8 +1441,9 @@ VL_ATTR_COLD void Vtop___024root___stl_sequent__TOP__0(Vtop___024root* vlSelf) {
                                                    & vlSelfRef.ysyx_25030077_top__DOT__i5__DOT___io_data_2_T)))
                                         : 0ULL)));
     vlSelfRef.ysyx_25030077_top__DOT__ALU_result = 
-        ((0x800U & ((IData)(1U) << (IData)(vlSelfRef.ALU_ctrl)))
-          ? vlSelfRef.ysyx_25030077_top__DOT__i6__DOT__csr_data
+        ((1U & ((((IData)(1U) << (IData)(vlSelfRef.ALU_ctrl)) 
+                 >> 0xbU) | (((IData)(1U) << (IData)(vlSelfRef.ALU_ctrl)) 
+                             >> 0xcU))) ? vlSelfRef.ysyx_25030077_top__DOT__i6__DOT__csr_data
           : (((IData)(vlSelfRef.ysyx_25030077_top__DOT__i6__DOT___io_out_T_39) 
               | ((0x200U & ((IData)(1U) << (IData)(vlSelfRef.ALU_ctrl)))
                   ? VL_SHIFTR_III(32,32,32, vlSelfRef.ysyx_25030077_top__DOT__ALU_data_1, vlSelfRef.ysyx_25030077_top__DOT__ALU_data_2)
