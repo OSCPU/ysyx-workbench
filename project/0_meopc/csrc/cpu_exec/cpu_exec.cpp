@@ -102,6 +102,7 @@ int cpu_init(int argc, char** argv){
 	return 0;
 }
 int cpu_exec(int n){
+	int pc_data;
 	FILE *itrace=fopen("outputs/itrace.txt","w");
 	if(MTRACE){
 		FILE *mtrace_Write=fopen("outputs/mtrace.txt","w");
@@ -110,7 +111,6 @@ int cpu_exec(int n){
 	for(int i = -3; i < 2 * n; i++){
 		//printf("i = %d\n", i);
 		if(top -> clock){
-			int pc_data = new_reg();
 			svScope scope;
 			if(is_S(insn32) > 0){
 				uint32_t rs1_data, rs2_data, imm_data;
@@ -136,9 +136,11 @@ int cpu_exec(int n){
 				}
 			}
 			if(insn32 != 0 && ITRACE){
+				pc_data = new_reg();
 				print_itrace(itrace, pc_data, insn32);
 			}
 			if(FTRACE){
+				pc_data = new_reg();
 				uint32_t dnpc_data;
 				scope = svGetScopeFromName("TOP.ysyx_25030077_top.i7");
 				svSetScope(scope);

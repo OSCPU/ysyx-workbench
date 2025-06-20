@@ -101,6 +101,9 @@ uint64_t get_time() {
 }
 svBitVecVal mem_data_read(const svBitVecVal* instruction_in, const svBitVecVal* rs1_data_in, const svBitVecVal* rs2_data_in, const svBitVecVal*  imm_data_in){
 	int mem_addr, mem_data;
+	if(is_L(*instruction_in) == 0){
+		return 0; // 如果不是取字节指令，返回0
+	}
 	mem_addr = *rs1_data_in + *imm_data_in;
 	if(MTRACE){
 		mtrace_Write=fopen("outputs/mtrace.txt","a");
