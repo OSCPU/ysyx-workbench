@@ -4,9 +4,11 @@
 void init_elf(const char *elf_file);
 void init_mem(size_t size);
 void init_log(const char *log_file);
+void init_difftest(char *ref_so_file, long img_size);
 static char *log_file = NULL;
 static char* img_file = NULL;
 static char *elf_file = NULL;
+static char *diff_so_file = NULL;
 void init_disasm();
 long load_img() {
     if (img_file == NULL) {
@@ -31,7 +33,7 @@ static int parse_args(int argc, char *argv[]) {
     {"batch"    , no_argument      , NULL, 'b'},
     {"log"      , required_argument, NULL, 'l'},
     {"elf"      , required_argument, NULL, 'e'},
-    // {"diff"     , required_argument, NULL, 'd'},
+    {"diff"     , required_argument, NULL, 'd'},
     // {"port"     , required_argument, NULL, 'p'},
     // {"help"     , no_argument      , NULL, 'h'},
     {0          , 0                , 0,  0 }
@@ -47,14 +49,14 @@ static int parse_args(int argc, char *argv[]) {
     case 'e': elf_file = optarg; 
               printf("ELF file: %s\n", elf_file); // Just for debugging
               break;
-    //   case 'd': diff_so_file = optarg; break;
+    case 'd': diff_so_file = optarg; printf("DIFF file: %s\n", diff_so_file); break;
     case 1: img_file = optarg; return 0;
       default:
         printf("Usage: %s [OPTION...] IMAGE [args]\n\n", argv[0]);
         printf("\t-b,--batch              run with batch mode\n");
         printf("\t-l,--log=FILE           output log to FILE\n");
         printf("\t-e,--elf=FILE           output elf to FILE\n");
-        // printf("\t-d,--diff=REF_SO        run DiffTest with reference REF_SO\n");
+        printf("\t-d,--diff=REF_SO        run DiffTest with reference REF_SO\n");
         // printf("\t-p,--port=PORT          run DiffTest with port PORT\n");
         printf("\n");
         exit(0);
@@ -83,10 +85,10 @@ void init_monitor(int argc, char *argv[]) {
     // for(int i = 0; i < img_size; i++){
     //     printf("guest_to_host(RESET_VECTOR)[%d] = %x\n", i, guest_to_host(RESET_VECTOR)[i]);
     // }
-    // init_difftest(diff_so_file, img_size, difftest_port);
+    init_difftest(diff_so_file, img_size);
     // init_sdb();
-    // IFDEF(CONFIG_ITRACE, init_disasm());
-    init_disasm();
+    IFDEF(ITRACE, init_disasm());
+    // init_disasm();
     // welcome();
     return;
   }

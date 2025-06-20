@@ -64,14 +64,14 @@ wave_display:
 	gtkwave obj_dir/wave.fst
 
 IMAGE = /home/meowth/ysyx/ysyx-workbench/am-kernels/kernels/demo/build/demo-riscv32e-npc
-
+DIFF_SO = /home/meowth/ysyx/ysyx-workbench/nemu/build/riscv32-nemu-interpreter-so
 sim:
 	verilator --cc --exe --trace-fst --build -j 0 \
 	-CFLAGS "-I/usr/include/readline \
 			 -I  /home/meowth/ysyx/ysyx-workbench/project/0_meopc/tools/capstone/repo/include" \
 	-LDFLAGS "-lreadline -lncurses" \
 	$(CSRCS_SIM)  vsrc/*.v 
-	obj_dir/Vtop -e $(IMAGE).elf $(IMAGE).bin mainargs=1
+	obj_dir/Vtop -e $(IMAGE).elf -d $(DIFF_SO) $(IMAGE).bin mainargs=1
 #	gtkwave obj_dir/wave.fst
 
 test:

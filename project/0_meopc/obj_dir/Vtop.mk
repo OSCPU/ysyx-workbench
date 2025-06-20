@@ -55,6 +55,7 @@ VM_USER_CLASSES = \
 	expr \
 	sdb \
 	disasm \
+	dut \
 	ftrace \
 	itrace \
 	logs \
@@ -98,6 +99,8 @@ expr.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc/csrc/sdb/expr.cpp
 sdb.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc/csrc/sdb/sdb.cpp 
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
 disasm.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc/csrc/utils/disasm.cpp 
+	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
+dut.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc/csrc/utils/dut.cpp 
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
 ftrace.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc/csrc/utils/ftrace.cpp 
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<

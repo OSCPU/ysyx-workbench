@@ -1,12 +1,13 @@
 #include "../include/common.h"
+
+
+int reg_data[32];
 const char *regs[] = {
     "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
     "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5",
     "a6", "a7", "s2", "s3", "s4", "s5", "s6", "s7",
     "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
-  };
-
-int reg_data[32];
+};
 int pc = 0;
 void reg_init()
 {
@@ -64,3 +65,19 @@ int new_reg(){
     return pc_data;
     // printf("--instruction: %x\n",insn32);
 }
+
+void isa_reg_display() {
+    int i;
+    printf("\ndut-pc=%x\n",pc);
+    for(i = 0;i < 32;i++){
+      if(reg_data[i] >= 0x02000000){
+        printf("dut-%3s = %-#11x",regs[i],reg_data[i]);
+        if(i % 3 == 0) printf("\n");
+        }
+      else{
+        printf("dut-%3s = %-11d",regs[i],reg_data[i]);
+        if(i % 3 == 0) printf("\n");
+        } 
+      }
+    printf("\n");
+  }

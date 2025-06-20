@@ -10,7 +10,7 @@ module ysyx_25030077_ALU(
   wire [31:0] csr_data = csr_read(io_in_a, io_in_b, io_sw);
 
   wire [15:0] oneHot = 16'h1 << io_sw; // @[OneHot.scala 64:12]
-  wire [32:0] addResult = io_in_a + io_in_b; // @[module.scala 17:28]
+  wire [32:0] addResult = io_in_a - io_in_b; // @[module.scala 17:28]
   wire [32:0] subResult = io_in_a - io_in_b; // @[module.scala 18:28]
   wire  sltiuResult = io_in_a < io_in_b; // @[module.scala 19:30]
   wire  sltResult = $signed(io_in_a) < $signed(io_in_b); // @[module.scala 20:35]

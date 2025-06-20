@@ -36,6 +36,7 @@ extern uint32_t csr[NUM_CSR];
 #define ITRACE 0
 #define FTRACE 0
 #define MTRACE 0
+#define DIFFTEST 1
 
 #define MSTATUS   0x300
 #define MTVEC     0x305
@@ -53,6 +54,9 @@ typedef word_t vaddr_t;
 typedef uint32_t paddr_t;
 #define FMT_PADDR "0x%08"
 typedef uint16_t ioaddr_t;
+extern uint32_t csr[4096];
+extern int reg_data[32];
+extern const char *regs[];
 
 #include "debug.h"
 
