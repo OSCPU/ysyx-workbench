@@ -24,5 +24,6 @@ ifndef CONFIG_DIFFTEST_REF_NEMU #当nemu为参考时用以生成so
 $(DIFF_REF_SO):
 	$(MAKE) -s -C $(DIFF_REF_PATH) $(MKFLAGS)
 endif
+
 .PHONY: $(DIFF_REF_SO)
 endif
