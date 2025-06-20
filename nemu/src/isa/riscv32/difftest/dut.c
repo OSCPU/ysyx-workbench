@@ -25,18 +25,27 @@ const char *regs_diff[] = {
   "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
 };
 
-bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
+bool isa_difftest_checkregs(CPU_state *ref_r , vaddr_t pc){
   bool flag = true;
-
-  if(ref_r->pc != cpu.pc) {
-    printf("pc mismatch: DUT: 0x%x, REF: 0x%x\n", pc, ref_r->pc);
-    flag = false;
-  }
-  for(int i = 0; i < NUM_REG; i++){
-    if(ref_r -> gpr[i] != cpu.gpr[i]){
-      printf("%s mismatch: DUT: 0x%x, REF: 0x%x\n", regs_diff[i], cpu.gpr[i], ref_r->gpr[i]);
+  int i;
+  if(ref_r -> pc != cpu.pc) flag = false;
+  for(i = 0;i < NUM_REG;i++){
+    if(ref_r -> gpr[i] != cpu.gpr[i])
       flag = false;
+  }
+  if(flag == false){
+    printf("ref-pc=%x\n",ref_r -> pc);
+    for(i = 0;i < NUM_REG;i++){
+    if(ref_r -> gpr[i] >= 0x80000000){
+        printf("ref-%3s = %-#11x",regs_diff[i],ref_r -> gpr[i]);
+        if(i % 3 == 0) printf("\n");
+        }
+    else{
+        printf("ref-%3s = %-11d",regs_diff[i],ref_r -> gpr[i]);
+        if(i % 3 == 0) printf("\n");
+        } 
     }
+    printf("\n");
   }
   return flag;
 }
