@@ -63,7 +63,7 @@ wave_build:
 wave_display:
 	gtkwave obj_dir/wave.fst
 
-IMAGE = /home/meowth/ysyx/ysyx-workbench/am-kernels/kernels/demo/build/demo-riscv32e-npc
+IMAGE = /home/meowth/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests/build/dummy-riscv32e-npc
 DIFF_SO = /home/meowth/ysyx/ysyx-workbench/nemu/build/riscv32-nemu-interpreter-so
 sim:
 	verilator --cc --exe --trace-fst --build -j 0 \

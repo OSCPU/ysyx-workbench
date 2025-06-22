@@ -20,7 +20,7 @@ void reg_new(int addr, int data);
 int  new_reg();
 void write_addr(uint32_t paddr, uint32_t data, int size);
 void ftrace_check(uint32_t pc, uint32_t dnpc, uint32_t inst);
-
+void difftest_step();
 void step_and_dump_wave(){
 	top->eval();
 	contextp->timeInc(1);
@@ -135,12 +135,13 @@ int cpu_exec(int n){
 						break;
 				}
 			}
-			if(insn32 != 0 && ITRACE){
+			if(ITRACE || FTRACE || DIFFTEST){
 				pc_data = new_reg();
+			}
+			if(insn32 != 0 && ITRACE){
 				print_itrace(itrace, pc_data, insn32);
 			}
 			if(FTRACE){
-				pc_data = new_reg();
 				uint32_t dnpc_data;
 				scope = svGetScopeFromName("TOP.ysyx_25030077_top.i7");
 				svSetScope(scope);
@@ -151,8 +152,12 @@ int cpu_exec(int n){
 		if(i == 3){
 			top -> reset = 0;
 		}
+		if (DIFFTEST && !(top -> clock) && !(top -> reset)){
+			difftest_step();
+		}
 		top -> clock = ~(top -> clock);
 		step_and_dump_wave();
+		
 		if(flag){
 			break;
 		}

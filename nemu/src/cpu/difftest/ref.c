@@ -51,6 +51,7 @@ __EXPORT void difftest_regcpy(void *dut, bool direction) {
 }
 
 __EXPORT void difftest_exec(uint64_t n) {
+  //printf("difftest_exec: n = %ld\n", n);
   cpu_exec(n);
 }
 
@@ -58,7 +59,7 @@ __EXPORT void difftest_raise_intr(word_t NO) {
   assert(0);
 }
 
-__EXPORT void difftest_init(int port) {
+__EXPORT void difftest_init() {
   void init_mem();
   init_mem();
   /* Perform ISA dependent initialization. */

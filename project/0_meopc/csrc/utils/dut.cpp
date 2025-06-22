@@ -86,21 +86,24 @@ void init_difftest(char *ref_so_file, long img_size) {
 bool static checkregs(struct CPU_state *ref_r){
     bool flag = true;
     int i;
-    //if(ref_r -> pc != pc) flag = false;
+    // if(ref_r -> pc != pc) flag = false;
     for(i = 0;i < REGNUM;i++){
+        //printf("dut-%3s = %-#11x\n",regs[i],reg_data[i]);
       if(ref_r -> gpr[i] != reg_data[i])
         flag = false;
     }
+    //printf("%d\n\n\n",flag);
+
     if(flag == false){
       printf("ref-pc=%x\n",ref_r -> pc);
       for(i = 0;i < REGNUM;i++){
       if(ref_r -> gpr[i] >= 0x02000000){
           printf("ref-%3s = %-#11x",regs[i],ref_r -> gpr[i]);
-          if(i % 3 == 0) printf("\n");
+          printf("\n");
           }
       else{
           printf("ref-%3s = %-11d",regs[i],ref_r -> gpr[i]);
-          if(i % 3 == 0) printf("\n");
+          printf("\n");
           } 
       }
       printf("\n");
@@ -111,7 +114,9 @@ bool static checkregs(struct CPU_state *ref_r){
 void difftest_step() {
   if(ref_difftest_memcpy == NULL) return;
   CPU_state ref_r;
+  //printf("difftest_step\n");
   ref_difftest_exec(1);
+
   ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
   is_skip_diff = ref_difftest_skip();
   if(is_skip_diff == true){

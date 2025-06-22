@@ -42,8 +42,8 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   #endif
     if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
     IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
-    if(watchpoint_check() == 1)
-    {nemu_state.state = NEMU_STOP;}
+    // if(watchpoint_check() == 1)
+    // {nemu_state.state = NEMU_STOP;}
 }
 
 static void exec_once(Decode *s, vaddr_t pc) {
@@ -88,11 +88,12 @@ static void exec_once(Decode *s, vaddr_t pc) {
 
 static void execute(uint64_t n) {
   Decode s;
- 
   for (;n > 0; n --) {
     exec_once(&s, cpu.pc);
+    
     g_nr_guest_inst ++;
     trace_and_difftest(&s, cpu.pc);
+    //printf("cpu_exec: n = %ld\n", n);
     if (nemu_state.state != NEMU_RUNNING) break;
     IFDEF(CONFIG_DEVICE, device_update());
   }
@@ -114,10 +115,15 @@ void assert_fail_msg() {
 
 /* Simulate how the CPU works. */
 void cpu_exec(uint64_t n) {
+  
   FILE *mtrace_Write;
-  mtrace_Write=fopen("outputs/memory_trace.txt","w");
   FILE *dtrace_Write;
-  dtrace_Write=fopen("outputs/device_trace.txt","w");
+  if(CONFIG_MTRACE){
+      mtrace_Write=fopen("outputs/memory_trace.txt","w");
+  }
+  if(CONFIG_DTRACE){
+      dtrace_Write=fopen("outputs/device_trace.txt","w");
+  }
   g_print_step = (n < MAX_INST_TO_PRINT);
   switch (nemu_state.state) {
     case NEMU_END: case NEMU_ABORT: case NEMU_QUIT:
@@ -125,7 +131,6 @@ void cpu_exec(uint64_t n) {
       return;
     default: nemu_state.state = NEMU_RUNNING;
   }
-
   uint64_t timer_start = get_time();
 
   for(int i = 0; i < 25; i++){
@@ -161,6 +166,10 @@ void cpu_exec(uint64_t n) {
       // fall through
     case NEMU_QUIT: statistic();
   }
-  fclose(mtrace_Write);
-  fclose(dtrace_Write);
+  if(CONFIG_MTRACE){
+    fclose(mtrace_Write);
+  }
+  if(CONFIG_DTRACE){
+    fclose(dtrace_Write);
+  }
 }
