@@ -58,7 +58,7 @@ int new_reg(){
     reg_new(w_addr, w_data);
     // printf("w_addr = %x\n", w_addr);
     // printf("w_data = %x\n", w_data);
-    scope = svGetScopeFromName("TOP.ysyx_25030077_top.i0");
+    scope = svGetScopeFromName("TOP.ysyx_25030077_top.i1");
     svSetScope(scope);
     pc_data = pc_read_data();
     pc_new(pc_data);

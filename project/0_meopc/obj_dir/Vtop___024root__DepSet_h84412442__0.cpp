@@ -6,17 +6,17 @@
 #include "Vtop__Syms.h"
 #include "Vtop___024root.h"
 
-void Vtop___024root____Vdpiexp_ysyx_25030077_top__DOT__i0__DOT__pc_read_data_TOP(Vtop__Syms* __restrict vlSymsp, IData/*31:0*/ &pc_read_data__Vfuncrtn) {
-    VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop___024root____Vdpiexp_ysyx_25030077_top__DOT__i0__DOT__pc_read_data_TOP\n"); );
+void Vtop___024root____Vdpiexp_ysyx_25030077_top__DOT__i1__DOT__addr_gen__DOT__pc_read_data_TOP(Vtop__Syms* __restrict vlSymsp, IData/*31:0*/ &pc_read_data__Vfuncrtn) {
+    VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop___024root____Vdpiexp_ysyx_25030077_top__DOT__i1__DOT__addr_gen__DOT__pc_read_data_TOP\n"); );
     // Init
     // Body
-    pc_read_data__Vfuncrtn = vlSymsp->TOP.ysyx_25030077_top__DOT__i0__DOT__state;
+    pc_read_data__Vfuncrtn = vlSymsp->TOP.ysyx_25030077_top__DOT__i1__DOT__addr_gen__DOT__dataReg;
 }
 
 extern "C" svBitVecVal addr_read(const svBitVecVal* pc);
 
-VL_INLINE_OPT void Vtop___024root____Vdpiimwrap_ysyx_25030077_top__DOT__i1__DOT__addr_read_TOP(IData/*31:0*/ pc, IData/*31:0*/ &addr_read__Vfuncrtn) {
-    VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop___024root____Vdpiimwrap_ysyx_25030077_top__DOT__i1__DOT__addr_read_TOP\n"); );
+VL_INLINE_OPT void Vtop___024root____Vdpiimwrap_ysyx_25030077_top__DOT__i1__DOT__sram__DOT__addr_read_TOP(IData/*31:0*/ pc, IData/*31:0*/ &addr_read__Vfuncrtn) {
+    VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop___024root____Vdpiimwrap_ysyx_25030077_top__DOT__i1__DOT__sram__DOT__addr_read_TOP\n"); );
     // Body
     svBitVecVal pc__Vcvt[1];
     for (size_t pc__Vidx = 0; pc__Vidx < 1; ++pc__Vidx) VL_SET_SVBV_I(32, pc__Vcvt + 1 * pc__Vidx, pc);

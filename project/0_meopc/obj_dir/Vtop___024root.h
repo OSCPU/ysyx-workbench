@@ -28,6 +28,8 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final : public VerilatedModule
         CData/*2:0*/ ysyx_25030077_top__DOT__data_control;
         CData/*3:0*/ ysyx_25030077_top__DOT__pc_next_type;
         CData/*0:0*/ ysyx_25030077_top__DOT__is_break_out;
+        CData/*0:0*/ ysyx_25030077_top__DOT__i1__DOT__addr_gen__DOT__addr_state;
+        CData/*0:0*/ ysyx_25030077_top__DOT__i1__DOT__ifu__DOT__state;
         CData/*2:0*/ ysyx_25030077_top__DOT__i2__DOT___io_imm_type_T_18;
         CData/*4:0*/ ysyx_25030077_top__DOT__i2__DOT___io_rs1_T_12;
         CData/*4:0*/ ysyx_25030077_top__DOT__i2__DOT___io_rs1_T_25;
@@ -48,12 +50,14 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final : public VerilatedModule
         VL_OUT(rs1_out,31,0);
         VL_OUT(rs2_out,31,0);
         IData/*31:0*/ ysyx_25030077_top__DOT__Pc_next;
-        IData/*31:0*/ ysyx_25030077_top__DOT__instruction_out;
         IData/*31:0*/ ysyx_25030077_top__DOT__ALU_result;
         IData/*31:0*/ ysyx_25030077_top__DOT__mem_data;
         IData/*31:0*/ ysyx_25030077_top__DOT__ALU_data_1;
         IData/*31:0*/ ysyx_25030077_top__DOT__ALU_data_2;
-        IData/*31:0*/ ysyx_25030077_top__DOT__i0__DOT__state;
+        IData/*31:0*/ ysyx_25030077_top__DOT__i1__DOT__addr_gen__DOT__dataReg;
+        IData/*31:0*/ ysyx_25030077_top__DOT__i1__DOT__ifu__DOT__addrReg;
+        IData/*31:0*/ ysyx_25030077_top__DOT__i1__DOT__sram__DOT__instReg;
+        IData/*31:0*/ ysyx_25030077_top__DOT__i1__DOT__sram__DOT__dpi_inst;
         IData/*16:0*/ ysyx_25030077_top__DOT__i2__DOT___isadd_T_3;
         IData/*31:0*/ ysyx_25030077_top__DOT__i3__DOT__Imm_type1;
         IData/*31:0*/ ysyx_25030077_top__DOT__i4__DOT__regs_0;
@@ -76,12 +80,12 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final : public VerilatedModule
         IData/*31:0*/ ysyx_25030077_top__DOT__i4__DOT__regs_17;
         IData/*31:0*/ ysyx_25030077_top__DOT__i4__DOT__regs_18;
         IData/*31:0*/ ysyx_25030077_top__DOT__i4__DOT__regs_19;
+    };
+    struct {
         IData/*31:0*/ ysyx_25030077_top__DOT__i4__DOT__regs_20;
         IData/*31:0*/ ysyx_25030077_top__DOT__i4__DOT__regs_21;
         IData/*31:0*/ ysyx_25030077_top__DOT__i4__DOT__regs_22;
         IData/*31:0*/ ysyx_25030077_top__DOT__i4__DOT__regs_23;
-    };
-    struct {
         IData/*31:0*/ ysyx_25030077_top__DOT__i4__DOT__regs_24;
         IData/*31:0*/ ysyx_25030077_top__DOT__i4__DOT__regs_25;
         IData/*31:0*/ ysyx_25030077_top__DOT__i4__DOT__regs_26;
@@ -96,7 +100,7 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final : public VerilatedModule
         IData/*31:0*/ ysyx_25030077_top__DOT__i6__DOT__csr_data;
         IData/*31:0*/ ysyx_25030077_top__DOT__i7__DOT__ecall_dnpc;
         IData/*31:0*/ ysyx_25030077_top__DOT__i7__DOT___beq_result_T_9;
-        IData/*31:0*/ __Vfunc_ysyx_25030077_top__DOT__i1__DOT__addr_read__0__Vfuncout;
+        IData/*31:0*/ __Vfunc_ysyx_25030077_top__DOT__i1__DOT__sram__DOT__addr_read__0__Vfuncout;
         IData/*31:0*/ __Vfunc_ysyx_25030077_top__DOT__i6__DOT__csr_read__2__Vfuncout;
         IData/*31:0*/ __Vfunc_ysyx_25030077_top__DOT__i7__DOT__ecall_read__3__Vfuncout;
         IData/*31:0*/ __Vfunc_ysyx_25030077_top__DOT__i9__DOT__mem_data_read__4__Vfuncout;

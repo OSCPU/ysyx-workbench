@@ -11,9 +11,9 @@ module ysyx_25030077_top(
 );
 wire [31:0] io_Pc_count;
 wire [31:0] Pc_next;
-ysyx_25030077_PC i0 (clock, reset,Pc_next ,io_Pc_count);
+// ysyx_25030077_PC i0 (clock, reset,Pc_next ,io_Pc_count);
 wire [31:0] instruction_out;
-ysyx_25030077_IFU i1 (io_Pc_count, instruction_out);
+ysyx_25030077_IFU i1 (clock, reset, Pc_next, instruction_out, io_Pc_count);
 wire [2:0] imm_type;
 wire [4:0] rs1; 
 wire [4:0] rs2;
@@ -32,7 +32,7 @@ wire is_unknown_instruction;
 ysyx_25030077_DATA_CONTROL i5 (rs1_out, rs2_out, imm, mem_data, io_Pc_count, data_control, ALU_data_1, ALU_data_2);
 ysyx_25030077_ALU i6 (ALU_data_1, ALU_data_2, ALU_ctrl, ALU_result, ALU_carry, ALU_overflow);
 ysyx_25030077_PC_next i7(rs1_out, rs2_out, instruction_out, pc_next_type, io_Pc_count, Pc_next, is_unknown_instruction);
-ysyx_25030077_EXIT i8 (clock, reset, io_Pc_count, is_break_out, is_unknown_instruction);
+ysyx_25030077_EXIT i8 (clock, reset, io_Pc_count, instruction_out, is_break_out, is_unknown_instruction);
 ysyx_25030077_MEM_read i9 (instruction_out, rs1_out, rs2_out, imm, mem_data);
 // always @(*) begin
 //   $display("%d + %d = %d\n", rs1_out, imm, ALU_result);

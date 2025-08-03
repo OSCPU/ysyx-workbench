@@ -40,9 +40,9 @@ uint32_t insn32;
 
 svBitVecVal addr_read(const svBitVecVal* pc){
 	svBitVecVal instruction;
-    //printf("pc = %x\n", *pc);
+    // printf("pc = %x\n", *pc);
 	if(*pc < 0x80000000){
-		instruction = 0;
+		instruction = 0x413;
 	}
 	else{
         int insert = (*pc - 0x80000000) + 3;
@@ -54,12 +54,12 @@ svBitVecVal addr_read(const svBitVecVal* pc){
                     static_cast<uint8_t>(guest_to_host(RESET_VECTOR)[insert - 3]);
 	}
     // printf("pc instruction =%x 0x%x\n",*pc, instruction);
-	if(instruction == 1048691 and insn32 == 32871){
-		// printf("instruction = %x\n", instruction);
+	if(instruction == 1048691){
+		printf("instruction = %x\n", instruction);
 		success = 1;
 	}
 	insn32 = instruction;
-	//printf("instruction: %x\n",instruction);
+	// printf("instruction: %x\n",instruction);
 	return instruction;
 }
 

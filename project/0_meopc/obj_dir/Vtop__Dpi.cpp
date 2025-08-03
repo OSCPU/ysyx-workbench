@@ -25,7 +25,7 @@ int dnpc_read_data() {
 #ifndef VL_DPIDECL_pc_read_data_
 #define VL_DPIDECL_pc_read_data_
 int pc_read_data() {
-    // DPI export at vsrc/ysyx_25030077_PC.v:8:14
+    // DPI export at vsrc/ysyx_25030077_IFU.v:18:16
     return Vtop::pc_read_data();
 }
 #endif
