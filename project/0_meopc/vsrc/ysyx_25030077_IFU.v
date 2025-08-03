@@ -164,7 +164,8 @@ module SRAM(
   input         reset,
   input         io_req_valid,
   input  [31:0] io_req_bits_addr,
-  output [31:0] io_instOut
+  output [31:0] io_instOut,
+  output inst_valid
 );
 `ifdef RANDOMIZE_REG_INIT
   reg [31:0] _RAND_0;
@@ -178,11 +179,12 @@ module SRAM(
 
   always @(posedge clock) begin
     if (reset) begin // @[SRAM.scala 15:24]
-      instReg <= 32'h0; // @[SRAM.scala 15:24]
+      instReg <= 32'h413; // @[SRAM.scala 15:24]
     end else if (!(io_req_valid)) begin // @[SRAM.scala 17:17]
       instReg <= dpi_inst;
     end
   end
+  assign inst_valid = io_req_valid; // @[SRAM.scala 19:20]
 // Register and memory initialization
 `ifdef RANDOMIZE_GARBAGE_ASSIGN
 `define RANDOMIZE
@@ -234,7 +236,8 @@ module ysyx_25030077_IFU(
   input         reset,
   input  [31:0] io_addr_in,
   output [31:0] io_instOut,
-  output [31:0] io_pc_count
+  output [31:0] io_pc_count,
+  output        io_inst_valid
 );
   wire  addr_gen_clock; // @[top.scala 12:25]
   wire  addr_gen_reset; // @[top.scala 12:25]
@@ -272,7 +275,8 @@ module ysyx_25030077_IFU(
     .reset(sram_reset),
     .io_req_valid(sram_io_req_valid),
     .io_req_bits_addr(sram_io_req_bits_addr),
-    .io_instOut(sram_io_instOut)
+    .io_instOut(sram_io_instOut),
+    .inst_valid(io_inst_valid)
   );
   assign io_instOut = sram_io_instOut; // @[top.scala 20:14]
   assign io_pc_count = addr_gen_io_IFUReq_bits_addr; // @[top.scala 22:15]

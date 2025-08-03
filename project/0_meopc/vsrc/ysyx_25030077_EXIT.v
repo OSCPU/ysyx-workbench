@@ -15,13 +15,13 @@ module ysyx_25030077_EXIT(
     end
   end
 
-  // always @(posedge clk) begin
-  //   if (is_unknown_instruction && (!reset)) begin
-  //     $display("检测到未知指令, 仿真退出! 当前PC = 0x%08x", io_Pc_count);
-  //     $display("检测到未知指令, 仿真退出! 当前指令 = 0x%08x", io_instruction);
-  //     $finish;
-  //     $finish;
-  //   end
-  // end
+  always @(posedge clk) begin
+    if (is_unknown_instruction && (!reset)) begin
+      $display("检测到未知指令, 仿真退出! 当前PC = 0x%08x", io_Pc_count);
+      $display("检测到未知指令, 仿真退出! 当前指令 = 0x%08x", io_instruction);
+      $finish;
+      $finish;
+    end
+  end
 
 endmodule

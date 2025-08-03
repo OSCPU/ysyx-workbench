@@ -33,7 +33,7 @@ int pc_read_data() {
 #ifndef VL_DPIDECL_reg_read_addr_
 #define VL_DPIDECL_reg_read_addr_
 int reg_read_addr() {
-    // DPI export at vsrc/ysyx_25030077_reg.v:12:16
+    // DPI export at vsrc/ysyx_25030077_reg.v:13:16
     return Vtop::reg_read_addr();
 }
 #endif
@@ -41,7 +41,7 @@ int reg_read_addr() {
 #ifndef VL_DPIDECL_reg_read_data_
 #define VL_DPIDECL_reg_read_data_
 int reg_read_data() {
-    // DPI export at vsrc/ysyx_25030077_reg.v:17:16
+    // DPI export at vsrc/ysyx_25030077_reg.v:18:16
     return Vtop::reg_read_data();
 }
 #endif

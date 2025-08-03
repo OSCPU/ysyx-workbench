@@ -94,8 +94,10 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final : public VerilatedModule
         IData/*31:0*/ ysyx_25030077_top__DOT__i4__DOT__regs_29;
         IData/*31:0*/ ysyx_25030077_top__DOT__i4__DOT__regs_30;
         IData/*31:0*/ ysyx_25030077_top__DOT__i4__DOT__regs_31;
-        IData/*31:0*/ ysyx_25030077_top__DOT__i4__DOT___GEN_53;
+        IData/*31:0*/ ysyx_25030077_top__DOT__i4__DOT___GEN_21;
+        IData/*31:0*/ ysyx_25030077_top__DOT__i4__DOT___regs_T_9;
         IData/*31:0*/ ysyx_25030077_top__DOT__i4__DOT___GEN_85;
+        IData/*31:0*/ ysyx_25030077_top__DOT__i4__DOT___GEN_117;
         IData/*31:0*/ ysyx_25030077_top__DOT__i5__DOT___io_data_2_T;
         IData/*31:0*/ ysyx_25030077_top__DOT__i6__DOT__csr_data;
         IData/*31:0*/ ysyx_25030077_top__DOT__i7__DOT__ecall_dnpc;

@@ -13,7 +13,8 @@ wire [31:0] io_Pc_count;
 wire [31:0] Pc_next;
 // ysyx_25030077_PC i0 (clock, reset,Pc_next ,io_Pc_count);
 wire [31:0] instruction_out;
-ysyx_25030077_IFU i1 (clock, reset, Pc_next, instruction_out, io_Pc_count);
+wire inst_valid;
+ysyx_25030077_IFU i1 (clock, reset, Pc_next, instruction_out, io_Pc_count, inst_valid);
 wire [2:0] imm_type;
 wire [4:0] rs1; 
 wire [4:0] rs2;
@@ -25,7 +26,7 @@ ysyx_25030077_Imm i3 (instruction_out, imm_type, imm);
 
 wire [31:0] ALU_result;
 wire [31:0] mem_data;
-ysyx_25030077_reg i4 (clock, reset, rd, ALU_result, rs1, rs1_out, rs2, rs2_out);
+ysyx_25030077_reg i4 (clock, reset, inst_valid, rd, ALU_result, rs1, rs1_out, rs2, rs2_out);
 wire [31:0] ALU_data_1;
 wire [31:0] ALU_data_2;
 wire is_unknown_instruction;

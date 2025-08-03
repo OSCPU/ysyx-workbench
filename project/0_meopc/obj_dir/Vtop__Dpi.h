@@ -20,9 +20,9 @@ extern "C" {
     extern int dnpc_read_data();
     // DPI export at vsrc/ysyx_25030077_IFU.v:18:16
     extern int pc_read_data();
-    // DPI export at vsrc/ysyx_25030077_reg.v:12:16
+    // DPI export at vsrc/ysyx_25030077_reg.v:13:16
     extern int reg_read_addr();
-    // DPI export at vsrc/ysyx_25030077_reg.v:17:16
+    // DPI export at vsrc/ysyx_25030077_reg.v:18:16
     extern int reg_read_data();
     // DPI export at vsrc/ysyx_25030077_DATA_CONTROL.v:12:16
     extern int reg_read_rs1();
@@ -30,7 +30,7 @@ extern "C" {
     extern int reg_read_rs2();
 
     // DPI IMPORTS
-    // DPI import at vsrc/ysyx_25030077_IFU.v:176:37
+    // DPI import at vsrc/ysyx_25030077_IFU.v:177:37
     extern svBitVecVal addr_read(const svBitVecVal* pc);
     // DPI import at vsrc/ysyx_25030077_ALU.v:9:37
     extern svBitVecVal csr_read(const svBitVecVal* rs1, const svBitVecVal* imm, const svBitVecVal* sw);
