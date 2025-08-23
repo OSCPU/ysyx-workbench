@@ -7,9 +7,10 @@
 
 #include "verilated.h"
 
+
 class Vtop__Syms;
 
-class Vtop___024root final : public VerilatedModule {
+class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final : public VerilatedModule {
   public:
 
     // DESIGN SPECIFIC STATE
@@ -21,9 +22,10 @@ class Vtop___024root final : public VerilatedModule {
     VL_OUT8(ALU_overflow,0,0);
     VL_OUT8(is_break_out,0,0);
     CData/*4:0*/ ysyx_25020077_top__DOT__rs1;
-    CData/*0:0*/ ysyx_25020077_top__DOT__i5__DOT____VdfgTmp_h0adca177__0;
+    CData/*0:0*/ ysyx_25020077_top__DOT__i5__DOT____VdfgRegularize_h7d8bcb34_0_4;
     CData/*0:0*/ __Vfunc_ysyx_25020077_top__DOT__i2__DOT__is_break__1__Vfuncout;
-    CData/*0:0*/ __Vtrigrprev__TOP__clock;
+    CData/*0:0*/ __VstlFirstIteration;
+    CData/*0:0*/ __Vtrigprevexpr___TOP__clock__0;
     CData/*0:0*/ __VactContinue;
     SData/*9:0*/ ysyx_25020077_top__DOT__i2__DOT__instruction_type;
     VL_OUT(imm,31,0);
@@ -69,7 +71,6 @@ class Vtop___024root final : public VerilatedModule {
     IData/*31:0*/ ysyx_25020077_top__DOT__i5__DOT___io_out_T_15;
     IData/*31:0*/ ysyx_25020077_top__DOT__i5__DOT___io_out_T_17;
     IData/*31:0*/ __Vfunc_ysyx_25020077_top__DOT__i1__DOT__addr_read__0__Vfuncout;
-    IData/*31:0*/ __VstlIterCount;
     IData/*31:0*/ __VactIterCount;
     QData/*32:0*/ ysyx_25020077_top__DOT__i5__DOT__addResult;
     QData/*32:0*/ ysyx_25020077_top__DOT__i5__DOT__subResult;
@@ -89,7 +90,7 @@ class Vtop___024root final : public VerilatedModule {
 
     // INTERNAL METHODS
     void __Vconfigure(bool first);
-} VL_ATTR_ALIGNED(VL_CACHE_LINE_BYTES);
+};
 
 
 #endif  // guard

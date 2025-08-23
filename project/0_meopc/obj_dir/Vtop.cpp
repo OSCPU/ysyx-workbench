@@ -12,13 +12,9 @@ Vtop::Vtop(VerilatedContext* _vcontextp__, const char* _vcname__)
     , vlSymsp{new Vtop__Syms(contextp(), _vcname__, this)}
     , clock{vlSymsp->TOP.clock}
     , reset{vlSymsp->TOP.reset}
-    , rd{vlSymsp->TOP.rd}
-    , ALU_ctrl{vlSymsp->TOP.ALU_ctrl}
-    , ALU_carry{vlSymsp->TOP.ALU_carry}
-    , ALU_overflow{vlSymsp->TOP.ALU_overflow}
-    , imm{vlSymsp->TOP.imm}
-    , rs1_out{vlSymsp->TOP.rs1_out}
-    , rs2_out{vlSymsp->TOP.rs2_out}
+    , io_is_unknown_instruction{vlSymsp->TOP.io_is_unknown_instruction}
+    , carry{vlSymsp->TOP.carry}
+    , overflow{vlSymsp->TOP.overflow}
     , rootp{&(vlSymsp->TOP)}
 {
     // Register model with the context

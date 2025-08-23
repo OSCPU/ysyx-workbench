@@ -10,3 +10,4 @@
 #include "Vtop___024root__DepSet_heccd7ead__0__Slow.cpp"
 #include "Vtop__Syms.cpp"
 #include "Vtop__Trace__0__Slow.cpp"
+#include "Vtop__TraceDecls__0__Slow.cpp"

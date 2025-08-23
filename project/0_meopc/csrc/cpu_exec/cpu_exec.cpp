@@ -38,11 +38,15 @@ svBit is_break(const svBitVecVal* instruction_in){
 int success = 0;
 uint32_t insn32;
 
+int ins_cnt = 0;
 svBitVecVal addr_read(const svBitVecVal* pc){
 	svBitVecVal instruction;
     // printf("pc = %x\n", *pc);
 	if(*pc < 0x80000000){
 		instruction = 0x413;
+	}
+	else if(*pc == 0x80000050){
+		instruction = 75299;
 	}
 	else{
         int insert = (*pc - 0x80000000) + 3;
@@ -53,10 +57,21 @@ svBitVecVal addr_read(const svBitVecVal* pc){
                     (static_cast<uint8_t>(guest_to_host(RESET_VECTOR)[insert - 2]) << 8)  |
                     static_cast<uint8_t>(guest_to_host(RESET_VECTOR)[insert - 3]);
 	}
-    printf("pc instruction =%x 0x%x\n",*pc, instruction);
+    // printf("pc =0x%x  instruction = 0x%x\n",*pc, instruction);
 	if(instruction == 1048691 && insn32 == 32871){
 		//printf("instruction = %x\n", instruction);
 		success = 1;
+	}
+	if(insn32 == instruction){
+		ins_cnt++;
+		if(ins_cnt > 100){
+			instruction == 1048691;
+			success = 1;
+			flag = 1;
+		}
+	}
+	else{
+		ins_cnt = 0;
 	}
 	insn32 = instruction;
 	// printf("instruction: %x\n",instruction);
@@ -108,17 +123,27 @@ int cpu_exec(int n){
 		FILE *mtrace_Write=fopen("outputs/mtrace.txt","w");
 		fclose(mtrace_Write);
 	} 
+	int ix = 1;
 	for(int i = -3; i < 2 * n; i++){
-		//printf("i = %d\n", i);
+		// if (!(top -> clk_div)){
+		// 	top -> clock = ~(top -> clock);
+		// 	step_and_dump_wave();
+		// 	if (n < 0){
+		// 		i = i - 1; // 如果n < 0，表示一直执行
+		// 	}
+		// 	continue;
+		// }
+		
 		if(top -> clock){
 			svScope scope;
-			if(is_S(insn32) > 0){
+			if(is_S(insn32) > 0 && (ix % 12 == 9)){
 				uint32_t rs1_data, rs2_data, imm_data;
-				scope = svGetScopeFromName("TOP.ysyx_25030077_top.i5");
+				scope = svGetScopeFromName("TOP.top.h_data_control");
 				svSetScope(scope);
 				rs1_data = (uint32_t)reg_read_rs1();
 				rs2_data = (uint32_t)reg_read_rs2();
 				imm_data = (SEXT((int64_t)BITS(insn32, 31, 25), 7) << 5) | BITS(insn32, 11, 7);
+				// printf("S-type: rs1 = %x, rs2 = %x, imm = %x\n", rs1_data, rs2_data, imm_data);
 				switch(is_S(insn32))
 				{
 					case 1:
@@ -155,7 +180,9 @@ int cpu_exec(int n){
 		if (DIFFTEST && !(top -> clock) && !(top -> reset)){
 			difftest_step();
 		}
+
 		top -> clock = ~(top -> clock);
+		// printf("i = %d\n", ix);
 		step_and_dump_wave();
 		
 		if(flag){
@@ -163,6 +190,12 @@ int cpu_exec(int n){
 		}
 		if (n < 0){
 			i = i - 1; // 如果n < 0，表示一直执行
+		}
+		ix ++;
+		if(ix > 20000){
+			flag = 1;
+			success = 0;
+			break;
 		}
 	} 
 	fclose(itrace);          

@@ -38,6 +38,10 @@ void write_addr(uint32_t paddr, uint32_t data, int size) {
 		fprintf(mtrace_Write, "write   %x\n", paddr);
 		fclose(mtrace_Write);
 	} 
+	// printf("write_addr: paddr = %x\n", paddr);
+	// if(paddr < 0x80000000 || paddr >= 0x8fffffff){
+	// 	return;
+	// }
 	for(int i = 0; i < size; i++){
 		(pmem)[paddr - RESET_VECTOR  + i] = BITS(data, (i + 1) * 8 - 1 , i * 8);
 	}
@@ -66,6 +70,7 @@ int is_S(int x){ //存字节指令判断
 }
 
 int is_L(int x){ //取字节指令判断
+
 	uint32_t high = (x >> 12) & 0b111;      // 提取14~12位
     uint32_t low = x & 0b1111111;           // 提取6~0位
     uint32_t result = (high << 7) | low;
@@ -117,6 +122,9 @@ svBitVecVal mem_data_read(const svBitVecVal* instruction_in, const svBitVecVal* 
 		}
 		return (uint32_t)(time_now >> 32);
 	}
+	// printf("mem_addr = %x\n", mem_addr);
+	if(mem_addr < 0x80000000 || mem_addr >= 0x8fffffff)
+		return 0;
 	switch (is_L(*instruction_in))
 	{
 		case 1:

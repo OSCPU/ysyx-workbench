@@ -54,7 +54,7 @@ wave_display:
 	gtkwave obj_dir/wave.fst
 
 sim:
-	verilator --cc --exe --trace-fst --build -j 0 wave_gen/wave.cpp  vsrc/top.v 
+	verilator --cc --exe --trace-fst --build -j 0 wave_gen/wave.cpp  vsrc/*.v 
 	obj_dir/Vtop
 	gtkwave obj_dir/wave.fst
 
