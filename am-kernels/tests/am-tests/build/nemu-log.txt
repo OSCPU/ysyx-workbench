@@ -1935,6 +1935,6 @@
 0x80001054: 00 05 05 13 mv	a0, a0
 0x80001058: 00 10 00 73 ebreak
 [1;34m[src/cpu/cpu-exec.c:161 cpu_exec] nemu: [1;32mHIT GOOD TRAP[0m at pc = 0x80001058[0m
-[1;34m[src/cpu/cpu-exec.c:105 statistic] host time spent = 11,277 us[0m
+[1;34m[src/cpu/cpu-exec.c:105 statistic] host time spent = 12,208 us[0m
 [1;34m[src/cpu/cpu-exec.c:106 statistic] total guest instructions = 1,923[0m
-[1;34m[src/cpu/cpu-exec.c:107 statistic] simulation frequency = 170,524 inst/s[0m
+[1;34m[src/cpu/cpu-exec.c:107 statistic] simulation frequency = 157,519 inst/s[0m
