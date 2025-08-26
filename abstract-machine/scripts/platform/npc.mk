@@ -25,7 +25,7 @@ image: image-dep
 	@echo + OBJCOPY "->" $(IMAGE_REL).bin
 	@$(OBJCOPY) -S --set-section-flags .bss=alloc,contents -O binary $(IMAGE).elf $(IMAGE).bin
 
-NPC_HOME = /home/meowth/ysyx/ysyx-workbench/project/0_meopc
+NPC_HOME = /home/meowth/ysyx/ysyx-workbench/project/0_meopc2
 DIFF_SO = /home/meowth/ysyx/ysyx-workbench/nemu/build/riscv32-nemu-interpreter-so
 run: insert-arg
 	@cd $(NPC_HOME) && \
