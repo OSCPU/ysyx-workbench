@@ -951,13 +951,13 @@ VL_ATTR_COLD void Vtop___024root___stl_sequent__TOP__0(Vtop___024root* vlSelf) {
                 ? vlSelfRef.top__DOT__g_mem_io_mem_data
                 : vlSelfRef.top__DOT__f_gpr_io_rdata_rs1));
     if ((2U == (IData)(vlSelfRef.top__DOT__d_idu__DOT__data_control_reg_o))) {
-        vlSelfRef.top__DOT__h_data_control_io_alu_Req_bits_data2 = 0U;
         vlSelfRef.top__DOT__i_alu__DOT____VdfgRegularize_h4243b50f_0_0 = 0U;
+        vlSelfRef.top__DOT__h_data_control_io_alu_Req_bits_data2 = 0U;
     } else {
-        vlSelfRef.top__DOT__h_data_control_io_alu_Req_bits_data2 
-            = vlSelfRef.top__DOT__h_data_control__DOT___io_alu_Req_bits_data2_T;
         vlSelfRef.top__DOT__i_alu__DOT____VdfgRegularize_h4243b50f_0_0 
             = (0x1fU & vlSelfRef.top__DOT__h_data_control__DOT___io_alu_Req_bits_data2_T);
+        vlSelfRef.top__DOT__h_data_control_io_alu_Req_bits_data2 
+            = vlSelfRef.top__DOT__h_data_control__DOT___io_alu_Req_bits_data2_T;
     }
     vlSelfRef.top__DOT__d_idu__DOT___rs1_reg_T_25 = 
         (0x1fU & ((0x113U == (IData)(vlSelfRef.top__DOT__d_idu__DOT___isaddi_T_2))
@@ -1182,64 +1182,9 @@ VL_ATTR_COLD void Vtop___024root___stl_sequent__TOP__0(Vtop___024root* vlSelf) {
                   >> 0x1fU) ^ ((2U != (IData)(vlSelfRef.top__DOT__d_idu__DOT__data_control_reg_o)) 
                                & (vlSelfRef.top__DOT__h_data_control__DOT___io_alu_Req_bits_data2_T 
                                   >> 0x1fU))));
-    vlSelfRef.top__DOT__i_alu__DOT___out33_T_47 = (
-                                                   (0x1ffffffffULL 
-                                                    & ((((((((1U 
-                                                              & ((IData)(1U) 
-                                                                 << (IData)(vlSelfRef.top__DOT__d_idu__DOT__ALU_ctrl_reg_o)))
-                                                              ? 
-                                                             ((QData)((IData)(vlSelfRef.top__DOT__h_data_control_io_alu_Req_bits_data1)) 
-                                                              + (QData)((IData)(vlSelfRef.top__DOT__h_data_control_io_alu_Req_bits_data2)))
-                                                              : 0ULL) 
-                                                            | ((2U 
-                                                                & ((IData)(1U) 
-                                                                   << (IData)(vlSelfRef.top__DOT__d_idu__DOT__ALU_ctrl_reg_o)))
-                                                                ? 
-                                                               ((QData)((IData)(vlSelfRef.top__DOT__h_data_control_io_alu_Req_bits_data1)) 
-                                                                - (QData)((IData)(vlSelfRef.top__DOT__h_data_control_io_alu_Req_bits_data2)))
-                                                                : 0ULL)) 
-                                                           | ((4U 
-                                                               & ((IData)(1U) 
-                                                                  << (IData)(vlSelfRef.top__DOT__d_idu__DOT__ALU_ctrl_reg_o)))
-                                                               ? (QData)((IData)(
-                                                                                (vlSelfRef.top__DOT__h_data_control_io_alu_Req_bits_data1 
-                                                                                < vlSelfRef.top__DOT__h_data_control_io_alu_Req_bits_data2)))
-                                                               : 0ULL)) 
-                                                          | ((8U 
-                                                              & ((IData)(1U) 
-                                                                 << (IData)(vlSelfRef.top__DOT__d_idu__DOT__ALU_ctrl_reg_o)))
-                                                              ? (QData)((IData)(
-                                                                                (vlSelfRef.top__DOT__h_data_control_io_alu_Req_bits_data1 
-                                                                                | vlSelfRef.top__DOT__h_data_control_io_alu_Req_bits_data2)))
-                                                              : 0ULL)) 
-                                                         | ((0x10U 
-                                                             & ((IData)(1U) 
-                                                                << (IData)(vlSelfRef.top__DOT__d_idu__DOT__ALU_ctrl_reg_o)))
-                                                             ? (QData)((IData)(
-                                                                               (vlSelfRef.top__DOT__h_data_control_io_alu_Req_bits_data1 
-                                                                                ^ vlSelfRef.top__DOT__h_data_control_io_alu_Req_bits_data2)))
-                                                             : 0ULL)) 
-                                                        | ((0x20U 
-                                                            & ((IData)(1U) 
-                                                               << (IData)(vlSelfRef.top__DOT__d_idu__DOT__ALU_ctrl_reg_o)))
-                                                            ? (QData)((IData)(
-                                                                              VL_SHIFTRS_III(32,32,5, vlSelfRef.top__DOT__h_data_control_io_alu_Req_bits_data1, (IData)(vlSelfRef.top__DOT__i_alu__DOT____VdfgRegularize_h4243b50f_0_0))))
-                                                            : 0ULL)) 
-                                                       | ((0x40U 
-                                                           & ((IData)(1U) 
-                                                              << (IData)(vlSelfRef.top__DOT__d_idu__DOT__ALU_ctrl_reg_o)))
-                                                           ? (QData)((IData)(
-                                                                             (vlSelfRef.top__DOT__h_data_control_io_alu_Req_bits_data1 
-                                                                              & vlSelfRef.top__DOT__h_data_control_io_alu_Req_bits_data2)))
-                                                           : 0ULL))) 
-                                                   | ((0x100U 
-                                                       & ((IData)(1U) 
-                                                          << (IData)(vlSelfRef.top__DOT__d_idu__DOT__ALU_ctrl_reg_o)))
-                                                       ? 
-                                                      (0x7fffffffffffffffULL 
-                                                       & ((QData)((IData)(vlSelfRef.top__DOT__h_data_control_io_alu_Req_bits_data1)) 
-                                                          << (IData)(vlSelfRef.top__DOT__i_alu__DOT____VdfgRegularize_h4243b50f_0_0)))
-                                                       : 0ULL));
+    vlSelfRef.top__DOT__i_alu__DOT__add33 = (0x1ffffffffULL 
+                                             & ((QData)((IData)(vlSelfRef.top__DOT__h_data_control_io_alu_Req_bits_data1)) 
+                                                - (QData)((IData)(vlSelfRef.top__DOT__h_data_control_io_alu_Req_bits_data2))));
     vlSelfRef.top__DOT__d_idu__DOT___GEN_0 = ((IData)(vlSelfRef.reset)
                                                ? 0U
                                                : ((IData)(vlSelfRef.top__DOT__d_idu__DOT___validReg_T)
@@ -1251,7 +1196,59 @@ VL_ATTR_COLD void Vtop___024root___stl_sequent__TOP__0(Vtop___024root* vlSelf) {
     vlSelfRef.top__DOT__c_sram__DOT___validReg_T = 
         ((IData)(vlSelfRef.top__DOT__b_ifu__DOT__reqQ__DOT__maybe_full) 
          & (IData)(vlSelfRef.top__DOT__b_ifu_io_sramReq_ready));
-    vlSelfRef.top__DOT__i_alu__DOT__out33 = ((vlSelfRef.top__DOT__i_alu__DOT___out33_T_47 
+    vlSelfRef.top__DOT__i_alu__DOT__out33 = (((((((
+                                                   ((((1U 
+                                                       & ((IData)(1U) 
+                                                          << (IData)(vlSelfRef.top__DOT__d_idu__DOT__ALU_ctrl_reg_o)))
+                                                       ? vlSelfRef.top__DOT__i_alu__DOT__add33
+                                                       : 0ULL) 
+                                                     | ((2U 
+                                                         & ((IData)(1U) 
+                                                            << (IData)(vlSelfRef.top__DOT__d_idu__DOT__ALU_ctrl_reg_o)))
+                                                         ? vlSelfRef.top__DOT__i_alu__DOT__add33
+                                                         : 0ULL)) 
+                                                    | ((4U 
+                                                        & ((IData)(1U) 
+                                                           << (IData)(vlSelfRef.top__DOT__d_idu__DOT__ALU_ctrl_reg_o)))
+                                                        ? (QData)((IData)(
+                                                                          (vlSelfRef.top__DOT__h_data_control_io_alu_Req_bits_data1 
+                                                                           < vlSelfRef.top__DOT__h_data_control_io_alu_Req_bits_data2)))
+                                                        : 0ULL)) 
+                                                   | ((8U 
+                                                       & ((IData)(1U) 
+                                                          << (IData)(vlSelfRef.top__DOT__d_idu__DOT__ALU_ctrl_reg_o)))
+                                                       ? (QData)((IData)(
+                                                                         (vlSelfRef.top__DOT__h_data_control_io_alu_Req_bits_data1 
+                                                                          | vlSelfRef.top__DOT__h_data_control_io_alu_Req_bits_data2)))
+                                                       : 0ULL)) 
+                                                  | ((0x10U 
+                                                      & ((IData)(1U) 
+                                                         << (IData)(vlSelfRef.top__DOT__d_idu__DOT__ALU_ctrl_reg_o)))
+                                                      ? (QData)((IData)(
+                                                                        (vlSelfRef.top__DOT__h_data_control_io_alu_Req_bits_data1 
+                                                                         ^ vlSelfRef.top__DOT__h_data_control_io_alu_Req_bits_data2)))
+                                                      : 0ULL)) 
+                                                 | ((0x20U 
+                                                     & ((IData)(1U) 
+                                                        << (IData)(vlSelfRef.top__DOT__d_idu__DOT__ALU_ctrl_reg_o)))
+                                                     ? (QData)((IData)(
+                                                                       VL_SHIFTRS_III(32,32,5, vlSelfRef.top__DOT__h_data_control_io_alu_Req_bits_data1, (IData)(vlSelfRef.top__DOT__i_alu__DOT____VdfgRegularize_h4243b50f_0_0))))
+                                                     : 0ULL)) 
+                                                | ((0x40U 
+                                                    & ((IData)(1U) 
+                                                       << (IData)(vlSelfRef.top__DOT__d_idu__DOT__ALU_ctrl_reg_o)))
+                                                    ? (QData)((IData)(
+                                                                      (vlSelfRef.top__DOT__h_data_control_io_alu_Req_bits_data1 
+                                                                       & vlSelfRef.top__DOT__h_data_control_io_alu_Req_bits_data2)))
+                                                    : 0ULL)) 
+                                               | ((0x100U 
+                                                   & ((IData)(1U) 
+                                                      << (IData)(vlSelfRef.top__DOT__d_idu__DOT__ALU_ctrl_reg_o)))
+                                                   ? 
+                                                  (0x7fffffffffffffffULL 
+                                                   & ((QData)((IData)(vlSelfRef.top__DOT__h_data_control_io_alu_Req_bits_data1)) 
+                                                      << (IData)(vlSelfRef.top__DOT__i_alu__DOT____VdfgRegularize_h4243b50f_0_0)))
+                                                   : 0ULL)) 
                                               | ((0x200U 
                                                   & ((IData)(1U) 
                                                      << (IData)(vlSelfRef.top__DOT__d_idu__DOT__ALU_ctrl_reg_o)))
@@ -1456,7 +1453,7 @@ VL_ATTR_COLD void Vtop___024root___ctor_var_reset(Vtop___024root* vlSelf) {
     vlSelf->top__DOT__i_alu__DOT__pc_next_type_reg = VL_RAND_RESET_I(4);
     vlSelf->top__DOT__i_alu__DOT__pc_count_reg = VL_RAND_RESET_I(32);
     vlSelf->top__DOT__i_alu__DOT__validReg = VL_RAND_RESET_I(1);
-    vlSelf->top__DOT__i_alu__DOT___out33_T_47 = VL_RAND_RESET_Q(64);
+    vlSelf->top__DOT__i_alu__DOT__add33 = VL_RAND_RESET_Q(33);
     vlSelf->top__DOT__i_alu__DOT__out33 = VL_RAND_RESET_Q(64);
     vlSelf->top__DOT__i_alu__DOT___validReg_T = VL_RAND_RESET_I(1);
     vlSelf->top__DOT__i_alu__DOT___validReg_T_1 = VL_RAND_RESET_I(1);

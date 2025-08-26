@@ -1350,39 +1350,18 @@ VL_ATTR_COLD void Vtop___024root___stl_sequent__TOP__0(Vtop___024root* vlSelf) {
         = vlSelfRef.__Vfunc_ysyx_25030077_top__DOT__i6__DOT__csr_read__2__Vfuncout;
     vlSelfRef.ysyx_25030077_top__DOT__i6__DOT__addResult 
         = (0x1ffffffffULL & ((QData)((IData)(vlSelfRef.ysyx_25030077_top__DOT__ALU_data_1)) 
-                             + (QData)((IData)(vlSelfRef.ysyx_25030077_top__DOT__ALU_data_2))));
-    vlSelfRef.ysyx_25030077_top__DOT__i6__DOT__subResult 
-        = (0x1ffffffffULL & ((QData)((IData)(vlSelfRef.ysyx_25030077_top__DOT__ALU_data_1)) 
                              - (QData)((IData)(vlSelfRef.ysyx_25030077_top__DOT__ALU_data_2))));
-    vlSelfRef.ALU_carry = (1U & ((((IData)(1U) << (IData)(vlSelfRef.ALU_ctrl)) 
-                                  & (IData)((vlSelfRef.ysyx_25030077_top__DOT__i6__DOT__addResult 
-                                             >> 0x20U))) 
-                                 | (IData)(((vlSelfRef.ysyx_25030077_top__DOT__i6__DOT__subResult 
-                                             >> 0x20U) 
-                                            & (((IData)(1U) 
-                                                << (IData)(vlSelfRef.ALU_ctrl)) 
-                                               >> 1U)))));
-    vlSelfRef.ALU_overflow = ((((IData)(1U) << (IData)(vlSelfRef.ALU_ctrl)) 
-                               & (((vlSelfRef.ysyx_25030077_top__DOT__ALU_data_1 
-                                    >> 0x1fU) == (IData)(vlSelfRef.ysyx_25030077_top__DOT__i6__DOT____VdfgRegularize_h4243b50f_0_2)) 
-                                  & ((vlSelfRef.ysyx_25030077_top__DOT__ALU_data_1 
-                                      >> 0x1fU) != 
-                                     (1U & (IData)(
-                                                   (vlSelfRef.ysyx_25030077_top__DOT__i6__DOT__addResult 
-                                                    >> 0x1fU)))))) 
-                              | (1U & ((((IData)(1U) 
-                                         << (IData)(vlSelfRef.ALU_ctrl)) 
-                                        >> 1U) & ((
-                                                   (vlSelfRef.ysyx_25030077_top__DOT__ALU_data_1 
-                                                    >> 0x1fU) 
-                                                   != (IData)(vlSelfRef.ysyx_25030077_top__DOT__i6__DOT____VdfgRegularize_h4243b50f_0_2)) 
-                                                  & ((vlSelfRef.ysyx_25030077_top__DOT__ALU_data_1 
-                                                      >> 0x1fU) 
-                                                     != 
-                                                     (1U 
-                                                      & (IData)(
-                                                                (vlSelfRef.ysyx_25030077_top__DOT__i6__DOT__subResult 
-                                                                 >> 0x1fU))))))));
+    vlSelfRef.ALU_carry = (IData)(((vlSelfRef.ysyx_25030077_top__DOT__i6__DOT__addResult 
+                                    >> 0x20U) & (((IData)(1U) 
+                                                  << (IData)(vlSelfRef.ALU_ctrl)) 
+                                                 | (1U 
+                                                    & (((IData)(1U) 
+                                                        << (IData)(vlSelfRef.ALU_ctrl)) 
+                                                       >> 1U)))));
+    vlSelfRef.ysyx_25030077_top__DOT__i6__DOT____VdfgRegularize_h4243b50f_0_3 
+        = ((vlSelfRef.ysyx_25030077_top__DOT__ALU_data_1 
+            >> 0x1fU) != (1U & (IData)((vlSelfRef.ysyx_25030077_top__DOT__i6__DOT__addResult 
+                                        >> 0x1fU))));
     vlSelfRef.ysyx_25030077_top__DOT__i6__DOT___io_out_T_39 
         = (0x7fffffffffffffffULL & (((((((((1U & ((IData)(1U) 
                                                   << (IData)(vlSelfRef.ALU_ctrl)))
@@ -1391,7 +1370,7 @@ VL_ATTR_COLD void Vtop___024root___stl_sequent__TOP__0(Vtop___024root* vlSelf) {
                                           | ((2U & 
                                               ((IData)(1U) 
                                                << (IData)(vlSelfRef.ALU_ctrl)))
-                                              ? vlSelfRef.ysyx_25030077_top__DOT__i6__DOT__subResult
+                                              ? vlSelfRef.ysyx_25030077_top__DOT__i6__DOT__addResult
                                               : 0ULL)) 
                                          | (QData)((IData)(
                                                            (1U 
@@ -1440,6 +1419,15 @@ VL_ATTR_COLD void Vtop___024root___stl_sequent__TOP__0(Vtop___024root* vlSelf) {
                                                 : (0x1fU 
                                                    & vlSelfRef.ysyx_25030077_top__DOT__i5__DOT___io_data_2_T)))
                                         : 0ULL)));
+    vlSelfRef.ALU_overflow = ((((IData)(1U) << (IData)(vlSelfRef.ALU_ctrl)) 
+                               & (((vlSelfRef.ysyx_25030077_top__DOT__ALU_data_1 
+                                    >> 0x1fU) == (IData)(vlSelfRef.ysyx_25030077_top__DOT__i6__DOT____VdfgRegularize_h4243b50f_0_2)) 
+                                  & (IData)(vlSelfRef.ysyx_25030077_top__DOT__i6__DOT____VdfgRegularize_h4243b50f_0_3))) 
+                              | ((IData)(vlSelfRef.ysyx_25030077_top__DOT__i6__DOT____VdfgRegularize_h4243b50f_0_3) 
+                                 & ((((IData)(1U) << (IData)(vlSelfRef.ALU_ctrl)) 
+                                     >> 1U) & ((vlSelfRef.ysyx_25030077_top__DOT__ALU_data_1 
+                                                >> 0x1fU) 
+                                               != (IData)(vlSelfRef.ysyx_25030077_top__DOT__i6__DOT____VdfgRegularize_h4243b50f_0_2)))));
     vlSelfRef.ysyx_25030077_top__DOT__ALU_result = 
         ((1U & ((((IData)(1U) << (IData)(vlSelfRef.ALU_ctrl)) 
                  >> 0xbU) | (((IData)(1U) << (IData)(vlSelfRef.ALU_ctrl)) 
@@ -1587,9 +1575,9 @@ VL_ATTR_COLD void Vtop___024root___ctor_var_reset(Vtop___024root* vlSelf) {
     vlSelf->ysyx_25030077_top__DOT__i5__DOT___io_data_2_T = VL_RAND_RESET_I(32);
     vlSelf->ysyx_25030077_top__DOT__i6__DOT__csr_data = VL_RAND_RESET_I(32);
     vlSelf->ysyx_25030077_top__DOT__i6__DOT__addResult = VL_RAND_RESET_Q(33);
-    vlSelf->ysyx_25030077_top__DOT__i6__DOT__subResult = VL_RAND_RESET_Q(33);
     vlSelf->ysyx_25030077_top__DOT__i6__DOT___io_out_T_39 = VL_RAND_RESET_Q(63);
     vlSelf->ysyx_25030077_top__DOT__i6__DOT____VdfgRegularize_h4243b50f_0_2 = VL_RAND_RESET_I(1);
+    vlSelf->ysyx_25030077_top__DOT__i6__DOT____VdfgRegularize_h4243b50f_0_3 = VL_RAND_RESET_I(1);
     vlSelf->ysyx_25030077_top__DOT__i7__DOT__ecall_dnpc = VL_RAND_RESET_I(32);
     vlSelf->ysyx_25030077_top__DOT__i7__DOT__is_eql = VL_RAND_RESET_I(1);
     vlSelf->ysyx_25030077_top__DOT__i7__DOT___beq_result_T_9 = VL_RAND_RESET_I(32);

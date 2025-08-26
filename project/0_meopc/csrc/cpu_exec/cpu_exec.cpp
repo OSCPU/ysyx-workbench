@@ -45,9 +45,9 @@ svBitVecVal addr_read(const svBitVecVal* pc){
 	if(*pc < 0x80000000){
 		instruction = 0x413;
 	}
-	else if(*pc == 0x80000050){
-		instruction = 75299;
-	}
+	// else if(*pc == 0x80000050){
+	// 	instruction = 75299;
+	// }
 	else{
         int insert = (*pc - 0x80000000) + 3;
         // printf("insert = %d\n", insert);
@@ -163,21 +163,22 @@ int cpu_exec(int n){
 			if(ITRACE || FTRACE || DIFFTEST){
 				pc_data = new_reg();
 			}
-			if(insn32 != 0 && ITRACE){
+			if(insn32 != 0 && ITRACE && ix % 12 == 1){
 				print_itrace(itrace, pc_data, insn32);
 			}
-			if(FTRACE){
+			if(FTRACE && ix % 12 == 11){
 				uint32_t dnpc_data;
-				scope = svGetScopeFromName("TOP.ysyx_25030077_top.i7");
+				scope = svGetScopeFromName("TOP.top.j_pc_next");
 				svSetScope(scope);
 				dnpc_data = (uint32_t)dnpc_read_data();
+				// printf("%x %x\n", pc_data, dnpc_data);									
 				ftrace_check(pc_data, dnpc_data, insn32);
 			}
 		}
 		if(i == 3){
 			top -> reset = 0;
 		}
-		if (DIFFTEST && !(top -> clock) && !(top -> reset)){
+		if (DIFFTEST && !(top -> clock) && !(top -> reset) && ix % 12 == 10){
 			difftest_step();
 		}
 
@@ -192,11 +193,11 @@ int cpu_exec(int n){
 			i = i - 1; // 如果n < 0，表示一直执行
 		}
 		ix ++;
-		if(ix > 20000){
-			flag = 1;
-			success = 0;
-			break;
-		}
+		// if(ix > 20000){
+		// 	flag = 1;
+		// 	success = 0;
+		// 	break;
+		// }
 	} 
 	fclose(itrace);          
 	return 0;

@@ -189,7 +189,7 @@ module ysyx_25030077_reg(
       end
     end
     if (reset) begin // @[gpr.scala 17:21]
-      regs_1 <= 32'h1; // @[gpr.scala 17:21]
+      regs_1 <= 32'h0; // @[gpr.scala 17:21]
     end else if (5'h1 == io_rd_Req_bits_rd_addr) begin // @[gpr.scala 31:32]
       if (io_rd_Req_valid & canAccept) begin // @[gpr.scala 31:38]
         if (io_rd_Req_bits_rd_addr == 5'h0) begin // @[gpr.scala 29:27]
@@ -204,7 +204,7 @@ module ysyx_25030077_reg(
       end
     end
     if (reset) begin // @[gpr.scala 17:21]
-      regs_2 <= 32'h2; // @[gpr.scala 17:21]
+      regs_2 <= 32'h0; // @[gpr.scala 17:21]
     end else if (5'h2 == io_rd_Req_bits_rd_addr) begin // @[gpr.scala 31:32]
       if (io_rd_Req_valid & canAccept) begin // @[gpr.scala 31:38]
         if (io_rd_Req_bits_rd_addr == 5'h0) begin // @[gpr.scala 29:27]
@@ -219,7 +219,7 @@ module ysyx_25030077_reg(
       end
     end
     if (reset) begin // @[gpr.scala 17:21]
-      regs_3 <= 32'h3; // @[gpr.scala 17:21]
+      regs_3 <= 32'h0; // @[gpr.scala 17:21]
     end else if (5'h3 == io_rd_Req_bits_rd_addr) begin // @[gpr.scala 31:32]
       if (io_rd_Req_valid & canAccept) begin // @[gpr.scala 31:38]
         if (io_rd_Req_bits_rd_addr == 5'h0) begin // @[gpr.scala 29:27]
@@ -234,7 +234,7 @@ module ysyx_25030077_reg(
       end
     end
     if (reset) begin // @[gpr.scala 17:21]
-      regs_4 <= 32'h4; // @[gpr.scala 17:21]
+      regs_4 <= 32'h0; // @[gpr.scala 17:21]
     end else if (5'h4 == io_rd_Req_bits_rd_addr) begin // @[gpr.scala 31:32]
       if (io_rd_Req_valid & canAccept) begin // @[gpr.scala 31:38]
         if (io_rd_Req_bits_rd_addr == 5'h0) begin // @[gpr.scala 29:27]
@@ -249,7 +249,7 @@ module ysyx_25030077_reg(
       end
     end
     if (reset) begin // @[gpr.scala 17:21]
-      regs_5 <= 32'h5; // @[gpr.scala 17:21]
+      regs_5 <= 32'h0; // @[gpr.scala 17:21]
     end else if (5'h5 == io_rd_Req_bits_rd_addr) begin // @[gpr.scala 31:32]
       if (io_rd_Req_valid & canAccept) begin // @[gpr.scala 31:38]
         if (io_rd_Req_bits_rd_addr == 5'h0) begin // @[gpr.scala 29:27]
@@ -264,7 +264,7 @@ module ysyx_25030077_reg(
       end
     end
     if (reset) begin // @[gpr.scala 17:21]
-      regs_6 <= 32'h6; // @[gpr.scala 17:21]
+      regs_6 <= 32'h0; // @[gpr.scala 17:21]
     end else if (5'h6 == io_rd_Req_bits_rd_addr) begin // @[gpr.scala 31:32]
       if (io_rd_Req_valid & canAccept) begin // @[gpr.scala 31:38]
         if (io_rd_Req_bits_rd_addr == 5'h0) begin // @[gpr.scala 29:27]
@@ -279,7 +279,7 @@ module ysyx_25030077_reg(
       end
     end
     if (reset) begin // @[gpr.scala 17:21]
-      regs_7 <= 32'h7; // @[gpr.scala 17:21]
+      regs_7 <= 32'h0; // @[gpr.scala 17:21]
     end else if (5'h7 == io_rd_Req_bits_rd_addr) begin // @[gpr.scala 31:32]
       if (io_rd_Req_valid & canAccept) begin // @[gpr.scala 31:38]
         if (io_rd_Req_bits_rd_addr == 5'h0) begin // @[gpr.scala 29:27]
@@ -294,7 +294,7 @@ module ysyx_25030077_reg(
       end
     end
     if (reset) begin // @[gpr.scala 17:21]
-      regs_8 <= 32'h8; // @[gpr.scala 17:21]
+      regs_8 <= 32'h0; // @[gpr.scala 17:21]
     end else if (5'h8 == io_rd_Req_bits_rd_addr) begin // @[gpr.scala 31:32]
       if (io_rd_Req_valid & canAccept) begin // @[gpr.scala 31:38]
         if (io_rd_Req_bits_rd_addr == 5'h0) begin // @[gpr.scala 29:27]
@@ -309,7 +309,7 @@ module ysyx_25030077_reg(
       end
     end
     if (reset) begin // @[gpr.scala 17:21]
-      regs_9 <= 32'h9; // @[gpr.scala 17:21]
+      regs_9 <= 32'h0; // @[gpr.scala 17:21]
     end else if (5'h9 == io_rd_Req_bits_rd_addr) begin // @[gpr.scala 31:32]
       if (io_rd_Req_valid & canAccept) begin // @[gpr.scala 31:38]
         if (io_rd_Req_bits_rd_addr == 5'h0) begin // @[gpr.scala 29:27]
@@ -324,7 +324,7 @@ module ysyx_25030077_reg(
       end
     end
     if (reset) begin // @[gpr.scala 17:21]
-      regs_10 <= 32'ha; // @[gpr.scala 17:21]
+      regs_10 <= 32'h0; // @[gpr.scala 17:21]
     end else if (5'ha == io_rd_Req_bits_rd_addr) begin // @[gpr.scala 31:32]
       if (io_rd_Req_valid & canAccept) begin // @[gpr.scala 31:38]
         if (io_rd_Req_bits_rd_addr == 5'h0) begin // @[gpr.scala 29:27]
@@ -339,7 +339,7 @@ module ysyx_25030077_reg(
       end
     end
     if (reset) begin // @[gpr.scala 17:21]
-      regs_11 <= 32'hb; // @[gpr.scala 17:21]
+      regs_11 <= 32'h0; // @[gpr.scala 17:21]
     end else if (5'hb == io_rd_Req_bits_rd_addr) begin // @[gpr.scala 31:32]
       if (io_rd_Req_valid & canAccept) begin // @[gpr.scala 31:38]
         if (io_rd_Req_bits_rd_addr == 5'h0) begin // @[gpr.scala 29:27]
@@ -354,7 +354,7 @@ module ysyx_25030077_reg(
       end
     end
     if (reset) begin // @[gpr.scala 17:21]
-      regs_12 <= 32'hc; // @[gpr.scala 17:21]
+      regs_12 <= 32'h0; // @[gpr.scala 17:21]
     end else if (5'hc == io_rd_Req_bits_rd_addr) begin // @[gpr.scala 31:32]
       if (io_rd_Req_valid & canAccept) begin // @[gpr.scala 31:38]
         if (io_rd_Req_bits_rd_addr == 5'h0) begin // @[gpr.scala 29:27]
@@ -369,7 +369,7 @@ module ysyx_25030077_reg(
       end
     end
     if (reset) begin // @[gpr.scala 17:21]
-      regs_13 <= 32'hd; // @[gpr.scala 17:21]
+      regs_13 <= 32'h0; // @[gpr.scala 17:21]
     end else if (5'hd == io_rd_Req_bits_rd_addr) begin // @[gpr.scala 31:32]
       if (io_rd_Req_valid & canAccept) begin // @[gpr.scala 31:38]
         if (io_rd_Req_bits_rd_addr == 5'h0) begin // @[gpr.scala 29:27]
@@ -384,7 +384,7 @@ module ysyx_25030077_reg(
       end
     end
     if (reset) begin // @[gpr.scala 17:21]
-      regs_14 <= 32'he; // @[gpr.scala 17:21]
+      regs_14 <= 32'h0; // @[gpr.scala 17:21]
     end else if (5'he == io_rd_Req_bits_rd_addr) begin // @[gpr.scala 31:32]
       if (io_rd_Req_valid & canAccept) begin // @[gpr.scala 31:38]
         if (io_rd_Req_bits_rd_addr == 5'h0) begin // @[gpr.scala 29:27]
@@ -399,7 +399,7 @@ module ysyx_25030077_reg(
       end
     end
     if (reset) begin // @[gpr.scala 17:21]
-      regs_15 <= 32'hf; // @[gpr.scala 17:21]
+      regs_15 <= 32'h0; // @[gpr.scala 17:21]
     end else if (5'hf == io_rd_Req_bits_rd_addr) begin // @[gpr.scala 31:32]
       if (io_rd_Req_valid & canAccept) begin // @[gpr.scala 31:38]
         if (io_rd_Req_bits_rd_addr == 5'h0) begin // @[gpr.scala 29:27]
@@ -414,7 +414,7 @@ module ysyx_25030077_reg(
       end
     end
     if (reset) begin // @[gpr.scala 17:21]
-      regs_16 <= 32'h10; // @[gpr.scala 17:21]
+      regs_16 <= 32'h0; // @[gpr.scala 17:21]
     end else if (5'h10 == io_rd_Req_bits_rd_addr) begin // @[gpr.scala 31:32]
       if (io_rd_Req_valid & canAccept) begin // @[gpr.scala 31:38]
         if (io_rd_Req_bits_rd_addr == 5'h0) begin // @[gpr.scala 29:27]
@@ -429,7 +429,7 @@ module ysyx_25030077_reg(
       end
     end
     if (reset) begin // @[gpr.scala 17:21]
-      regs_17 <= 32'h11; // @[gpr.scala 17:21]
+      regs_17 <= 32'h0; // @[gpr.scala 17:21]
     end else if (5'h11 == io_rd_Req_bits_rd_addr) begin // @[gpr.scala 31:32]
       if (io_rd_Req_valid & canAccept) begin // @[gpr.scala 31:38]
         if (io_rd_Req_bits_rd_addr == 5'h0) begin // @[gpr.scala 29:27]
@@ -444,7 +444,7 @@ module ysyx_25030077_reg(
       end
     end
     if (reset) begin // @[gpr.scala 17:21]
-      regs_18 <= 32'h12; // @[gpr.scala 17:21]
+      regs_18 <= 32'h0; // @[gpr.scala 17:21]
     end else if (5'h12 == io_rd_Req_bits_rd_addr) begin // @[gpr.scala 31:32]
       if (io_rd_Req_valid & canAccept) begin // @[gpr.scala 31:38]
         if (io_rd_Req_bits_rd_addr == 5'h0) begin // @[gpr.scala 29:27]
@@ -459,7 +459,7 @@ module ysyx_25030077_reg(
       end
     end
     if (reset) begin // @[gpr.scala 17:21]
-      regs_19 <= 32'h13; // @[gpr.scala 17:21]
+      regs_19 <= 32'h0; // @[gpr.scala 17:21]
     end else if (5'h13 == io_rd_Req_bits_rd_addr) begin // @[gpr.scala 31:32]
       if (io_rd_Req_valid & canAccept) begin // @[gpr.scala 31:38]
         if (io_rd_Req_bits_rd_addr == 5'h0) begin // @[gpr.scala 29:27]
@@ -474,7 +474,7 @@ module ysyx_25030077_reg(
       end
     end
     if (reset) begin // @[gpr.scala 17:21]
-      regs_20 <= 32'h14; // @[gpr.scala 17:21]
+      regs_20 <= 32'h0; // @[gpr.scala 17:21]
     end else if (5'h14 == io_rd_Req_bits_rd_addr) begin // @[gpr.scala 31:32]
       if (io_rd_Req_valid & canAccept) begin // @[gpr.scala 31:38]
         if (io_rd_Req_bits_rd_addr == 5'h0) begin // @[gpr.scala 29:27]
@@ -489,7 +489,7 @@ module ysyx_25030077_reg(
       end
     end
     if (reset) begin // @[gpr.scala 17:21]
-      regs_21 <= 32'h15; // @[gpr.scala 17:21]
+      regs_21 <= 32'h0; // @[gpr.scala 17:21]
     end else if (5'h15 == io_rd_Req_bits_rd_addr) begin // @[gpr.scala 31:32]
       if (io_rd_Req_valid & canAccept) begin // @[gpr.scala 31:38]
         if (io_rd_Req_bits_rd_addr == 5'h0) begin // @[gpr.scala 29:27]
@@ -504,7 +504,7 @@ module ysyx_25030077_reg(
       end
     end
     if (reset) begin // @[gpr.scala 17:21]
-      regs_22 <= 32'h16; // @[gpr.scala 17:21]
+      regs_22 <= 32'h0; // @[gpr.scala 17:21]
     end else if (5'h16 == io_rd_Req_bits_rd_addr) begin // @[gpr.scala 31:32]
       if (io_rd_Req_valid & canAccept) begin // @[gpr.scala 31:38]
         if (io_rd_Req_bits_rd_addr == 5'h0) begin // @[gpr.scala 29:27]
@@ -519,7 +519,7 @@ module ysyx_25030077_reg(
       end
     end
     if (reset) begin // @[gpr.scala 17:21]
-      regs_23 <= 32'h17; // @[gpr.scala 17:21]
+      regs_23 <= 32'h0; // @[gpr.scala 17:21]
     end else if (5'h17 == io_rd_Req_bits_rd_addr) begin // @[gpr.scala 31:32]
       if (io_rd_Req_valid & canAccept) begin // @[gpr.scala 31:38]
         if (io_rd_Req_bits_rd_addr == 5'h0) begin // @[gpr.scala 29:27]
@@ -534,7 +534,7 @@ module ysyx_25030077_reg(
       end
     end
     if (reset) begin // @[gpr.scala 17:21]
-      regs_24 <= 32'h18; // @[gpr.scala 17:21]
+      regs_24 <= 32'h0; // @[gpr.scala 17:21]
     end else if (5'h18 == io_rd_Req_bits_rd_addr) begin // @[gpr.scala 31:32]
       if (io_rd_Req_valid & canAccept) begin // @[gpr.scala 31:38]
         if (io_rd_Req_bits_rd_addr == 5'h0) begin // @[gpr.scala 29:27]
@@ -549,7 +549,7 @@ module ysyx_25030077_reg(
       end
     end
     if (reset) begin // @[gpr.scala 17:21]
-      regs_25 <= 32'h19; // @[gpr.scala 17:21]
+      regs_25 <= 32'h0; // @[gpr.scala 17:21]
     end else if (5'h19 == io_rd_Req_bits_rd_addr) begin // @[gpr.scala 31:32]
       if (io_rd_Req_valid & canAccept) begin // @[gpr.scala 31:38]
         if (io_rd_Req_bits_rd_addr == 5'h0) begin // @[gpr.scala 29:27]
@@ -564,7 +564,7 @@ module ysyx_25030077_reg(
       end
     end
     if (reset) begin // @[gpr.scala 17:21]
-      regs_26 <= 32'h1a; // @[gpr.scala 17:21]
+      regs_26 <= 32'h0; // @[gpr.scala 17:21]
     end else if (5'h1a == io_rd_Req_bits_rd_addr) begin // @[gpr.scala 31:32]
       if (io_rd_Req_valid & canAccept) begin // @[gpr.scala 31:38]
         if (io_rd_Req_bits_rd_addr == 5'h0) begin // @[gpr.scala 29:27]
@@ -579,7 +579,7 @@ module ysyx_25030077_reg(
       end
     end
     if (reset) begin // @[gpr.scala 17:21]
-      regs_27 <= 32'h1b; // @[gpr.scala 17:21]
+      regs_27 <= 32'h0; // @[gpr.scala 17:21]
     end else if (5'h1b == io_rd_Req_bits_rd_addr) begin // @[gpr.scala 31:32]
       if (io_rd_Req_valid & canAccept) begin // @[gpr.scala 31:38]
         if (io_rd_Req_bits_rd_addr == 5'h0) begin // @[gpr.scala 29:27]
@@ -594,7 +594,7 @@ module ysyx_25030077_reg(
       end
     end
     if (reset) begin // @[gpr.scala 17:21]
-      regs_28 <= 32'h1c; // @[gpr.scala 17:21]
+      regs_28 <= 32'h0; // @[gpr.scala 17:21]
     end else if (5'h1c == io_rd_Req_bits_rd_addr) begin // @[gpr.scala 31:32]
       if (io_rd_Req_valid & canAccept) begin // @[gpr.scala 31:38]
         if (io_rd_Req_bits_rd_addr == 5'h0) begin // @[gpr.scala 29:27]
@@ -609,7 +609,7 @@ module ysyx_25030077_reg(
       end
     end
     if (reset) begin // @[gpr.scala 17:21]
-      regs_29 <= 32'h1d; // @[gpr.scala 17:21]
+      regs_29 <= 32'h0; // @[gpr.scala 17:21]
     end else if (5'h1d == io_rd_Req_bits_rd_addr) begin // @[gpr.scala 31:32]
       if (io_rd_Req_valid & canAccept) begin // @[gpr.scala 31:38]
         if (io_rd_Req_bits_rd_addr == 5'h0) begin // @[gpr.scala 29:27]
@@ -624,7 +624,7 @@ module ysyx_25030077_reg(
       end
     end
     if (reset) begin // @[gpr.scala 17:21]
-      regs_30 <= 32'h1e; // @[gpr.scala 17:21]
+      regs_30 <= 32'h0; // @[gpr.scala 17:21]
     end else if (5'h1e == io_rd_Req_bits_rd_addr) begin // @[gpr.scala 31:32]
       if (io_rd_Req_valid & canAccept) begin // @[gpr.scala 31:38]
         if (io_rd_Req_bits_rd_addr == 5'h0) begin // @[gpr.scala 29:27]
@@ -639,7 +639,7 @@ module ysyx_25030077_reg(
       end
     end
     if (reset) begin // @[gpr.scala 17:21]
-      regs_31 <= 32'h1f; // @[gpr.scala 17:21]
+      regs_31 <= 32'h0; // @[gpr.scala 17:21]
     end else if (5'h1f == io_rd_Req_bits_rd_addr) begin // @[gpr.scala 31:32]
       if (io_rd_Req_valid & canAccept) begin // @[gpr.scala 31:38]
         if (io_rd_Req_bits_rd_addr == 5'h0) begin // @[gpr.scala 29:27]
