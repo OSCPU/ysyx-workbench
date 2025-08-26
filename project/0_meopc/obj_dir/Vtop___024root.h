@@ -143,7 +143,7 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final : public VerilatedModule
         IData/*31:0*/ top__DOT__j_pc_next__DOT___beq_result_T_9;
         IData/*31:0*/ __Vfunc_top__DOT__g_mem__DOT__mem_data_read__2__Vfuncout;
         IData/*31:0*/ __VactIterCount;
-        QData/*32:0*/ top__DOT__i_alu__DOT__add33;
+        QData/*63:0*/ top__DOT__i_alu__DOT___out33_T_47;
         QData/*63:0*/ top__DOT__i_alu__DOT__out33;
         VlUnpacked<IData/*31:0*/, 1> top__DOT__b_ifu__DOT__reqQ__DOT__ram_addr;
     };

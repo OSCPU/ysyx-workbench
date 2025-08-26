@@ -36,7 +36,7 @@ module ysyx_25030077_ALU(
   reg  validReg; // @[alu.scala 23:25]
   wire  canAccept = ~validReg | io_rd_Req_ready; // @[alu.scala 24:29]
   wire [15:0] oneHot = 16'h1 << io_alu_Req_bits_sw; // @[OneHot.scala 64:12]
-  wire [32:0] add33 = io_alu_Req_bits_data1 - io_alu_Req_bits_data2; // @[alu.scala 30:39]
+  wire [32:0] add33 = io_alu_Req_bits_data1 + io_alu_Req_bits_data2; // @[alu.scala 30:39]
   wire [32:0] sub33 = io_alu_Req_bits_data1 - io_alu_Req_bits_data2; // @[alu.scala 31:39]
   wire [31:0] and32 = io_alu_Req_bits_data1 & io_alu_Req_bits_data2; // @[alu.scala 32:39]
   wire [31:0] or32 = io_alu_Req_bits_data1 | io_alu_Req_bits_data2; // @[alu.scala 33:39]
