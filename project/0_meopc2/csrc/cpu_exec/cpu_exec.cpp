@@ -6,6 +6,8 @@
 
 int flag = 0;
 uint32_t csr[4096];
+
+uint64_t g_nr_guest_inst = 0;
 VerilatedContext* contextp = new VerilatedContext;
 VerilatedFstC* tfp = new VerilatedFstC;
 Vtop* top = new Vtop{contextp};
@@ -111,6 +113,7 @@ int cpu_exec(int n){
 	for(int i = -3; i < 2 * n; i++){
 		//printf("i = %d\n", i);
 		if(top -> clock){
+			g_nr_guest_inst ++;
 			svScope scope;
 			if(is_S(insn32) > 0){
 				uint32_t rs1_data, rs2_data, imm_data;
@@ -174,5 +177,6 @@ int cpu_end(){
 	delete top;
 	tfp -> close();
 	delete contextp;
+	printf("total guest instructions = %lu\n", g_nr_guest_inst);
 	return success;
 }
