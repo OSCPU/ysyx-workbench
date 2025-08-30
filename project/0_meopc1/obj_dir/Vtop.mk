@@ -37,19 +37,40 @@ VM_PREFIX = Vtop
 VM_MODPREFIX = Vtop
 # User CFLAGS (from -CFLAGS on Verilator command line)
 VM_USER_CFLAGS = \
+	-I/usr/include/readline 		 -I  /home/meowth/ysyx/ysyx-workbench/project/0_meopc/tools/capstone/repo/include \
 
 # User LDLIBS (from -LDFLAGS on Verilator command line)
 VM_USER_LDLIBS = \
 	-lz \
+	-lreadline -lncurses \
 
 # User .cpp files (from .cpp's on Verilator command line)
 VM_USER_CLASSES = \
-	wave \
+	cpu_exec \
+	elf \
+	main \
+	memory \
+	monitor \
+	regs \
+	expr \
+	sdb \
+	disasm \
+	dut \
+	ftrace \
+	itrace \
+	logs \
 
 # User .cpp directories (from .cpp's on Verilator command line)
 VM_USER_DIR = \
 	.. \
 	../csrc \
+	../csrc/cpu_exec \
+	../csrc/elf \
+	../csrc/memory \
+	../csrc/monitor \
+	../csrc/regs \
+	../csrc/sdb \
+	../csrc/utils \
 
 
 ### Default rules...
@@ -61,7 +82,31 @@ include $(VERILATOR_ROOT)/include/verilated.mk
 ### Executable rules... (from --exe)
 VPATH += $(VM_USER_DIR)
 
-wave.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc1/csrc/wave.cpp 
+cpu_exec.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc2/csrc/cpu_exec/cpu_exec.cpp 
+	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
+elf.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc2/csrc/elf/elf.cpp 
+	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
+main.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc2/csrc/main.cpp 
+	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
+memory.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc2/csrc/memory/memory.cpp 
+	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
+monitor.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc2/csrc/monitor/monitor.cpp 
+	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
+regs.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc2/csrc/regs/regs.cpp 
+	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
+expr.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc2/csrc/sdb/expr.cpp 
+	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
+sdb.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc2/csrc/sdb/sdb.cpp 
+	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
+disasm.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc2/csrc/utils/disasm.cpp 
+	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
+dut.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc2/csrc/utils/dut.cpp 
+	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
+ftrace.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc2/csrc/utils/ftrace.cpp 
+	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
+itrace.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc2/csrc/utils/itrace.cpp 
+	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
+logs.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc2/csrc/utils/logs.cpp 
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
 
 ### Link rules... (from --exe)

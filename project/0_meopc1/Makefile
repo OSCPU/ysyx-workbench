@@ -27,6 +27,12 @@ CSRCS += $(SRC_AUTO_BIND)
 
 CSRCS_SIM = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
 
+LIBCAPSTONE = /home/meowth/ysyx/ysyx-workbench/project/0_meopc/tools/capstone/repo/libcapstone.so.5
+#CFLAGS += -I  /home/meowth/ysyx/ysyx-workbench/project/0_meopc/tools/capstone/repo/include
+/home/meowth/ysyx/ysyx-workbench/project/0_meopc/csrc/utils/disasm.cpp: $(LIBCAPSTONE)
+$(LIBCAPSTONE):
+	$(MAKE) -C /home/meowth/ysyx/ysyx-workbench/project/0_meopc/tools/capstone
+
 # rules for NVBoard
 include $(NVBOARD_HOME)/scripts/nvboard.mk
 
@@ -57,15 +63,20 @@ wave_build:
 wave_display:
 	gtkwave obj_dir/wave.fst
 
+IMAGE = /home/meowth/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests/build/bit-riscv32e-npc
+DIFF_SO = /home/meowth/ysyx/ysyx-workbench/nemu/build/riscv32-nemu-interpreter-so
 sim:
-	verilator --cc --exe --trace-fst --build -j 0 $(CSRCS_SIM)  vsrc/*.v 
-	obj_dir/test /home/meowth/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests/build/dummy-riscv32e-npc.bin
+	verilator --cc --exe --trace-fst --build -j 0 \
+	-CFLAGS "-I/usr/include/readline \
+			 -I  /home/meowth/ysyx/ysyx-workbench/project/0_meopc/tools/capstone/repo/include" \
+	-LDFLAGS "-lreadline -lncurses" \
+	$(CSRCS_SIM)  vsrc/*.v 
+	obj_dir/Vtop -e $(IMAGE).elf -d $(DIFF_SO) $(IMAGE).bin mainargs=1
 	gtkwave obj_dir/wave.fst
 
 test:
-	verilator --cc --exe --trace-fst --build -j 0 $(CSRCS_SIM)  vsrc/*.v -o test
-	obj_dir/test /home/meowth/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests/build/dummy-riscv32e-npc.bin
-	gtkwave obj_dir/wave.fst
+	verilator --cc --exe --trace-fst --build -j 0 $(CSRCS_SIM)  vsrc/*.v 
+	obj_dir/Vtop /home/meowth/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests/build/dummy-riscv32e-npc.bin
 
 
 .PHONY: default all clean run

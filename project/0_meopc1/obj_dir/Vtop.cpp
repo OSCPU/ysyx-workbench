@@ -16,7 +16,6 @@ Vtop::Vtop(VerilatedContext* _vcontextp__, const char* _vcname__)
     , ALU_ctrl{vlSymsp->TOP.ALU_ctrl}
     , ALU_carry{vlSymsp->TOP.ALU_carry}
     , ALU_overflow{vlSymsp->TOP.ALU_overflow}
-    , is_break_out{vlSymsp->TOP.is_break_out}
     , imm{vlSymsp->TOP.imm}
     , rs1_out{vlSymsp->TOP.rs1_out}
     , rs2_out{vlSymsp->TOP.rs2_out}

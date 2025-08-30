@@ -33,10 +33,9 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop VL_NOT_FINAL : public VerilatedModel {
     VL_IN8(&clock,0,0);
     VL_IN8(&reset,0,0);
     VL_OUT8(&rd,4,0);
-    VL_OUT8(&ALU_ctrl,2,0);
+    VL_OUT8(&ALU_ctrl,3,0);
     VL_OUT8(&ALU_carry,0,0);
     VL_OUT8(&ALU_overflow,0,0);
-    VL_OUT8(&is_break_out,0,0);
     VL_OUT(&imm,31,0);
     VL_OUT(&rs1_out,31,0);
     VL_OUT(&rs2_out,31,0);
@@ -80,6 +79,14 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop VL_NOT_FINAL : public VerilatedModel {
     void trace(VerilatedTraceBaseC* tfp, int levels, int options = 0) { contextp()->trace(tfp, levels, options); }
     /// Retrieve name of this model instance (as passed to constructor).
     const char* name() const;
+
+    /// DPI Export functions
+    static int dnpc_read_data();
+    static int pc_read_data();
+    static int reg_read_addr();
+    static int reg_read_data();
+    static int reg_read_rs1();
+    static int reg_read_rs2();
 
     // Abstract methods from VerilatedModel
     const char* hierName() const override final;
