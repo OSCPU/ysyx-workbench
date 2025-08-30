@@ -24,6 +24,9 @@ module ysyx_25030077_ALU(
   output        io_carry,
   output        io_overflow
 );
+  import "DPI-C" function bit[31:0] csr_read(input bit[31:0] rs1, input bit[31:0] imm, input bit[3:0] sw);
+  wire [31:0] csr_data = csr_read(io_alu_Req_bits_data1, io_alu_Req_bits_data2, io_alu_Req_bits_sw);
+
   reg [31:0] out_reg; // @[alu.scala 13:29]
   reg  carry_reg; // @[alu.scala 14:29]
   reg  overflow_reg; // @[alu.scala 15:29]
@@ -104,7 +107,11 @@ module ysyx_25030077_ALU(
     if (reset) begin // @[alu.scala 13:29]
       out_reg <= 32'h0; // @[alu.scala 13:29]
     end else if (_validReg_T) begin // @[alu.scala 83:19]
-      out_reg <= out33[31:0];
+      if (oneHot[12] || oneHot[11]) begin // @[Mux.scala 27:73]
+        out_reg <= csr_data;
+      end else begin
+        out_reg <= out33[31:0];
+      end
     end
     carry_reg <= _GEN_3[0]; // @[alu.scala 14:{29,29} 92:13]
     if (reset) begin // @[alu.scala 15:29]

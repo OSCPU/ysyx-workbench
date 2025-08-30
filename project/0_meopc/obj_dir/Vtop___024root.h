@@ -134,20 +134,24 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final : public VerilatedModule
         IData/*31:0*/ top__DOT__f_gpr__DOT___GEN_85;
         IData/*31:0*/ top__DOT__f_gpr__DOT___GEN_117;
         IData/*31:0*/ top__DOT__h_data_control__DOT___io_alu_Req_bits_data2_T;
+        IData/*31:0*/ top__DOT__i_alu__DOT__csr_data;
         IData/*31:0*/ top__DOT__i_alu__DOT__out_reg;
         IData/*31:0*/ top__DOT__i_alu__DOT__rs1_data_reg;
         IData/*31:0*/ top__DOT__i_alu__DOT__rs2_data_reg;
         IData/*31:0*/ top__DOT__i_alu__DOT__instruction_reg;
         IData/*31:0*/ top__DOT__i_alu__DOT__pc_count_reg;
+        IData/*31:0*/ top__DOT__j_pc_next__DOT__ecall_dnpc;
         IData/*31:0*/ top__DOT__j_pc_next__DOT__pc_next_reg;
         IData/*31:0*/ top__DOT__j_pc_next__DOT___beq_result_T_9;
         IData/*31:0*/ __Vfunc_top__DOT__g_mem__DOT__mem_data_read__2__Vfuncout;
+        IData/*31:0*/ __Vfunc_top__DOT__i_alu__DOT__csr_read__3__Vfuncout;
+        IData/*31:0*/ __Vfunc_top__DOT__j_pc_next__DOT__ecall_read__4__Vfuncout;
+    };
+    struct {
         IData/*31:0*/ __VactIterCount;
         QData/*63:0*/ top__DOT__i_alu__DOT___out33_T_47;
         QData/*63:0*/ top__DOT__i_alu__DOT__out33;
         VlUnpacked<IData/*31:0*/, 1> top__DOT__b_ifu__DOT__reqQ__DOT__ram_addr;
-    };
-    struct {
         VlUnpacked<CData/*0:0*/, 2> __Vm_traceActivity;
     };
     VlTriggerVec<1> __VstlTriggered;

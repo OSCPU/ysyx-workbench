@@ -19,6 +19,9 @@ module ysyx_25030077_PC_next(
     return {io_IFUReq_bits_addr};
   endfunction
 
+  import "DPI-C" function bit[31:0] ecall_read(input bit[31:0] pc, input bit[3:0] type_p);
+  wire [31:0] ecall_dnpc = ecall_read(io_pcnext_Req_bits_pc_count, io_pcnext_Req_bits_pc_next_type);
+
   reg  validReg; // @[pc_next.scala 12:25]
   reg [31:0] pc_next_reg; // @[pc_next.scala 13:28]
   reg  is_unknown_instruction_reg; // @[pc_next.scala 14:43]
@@ -33,6 +36,7 @@ module ysyx_25030077_PC_next(
   wire  is_type8 = io_pcnext_Req_bits_pc_next_type == 4'h8; // @[pc_next.scala 26:50]
   wire  is_type9 = io_pcnext_Req_bits_pc_next_type == 4'h9; // @[pc_next.scala 27:50]
   wire  is_type10 = io_pcnext_Req_bits_pc_next_type == 4'ha; // @[pc_next.scala 28:50]
+  wire  is_type11 = (io_pcnext_Req_bits_pc_next_type == 4'hb || io_pcnext_Req_bits_pc_next_type == 4'hc); // @[module.scala 27:34]
   wire  is_eql = io_pcnext_Req_bits_rs1_data == io_pcnext_Req_bits_rs2_data; // @[pc_next.scala 30:44]
   wire  is_more_equ = $signed(io_pcnext_Req_bits_rs1_data) >= $signed(io_pcnext_Req_bits_rs2_data); // @[pc_next.scala 31:56]
   wire  is_less = $signed(io_pcnext_Req_bits_rs1_data) < $signed(io_pcnext_Req_bits_rs2_data); // @[pc_next.scala 32:52]
@@ -84,6 +88,8 @@ module ysyx_25030077_PC_next(
         pc_next_reg <= _pc_nexto_T_9;
       end else if (is_type2) begin // @[Mux.scala 101:16]
         pc_next_reg <= _pc_nexto_T_18;
+      end else if (is_type11) begin // @[Mux.scala 101:16]
+        pc_next_reg <= ecall_dnpc;
       end else begin
         pc_next_reg <= _pc_nexto_T_25;
       end

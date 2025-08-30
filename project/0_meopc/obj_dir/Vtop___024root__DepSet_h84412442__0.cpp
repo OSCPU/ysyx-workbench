@@ -84,11 +84,41 @@ void Vtop___024root____Vdpiexp_top__DOT__h_data_control__DOT__reg_read_rs2_TOP(V
     reg_read_rs2__Vfuncrtn = vlSymsp->TOP.top__DOT__f_gpr_io_rdata_rs2;
 }
 
+extern "C" svBitVecVal csr_read(const svBitVecVal* rs1, const svBitVecVal* imm, const svBitVecVal* sw);
+
+VL_INLINE_OPT void Vtop___024root____Vdpiimwrap_top__DOT__i_alu__DOT__csr_read_TOP(IData/*31:0*/ rs1, IData/*31:0*/ imm, CData/*3:0*/ sw, IData/*31:0*/ &csr_read__Vfuncrtn) {
+    VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop___024root____Vdpiimwrap_top__DOT__i_alu__DOT__csr_read_TOP\n"); );
+    // Body
+    svBitVecVal rs1__Vcvt[1];
+    for (size_t rs1__Vidx = 0; rs1__Vidx < 1; ++rs1__Vidx) VL_SET_SVBV_I(32, rs1__Vcvt + 1 * rs1__Vidx, rs1);
+    svBitVecVal imm__Vcvt[1];
+    for (size_t imm__Vidx = 0; imm__Vidx < 1; ++imm__Vidx) VL_SET_SVBV_I(32, imm__Vcvt + 1 * imm__Vidx, imm);
+    svBitVecVal sw__Vcvt[1];
+    for (size_t sw__Vidx = 0; sw__Vidx < 1; ++sw__Vidx) VL_SET_SVBV_I(4, sw__Vcvt + 1 * sw__Vidx, sw);
+    svBitVecVal csr_read__Vfuncrtn__Vcvt[1];
+    csr_read__Vfuncrtn__Vcvt[0] = csr_read(rs1__Vcvt, imm__Vcvt, sw__Vcvt);
+    csr_read__Vfuncrtn = VL_SET_I_SVBV(csr_read__Vfuncrtn__Vcvt);
+}
+
 void Vtop___024root____Vdpiexp_top__DOT__j_pc_next__DOT__dnpc_read_data_TOP(Vtop__Syms* __restrict vlSymsp, IData/*31:0*/ &dnpc_read_data__Vfuncrtn) {
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop___024root____Vdpiexp_top__DOT__j_pc_next__DOT__dnpc_read_data_TOP\n"); );
     // Init
     // Body
     dnpc_read_data__Vfuncrtn = vlSymsp->TOP.top__DOT__j_pc_next__DOT__pc_next_reg;
+}
+
+extern "C" svBitVecVal ecall_read(const svBitVecVal* pc, const svBitVecVal* type_p);
+
+VL_INLINE_OPT void Vtop___024root____Vdpiimwrap_top__DOT__j_pc_next__DOT__ecall_read_TOP(IData/*31:0*/ pc, CData/*3:0*/ type_p, IData/*31:0*/ &ecall_read__Vfuncrtn) {
+    VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop___024root____Vdpiimwrap_top__DOT__j_pc_next__DOT__ecall_read_TOP\n"); );
+    // Body
+    svBitVecVal pc__Vcvt[1];
+    for (size_t pc__Vidx = 0; pc__Vidx < 1; ++pc__Vidx) VL_SET_SVBV_I(32, pc__Vcvt + 1 * pc__Vidx, pc);
+    svBitVecVal type_p__Vcvt[1];
+    for (size_t type_p__Vidx = 0; type_p__Vidx < 1; ++type_p__Vidx) VL_SET_SVBV_I(4, type_p__Vcvt + 1 * type_p__Vidx, type_p);
+    svBitVecVal ecall_read__Vfuncrtn__Vcvt[1];
+    ecall_read__Vfuncrtn__Vcvt[0] = ecall_read(pc__Vcvt, type_p__Vcvt);
+    ecall_read__Vfuncrtn = VL_SET_I_SVBV(ecall_read__Vfuncrtn__Vcvt);
 }
 
 #ifdef VL_DEBUG

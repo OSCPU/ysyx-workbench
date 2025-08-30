@@ -77,10 +77,10 @@ svBitVecVal addr_read(const svBitVecVal* pc){
 	// printf("instruction: %x\n",instruction);
 	return instruction;
 }
-
 svBitVecVal ecall_read(const svBitVecVal* pc, const svBitVecVal* type_p){
+	// printf("ecall_read: pc = %x, type = %d\n", *pc, *type_p);
 	if(*type_p == 11){
-		//printf("ecall: %x\n", *pc);
+		// printf("ecall: %x\n", *pc);
 		csr[MEPC] = (uint32_t)*pc;
 		csr[MCAUSE] = 11;
 		assert(csr[MTVEC] != 0);
@@ -93,14 +93,15 @@ svBitVecVal ecall_read(const svBitVecVal* pc, const svBitVecVal* type_p){
 	}
 	return 0;
 }
-
 svBitVecVal csr_read(const svBitVecVal* rs1, const svBitVecVal* imm, const svBitVecVal* sw){
 	if(*sw == 11){
+		// printf("iz: %d csr_read: rs1 = %x, imm = %x, sw = %d\n",iz, *rs1, *imm, *sw);
 		svBitVecVal t = csr[*imm];
 		csr[*imm] = *rs1;
 		return t;
 	}
 	if(*sw == 12){
+		// printf("iz: %d csr_read: rs1 = %x, imm = %x, sw = %d\n",iz, *rs1, *imm, *sw);
 		svBitVecVal t = csr[*imm];
 		csr[*imm] = t | *rs1;
 		return t;
