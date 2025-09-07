@@ -105,9 +105,9 @@ uint64_t get_time() {
 	uint64_t now = get_time_internal();
 	return now - boot_time;
 }
-svBitVecVal mem_data_read(const svBitVecVal* instruction_in, const svBitVecVal* rs1_data_in, const svBitVecVal* rs2_data_in, const svBitVecVal*  imm_data_in){
+svBitVecVal mem_data_read(const svBitVecVal* w_mask, const svBitVecVal* rs1_data_in, const svBitVecVal* rs2_data_in, const svBitVecVal*  imm_data_in){
 	int mem_addr, mem_data;
-	if(is_L(*instruction_in) == 0){
+	if(*w_mask == 0){
 		return 0; // 如果不是取字节指令，返回0
 	}
 	mem_addr = *rs1_data_in + *imm_data_in;
@@ -130,7 +130,7 @@ svBitVecVal mem_data_read(const svBitVecVal* instruction_in, const svBitVecVal* 
 	if(mem_addr < 0x80000000 || mem_addr >= 0x8fffffff)
 		return 0;
 	// printf("mem_addr = %x\n", mem_addr);
-	switch (is_L(*instruction_in))
+	switch (*w_mask)
 	{
 		case 1:
 			//printf("read addr = %x\n", mem_addr);	

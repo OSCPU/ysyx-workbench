@@ -1,0 +1,13 @@
+/picorv32_modified/
+/picorv32_vivado/
+/init_gate.vcd
+/init_gold.vcd
+/test_gate.vcd
+/test_gold.vcd
+/test_gate_uut.v
+/test_gold_uut.v
+/test_gate
+/test_gold
+/tryamend_*/
+/tryamend_*.eqy
+/tryamend.mk

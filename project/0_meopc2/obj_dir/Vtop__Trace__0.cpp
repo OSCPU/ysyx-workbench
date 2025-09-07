@@ -155,9 +155,7 @@ void Vtop___024root__trace_chg_0_sub_0(Vtop___024root* vlSelf, VerilatedFst::Buf
         bufp->chgIData(oldp+116,(VL_SHIFTR_III(32,32,32, vlSelfRef.ysyx_25030077_top__DOT__ALU_data_1, vlSelfRef.ysyx_25030077_top__DOT__ALU_data_2)),32);
         bufp->chgQData(oldp+117,((0x7fffffffffffffffULL 
                                   & ((QData)((IData)(vlSelfRef.ysyx_25030077_top__DOT__ALU_data_1)) 
-                                     << ((2U == (IData)(vlSelfRef.ysyx_25030077_top__DOT__data_control))
-                                          ? 0U : (0x1fU 
-                                                  & vlSelfRef.ysyx_25030077_top__DOT__i5__DOT___io_data_2_T))))),63);
+                                     << (0x1fU & vlSelfRef.ysyx_25030077_top__DOT__ALU_data_2)))),63);
         bufp->chgIData(oldp+119,(vlSelfRef.ysyx_25030077_top__DOT__i7__DOT__ecall_dnpc),32);
         bufp->chgIData(oldp+120,(((IData)(4U) + vlSelfRef.ysyx_25030077_top__DOT__i0__DOT__state)),32);
         bufp->chgBit(oldp+121,((1U == (IData)(vlSelfRef.ysyx_25030077_top__DOT__pc_next_type))));

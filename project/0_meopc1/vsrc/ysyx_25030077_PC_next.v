@@ -7,10 +7,10 @@ module ysyx_25030077_PC_next(
   output [31:0] io_pc_next,
   output        io_is_unknown_instruction
 );
-  export "DPI-C" function dnpc_read_data;
-  function int dnpc_read_data();
-    return {io_pc_next};
-  endfunction
+  // export "DPI-C" function dnpc_read_data;
+  // function int dnpc_read_data();
+  //   return {io_pc_next};
+  // endfunction
 
   // import "DPI-C" function bit[31:0] ecall_read(input bit[31:0] pc, input bit[3:0] type_p);
   wire [31:0] ecall_dnpc = io_pc_count;

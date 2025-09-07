@@ -1,5 +1,5 @@
 module ysyx_25030077_reg(
-  input         clock,
+  input         clk,
   input         reset,
   input  [4:0]  io_waddr,
   input  [31:0] io_wdata,
@@ -8,50 +8,6 @@ module ysyx_25030077_reg(
   input  [4:0]  io_raddr_rs2,
   output [31:0] io_rdata_rs2
 );
-  // export "DPI-C" function reg_read_addr;
-  // function int reg_read_addr();
-  //   return {27'b0, io_waddr};
-  // endfunction
-
-  // export "DPI-C" function reg_read_data;
-  // function int reg_read_data();
-  //   return {io_wdata};
-  // endfunction
-
-`ifdef RANDOMIZE_REG_INIT
-  reg [31:0] _RAND_0;
-  reg [31:0] _RAND_1;
-  reg [31:0] _RAND_2;
-  reg [31:0] _RAND_3;
-  reg [31:0] _RAND_4;
-  reg [31:0] _RAND_5;
-  reg [31:0] _RAND_6;
-  reg [31:0] _RAND_7;
-  reg [31:0] _RAND_8;
-  reg [31:0] _RAND_9;
-  reg [31:0] _RAND_10;
-  reg [31:0] _RAND_11;
-  reg [31:0] _RAND_12;
-  reg [31:0] _RAND_13;
-  reg [31:0] _RAND_14;
-  reg [31:0] _RAND_15;
-  reg [31:0] _RAND_16;
-  reg [31:0] _RAND_17;
-  reg [31:0] _RAND_18;
-  reg [31:0] _RAND_19;
-  reg [31:0] _RAND_20;
-  reg [31:0] _RAND_21;
-  reg [31:0] _RAND_22;
-  reg [31:0] _RAND_23;
-  reg [31:0] _RAND_24;
-  reg [31:0] _RAND_25;
-  reg [31:0] _RAND_26;
-  reg [31:0] _RAND_27;
-  reg [31:0] _RAND_28;
-  reg [31:0] _RAND_29;
-  reg [31:0] _RAND_30;
-  reg [31:0] _RAND_31;
-`endif // RANDOMIZE_REG_INIT
   reg [31:0] regs_0; // @[module.scala 14:21]
   reg [31:0] regs_1; // @[module.scala 14:21]
   reg [31:0] regs_2; // @[module.scala 14:21]
@@ -148,7 +104,7 @@ module ysyx_25030077_reg(
   wire [31:0] _GEN_94 = 5'h1e == io_raddr_rs2 ? regs_30 : _GEN_93; // @[module.scala 22:{16,16}]
   assign io_rdata_rs1 = 5'h1f == io_raddr_rs1 ? regs_31 : _GEN_62; // @[module.scala 21:{16,16}]
   assign io_rdata_rs2 = 5'h1f == io_raddr_rs2 ? regs_31 : _GEN_94; // @[module.scala 22:{16,16}]
-  always @(posedge clock) begin
+  always @(posedge clk) begin
     if (reset) begin // @[module.scala 14:21]
       regs_0 <= 32'h0; // @[module.scala 14:21]
     end else if (5'h0 == io_waddr) begin // @[module.scala 17:18]
@@ -438,111 +394,4 @@ module ysyx_25030077_reg(
       end
     end
   end
-// Register and memory initialization
-`ifdef RANDOMIZE_GARBAGE_ASSIGN
-`define RANDOMIZE
-`endif
-`ifdef RANDOMIZE_INVALID_ASSIGN
-`define RANDOMIZE
-`endif
-`ifdef RANDOMIZE_REG_INIT
-`define RANDOMIZE
-`endif
-`ifdef RANDOMIZE_MEM_INIT
-`define RANDOMIZE
-`endif
-`ifndef RANDOM
-`define RANDOM $random
-`endif
-`ifdef RANDOMIZE_MEM_INIT
-  integer initvar;
-`endif
-`ifndef SYNTHESIS
-`ifdef FIRRTL_BEFORE_INITIAL
-`FIRRTL_BEFORE_INITIAL
-`endif
-initial begin
-  `ifdef RANDOMIZE
-    `ifdef INIT_RANDOM
-      `INIT_RANDOM
-    `endif
-    `ifndef VERILATOR
-      `ifdef RANDOMIZE_DELAY
-        #`RANDOMIZE_DELAY begin end
-      `else
-        #0.002 begin end
-      `endif
-    `endif
-`ifdef RANDOMIZE_REG_INIT
-  _RAND_0 = {1{`RANDOM}};
-  regs_0 = _RAND_0[31:0];
-  _RAND_1 = {1{`RANDOM}};
-  regs_1 = _RAND_1[31:0];
-  _RAND_2 = {1{`RANDOM}};
-  regs_2 = _RAND_2[31:0];
-  _RAND_3 = {1{`RANDOM}};
-  regs_3 = _RAND_3[31:0];
-  _RAND_4 = {1{`RANDOM}};
-  regs_4 = _RAND_4[31:0];
-  _RAND_5 = {1{`RANDOM}};
-  regs_5 = _RAND_5[31:0];
-  _RAND_6 = {1{`RANDOM}};
-  regs_6 = _RAND_6[31:0];
-  _RAND_7 = {1{`RANDOM}};
-  regs_7 = _RAND_7[31:0];
-  _RAND_8 = {1{`RANDOM}};
-  regs_8 = _RAND_8[31:0];
-  _RAND_9 = {1{`RANDOM}};
-  regs_9 = _RAND_9[31:0];
-  _RAND_10 = {1{`RANDOM}};
-  regs_10 = _RAND_10[31:0];
-  _RAND_11 = {1{`RANDOM}};
-  regs_11 = _RAND_11[31:0];
-  _RAND_12 = {1{`RANDOM}};
-  regs_12 = _RAND_12[31:0];
-  _RAND_13 = {1{`RANDOM}};
-  regs_13 = _RAND_13[31:0];
-  _RAND_14 = {1{`RANDOM}};
-  regs_14 = _RAND_14[31:0];
-  _RAND_15 = {1{`RANDOM}};
-  regs_15 = _RAND_15[31:0];
-  _RAND_16 = {1{`RANDOM}};
-  regs_16 = _RAND_16[31:0];
-  _RAND_17 = {1{`RANDOM}};
-  regs_17 = _RAND_17[31:0];
-  _RAND_18 = {1{`RANDOM}};
-  regs_18 = _RAND_18[31:0];
-  _RAND_19 = {1{`RANDOM}};
-  regs_19 = _RAND_19[31:0];
-  _RAND_20 = {1{`RANDOM}};
-  regs_20 = _RAND_20[31:0];
-  _RAND_21 = {1{`RANDOM}};
-  regs_21 = _RAND_21[31:0];
-  _RAND_22 = {1{`RANDOM}};
-  regs_22 = _RAND_22[31:0];
-  _RAND_23 = {1{`RANDOM}};
-  regs_23 = _RAND_23[31:0];
-  _RAND_24 = {1{`RANDOM}};
-  regs_24 = _RAND_24[31:0];
-  _RAND_25 = {1{`RANDOM}};
-  regs_25 = _RAND_25[31:0];
-  _RAND_26 = {1{`RANDOM}};
-  regs_26 = _RAND_26[31:0];
-  _RAND_27 = {1{`RANDOM}};
-  regs_27 = _RAND_27[31:0];
-  _RAND_28 = {1{`RANDOM}};
-  regs_28 = _RAND_28[31:0];
-  _RAND_29 = {1{`RANDOM}};
-  regs_29 = _RAND_29[31:0];
-  _RAND_30 = {1{`RANDOM}};
-  regs_30 = _RAND_30[31:0];
-  _RAND_31 = {1{`RANDOM}};
-  regs_31 = _RAND_31[31:0];
-`endif // RANDOMIZE_REG_INIT
-  `endif // RANDOMIZE
-end // initial
-`ifdef FIRRTL_AFTER_INITIAL
-`FIRRTL_AFTER_INITIAL
-`endif
-`endif // SYNTHESIS
 endmodule

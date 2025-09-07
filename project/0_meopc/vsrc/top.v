@@ -2,351 +2,236 @@ module top(
   input   clock,
   input   reset,
   output  io_is_unknown_instruction,
-  output  carry,
-  output  overflow
+  output  io_carry,
+  output  io_isoverflow
 );
-  wire  b_ifu_clock; // @[top.scala 12:22]
-  wire  b_ifu_reset; // @[top.scala 12:22]
-  wire  b_ifu_io_addr_Req_ready; // @[top.scala 12:22]
-  wire  b_ifu_io_addr_Req_valid; // @[top.scala 12:22]
-  wire [31:0] b_ifu_io_addr_Req_bits_addr; // @[top.scala 12:22]
-  wire  b_ifu_io_sramReq_ready; // @[top.scala 12:22]
-  wire  b_ifu_io_sramReq_valid; // @[top.scala 12:22]
-  wire [31:0] b_ifu_io_sramReq_bits_addr; // @[top.scala 12:22]
-  wire  c_sram_clock; // @[top.scala 13:22]
-  wire  c_sram_reset; // @[top.scala 13:22]
-  wire  c_sram_io_req_ready; // @[top.scala 13:22]
-  wire  c_sram_io_req_valid; // @[top.scala 13:22]
-  wire [31:0] c_sram_io_req_bits_addr; // @[top.scala 13:22]
-  wire  c_sram_io_iduReq_ready; // @[top.scala 13:22]
-  wire  c_sram_io_iduReq_valid; // @[top.scala 13:22]
-  wire [31:0] c_sram_io_iduReq_bits_inst; // @[top.scala 13:22]
-  wire [31:0] c_sram_io_iduReq_bits_pc; // @[top.scala 13:22]
-  wire  d_idu_clock; // @[top.scala 14:21]
-  wire  d_idu_reset; // @[top.scala 14:21]
-  wire  d_idu_io_inst_req_ready; // @[top.scala 14:21]
-  wire  d_idu_io_inst_req_valid; // @[top.scala 14:21]
-  wire [31:0] d_idu_io_inst_req_bits_inst; // @[top.scala 14:21]
-  wire [31:0] d_idu_io_inst_req_bits_pc; // @[top.scala 14:21]
-  wire [2:0] d_idu_io_imm_type; // @[top.scala 14:21]
-  wire [4:0] d_idu_io_rs1; // @[top.scala 14:21]
-  wire [4:0] d_idu_io_rs2; // @[top.scala 14:21]
-  wire [4:0] d_idu_io_rd; // @[top.scala 14:21]
-  wire  d_idu_io_ready; // @[top.scala 14:21]
-  wire  d_idu_io_valid; // @[top.scala 14:21]
-  wire [2:0] d_idu_io_data_control; // @[top.scala 14:21]
-  wire [3:0] d_idu_io_ALU_ctrl; // @[top.scala 14:21]
-  wire [3:0] d_idu_io_pc_next_type; // @[top.scala 14:21]
-  wire [31:0] d_idu_io_instruction_o; // @[top.scala 14:21]
-  wire [31:0] d_idu_io_pc_o; // @[top.scala 14:21]
-  wire [31:0] e_imm_io_instruction; // @[top.scala 15:21]
-  wire [2:0] e_imm_io_imm_type; // @[top.scala 15:21]
-  wire [31:0] e_imm_io_imm; // @[top.scala 15:21]
-  wire  f_gpr_clock; // @[top.scala 16:21]
-  wire  f_gpr_reset; // @[top.scala 16:21]
-  wire  f_gpr_io_rd_Req_ready; // @[top.scala 16:21]
-  wire  f_gpr_io_rd_Req_valid; // @[top.scala 16:21]
-  wire [4:0] f_gpr_io_rd_Req_bits_rd_addr; // @[top.scala 16:21]
-  wire [31:0] f_gpr_io_rd_Req_bits_rd_data; // @[top.scala 16:21]
-  wire [31:0] f_gpr_io_rd_Req_bits_rs1_data; // @[top.scala 16:21]
-  wire [31:0] f_gpr_io_rd_Req_bits_rs2_data; // @[top.scala 16:21]
-  wire [31:0] f_gpr_io_rd_Req_bits_instruction; // @[top.scala 16:21]
-  wire [3:0] f_gpr_io_rd_Req_bits_pc_next_type; // @[top.scala 16:21]
-  wire [31:0] f_gpr_io_rd_Req_bits_pc_count; // @[top.scala 16:21]
-  wire  f_gpr_io_pcnext_Req_ready; // @[top.scala 16:21]
-  wire  f_gpr_io_pcnext_Req_valid; // @[top.scala 16:21]
-  wire [31:0] f_gpr_io_pcnext_Req_bits_rs1_data; // @[top.scala 16:21]
-  wire [31:0] f_gpr_io_pcnext_Req_bits_rs2_data; // @[top.scala 16:21]
-  wire [31:0] f_gpr_io_pcnext_Req_bits_instruction; // @[top.scala 16:21]
-  wire [3:0] f_gpr_io_pcnext_Req_bits_pc_next_type; // @[top.scala 16:21]
-  wire [31:0] f_gpr_io_pcnext_Req_bits_pc_count; // @[top.scala 16:21]
-  wire [4:0] f_gpr_io_raddr_rs1; // @[top.scala 16:21]
-  wire [31:0] f_gpr_io_rdata_rs1; // @[top.scala 16:21]
-  wire [4:0] f_gpr_io_raddr_rs2; // @[top.scala 16:21]
-  wire [31:0] f_gpr_io_rdata_rs2; // @[top.scala 16:21]
-  wire [31:0] g_mem_io_inst; // @[top.scala 17:21]
-  wire [31:0] g_mem_io_rs1; // @[top.scala 17:21]
-  wire [31:0] g_mem_io_rs2; // @[top.scala 17:21]
-  wire [31:0] g_mem_io_imm; // @[top.scala 17:21]
-  wire [31:0] g_mem_io_mem_data; // @[top.scala 17:21]
-  wire [3:0] h_data_control_io_sw; // @[top.scala 18:30]
-  wire [4:0] h_data_control_io_rd_addr; // @[top.scala 18:30]
-  wire [31:0] h_data_control_io_rs1_data; // @[top.scala 18:30]
-  wire [31:0] h_data_control_io_rs2_data; // @[top.scala 18:30]
-  wire [31:0] h_data_control_io_instruction; // @[top.scala 18:30]
-  wire [3:0] h_data_control_io_pc_next_type; // @[top.scala 18:30]
-  wire [31:0] h_data_control_io_imm; // @[top.scala 18:30]
-  wire [31:0] h_data_control_io_mem_data; // @[top.scala 18:30]
-  wire [31:0] h_data_control_io_pc_count; // @[top.scala 18:30]
-  wire [2:0] h_data_control_io_data_control; // @[top.scala 18:30]
-  wire  h_data_control_io_alu_Req_ready; // @[top.scala 18:30]
-  wire  h_data_control_io_alu_Req_valid; // @[top.scala 18:30]
-  wire [31:0] h_data_control_io_alu_Req_bits_data1; // @[top.scala 18:30]
-  wire [31:0] h_data_control_io_alu_Req_bits_data2; // @[top.scala 18:30]
-  wire [3:0] h_data_control_io_alu_Req_bits_sw; // @[top.scala 18:30]
-  wire [4:0] h_data_control_io_alu_Req_bits_addr; // @[top.scala 18:30]
-  wire [31:0] h_data_control_io_alu_Req_bits_rs1_data; // @[top.scala 18:30]
-  wire [31:0] h_data_control_io_alu_Req_bits_rs2_data; // @[top.scala 18:30]
-  wire [31:0] h_data_control_io_alu_Req_bits_instruction; // @[top.scala 18:30]
-  wire [3:0] h_data_control_io_alu_Req_bits_pc_next_type; // @[top.scala 18:30]
-  wire [31:0] h_data_control_io_alu_Req_bits_pc_count; // @[top.scala 18:30]
-  wire  h_data_control_io_ready; // @[top.scala 18:30]
-  wire  h_data_control_io_valid; // @[top.scala 18:30]
-  wire  i_alu_clock; // @[top.scala 19:21]
-  wire  i_alu_reset; // @[top.scala 19:21]
-  wire  i_alu_io_alu_Req_ready; // @[top.scala 19:21]
-  wire  i_alu_io_alu_Req_valid; // @[top.scala 19:21]
-  wire [31:0] i_alu_io_alu_Req_bits_data1; // @[top.scala 19:21]
-  wire [31:0] i_alu_io_alu_Req_bits_data2; // @[top.scala 19:21]
-  wire [3:0] i_alu_io_alu_Req_bits_sw; // @[top.scala 19:21]
-  wire [4:0] i_alu_io_alu_Req_bits_addr; // @[top.scala 19:21]
-  wire [31:0] i_alu_io_alu_Req_bits_rs1_data; // @[top.scala 19:21]
-  wire [31:0] i_alu_io_alu_Req_bits_rs2_data; // @[top.scala 19:21]
-  wire [31:0] i_alu_io_alu_Req_bits_instruction; // @[top.scala 19:21]
-  wire [3:0] i_alu_io_alu_Req_bits_pc_next_type; // @[top.scala 19:21]
-  wire [31:0] i_alu_io_alu_Req_bits_pc_count; // @[top.scala 19:21]
-  wire  i_alu_io_rd_Req_ready; // @[top.scala 19:21]
-  wire  i_alu_io_rd_Req_valid; // @[top.scala 19:21]
-  wire [4:0] i_alu_io_rd_Req_bits_rd_addr; // @[top.scala 19:21]
-  wire [31:0] i_alu_io_rd_Req_bits_rd_data; // @[top.scala 19:21]
-  wire [31:0] i_alu_io_rd_Req_bits_rs1_data; // @[top.scala 19:21]
-  wire [31:0] i_alu_io_rd_Req_bits_rs2_data; // @[top.scala 19:21]
-  wire [31:0] i_alu_io_rd_Req_bits_instruction; // @[top.scala 19:21]
-  wire [3:0] i_alu_io_rd_Req_bits_pc_next_type; // @[top.scala 19:21]
-  wire [31:0] i_alu_io_rd_Req_bits_pc_count; // @[top.scala 19:21]
-  wire  j_pc_next_clock; // @[top.scala 20:25]
-  wire  j_pc_next_reset; // @[top.scala 20:25]
-  wire  j_pc_next_io_pcnext_Req_ready; // @[top.scala 20:25]
-  wire  j_pc_next_io_pcnext_Req_valid; // @[top.scala 20:25]
-  wire [31:0] j_pc_next_io_pcnext_Req_bits_rs1_data; // @[top.scala 20:25]
-  wire [31:0] j_pc_next_io_pcnext_Req_bits_rs2_data; // @[top.scala 20:25]
-  wire [31:0] j_pc_next_io_pcnext_Req_bits_instruction; // @[top.scala 20:25]
-  wire [3:0] j_pc_next_io_pcnext_Req_bits_pc_next_type; // @[top.scala 20:25]
-  wire [31:0] j_pc_next_io_pcnext_Req_bits_pc_count; // @[top.scala 20:25]
-  wire  j_pc_next_io_is_unknown_instruction; // @[top.scala 20:25]
-  wire  j_pc_next_io_IFUReq_ready; // @[top.scala 20:25]
-  wire  j_pc_next_io_IFUReq_valid; // @[top.scala 20:25]
-  wire [31:0] j_pc_next_io_IFUReq_bits_addr; // @[top.scala 20:25]
-  ysyx_25030077_IFU b_ifu ( // @[top.scala 12:22]
+  wire  b_ifu_clock; // @[top.scala 14:22]
+  wire  b_ifu_reset; // @[top.scala 14:22]
+  wire  b_ifu_io_rd_Req_ready; // @[top.scala 14:22]
+  wire  b_ifu_io_rd_Req_valid; // @[top.scala 14:22]
+  wire [31:0] b_ifu_io_rd_Req_bits_addr; // @[top.scala 14:22]
+  wire  b_ifu_io_sram_Req_ready; // @[top.scala 14:22]
+  wire  b_ifu_io_sram_Req_valid; // @[top.scala 14:22]
+  wire [31:0] b_ifu_io_sram_Req_bits_addr; // @[top.scala 14:22]
+  wire  c_sram_clock; // @[top.scala 15:22]
+  wire  c_sram_reset; // @[top.scala 15:22]
+  wire  c_sram_io_ifu_Req_ready; // @[top.scala 15:22]
+  wire  c_sram_io_ifu_Req_valid; // @[top.scala 15:22]
+  wire [31:0] c_sram_io_ifu_Req_bits_addr; // @[top.scala 15:22]
+  wire  c_sram_io_mem_Req_ready; // @[top.scala 15:22]
+  wire  c_sram_io_mem_Req_valid; // @[top.scala 15:22]
+  wire [31:0] c_sram_io_inst; // @[top.scala 15:22]
+  wire [31:0] d_idu_io_instruction; // @[top.scala 16:21]
+  wire [2:0] d_idu_io_imm_type; // @[top.scala 16:21]
+  wire [4:0] d_idu_io_rs1; // @[top.scala 16:21]
+  wire [4:0] d_idu_io_rs2; // @[top.scala 16:21]
+  wire [4:0] d_idu_io_rd; // @[top.scala 16:21]
+  wire [2:0] d_idu_io_data_control; // @[top.scala 16:21]
+  wire [3:0] d_idu_io_ALU_ctrl; // @[top.scala 16:21]
+  wire [3:0] d_idu_io_pc_next_type; // @[top.scala 16:21]
+  wire [2:0] d_idu_io_r_mask; // @[top.scala 16:21]
+  wire [31:0] e_imm_io_instruction; // @[top.scala 17:21]
+  wire [2:0] e_imm_io_imm_type; // @[top.scala 17:21]
+  wire [31:0] e_imm_io_imm; // @[top.scala 17:21]
+  wire  f_gpr_clock; // @[top.scala 18:21]
+  wire  f_gpr_reset; // @[top.scala 18:21]
+  wire  f_gpr_io_mem_Req_ready; // @[top.scala 18:21]
+  wire  f_gpr_io_mem_Req_valid; // @[top.scala 18:21]
+  wire [31:0] f_gpr_io_pc_next; // @[top.scala 18:21]
+  wire [4:0] f_gpr_io_waddr_rd; // @[top.scala 18:21]
+  wire [31:0] f_gpr_io_wdata_rd; // @[top.scala 18:21]
+  wire [4:0] f_gpr_io_raddr_rs1; // @[top.scala 18:21]
+  wire [31:0] f_gpr_io_rdata_rs1; // @[top.scala 18:21]
+  wire [4:0] f_gpr_io_raddr_rs2; // @[top.scala 18:21]
+  wire [31:0] f_gpr_io_rdata_rs2; // @[top.scala 18:21]
+  wire  f_gpr_io_ifu_Req_ready; // @[top.scala 18:21]
+  wire  f_gpr_io_ifu_Req_valid; // @[top.scala 18:21]
+  wire [31:0] f_gpr_io_ifu_Req_bits_addr; // @[top.scala 18:21]
+  wire  g_mem_clock; // @[top.scala 19:21]
+  wire  g_mem_reset; // @[top.scala 19:21]
+  wire  g_mem_io_sram_Req_ready; // @[top.scala 19:21]
+  wire  g_mem_io_sram_Req_valid; // @[top.scala 19:21]
+  wire [31:0] g_mem_io_rs1; // @[top.scala 19:21]
+  wire [31:0] g_mem_io_rs2; // @[top.scala 19:21]
+  wire [31:0] g_mem_io_imm; // @[top.scala 19:21]
+  wire [2:0] g_mem_io_r_mask; // @[top.scala 19:21]
+  wire [2:0] g_mem_io_w_mask; // @[top.scala 19:21]
+  wire [31:0] g_mem_io_mem_data; // @[top.scala 19:21]
+  wire  g_mem_io_gpr_Req_ready; // @[top.scala 19:21]
+  wire  g_mem_io_gpr_Req_valid; // @[top.scala 19:21]
+  wire [31:0] h_data_control_io_rs1_data; // @[top.scala 20:30]
+  wire [31:0] h_data_control_io_rs2_data; // @[top.scala 20:30]
+  wire [31:0] h_data_control_io_imm; // @[top.scala 20:30]
+  wire [31:0] h_data_control_io_mem_data; // @[top.scala 20:30]
+  wire [31:0] h_data_control_io_pc_count; // @[top.scala 20:30]
+  wire [2:0] h_data_control_io_data_control; // @[top.scala 20:30]
+  wire [31:0] h_data_control_io_data_1; // @[top.scala 20:30]
+  wire [31:0] h_data_control_io_data_2; // @[top.scala 20:30]
+  wire [31:0] i_alu_io_in_a; // @[top.scala 21:21]
+  wire [31:0] i_alu_io_in_b; // @[top.scala 21:21]
+  wire [3:0] i_alu_io_sw; // @[top.scala 21:21]
+  wire [31:0] i_alu_io_out; // @[top.scala 21:21]
+  wire  i_alu_io_carry; // @[top.scala 21:21]
+  wire  i_alu_io_overflow; // @[top.scala 21:21]
+  wire [31:0] j_pc_next_io_rs1_data; // @[top.scala 22:25]
+  wire [31:0] j_pc_next_io_rs2_data; // @[top.scala 22:25]
+  wire [31:0] j_pc_next_io_instruction; // @[top.scala 22:25]
+  wire [3:0] j_pc_next_io_pc_next_type; // @[top.scala 22:25]
+  wire [31:0] j_pc_next_io_pc_count; // @[top.scala 22:25]
+  wire [31:0] j_pc_next_io_pc_next; // @[top.scala 22:25]
+  wire  j_pc_next_io_is_unknown_instruction; // @[top.scala 22:25]
+  ysyx_25030077_IFU b_ifu ( // @[top.scala 14:22]
     .clock(b_ifu_clock),
     .reset(b_ifu_reset),
-    .io_addr_Req_ready(b_ifu_io_addr_Req_ready),
-    .io_addr_Req_valid(b_ifu_io_addr_Req_valid),
-    .io_addr_Req_bits_addr(b_ifu_io_addr_Req_bits_addr),
-    .io_sramReq_ready(b_ifu_io_sramReq_ready),
-    .io_sramReq_valid(b_ifu_io_sramReq_valid),
-    .io_sramReq_bits_addr(b_ifu_io_sramReq_bits_addr)
+    .io_rd_Req_ready(b_ifu_io_rd_Req_ready),
+    .io_rd_Req_valid(b_ifu_io_rd_Req_valid),
+    .io_rd_Req_bits_addr(b_ifu_io_rd_Req_bits_addr),
+    .io_sram_Req_ready(b_ifu_io_sram_Req_ready),
+    .io_sram_Req_valid(b_ifu_io_sram_Req_valid),
+    .io_sram_Req_bits_addr(b_ifu_io_sram_Req_bits_addr)
   );
-  ysyx_25030077_sram c_sram ( // @[top.scala 13:22]
+  ysyx_25030077_SRAM c_sram ( // @[top.scala 15:22]
     .clock(c_sram_clock),
     .reset(c_sram_reset),
-    .io_req_ready(c_sram_io_req_ready),
-    .io_req_valid(c_sram_io_req_valid),
-    .io_req_bits_addr(c_sram_io_req_bits_addr),
-    .io_iduReq_ready(c_sram_io_iduReq_ready),
-    .io_iduReq_valid(c_sram_io_iduReq_valid),
-    .io_iduReq_bits_inst(c_sram_io_iduReq_bits_inst),
-    .io_iduReq_bits_pc(c_sram_io_iduReq_bits_pc)
+    .io_ifu_Req_ready(c_sram_io_ifu_Req_ready),
+    .io_ifu_Req_valid(c_sram_io_ifu_Req_valid),
+    .io_ifu_Req_bits_addr(c_sram_io_ifu_Req_bits_addr),
+    .io_mem_Req_ready(c_sram_io_mem_Req_ready),
+    .io_mem_Req_valid(c_sram_io_mem_Req_valid),
+    .io_inst(c_sram_io_inst)
   );
   wire is_break_out_o;
-  ysyx_25030077_IDU d_idu ( // @[top.scala 14:21]
-    .clock(d_idu_clock),
-    .reset(d_idu_reset),
-    .io_inst_req_ready(d_idu_io_inst_req_ready),
-    .io_inst_req_valid(d_idu_io_inst_req_valid),
-    .io_inst_req_bits_inst(d_idu_io_inst_req_bits_inst),
-    .io_inst_req_bits_pc(d_idu_io_inst_req_bits_pc),
+  wire [2:0] d_idu_io_w_mask;
+  ysyx_25030077_IDU d_idu ( // @[top.scala 16:21]
+    .io_instruction(d_idu_io_instruction),
     .io_imm_type(d_idu_io_imm_type),
     .io_rs1(d_idu_io_rs1),
     .io_rs2(d_idu_io_rs2),
     .io_rd(d_idu_io_rd),
-    .io_ready(d_idu_io_ready),
-    .io_valid(d_idu_io_valid),
     .io_data_control(d_idu_io_data_control),
     .io_ALU_ctrl(d_idu_io_ALU_ctrl),
     .io_pc_next_type(d_idu_io_pc_next_type),
-    .io_instruction_o(d_idu_io_instruction_o),
-    .io_pc_o(d_idu_io_pc_o),
+    .io_r_mask(d_idu_io_r_mask),
+    .io_w_mask(d_idu_io_w_mask),
     .is_break_out(is_break_out_o)
   );
-  ysyx_25030077_Imm e_imm ( // @[top.scala 15:21]
+  ysyx_25030077_Imm e_imm ( // @[top.scala 17:21]
     .io_instruction(e_imm_io_instruction),
     .io_imm_type(e_imm_io_imm_type),
     .io_imm(e_imm_io_imm)
   );
-  ysyx_25030077_reg f_gpr ( // @[top.scala 16:21]
+  ysyx_25030077_reg f_gpr ( // @[top.scala 18:21]
     .clock(f_gpr_clock),
     .reset(f_gpr_reset),
-    .io_rd_Req_ready(f_gpr_io_rd_Req_ready),
-    .io_rd_Req_valid(f_gpr_io_rd_Req_valid),
-    .io_rd_Req_bits_rd_addr(f_gpr_io_rd_Req_bits_rd_addr),
-    .io_rd_Req_bits_rd_data(f_gpr_io_rd_Req_bits_rd_data),
-    .io_rd_Req_bits_rs1_data(f_gpr_io_rd_Req_bits_rs1_data),
-    .io_rd_Req_bits_rs2_data(f_gpr_io_rd_Req_bits_rs2_data),
-    .io_rd_Req_bits_instruction(f_gpr_io_rd_Req_bits_instruction),
-    .io_rd_Req_bits_pc_next_type(f_gpr_io_rd_Req_bits_pc_next_type),
-    .io_rd_Req_bits_pc_count(f_gpr_io_rd_Req_bits_pc_count),
-    .io_pcnext_Req_ready(f_gpr_io_pcnext_Req_ready),
-    .io_pcnext_Req_valid(f_gpr_io_pcnext_Req_valid),
-    .io_pcnext_Req_bits_rs1_data(f_gpr_io_pcnext_Req_bits_rs1_data),
-    .io_pcnext_Req_bits_rs2_data(f_gpr_io_pcnext_Req_bits_rs2_data),
-    .io_pcnext_Req_bits_instruction(f_gpr_io_pcnext_Req_bits_instruction),
-    .io_pcnext_Req_bits_pc_next_type(f_gpr_io_pcnext_Req_bits_pc_next_type),
-    .io_pcnext_Req_bits_pc_count(f_gpr_io_pcnext_Req_bits_pc_count),
+    .io_mem_Req_ready(f_gpr_io_mem_Req_ready),
+    .io_mem_Req_valid(f_gpr_io_mem_Req_valid),
+    .io_pc_next(f_gpr_io_pc_next),
+    .io_waddr_rd(f_gpr_io_waddr_rd),
+    .io_wdata_rd(f_gpr_io_wdata_rd),
     .io_raddr_rs1(f_gpr_io_raddr_rs1),
     .io_rdata_rs1(f_gpr_io_rdata_rs1),
     .io_raddr_rs2(f_gpr_io_raddr_rs2),
-    .io_rdata_rs2(f_gpr_io_rdata_rs2)
+    .io_rdata_rs2(f_gpr_io_rdata_rs2),
+    .io_ifu_Req_ready(f_gpr_io_ifu_Req_ready),
+    .io_ifu_Req_valid(f_gpr_io_ifu_Req_valid),
+    .io_ifu_Req_bits_addr(f_gpr_io_ifu_Req_bits_addr)
   );
-  ysyx_25030077_MEM_read g_mem ( // @[top.scala 17:21]
-    .io_inst(g_mem_io_inst),
+  ysyx_25030077_MEM g_mem ( // @[top.scala 19:21]
+    .clock(g_mem_clock),
+    .reset(g_mem_reset),
+    .io_sram_Req_ready(g_mem_io_sram_Req_ready),
+    .io_sram_Req_valid(g_mem_io_sram_Req_valid),
     .io_rs1(g_mem_io_rs1),
     .io_rs2(g_mem_io_rs2),
     .io_imm(g_mem_io_imm),
-    .io_mem_data(g_mem_io_mem_data)
+    .io_r_mask(g_mem_io_r_mask),
+    .io_w_mask(g_mem_io_w_mask),
+    .io_mem_data(g_mem_io_mem_data),
+    .io_gpr_Req_ready(g_mem_io_gpr_Req_ready),
+    .io_gpr_Req_valid(g_mem_io_gpr_Req_valid)
   );
-  ysyx_25030077_DATA_CONTROL h_data_control ( // @[top.scala 18:30]
-    .io_sw(h_data_control_io_sw),
-    .io_rd_addr(h_data_control_io_rd_addr),
+  ysyx_25030077_DATA_CONTROL h_data_control ( // @[top.scala 20:30]
     .io_rs1_data(h_data_control_io_rs1_data),
     .io_rs2_data(h_data_control_io_rs2_data),
-    .io_instruction(h_data_control_io_instruction),
-    .io_pc_next_type(h_data_control_io_pc_next_type),
     .io_imm(h_data_control_io_imm),
     .io_mem_data(h_data_control_io_mem_data),
     .io_pc_count(h_data_control_io_pc_count),
     .io_data_control(h_data_control_io_data_control),
-    .io_alu_Req_ready(h_data_control_io_alu_Req_ready),
-    .io_alu_Req_valid(h_data_control_io_alu_Req_valid),
-    .io_alu_Req_bits_data1(h_data_control_io_alu_Req_bits_data1),
-    .io_alu_Req_bits_data2(h_data_control_io_alu_Req_bits_data2),
-    .io_alu_Req_bits_sw(h_data_control_io_alu_Req_bits_sw),
-    .io_alu_Req_bits_addr(h_data_control_io_alu_Req_bits_addr),
-    .io_alu_Req_bits_rs1_data(h_data_control_io_alu_Req_bits_rs1_data),
-    .io_alu_Req_bits_rs2_data(h_data_control_io_alu_Req_bits_rs2_data),
-    .io_alu_Req_bits_instruction(h_data_control_io_alu_Req_bits_instruction),
-    .io_alu_Req_bits_pc_next_type(h_data_control_io_alu_Req_bits_pc_next_type),
-    .io_alu_Req_bits_pc_count(h_data_control_io_alu_Req_bits_pc_count),
-    .io_ready(h_data_control_io_ready),
-    .io_valid(h_data_control_io_valid)
+    .io_data_1(h_data_control_io_data_1),
+    .io_data_2(h_data_control_io_data_2)
   );
-  ysyx_25030077_ALU i_alu ( // @[top.scala 19:21]
-    .clock(i_alu_clock),
-    .reset(i_alu_reset),
-    .io_alu_Req_ready(i_alu_io_alu_Req_ready),
-    .io_alu_Req_valid(i_alu_io_alu_Req_valid),
-    .io_alu_Req_bits_data1(i_alu_io_alu_Req_bits_data1),
-    .io_alu_Req_bits_data2(i_alu_io_alu_Req_bits_data2),
-    .io_alu_Req_bits_sw(i_alu_io_alu_Req_bits_sw),
-    .io_alu_Req_bits_addr(i_alu_io_alu_Req_bits_addr),
-    .io_alu_Req_bits_rs1_data(i_alu_io_alu_Req_bits_rs1_data),
-    .io_alu_Req_bits_rs2_data(i_alu_io_alu_Req_bits_rs2_data),
-    .io_alu_Req_bits_instruction(i_alu_io_alu_Req_bits_instruction),
-    .io_alu_Req_bits_pc_next_type(i_alu_io_alu_Req_bits_pc_next_type),
-    .io_alu_Req_bits_pc_count(i_alu_io_alu_Req_bits_pc_count),
-    .io_rd_Req_ready(i_alu_io_rd_Req_ready),
-    .io_rd_Req_valid(i_alu_io_rd_Req_valid),
-    .io_rd_Req_bits_rd_addr(i_alu_io_rd_Req_bits_rd_addr),
-    .io_rd_Req_bits_rd_data(i_alu_io_rd_Req_bits_rd_data),
-    .io_rd_Req_bits_rs1_data(i_alu_io_rd_Req_bits_rs1_data),
-    .io_rd_Req_bits_rs2_data(i_alu_io_rd_Req_bits_rs2_data),
-    .io_rd_Req_bits_instruction(i_alu_io_rd_Req_bits_instruction),
-    .io_rd_Req_bits_pc_next_type(i_alu_io_rd_Req_bits_pc_next_type),
-    .io_rd_Req_bits_pc_count(i_alu_io_rd_Req_bits_pc_count),
-    .io_carry(carry),
-    .io_overflow(overflow)
+  ysyx_25030077_ALU i_alu ( // @[top.scala 21:21]
+    .io_in_a(i_alu_io_in_a),
+    .io_in_b(i_alu_io_in_b),
+    .io_sw(i_alu_io_sw),
+    .io_out(i_alu_io_out),
+    .io_carry(i_alu_io_carry),
+    .io_overflow(i_alu_io_overflow)
   );
-  ysyx_25030077_PC_next j_pc_next ( // @[top.scala 20:25]
-    .clock(j_pc_next_clock),
-    .reset(j_pc_next_reset),
-    .io_pcnext_Req_ready(j_pc_next_io_pcnext_Req_ready),
-    .io_pcnext_Req_valid(j_pc_next_io_pcnext_Req_valid),
-    .io_pcnext_Req_bits_rs1_data(j_pc_next_io_pcnext_Req_bits_rs1_data),
-    .io_pcnext_Req_bits_rs2_data(j_pc_next_io_pcnext_Req_bits_rs2_data),
-    .io_pcnext_Req_bits_instruction(j_pc_next_io_pcnext_Req_bits_instruction),
-    .io_pcnext_Req_bits_pc_next_type(j_pc_next_io_pcnext_Req_bits_pc_next_type),
-    .io_pcnext_Req_bits_pc_count(j_pc_next_io_pcnext_Req_bits_pc_count),
-    .io_is_unknown_instruction(j_pc_next_io_is_unknown_instruction),
-    .io_IFUReq_ready(j_pc_next_io_IFUReq_ready),
-    .io_IFUReq_valid(j_pc_next_io_IFUReq_valid),
-    .io_IFUReq_bits_addr(j_pc_next_io_IFUReq_bits_addr)
+  ysyx_25030077_PC_next j_pc_next ( // @[top.scala 22:25]
+    .io_rs1_data(j_pc_next_io_rs1_data),
+    .io_rs2_data(j_pc_next_io_rs2_data),
+    .io_instruction(j_pc_next_io_instruction),
+    .io_pc_next_type(j_pc_next_io_pc_next_type),
+    .io_pc_count(j_pc_next_io_pc_count),
+    .io_pc_next(j_pc_next_io_pc_next),
+    .io_is_unknown_instruction(j_pc_next_io_is_unknown_instruction)
   );
+
   ysyx_25030077_EXIT k_EXIT(
     .clock(clock),
     .reset(reset),
-    .io_Pc_count(d_idu_io_pc_o),
+    .io_Pc_count(b_ifu_io_sram_Req_bits_addr),
     .is_break_out(is_break_out_o),
     .is_unknown_instruction(j_pc_next_io_is_unknown_instruction)
   );
-  assign io_is_unknown_instruction = j_pc_next_io_is_unknown_instruction; // @[top.scala 61:29]
 
+  assign io_is_unknown_instruction = j_pc_next_io_is_unknown_instruction; // @[top.scala 63:29]
+  assign io_carry = i_alu_io_carry; // @[top.scala 64:12]
+  assign io_isoverflow = i_alu_io_overflow; // @[top.scala 65:17]
   assign b_ifu_clock = clock;
   assign b_ifu_reset = reset;
-  assign b_ifu_io_addr_Req_valid = j_pc_next_io_IFUReq_valid; // @[top.scala 22:23]
-  assign b_ifu_io_addr_Req_bits_addr = j_pc_next_io_IFUReq_bits_addr; // @[top.scala 22:23]
-  assign b_ifu_io_sramReq_ready = c_sram_io_req_ready; // @[top.scala 24:20]
+  assign b_ifu_io_rd_Req_valid = f_gpr_io_ifu_Req_valid; // @[top.scala 27:20]
+  assign b_ifu_io_rd_Req_bits_addr = f_gpr_io_ifu_Req_bits_addr; // @[top.scala 27:20]
+  assign b_ifu_io_sram_Req_ready = c_sram_io_ifu_Req_ready; // @[top.scala 24:21]
   assign c_sram_clock = clock;
   assign c_sram_reset = reset;
-  assign c_sram_io_req_valid = b_ifu_io_sramReq_valid; // @[top.scala 24:20]
-  assign c_sram_io_req_bits_addr = b_ifu_io_sramReq_bits_addr; // @[top.scala 24:20]
-  assign c_sram_io_iduReq_ready = d_idu_io_inst_req_ready; // @[top.scala 26:20]
-  assign d_idu_clock = clock;
-  assign d_idu_reset = reset;
-  assign d_idu_io_inst_req_valid = c_sram_io_iduReq_valid; // @[top.scala 26:20]
-  assign d_idu_io_inst_req_bits_inst = c_sram_io_iduReq_bits_inst; // @[top.scala 26:20]
-  assign d_idu_io_inst_req_bits_pc = c_sram_io_iduReq_bits_pc; // @[top.scala 26:20]
-  assign d_idu_io_ready = h_data_control_io_ready; // @[top.scala 51:18]
-  assign e_imm_io_instruction = d_idu_io_instruction_o; // @[top.scala 28:24]
-  assign e_imm_io_imm_type = d_idu_io_imm_type; // @[top.scala 29:21]
+  assign c_sram_io_ifu_Req_valid = b_ifu_io_sram_Req_valid; // @[top.scala 24:21]
+  assign c_sram_io_ifu_Req_bits_addr = b_ifu_io_sram_Req_bits_addr; // @[top.scala 24:21]
+  assign c_sram_io_mem_Req_ready = g_mem_io_sram_Req_ready; // @[top.scala 25:21]
+  assign d_idu_io_instruction = c_sram_io_inst; // @[top.scala 29:24]
+  assign e_imm_io_instruction = c_sram_io_inst; // @[top.scala 31:24]
+  assign e_imm_io_imm_type = d_idu_io_imm_type; // @[top.scala 32:21]
   assign f_gpr_clock = clock;
   assign f_gpr_reset = reset;
-  assign f_gpr_io_rd_Req_valid = i_alu_io_rd_Req_valid; // @[top.scala 56:19]
-  assign f_gpr_io_rd_Req_bits_rd_addr = i_alu_io_rd_Req_bits_rd_addr; // @[top.scala 56:19]
-  assign f_gpr_io_rd_Req_bits_rd_data = i_alu_io_rd_Req_bits_rd_data; // @[top.scala 56:19]
-  assign f_gpr_io_rd_Req_bits_rs1_data = i_alu_io_rd_Req_bits_rs1_data; // @[top.scala 56:19]
-  assign f_gpr_io_rd_Req_bits_rs2_data = i_alu_io_rd_Req_bits_rs2_data; // @[top.scala 56:19]
-  assign f_gpr_io_rd_Req_bits_instruction = i_alu_io_rd_Req_bits_instruction; // @[top.scala 56:19]
-  assign f_gpr_io_rd_Req_bits_pc_next_type = i_alu_io_rd_Req_bits_pc_next_type; // @[top.scala 56:19]
-  assign f_gpr_io_rd_Req_bits_pc_count = i_alu_io_rd_Req_bits_pc_count; // @[top.scala 56:19]
-  assign f_gpr_io_pcnext_Req_ready = j_pc_next_io_pcnext_Req_ready; // @[top.scala 58:27]
-  assign f_gpr_io_raddr_rs1 = d_idu_io_rs1; // @[top.scala 31:22]
-  assign f_gpr_io_raddr_rs2 = d_idu_io_rs2; // @[top.scala 32:22]
-  assign g_mem_io_inst = d_idu_io_instruction_o; // @[top.scala 34:17]
-  assign g_mem_io_rs1 = f_gpr_io_rdata_rs1; // @[top.scala 35:16]
-  assign g_mem_io_rs2 = f_gpr_io_rdata_rs2; // @[top.scala 36:16]
-  assign g_mem_io_imm = e_imm_io_imm; // @[top.scala 37:16]
-  assign h_data_control_io_sw = d_idu_io_ALU_ctrl; // @[top.scala 43:24]
-  assign h_data_control_io_rd_addr = d_idu_io_rd; // @[top.scala 39:29]
-  assign h_data_control_io_rs1_data = f_gpr_io_rdata_rs1; // @[top.scala 40:30]
-  assign h_data_control_io_rs2_data = f_gpr_io_rdata_rs2; // @[top.scala 41:30]
-  assign h_data_control_io_instruction = d_idu_io_instruction_o; // @[top.scala 48:33]
-  assign h_data_control_io_pc_next_type = d_idu_io_pc_next_type; // @[top.scala 47:34]
-  assign h_data_control_io_imm = e_imm_io_imm; // @[top.scala 42:25]
-  assign h_data_control_io_mem_data = g_mem_io_mem_data; // @[top.scala 44:30]
-  assign h_data_control_io_pc_count = d_idu_io_pc_o; // @[top.scala 46:30]
-  assign h_data_control_io_data_control = d_idu_io_data_control; // @[top.scala 45:34]
-  assign h_data_control_io_alu_Req_ready = i_alu_io_alu_Req_ready; // @[top.scala 54:20]
-  assign h_data_control_io_valid = d_idu_io_valid; // @[top.scala 50:27]
-  assign i_alu_clock = clock;
-  assign i_alu_reset = reset;
-  assign i_alu_io_alu_Req_valid = h_data_control_io_alu_Req_valid; // @[top.scala 54:20]
-  assign i_alu_io_alu_Req_bits_data1 = h_data_control_io_alu_Req_bits_data1; // @[top.scala 54:20]
-  assign i_alu_io_alu_Req_bits_data2 = h_data_control_io_alu_Req_bits_data2; // @[top.scala 54:20]
-  assign i_alu_io_alu_Req_bits_sw = h_data_control_io_alu_Req_bits_sw; // @[top.scala 54:20]
-  assign i_alu_io_alu_Req_bits_addr = h_data_control_io_alu_Req_bits_addr; // @[top.scala 54:20]
-  assign i_alu_io_alu_Req_bits_rs1_data = h_data_control_io_alu_Req_bits_rs1_data; // @[top.scala 54:20]
-  assign i_alu_io_alu_Req_bits_rs2_data = h_data_control_io_alu_Req_bits_rs2_data; // @[top.scala 54:20]
-  assign i_alu_io_alu_Req_bits_instruction = h_data_control_io_alu_Req_bits_instruction; // @[top.scala 54:20]
-  assign i_alu_io_alu_Req_bits_pc_next_type = h_data_control_io_alu_Req_bits_pc_next_type; // @[top.scala 54:20]
-  assign i_alu_io_alu_Req_bits_pc_count = h_data_control_io_alu_Req_bits_pc_count; // @[top.scala 54:20]
-  assign i_alu_io_rd_Req_ready = f_gpr_io_rd_Req_ready; // @[top.scala 56:19]
-  assign j_pc_next_clock = clock;
-  assign j_pc_next_reset = reset;
-  assign j_pc_next_io_pcnext_Req_valid = f_gpr_io_pcnext_Req_valid; // @[top.scala 58:27]
-  assign j_pc_next_io_pcnext_Req_bits_rs1_data = f_gpr_io_pcnext_Req_bits_rs1_data; // @[top.scala 58:27]
-  assign j_pc_next_io_pcnext_Req_bits_rs2_data = f_gpr_io_pcnext_Req_bits_rs2_data; // @[top.scala 58:27]
-  assign j_pc_next_io_pcnext_Req_bits_instruction = f_gpr_io_pcnext_Req_bits_instruction; // @[top.scala 58:27]
-  assign j_pc_next_io_pcnext_Req_bits_pc_next_type = f_gpr_io_pcnext_Req_bits_pc_next_type; // @[top.scala 58:27]
-  assign j_pc_next_io_pcnext_Req_bits_pc_count = f_gpr_io_pcnext_Req_bits_pc_count; // @[top.scala 58:27]
-  assign j_pc_next_io_IFUReq_ready = b_ifu_io_addr_Req_ready; // @[top.scala 22:23]
+  assign f_gpr_io_mem_Req_valid = g_mem_io_gpr_Req_valid; // @[top.scala 26:20]
+  assign f_gpr_io_pc_next = j_pc_next_io_pc_next; // @[top.scala 36:20]
+  assign f_gpr_io_waddr_rd = d_idu_io_rd; // @[top.scala 37:21]
+  assign f_gpr_io_wdata_rd = i_alu_io_out; // @[top.scala 38:21]
+  assign f_gpr_io_raddr_rs1 = d_idu_io_rs1; // @[top.scala 34:22]
+  assign f_gpr_io_raddr_rs2 = d_idu_io_rs2; // @[top.scala 35:22]
+  assign f_gpr_io_ifu_Req_ready = b_ifu_io_rd_Req_ready; // @[top.scala 27:20]
+  assign g_mem_clock = clock;
+  assign g_mem_reset = reset;
+  assign g_mem_io_sram_Req_valid = c_sram_io_mem_Req_valid; // @[top.scala 25:21]
+  assign g_mem_io_rs1 = f_gpr_io_rdata_rs1; // @[top.scala 46:16]
+  assign g_mem_io_rs2 = f_gpr_io_rdata_rs2; // @[top.scala 47:16]
+  assign g_mem_io_imm = e_imm_io_imm; // @[top.scala 48:16]
+  assign g_mem_io_r_mask = d_idu_io_r_mask; // @[top.scala 49:19]
+  assign g_mem_io_w_mask = d_idu_io_w_mask; // @[top.scala 49:19]
+  assign g_mem_io_gpr_Req_ready = f_gpr_io_mem_Req_ready; // @[top.scala 26:20]
+  assign h_data_control_io_rs1_data = f_gpr_io_rdata_rs1; // @[top.scala 52:30]
+  assign h_data_control_io_rs2_data = f_gpr_io_rdata_rs2; // @[top.scala 53:30]
+  assign h_data_control_io_imm = e_imm_io_imm; // @[top.scala 54:25]
+  assign h_data_control_io_mem_data = g_mem_io_mem_data; // @[top.scala 55:30]
+  assign h_data_control_io_pc_count = b_ifu_io_rd_Req_bits_addr; // @[top.scala 57:30]
+  assign h_data_control_io_data_control = d_idu_io_data_control; // @[top.scala 56:34]
+  assign i_alu_io_in_a = h_data_control_io_data_1; // @[top.scala 59:17]
+  assign i_alu_io_in_b = h_data_control_io_data_2; // @[top.scala 60:17]
+  assign i_alu_io_sw = d_idu_io_ALU_ctrl; // @[top.scala 61:15]
+  assign j_pc_next_io_rs1_data = f_gpr_io_rdata_rs1; // @[top.scala 40:25]
+  assign j_pc_next_io_rs2_data = f_gpr_io_rdata_rs2; // @[top.scala 41:25]
+  assign j_pc_next_io_instruction = c_sram_io_inst; // @[top.scala 42:28]
+  assign j_pc_next_io_pc_next_type = d_idu_io_pc_next_type; // @[top.scala 44:29]
+  assign j_pc_next_io_pc_count = b_ifu_io_rd_Req_bits_addr; // @[top.scala 43:25]
 endmodule

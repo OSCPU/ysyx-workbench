@@ -12,11 +12,11 @@ PERL = perl
 # Python3 executable (from $PYTHON3, defaults to 'python3' if not set)
 PYTHON3 = python3
 # Path to Verilator kit (from $VERILATOR_ROOT)
-VERILATOR_ROOT = /home/meowth/ysyx/ysyx-workbench/project/oss-cad-suite-linux-x64-20250524/oss-cad-suite/share/verilator
+VERILATOR_ROOT = /home/meowth/ysyx/ysyx-workbench/oss-cad-suite-linux-x64-20250830/oss-cad-suite/share/verilator
 # SystemC include directory with systemc.h (from $SYSTEMC_INCLUDE)
-SYSTEMC_INCLUDE ?= 
+SYSTEMC_INCLUDE ?=
 # SystemC library directory with libsystemc.a (from $SYSTEMC_LIBDIR)
-SYSTEMC_LIBDIR ?= 
+SYSTEMC_LIBDIR ?=
 
 ### Switches...
 # C++ code coverage  0/1 (from --prof-c)
@@ -37,41 +37,40 @@ VM_PREFIX = Vtop
 VM_MODPREFIX = Vtop
 # User CFLAGS (from -CFLAGS on Verilator command line)
 VM_USER_CFLAGS = \
-	-I/usr/include/readline 		 -I  /home/meowth/ysyx/ysyx-workbench/project/0_meopc/tools/capstone/repo/include \
+  -I/usr/include/readline 		 -I  /home/meowth/ysyx/ysyx-workbench/project/0_meopc/tools/capstone/repo/include \
 
 # User LDLIBS (from -LDFLAGS on Verilator command line)
 VM_USER_LDLIBS = \
-	-lz \
-	-lreadline -lncurses \
+  -lz \
+  -lreadline -lncurses \
 
 # User .cpp files (from .cpp's on Verilator command line)
 VM_USER_CLASSES = \
-	cpu_exec \
-	elf \
-	main \
-	memory \
-	monitor \
-	regs \
-	expr \
-	sdb \
-	disasm \
-	dut \
-	ftrace \
-	itrace \
-	logs \
+  cpu_exec \
+  elf \
+  main \
+  memory \
+  monitor \
+  regs \
+  expr \
+  sdb \
+  disasm \
+  dut \
+  ftrace \
+  itrace \
+  logs \
 
 # User .cpp directories (from .cpp's on Verilator command line)
 VM_USER_DIR = \
-	.. \
-	../csrc \
-	../csrc/cpu_exec \
-	../csrc/elf \
-	../csrc/memory \
-	../csrc/monitor \
-	../csrc/regs \
-	../csrc/sdb \
-	../csrc/utils \
-
+  .. \
+  ../csrc \
+  ../csrc/cpu_exec \
+  ../csrc/elf \
+  ../csrc/memory \
+  ../csrc/monitor \
+  ../csrc/regs \
+  ../csrc/sdb \
+  ../csrc/utils \
 
 ### Default rules...
 # Include list of all generated classes
@@ -112,6 +111,5 @@ logs.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc/csrc/utils/logs.cpp
 ### Link rules... (from --exe)
 Vtop: $(VK_USER_OBJS) $(VK_GLOBAL_OBJS) $(VM_PREFIX)__ALL.a $(VM_HIER_LIBS)
 	$(LINK) $(LDFLAGS) $^ $(LOADLIBES) $(LDLIBS) $(LIBS) $(SC_LIBS) -o $@
-
 
 # Verilated -*- Makefile -*-

@@ -126,26 +126,30 @@ int cpu_exec(int n){
 	} 
 	int ix = 1;
 	for(int i = -3; i < 2 * n; i++){
-		// if (!(top -> clk_div)){
-		// 	top -> clock = ~(top -> clock);
-		// 	step_and_dump_wave();
-		// 	if (n < 0){
-		// 		i = i - 1; // 如果n < 0，表示一直执行
-		// 	}
-		// 	continue;
-		// }
-		
 		if(top -> clock){
+			// printf("%d\n", i);
+			uint32_t wmask, valid;
 			svScope scope;
-			if(is_S(insn32) > 0 && (ix % 12 == 9)){
+			scope = svGetScopeFromName("TOP.top.g_mem");
+			svSetScope(scope);
+			wmask = (uint32_t)wmask_read();
+			valid = (uint32_t)valid_read();
+
+			if(wmask > 0 && valid){
 				uint32_t rs1_data, rs2_data, imm_data;
 				scope = svGetScopeFromName("TOP.top.h_data_control");
 				svSetScope(scope);
 				rs1_data = (uint32_t)reg_read_rs1();
 				rs2_data = (uint32_t)reg_read_rs2();
+
+				scope = svGetScopeFromName("TOP.top.g_mem");
+				svSetScope(scope);
+				wmask = (uint32_t)wmask_read();
+				valid = (uint32_t)valid_read();
+
 				imm_data = (SEXT((int64_t)BITS(insn32, 31, 25), 7) << 5) | BITS(insn32, 11, 7);
 				// printf("S-type: rs1 = %x, rs2 = %x, imm = %x\n", rs1_data, rs2_data, imm_data);
-				switch(is_S(insn32))
+				switch(wmask)
 				{
 					case 1:
 						// printf("%x %x\n", rs1_data + imm_data, rs2_data);
@@ -164,10 +168,10 @@ int cpu_exec(int n){
 			if(ITRACE || FTRACE || DIFFTEST){
 				pc_data = new_reg();
 			}
-			if(insn32 != 0 && ITRACE && ix % 12 == 1){
+			if(insn32 != 0 && ITRACE && ix % 8 == 1){
 				print_itrace(itrace, pc_data, insn32);
 			}
-			if(FTRACE && ix % 12 == 11){
+			if(FTRACE && ix % 8 == 7){
 				uint32_t dnpc_data;
 				scope = svGetScopeFromName("TOP.top.j_pc_next");
 				svSetScope(scope);
@@ -179,7 +183,7 @@ int cpu_exec(int n){
 		if(i == 3){
 			top -> reset = 0;
 		}
-		if (DIFFTEST && !(top -> clock) && !(top -> reset) && ix % 12 == 10){
+		if (DIFFTEST && !(top -> clock) && !(top -> reset) && ix % 8 == 7){
 			difftest_step();
 		}
 

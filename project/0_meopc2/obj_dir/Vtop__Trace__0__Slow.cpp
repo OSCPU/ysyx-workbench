@@ -11,6 +11,7 @@ VL_ATTR_COLD void Vtop___024root__trace_init_sub__TOP__0(Vtop___024root* vlSelf,
     // Init
     const int c = vlSymsp->__Vm_baseCode;
     // Body
+    tracep->pushPrefix("$rootio", VerilatedTracePrefixType::SCOPE_MODULE);
     tracep->declBit(c+135,0,"clock",-1, VerilatedTraceSigDirection::INPUT, VerilatedTraceSigKind::WIRE, VerilatedTraceSigType::LOGIC, false,-1);
     tracep->declBit(c+136,0,"reset",-1, VerilatedTraceSigDirection::INPUT, VerilatedTraceSigKind::WIRE, VerilatedTraceSigType::LOGIC, false,-1);
     tracep->declBus(c+137,0,"imm",-1, VerilatedTraceSigDirection::OUTPUT, VerilatedTraceSigKind::WIRE, VerilatedTraceSigType::LOGIC, false,-1, 31,0);
@@ -20,6 +21,7 @@ VL_ATTR_COLD void Vtop___024root__trace_init_sub__TOP__0(Vtop___024root* vlSelf,
     tracep->declBus(c+141,0,"rs2_out",-1, VerilatedTraceSigDirection::OUTPUT, VerilatedTraceSigKind::WIRE, VerilatedTraceSigType::LOGIC, false,-1, 31,0);
     tracep->declBit(c+142,0,"ALU_carry",-1, VerilatedTraceSigDirection::OUTPUT, VerilatedTraceSigKind::WIRE, VerilatedTraceSigType::LOGIC, false,-1);
     tracep->declBit(c+143,0,"ALU_overflow",-1, VerilatedTraceSigDirection::OUTPUT, VerilatedTraceSigKind::WIRE, VerilatedTraceSigType::LOGIC, false,-1);
+    tracep->popPrefix();
     tracep->pushPrefix("ysyx_25030077_top", VerilatedTracePrefixType::SCOPE_MODULE);
     tracep->declBit(c+135,0,"clock",-1, VerilatedTraceSigDirection::INPUT, VerilatedTraceSigKind::WIRE, VerilatedTraceSigType::LOGIC, false,-1);
     tracep->declBit(c+136,0,"reset",-1, VerilatedTraceSigDirection::INPUT, VerilatedTraceSigKind::WIRE, VerilatedTraceSigType::LOGIC, false,-1);
@@ -434,9 +436,7 @@ VL_ATTR_COLD void Vtop___024root__trace_full_0_sub_0(Vtop___024root* vlSelf, Ver
     bufp->fullIData(oldp+117,(VL_SHIFTR_III(32,32,32, vlSelfRef.ysyx_25030077_top__DOT__ALU_data_1, vlSelfRef.ysyx_25030077_top__DOT__ALU_data_2)),32);
     bufp->fullQData(oldp+118,((0x7fffffffffffffffULL 
                                & ((QData)((IData)(vlSelfRef.ysyx_25030077_top__DOT__ALU_data_1)) 
-                                  << ((2U == (IData)(vlSelfRef.ysyx_25030077_top__DOT__data_control))
-                                       ? 0U : (0x1fU 
-                                               & vlSelfRef.ysyx_25030077_top__DOT__i5__DOT___io_data_2_T))))),63);
+                                  << (0x1fU & vlSelfRef.ysyx_25030077_top__DOT__ALU_data_2)))),63);
     bufp->fullIData(oldp+120,(vlSelfRef.ysyx_25030077_top__DOT__i7__DOT__ecall_dnpc),32);
     bufp->fullIData(oldp+121,(((IData)(4U) + vlSelfRef.ysyx_25030077_top__DOT__i0__DOT__state)),32);
     bufp->fullBit(oldp+122,((1U == (IData)(vlSelfRef.ysyx_25030077_top__DOT__pc_next_type))));

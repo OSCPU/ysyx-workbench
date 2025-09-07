@@ -265,4 +265,17 @@ module ysyx_25030077_MEM_read(
   wire [31:0] _GEN_254 = 8'hfe == index ? 32'hfe : _GEN_253; // @[module.scala 17:{15,15}]
   assign io_mem_data = 8'hff == index ? 32'hff : _GEN_254; // @[module.scala 17:{15,15}]
 
+// reg [31:0] data1;
+
+  // always @(posedge clk) begin
+  //   if (reset) begin
+  //     data1 <= 32'b0;
+  //   end
+  //   else if (8'hff == io_addr[7:0]) begin
+  //     data1 <= 32'hff;
+  //   end
+  //   else begin
+  //     data1 <= _GEN_254;
+  //   end
+  // end
 endmodule

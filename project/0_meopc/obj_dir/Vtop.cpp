@@ -13,8 +13,8 @@ Vtop::Vtop(VerilatedContext* _vcontextp__, const char* _vcname__)
     , clock{vlSymsp->TOP.clock}
     , reset{vlSymsp->TOP.reset}
     , io_is_unknown_instruction{vlSymsp->TOP.io_is_unknown_instruction}
-    , carry{vlSymsp->TOP.carry}
-    , overflow{vlSymsp->TOP.overflow}
+    , io_carry{vlSymsp->TOP.io_carry}
+    , io_isoverflow{vlSymsp->TOP.io_isoverflow}
     , rootp{&(vlSymsp->TOP)}
 {
     // Register model with the context
