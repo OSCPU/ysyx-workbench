@@ -48,13 +48,13 @@ module ysyx_25030077_IFU(
   output        io_rd_Req_ready,
   input         io_rd_Req_valid,
   input  [31:0] io_rd_Req_bits_addr,
-  input         io_sram_Req_ready,
-  output        io_sram_Req_valid,
-  output [31:0] io_sram_Req_bits_addr
+  input         io_ar_ready,
+  output        io_ar_valid,
+  output [31:0] io_ar_bits_addr
 );
   export "DPI-C" function pc_read_data;
   function int pc_read_data();
-    return {io_sram_Req_bits_addr};
+    return {io_ar_bits_addr};
   endfunction
   wire  reqQ_clock; // @[Decoupled.scala 361:21]
   wire  reqQ_reset; // @[Decoupled.scala 361:21]
@@ -75,11 +75,11 @@ module ysyx_25030077_IFU(
     .io_deq_bits_addr(reqQ_io_deq_bits_addr)
   );
   assign io_rd_Req_ready = reqQ_io_enq_ready; // @[Decoupled.scala 365:17]
-  assign io_sram_Req_valid = reqQ_io_deq_valid; // @[IFU.scala 14:21]
-  assign io_sram_Req_bits_addr = reqQ_io_deq_bits_addr; // @[IFU.scala 15:25]
+  assign io_ar_valid = reqQ_io_deq_valid; // @[IFU.scala 12:15]
+  assign io_ar_bits_addr = reqQ_io_deq_bits_addr; // @[IFU.scala 13:19]
   assign reqQ_clock = clock;
   assign reqQ_reset = reset;
   assign reqQ_io_enq_valid = io_rd_Req_valid; // @[Decoupled.scala 363:22]
   assign reqQ_io_enq_bits_addr = io_rd_Req_bits_addr; // @[Decoupled.scala 364:21]
-  assign reqQ_io_deq_ready = io_sram_Req_ready; // @[IFU.scala 16:14]
+  assign reqQ_io_deq_ready = io_ar_ready; // @[IFU.scala 14:14]
 endmodule

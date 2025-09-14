@@ -70,6 +70,7 @@ sim:
 	-CFLAGS "-I/usr/include/readline \
 			 -I  /home/meowth/ysyx/ysyx-workbench/project/0_meopc/tools/capstone/repo/include" \
 	-LDFLAGS "-lreadline -lncurses" \
+	--top-module top \
 	$(CSRCS_SIM)  vsrc/*.v 
 	obj_dir/Vtop -e $(IMAGE).elf -d $(DIFF_SO) $(IMAGE).bin mainargs=1
 	gtkwave obj_dir/wave.fst
