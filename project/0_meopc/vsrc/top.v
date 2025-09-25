@@ -125,6 +125,13 @@ module top(
   wire c_arbiter_io_axi_b_valid;
   wire g_mem_io_w_ready;
   wire g_mem_io_aw_ready;
+
+  wire  c_arbiter_io_axi_aw_valid_uart; // @[top.scala 15:25]
+  wire [31:0] c_arbiter_io_axi_aw_addr_uart; // @[top.scala 15:25]
+  wire  c_arbiter_io_axi_w_valid_uart; // @[top.scala 15:25]
+  wire [31:0] c_arbiter_io_axi_w_data_uart; // @[top.scala 15:25]
+  wire [2:0] c_arbiter_io_axi_w_strb_uart; // @[top.scala 15:25]
+
   ysyx_25030077_arbiter c_arbiter ( // @[top.scala 15:22]
     .clock(c_arbiter_clock),
     .reset(c_arbiter_reset),
@@ -140,13 +147,18 @@ module top(
     .io_axi_ar_addr(c_arbiter_io_axi_ar_addr),
     .io_axi_ar_strb(c_arbiter_io_axi_ar_strb),
     .io_axi_ar_ready(c_arbiter_io_axi_ar_ready),
-    .io_axi_aw_valid(c_arbiter_io_axi_aw_valid),
-    .io_axi_aw_addr(c_arbiter_io_axi_aw_addr),
-    .io_axi_aw_ready(g_mem_io_aw_ready),
-    .io_axi_w_valid(c_arbiter_io_axi_w_valid),
-    .io_axi_w_data(c_arbiter_io_axi_w_data),
-    .io_axi_w_strb(c_arbiter_io_axi_w_strb),
-    .io_axi_w_ready(g_mem_io_w_ready),
+    .io_axi_aw_valid_mem(c_arbiter_io_axi_aw_valid),
+    .io_axi_aw_addr_mem(c_arbiter_io_axi_aw_addr),
+    .io_axi_aw_ready_mem(g_mem_io_aw_ready),
+    .io_axi_w_valid_mem(c_arbiter_io_axi_w_valid),
+    .io_axi_w_data_mem(c_arbiter_io_axi_w_data),
+    .io_axi_w_strb_mem(c_arbiter_io_axi_w_strb),
+    .io_axi_w_ready_mem(g_mem_io_w_ready),
+    .io_axi_aw_valid_uart(c_arbiter_io_axi_aw_valid_uart),
+    .io_axi_aw_addr_uart(c_arbiter_io_axi_aw_addr_uart),
+    .io_axi_w_valid_uart(c_arbiter_io_axi_w_valid_uart),
+    .io_axi_w_data_uart(c_arbiter_io_axi_w_data_uart),
+    .io_axi_w_strb_uart(c_arbiter_io_axi_w_strb_uart),
     .io_axi_r_valid(c_arbiter_io_axi_r_valid),
     .io_axi_r_data(c_arbiter_io_axi_r_data),
     .io_axi_r_ready(c_arbiter_io_axi_r_ready),
@@ -258,6 +270,22 @@ module top(
     .is_unknown_instruction(j_pc_next_io_is_unknown_instruction)
   );
 
+  wire  l_uart_clock; // @[top.scala 23:22]
+  wire  l_uart_reset; // @[top.scala 23:22]
+  wire  l_uart_io_aw_valid; // @[top.scala 23:22]
+  wire  l_uart_io_w_valid; // @[top.scala 23:22]
+  wire [31:0] l_uart_io_waddr; // @[top.scala 23:22]
+  wire [31:0] l_uart_io_wdata; // @[top.scala 23:22]
+
+  ysyx_25030077_UART l_uart ( // @[top.scala 23:22]
+    .clock(l_uart_clock),
+    .reset(l_uart_reset),
+    .io_aw_valid(l_uart_io_aw_valid),
+    .io_w_valid(l_uart_io_w_valid),
+    .io_waddr(l_uart_io_waddr),
+    .io_wdata(l_uart_io_wdata)
+  );
+
   assign io_is_unknown_instruction = j_pc_next_io_is_unknown_instruction; // @[top.scala 89:29]
   assign io_carry = i_alu_io_carry; // @[top.scala 90:12]
   assign io_isoverflow = i_alu_io_overflow; // @[top.scala 91:17]
@@ -320,4 +348,11 @@ module top(
   assign j_pc_next_io_instruction = c_arbiter_io_inst; // @[top.scala 74:28]
   assign j_pc_next_io_pc_next_type = d_idu_io_pc_next_type; // @[top.scala 76:29]
   assign j_pc_next_io_pc_count = b_ifu_io_rd_Req_bits_addr; // @[top.scala 75:25]
+
+  assign l_uart_clock = clock;
+  assign l_uart_reset = reset;
+  assign l_uart_io_aw_valid = c_arbiter_io_axi_aw_valid_uart; // @[top.scala 93:22]
+  assign l_uart_io_w_valid = c_arbiter_io_axi_w_valid_uart; // @[top.scala 94:21]
+  assign l_uart_io_waddr = c_arbiter_io_axi_aw_addr_uart; // @[top.scala 95:19]
+  assign l_uart_io_wdata = c_arbiter_io_axi_w_data_uart; // @[top.scala 96:19]
 endmodule

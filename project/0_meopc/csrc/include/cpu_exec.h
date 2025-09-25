@@ -4,7 +4,7 @@
 #include "common.h"
 #include "memory.h"
 void step_and_dump_wave();
-svBit is_break(const svBitVecVal* instruction_in);
+// svBit is_break(const svBitVecVal* instruction_in);
 svBitVecVal addr_read(const svBitVecVal* pc);
 svBitVecVal ecall_read(const svBitVecVal* pc, svBitVecVal* type_p);
 svBitVecVal csr_read(const svBitVecVal* rs1, const svBitVecVal* imm, const svBitVecVal* sw);

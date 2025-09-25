@@ -52,10 +52,10 @@ module ysyx_25030077_IFU(
   output        io_ar_valid,
   output [31:0] io_ar_bits_addr
 );
-  export "DPI-C" function pc_read_data;
-  function int pc_read_data();
-    return {io_ar_bits_addr};
-  endfunction
+  // export "DPI-C" function pc_read_data;
+  // function int pc_read_data();
+  //   return {io_ar_bits_addr};
+  // endfunction
   wire  reqQ_clock; // @[Decoupled.scala 361:21]
   wire  reqQ_reset; // @[Decoupled.scala 361:21]
   wire  reqQ_io_enq_ready; // @[Decoupled.scala 361:21]

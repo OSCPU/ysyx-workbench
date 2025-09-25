@@ -16,15 +16,15 @@ module ysyx_25030077_reg(
   output        io_ifu_Req_valid,
   output [31:0] io_ifu_Req_bits_addr
 );
-  export "DPI-C" function reg_read_addr;
-  function int reg_read_addr();
-    return {27'b0, io_waddr_rd};
-  endfunction
+  // export "DPI-C" function reg_read_addr;
+  // function int reg_read_addr();
+  //   return {27'b0, io_waddr_rd};
+  // endfunction
 
-  export "DPI-C" function reg_read_data;
-  function int reg_read_data();
-    return {io_wdata_rd};
-  endfunction
+  // export "DPI-C" function reg_read_data;
+  // function int reg_read_data();
+  //   return {io_wdata_rd};
+  // endfunction
 
   wire  canAccept_prng_clock; // @[PRNG.scala 91:22]
   wire  canAccept_prng_reset; // @[PRNG.scala 91:22]
@@ -685,9 +685,9 @@ module ysyx_25030077_reg(
       end
     end
     if (reset) begin // @[gpr.scala 20:25]
-      validReg <= 1'h0; // @[gpr.scala 20:25]
+      validReg <= 1'h1; // @[gpr.scala 20:25]
     end else begin
-      validReg <= io_b_valid & io_mem_Req_valid & canAccept | _validReg_T_2; // @[gpr.scala 25:12]
+      validReg <= io_mem_Req_valid & canAccept | _validReg_T_2; // @[gpr.scala 25:12]
     end
     if (reset) begin // @[gpr.scala 22:28]
       pc_next_reg <= 32'h80000000; // @[gpr.scala 22:28]

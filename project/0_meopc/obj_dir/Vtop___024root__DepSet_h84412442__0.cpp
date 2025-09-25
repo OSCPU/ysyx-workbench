@@ -14,18 +14,6 @@ void Vtop___024root____Vdpiexp_top__DOT__b_ifu__DOT__pc_read_data_TOP(Vtop__Syms
         [0U];
 }
 
-extern "C" svBit is_break(const svBitVecVal* instruction_in);
-
-VL_INLINE_OPT void Vtop___024root____Vdpiimwrap_top__DOT__d_idu__DOT__is_break_TOP(IData/*31:0*/ instruction_in, CData/*0:0*/ &is_break__Vfuncrtn) {
-    VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop___024root____Vdpiimwrap_top__DOT__d_idu__DOT__is_break_TOP\n"); );
-    // Body
-    svBitVecVal instruction_in__Vcvt[1];
-    VL_SET_SVBV_I(32, instruction_in__Vcvt, instruction_in);
-    svBit is_break__Vfuncrtn__Vcvt;
-    is_break__Vfuncrtn__Vcvt = is_break(instruction_in__Vcvt);
-    is_break__Vfuncrtn = (1U & is_break__Vfuncrtn__Vcvt);
-}
-
 void Vtop___024root____Vdpiexp_top__DOT__f_gpr__DOT__reg_read_addr_TOP(Vtop__Syms* __restrict vlSymsp, IData/*31:0*/ &reg_read_addr__Vfuncrtn) {
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop___024root____Vdpiexp_top__DOT__f_gpr__DOT__reg_read_addr_TOP\n"); );
     // Init
@@ -70,21 +58,27 @@ void Vtop___024root____Vdpiexp_top__DOT__g_mem__DOT__wmask_read_TOP(Vtop__Syms* 
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop___024root____Vdpiexp_top__DOT__g_mem__DOT__wmask_read_TOP\n"); );
     // Init
     // Body
-    wmask_read__Vfuncrtn = ((1U == (IData)(vlSymsp->TOP.top__DOT__c_arbiter__DOT__state_reg))
-                             ? ((0x123U == (IData)(vlSymsp->TOP.top__DOT__d_idu__DOT___isaddi_T_2))
-                                 ? 1U : ((0x23U == (IData)(vlSymsp->TOP.top__DOT__d_idu__DOT___isaddi_T_2))
-                                          ? 3U : ((0xa3U 
+    wmask_read__Vfuncrtn = ((0xa00003f8U == vlSymsp->TOP.top__DOT__c_arbiter__DOT__axi_aw_addr)
+                             ? 0U : ((1U == (IData)(vlSymsp->TOP.top__DOT__c_arbiter__DOT__state_reg))
+                                      ? ((0x123U == (IData)(vlSymsp->TOP.top__DOT__d_idu__DOT___isaddi_T_2))
+                                          ? 1U : ((0x23U 
                                                    == (IData)(vlSymsp->TOP.top__DOT__d_idu__DOT___isaddi_T_2))
-                                                   ? 2U
-                                                   : 0U)))
-                             : 0U);
+                                                   ? 3U
+                                                   : 
+                                                  ((0xa3U 
+                                                    == (IData)(vlSymsp->TOP.top__DOT__d_idu__DOT___isaddi_T_2))
+                                                    ? 2U
+                                                    : 0U)))
+                                      : 0U));
 }
 
 void Vtop___024root____Vdpiexp_top__DOT__g_mem__DOT__valid_read_TOP(Vtop__Syms* __restrict vlSymsp, IData/*31:0*/ &valid_read__Vfuncrtn) {
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop___024root____Vdpiexp_top__DOT__g_mem__DOT__valid_read_TOP\n"); );
     // Init
     // Body
-    valid_read__Vfuncrtn = vlSymsp->TOP.top__DOT__g_mem__DOT___startDelay_T;
+    valid_read__Vfuncrtn = ((IData)(vlSymsp->TOP.top__DOT__g_mem__DOT__canAccept_prng__DOT__state_0) 
+                            & ((0xa00003f8U != vlSymsp->TOP.top__DOT__c_arbiter__DOT__axi_aw_addr) 
+                               & (IData)(vlSymsp->TOP.top__DOT__c_arbiter__DOT__axi_aw_valid)));
 }
 
 void Vtop___024root____Vdpiexp_top__DOT__h_data_control__DOT__reg_read_rs1_TOP(Vtop__Syms* __restrict vlSymsp, IData/*31:0*/ &reg_read_rs1__Vfuncrtn) {

@@ -6,9 +6,9 @@ module ysyx_25030077_ALU(
   output        io_carry,
   output        io_overflow
 );
-  import "DPI-C" function bit[31:0] csr_read(input bit[31:0] rs1, input bit[31:0] imm, input bit[3:0] sw);
-  wire [31:0] csr_data = csr_read(io_in_a, io_in_b, io_sw);
-  
+  // import "DPI-C" function bit[31:0] csr_read(input bit[31:0] rs1, input bit[31:0] imm, input bit[3:0] sw);
+  // wire [31:0] csr_data = csr_read(io_in_a, io_in_b, io_sw);
+  wire [31:0] csr_data = io_in_a;
   wire [15:0] oneHot = 16'h1 << io_sw; // @[OneHot.scala 64:12]
   wire [32:0] add33 = io_in_a + io_in_b; // @[alu.scala 18:25]
   wire [32:0] sub33 = io_in_a - io_in_b; // @[alu.scala 19:25]

@@ -105,10 +105,9 @@ uint64_t get_time() {
 	uint64_t now = get_time_internal();
 	return now - boot_time;
 }
-svBitVecVal mem_data_read(const svBitVecVal* w_mask, const svBitVecVal* rs1, const svBitVecVal* rs2, const svBitVecVal* imm){
+svBitVecVal mem_data_read(const svBitVecVal* w_mask, const svBitVecVal* addr){
 	int mem_addr, mem_data;
-	// printf("%d\n", *w_mask);
-	mem_addr = *rs1 + *imm;
+	mem_addr = *addr;
 	if(*w_mask == 0){
 		return 0; // 如果不是取字节指令，返回0
 	}

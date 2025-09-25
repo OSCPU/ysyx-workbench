@@ -30,7 +30,7 @@ module ysyx_25030077_MEM(
     return {io_w_mask_ext};
 
   endfunction
-  wire  [31:0] valid = {31'b0, io_ar_valid & canAccept};
+  wire  [31:0] valid = {31'b0, io_aw_valid & canAccept};
   export "DPI-C" function valid_read;
   function int valid_read();
     return {valid};

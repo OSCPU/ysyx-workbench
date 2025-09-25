@@ -65,7 +65,7 @@ int reg_read_rs2() {
 #ifndef VL_DPIDECL_valid_read_
 #define VL_DPIDECL_valid_read_
 int valid_read() {
-    // DPI export at vsrc/ysyx_25030077_MEM.v:33:16
+    // DPI export at vsrc/ysyx_25030077_MEM.v:35:16
     return Vtop::valid_read();
 }
 #endif
@@ -73,7 +73,7 @@ int valid_read() {
 #ifndef VL_DPIDECL_wmask_read_
 #define VL_DPIDECL_wmask_read_
 int wmask_read() {
-    // DPI export at vsrc/ysyx_25030077_MEM.v:27:16
+    // DPI export at vsrc/ysyx_25030077_MEM.v:29:16
     return Vtop::wmask_read();
 }
 #endif

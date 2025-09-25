@@ -12,8 +12,9 @@ module ysyx_25030077_IDU(
   output        io_r_valid,        
   output        is_break_out
 );
-  import "DPI-C" function bit is_break(input bit[31:0] instruction_in);
-  assign is_break_out = is_break(io_instruction);
+  // import "DPI-C" function bit is_break(input bit[31:0] instruction_in);
+  // assign is_break_out = is_break(io_instruction);
+  assign is_break_out = (io_instruction == 32'h100073);
   
   wire [4:0] addi_Rs1 = io_instruction[19:15]; // @[IDU.scala 30:32]
   wire [4:0] addi_Rd = io_instruction[11:7]; // @[IDU.scala 31:32]

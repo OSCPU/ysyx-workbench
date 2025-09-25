@@ -32,7 +32,6 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final : public VerilatedModule
         CData/*2:0*/ top__DOT__d_idu_io_data_control;
         CData/*3:0*/ top__DOT__d_idu_io_ALU_ctrl;
         CData/*3:0*/ top__DOT__d_idu_io_pc_next_type;
-        CData/*0:0*/ top__DOT__is_break_out_o;
         CData/*0:0*/ top__DOT__b_ifu__DOT__reqQ__DOT__ram_addr_MPORT_en;
         CData/*0:0*/ top__DOT__b_ifu__DOT__reqQ__DOT__maybe_full;
         CData/*0:0*/ top__DOT__b_ifu__DOT__reqQ__DOT__do_deq;
@@ -41,6 +40,7 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final : public VerilatedModule
         CData/*0:0*/ top__DOT__c_arbiter__DOT___state_reg_T_3;
         CData/*0:0*/ top__DOT__c_arbiter__DOT___state_reg_T_8;
         CData/*0:0*/ top__DOT__c_arbiter__DOT___state_reg_T_12;
+        CData/*0:0*/ top__DOT__c_arbiter__DOT__axi_aw_valid;
         CData/*0:0*/ top__DOT__f_gpr__DOT__validReg;
         CData/*0:0*/ top__DOT__f_gpr__DOT___validReg_T_2;
         CData/*0:0*/ top__DOT__f_gpr__DOT__canAccept_prng__DOT__state_0;
@@ -88,7 +88,22 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final : public VerilatedModule
         CData/*0:0*/ top__DOT__i_alu__DOT___overflowAddBool_T;
         CData/*0:0*/ top__DOT__i_alu__DOT___overflowAddBool_T_1;
         CData/*0:0*/ top__DOT__j_pc_next__DOT__is_eql;
-        CData/*0:0*/ __Vfunc_top__DOT__d_idu__DOT__is_break__0__Vfuncout;
+        CData/*0:0*/ top__DOT__l_uart__DOT__canAccept_prng__DOT__state_0;
+        CData/*0:0*/ top__DOT__l_uart__DOT__canAccept_prng__DOT__state_1;
+        CData/*0:0*/ top__DOT__l_uart__DOT__canAccept_prng__DOT__state_2;
+        CData/*0:0*/ top__DOT__l_uart__DOT__canAccept_prng__DOT__state_3;
+        CData/*0:0*/ top__DOT__l_uart__DOT__canAccept_prng__DOT__state_4;
+        CData/*0:0*/ top__DOT__l_uart__DOT__canAccept_prng__DOT__state_5;
+        CData/*0:0*/ top__DOT__l_uart__DOT__canAccept_prng__DOT__state_6;
+        CData/*0:0*/ top__DOT__l_uart__DOT__canAccept_prng__DOT__state_7;
+        CData/*0:0*/ top__DOT__l_uart__DOT__canAccept_prng__DOT__state_8;
+        CData/*0:0*/ top__DOT__l_uart__DOT__canAccept_prng__DOT__state_9;
+        CData/*0:0*/ top__DOT__l_uart__DOT__canAccept_prng__DOT__state_10;
+        CData/*0:0*/ top__DOT__l_uart__DOT__canAccept_prng__DOT__state_11;
+        CData/*0:0*/ top__DOT__l_uart__DOT__canAccept_prng__DOT__state_12;
+        CData/*0:0*/ top__DOT__l_uart__DOT__canAccept_prng__DOT__state_13;
+        CData/*0:0*/ top__DOT__l_uart__DOT__canAccept_prng__DOT__state_14;
+        CData/*0:0*/ top__DOT__l_uart__DOT__canAccept_prng__DOT__state_15;
         CData/*0:0*/ __VstlFirstIteration;
         CData/*0:0*/ __Vtrigprevexpr___TOP__clock__0;
         CData/*0:0*/ __VactContinue;
@@ -103,6 +118,7 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final : public VerilatedModule
         IData/*31:0*/ top__DOT__h_data_control_io_data_1;
         IData/*31:0*/ top__DOT__h_data_control_io_data_2;
         IData/*31:0*/ top__DOT__c_arbiter__DOT__inst_reg;
+        IData/*31:0*/ top__DOT__c_arbiter__DOT__axi_aw_addr;
         IData/*16:0*/ top__DOT__d_idu__DOT___isadd_T_3;
         IData/*31:0*/ top__DOT__e_imm__DOT__Imm_type1;
         IData/*31:0*/ top__DOT__f_gpr__DOT__regs_0;
@@ -130,6 +146,8 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final : public VerilatedModule
         IData/*31:0*/ top__DOT__f_gpr__DOT__regs_22;
         IData/*31:0*/ top__DOT__f_gpr__DOT__regs_23;
         IData/*31:0*/ top__DOT__f_gpr__DOT__regs_24;
+    };
+    struct {
         IData/*31:0*/ top__DOT__f_gpr__DOT__regs_25;
         IData/*31:0*/ top__DOT__f_gpr__DOT__regs_26;
         IData/*31:0*/ top__DOT__f_gpr__DOT__regs_27;
@@ -144,12 +162,10 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final : public VerilatedModule
         IData/*31:0*/ top__DOT__i_alu__DOT__csr_data;
         IData/*31:0*/ top__DOT__j_pc_next__DOT__ecall_dnpc;
         IData/*31:0*/ top__DOT__j_pc_next__DOT___beq_result_T_9;
-        IData/*31:0*/ __Vfunc_top__DOT__g_mem__DOT__addr_read__1__Vfuncout;
-        IData/*31:0*/ __Vfunc_top__DOT__g_mem__DOT__mem_data_read__2__Vfuncout;
-    };
-    struct {
-        IData/*31:0*/ __Vfunc_top__DOT__i_alu__DOT__csr_read__3__Vfuncout;
-        IData/*31:0*/ __Vfunc_top__DOT__j_pc_next__DOT__ecall_read__4__Vfuncout;
+        IData/*31:0*/ __Vfunc_top__DOT__g_mem__DOT__addr_read__0__Vfuncout;
+        IData/*31:0*/ __Vfunc_top__DOT__g_mem__DOT__mem_data_read__1__Vfuncout;
+        IData/*31:0*/ __Vfunc_top__DOT__i_alu__DOT__csr_read__2__Vfuncout;
+        IData/*31:0*/ __Vfunc_top__DOT__j_pc_next__DOT__ecall_read__3__Vfuncout;
         IData/*31:0*/ __VactIterCount;
         QData/*63:0*/ top__DOT__i_alu__DOT__out33;
         VlUnpacked<IData/*31:0*/, 1> top__DOT__b_ifu__DOT__reqQ__DOT__ram_addr;

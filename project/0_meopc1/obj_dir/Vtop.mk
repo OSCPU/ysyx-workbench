@@ -81,31 +81,31 @@ include $(VERILATOR_ROOT)/include/verilated.mk
 ### Executable rules... (from --exe)
 VPATH += $(VM_USER_DIR)
 
-cpu_exec.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc1/csrc/cpu_exec/cpu_exec.cpp 
+cpu_exec.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc/csrc/cpu_exec/cpu_exec.cpp 
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
-elf.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc1/csrc/elf/elf.cpp 
+elf.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc/csrc/elf/elf.cpp 
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
-main.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc1/csrc/main.cpp 
+main.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc/csrc/main.cpp 
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
-memory.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc1/csrc/memory/memory.cpp 
+memory.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc/csrc/memory/memory.cpp 
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
-monitor.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc1/csrc/monitor/monitor.cpp 
+monitor.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc/csrc/monitor/monitor.cpp 
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
-regs.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc1/csrc/regs/regs.cpp 
+regs.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc/csrc/regs/regs.cpp 
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
-expr.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc1/csrc/sdb/expr.cpp 
+expr.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc/csrc/sdb/expr.cpp 
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
-sdb.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc1/csrc/sdb/sdb.cpp 
+sdb.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc/csrc/sdb/sdb.cpp 
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
-disasm.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc1/csrc/utils/disasm.cpp 
+disasm.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc/csrc/utils/disasm.cpp 
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
-dut.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc1/csrc/utils/dut.cpp 
+dut.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc/csrc/utils/dut.cpp 
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
-ftrace.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc1/csrc/utils/ftrace.cpp 
+ftrace.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc/csrc/utils/ftrace.cpp 
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
-itrace.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc1/csrc/utils/itrace.cpp 
+itrace.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc/csrc/utils/itrace.cpp 
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
-logs.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc1/csrc/utils/logs.cpp 
+logs.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc/csrc/utils/logs.cpp 
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
 
 ### Link rules... (from --exe)

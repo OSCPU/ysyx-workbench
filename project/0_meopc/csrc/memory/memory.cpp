@@ -28,11 +28,11 @@ uint8_t* guest_to_host(uint32_t paddr) {
 
 int ix = 0;
 void write_addr(uint32_t paddr, uint32_t data, int size) {
-	if(paddr == 0xa00003f8){
-		putchar(data);
-		//printf("write_addr: paddr = %x, data = %x, size = %d\n", paddr, data, size);
-		return;
-	}
+	// if(paddr == 0xa00003f8){
+	// 	putchar(data);
+	// 	//printf("write_addr: paddr = %x, data = %x, size = %d\n", paddr, data, size);
+	// 	return;
+	// }
 	// printf("write_addr: paddr = %x, data = %x, size = %d\n", paddr, data, size);
 	if(MTRACE){
 		mtrace_Write=fopen("outputs/mtrace.txt","a");

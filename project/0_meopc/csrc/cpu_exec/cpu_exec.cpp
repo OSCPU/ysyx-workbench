@@ -27,13 +27,13 @@ void step_and_dump_wave(){
 	tfp->dump(contextp->time());
 }
 
-svBit is_break(const svBitVecVal* instruction_in){
-	if(*instruction_in == 0b00000000000100000000000001110011){
-		flag = 1;
-		return 1;
-	}	 
-	return 0;
-}
+// svBit is_break(const svBitVecVal* instruction_in){
+// 	if(*instruction_in == 0b00000000000100000000000001110011){
+// 		flag = 1;
+// 		return 1;
+// 	}	 
+// 	return 0;
+// }
 
 int success = 0;
 uint32_t insn32;
@@ -62,10 +62,13 @@ svBitVecVal addr_read(const svBitVecVal* pc){
 		//printf("instruction = %x\n", instruction);
 		success = 1;
 	}
+	else if(instruction == 1048691){
+		flag = 1;
+	}
 	if(insn32 == instruction){
 		ins_cnt++;
 		if(ins_cnt > 100){
-			instruction == 1048691;
+			instruction = 1048691;
 			success = 1;
 			flag = 1;
 		}
@@ -144,8 +147,6 @@ int cpu_exec(int n){
 
 				scope = svGetScopeFromName("TOP.top.g_mem");
 				svSetScope(scope);
-				wmask = (uint32_t)wmask_read();
-				valid = (uint32_t)valid_read();
 
 				imm_data = (SEXT((int64_t)BITS(insn32, 31, 25), 7) << 5) | BITS(insn32, 11, 7);
 				// printf("S-type: rs1 = %x, rs2 = %x, imm = %x\n", rs1_data, rs2_data, imm_data);
