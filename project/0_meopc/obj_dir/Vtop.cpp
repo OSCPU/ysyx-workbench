@@ -15,9 +15,6 @@ Vtop::Vtop(VerilatedContext* _vcontextp__, const char* _vcname__)
     , io_is_unknown_instruction{vlSymsp->TOP.io_is_unknown_instruction}
     , io_carry{vlSymsp->TOP.io_carry}
     , io_isoverflow{vlSymsp->TOP.io_isoverflow}
-    , sram_b_valid{vlSymsp->TOP.sram_b_valid}
-    , sram_aw1_ready{vlSymsp->TOP.sram_aw1_ready}
-    , sram_w1_ready{vlSymsp->TOP.sram_w1_ready}
     , rootp{&(vlSymsp->TOP)}
 {
     // Register model with the context

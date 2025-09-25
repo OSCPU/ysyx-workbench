@@ -685,9 +685,9 @@ module ysyx_25030077_reg(
       end
     end
     if (reset) begin // @[gpr.scala 20:25]
-      validReg <= 1'h0; // @[gpr.scala 20:25]
+      validReg <= 1'h1; // @[gpr.scala 20:25]
     end else begin
-      validReg <= io_b_valid & io_mem_Req_valid & canAccept | _validReg_T_2; // @[gpr.scala 25:12]
+      validReg <= io_mem_Req_valid & canAccept | _validReg_T_2; // @[gpr.scala 25:12]
     end
     if (reset) begin // @[gpr.scala 22:28]
       pc_next_reg <= 32'h80000000; // @[gpr.scala 22:28]

@@ -32,13 +32,12 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop VL_NOT_FINAL : public VerilatedModel {
     // propagate new values into/out from the Verilated model.
     VL_IN8(&clock,0,0);
     VL_IN8(&reset,0,0);
-    VL_OUT8(&rd,4,0);
-    VL_OUT8(&ALU_ctrl,3,0);
-    VL_OUT8(&ALU_carry,0,0);
-    VL_OUT8(&ALU_overflow,0,0);
-    VL_OUT(&imm,31,0);
-    VL_OUT(&rs1_out,31,0);
-    VL_OUT(&rs2_out,31,0);
+    VL_OUT8(&io_is_unknown_instruction,0,0);
+    VL_OUT8(&io_carry,0,0);
+    VL_OUT8(&io_isoverflow,0,0);
+    VL_OUT8(&sram_b_valid,0,0);
+    VL_OUT8(&sram_aw1_ready,0,0);
+    VL_OUT8(&sram_w1_ready,0,0);
 
     // CELLS
     // Public to allow access to /* verilator public */ items.
@@ -87,6 +86,8 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop VL_NOT_FINAL : public VerilatedModel {
     static int reg_read_data();
     static int reg_read_rs1();
     static int reg_read_rs2();
+    static int valid_read();
+    static int wmask_read();
 
     // Abstract methods from VerilatedModel
     const char* hierName() const override final;

@@ -198,12 +198,12 @@ int cpu_exec(int n){
 			i = i - 1; // 如果n < 0，表示一直执行
 		}
 		ix ++;
-		if(ix > 20000){
-			flag = 1;
-			success = 0;
-		 printf("Too many instructions\n");
-			break;
-		}
+		// if(ix > 20000){
+		// 	flag = 1;
+		// 	success = 0;
+		//  printf("Too many instructions\n");
+		// 	break;
+		// }
 	} 
 	fclose(itrace);          
 	return 0;

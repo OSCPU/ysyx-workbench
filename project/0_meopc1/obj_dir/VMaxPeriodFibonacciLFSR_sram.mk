@@ -2,9 +2,9 @@
 # DESCRIPTION: Verilator output: Makefile for building Verilated archive or executable
 #
 # Execute this makefile from the object directory:
-#    make -f Vysyx_25020077_top.mk
+#    make -f VMaxPeriodFibonacciLFSR_sram.mk
 
-default: Vysyx_25020077_top
+default: VMaxPeriodFibonacciLFSR_sram
 
 ### Constants...
 # Perl executable (from $PERL, defaults to 'perl' if not set)
@@ -32,9 +32,9 @@ VM_SC_TARGET_ARCH = linux
 
 ### Vars...
 # Design prefix (from --prefix)
-VM_PREFIX = Vysyx_25020077_top
+VM_PREFIX = VMaxPeriodFibonacciLFSR_sram
 # Module prefix (from --prefix)
-VM_MODPREFIX = Vysyx_25020077_top
+VM_MODPREFIX = VMaxPeriodFibonacciLFSR_sram
 # User CFLAGS (from -CFLAGS on Verilator command line)
 VM_USER_CFLAGS = \
   -I/usr/include/readline 		 -I  /home/meowth/ysyx/ysyx-workbench/project/0_meopc/tools/capstone/repo/include \
@@ -74,42 +74,42 @@ VM_USER_DIR = \
 
 ### Default rules...
 # Include list of all generated classes
-include Vysyx_25020077_top_classes.mk
+include VMaxPeriodFibonacciLFSR_sram_classes.mk
 # Include global rules
 include $(VERILATOR_ROOT)/include/verilated.mk
 
 ### Executable rules... (from --exe)
 VPATH += $(VM_USER_DIR)
 
-cpu_exec.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc1/csrc/cpu_exec/cpu_exec.cpp 
+cpu_exec.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc/csrc/cpu_exec/cpu_exec.cpp 
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
-elf.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc1/csrc/elf/elf.cpp 
+elf.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc/csrc/elf/elf.cpp 
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
-main.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc1/csrc/main.cpp 
+main.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc/csrc/main.cpp 
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
-memory.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc1/csrc/memory/memory.cpp 
+memory.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc/csrc/memory/memory.cpp 
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
-monitor.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc1/csrc/monitor/monitor.cpp 
+monitor.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc/csrc/monitor/monitor.cpp 
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
-regs.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc1/csrc/regs/regs.cpp 
+regs.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc/csrc/regs/regs.cpp 
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
-expr.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc1/csrc/sdb/expr.cpp 
+expr.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc/csrc/sdb/expr.cpp 
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
-sdb.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc1/csrc/sdb/sdb.cpp 
+sdb.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc/csrc/sdb/sdb.cpp 
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
-disasm.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc1/csrc/utils/disasm.cpp 
+disasm.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc/csrc/utils/disasm.cpp 
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
-dut.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc1/csrc/utils/dut.cpp 
+dut.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc/csrc/utils/dut.cpp 
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
-ftrace.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc1/csrc/utils/ftrace.cpp 
+ftrace.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc/csrc/utils/ftrace.cpp 
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
-itrace.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc1/csrc/utils/itrace.cpp 
+itrace.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc/csrc/utils/itrace.cpp 
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
-logs.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc1/csrc/utils/logs.cpp 
+logs.o: /home/meowth/ysyx/ysyx-workbench/project/0_meopc/csrc/utils/logs.cpp 
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
 
 ### Link rules... (from --exe)
-Vysyx_25020077_top: $(VK_USER_OBJS) $(VK_GLOBAL_OBJS) $(VM_PREFIX)__ALL.a $(VM_HIER_LIBS)
+VMaxPeriodFibonacciLFSR_sram: $(VK_USER_OBJS) $(VK_GLOBAL_OBJS) $(VM_PREFIX)__ALL.a $(VM_HIER_LIBS)
 	$(LINK) $(LDFLAGS) $^ $(LOADLIBES) $(LDLIBS) $(LIBS) $(SC_LIBS) -o $@
 
 # Verilated -*- Makefile -*-

@@ -97,14 +97,14 @@ bool static checkregs(struct CPU_state *ref_r){
     if(flag == false){
       printf("ref-pc=%x\n",ref_r -> pc);
       for(i = 0;i < REGNUM;i++){
-      if(ref_r -> gpr[i] >= 0x02000000){
+      // if(ref_r -> gpr[i] >= 0x02000000){
           printf("ref-%3s = %-#11x",regs[i],ref_r -> gpr[i]);
-          printf("\n");
-          }
-      else{
-          printf("ref-%3s = %-11d",regs[i],ref_r -> gpr[i]);
-          printf("\n");
-          } 
+          if(i % 3 == 0) printf("\n");
+          // }
+      // else{
+      //     printf("ref-%3s = %-11d",regs[i],ref_r -> gpr[i]);
+      //     if(i % 3 == 0) printf("\n");
+      //     } 
       }
       printf("\n");
     }

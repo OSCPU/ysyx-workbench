@@ -23,6 +23,8 @@ using Vtop__Vcb_reg_read_addr_t = void (*) (Vtop__Syms* __restrict vlSymsp, IDat
 using Vtop__Vcb_reg_read_data_t = void (*) (Vtop__Syms* __restrict vlSymsp, IData/*31:0*/ &reg_read_data__Vfuncrtn);
 using Vtop__Vcb_reg_read_rs1_t = void (*) (Vtop__Syms* __restrict vlSymsp, IData/*31:0*/ &reg_read_rs1__Vfuncrtn);
 using Vtop__Vcb_reg_read_rs2_t = void (*) (Vtop__Syms* __restrict vlSymsp, IData/*31:0*/ &reg_read_rs2__Vfuncrtn);
+using Vtop__Vcb_valid_read_t = void (*) (Vtop__Syms* __restrict vlSymsp, IData/*31:0*/ &valid_read__Vfuncrtn);
+using Vtop__Vcb_wmask_read_t = void (*) (Vtop__Syms* __restrict vlSymsp, IData/*31:0*/ &wmask_read__Vfuncrtn);
 
 // SYMS CLASS (contains all model state)
 class alignas(VL_CACHE_LINE_BYTES)Vtop__Syms final : public VerilatedSyms {
@@ -38,10 +40,11 @@ class alignas(VL_CACHE_LINE_BYTES)Vtop__Syms final : public VerilatedSyms {
     Vtop___024root                 TOP;
 
     // SCOPE NAMES
-    VerilatedScope __Vscope_ysyx_25030077_top__i0;
-    VerilatedScope __Vscope_ysyx_25030077_top__i4;
-    VerilatedScope __Vscope_ysyx_25030077_top__i5;
-    VerilatedScope __Vscope_ysyx_25030077_top__i7;
+    VerilatedScope __Vscope_top__b_ifu;
+    VerilatedScope __Vscope_top__f_gpr;
+    VerilatedScope __Vscope_top__g_mem;
+    VerilatedScope __Vscope_top__h_data_control;
+    VerilatedScope __Vscope_top__j_pc_next;
 
     // CONSTRUCTORS
     Vtop__Syms(VerilatedContext* contextp, const char* namep, Vtop* modelp);

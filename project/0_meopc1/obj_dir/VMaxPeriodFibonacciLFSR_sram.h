@@ -5,20 +5,21 @@
 // The class here is then constructed to instantiate the design.
 // See the Verilator manual for examples.
 
-#ifndef VERILATED_VYSYX_25020077_TOP_H_
-#define VERILATED_VYSYX_25020077_TOP_H_  // guard
+#ifndef VERILATED_VMAXPERIODFIBONACCILFSR_SRAM_H_
+#define VERILATED_VMAXPERIODFIBONACCILFSR_SRAM_H_  // guard
 
 #include "verilated.h"
+#include "svdpi.h"
 
-class Vysyx_25020077_top__Syms;
-class Vysyx_25020077_top___024root;
+class VMaxPeriodFibonacciLFSR_sram__Syms;
+class VMaxPeriodFibonacciLFSR_sram___024root;
 class VerilatedFstC;
 
 // This class is the main interface to the Verilated model
-class alignas(VL_CACHE_LINE_BYTES) Vysyx_25020077_top VL_NOT_FINAL : public VerilatedModel {
+class alignas(VL_CACHE_LINE_BYTES) VMaxPeriodFibonacciLFSR_sram VL_NOT_FINAL : public VerilatedModel {
   private:
     // Symbol table holding complete model state (owned by this class)
-    Vysyx_25020077_top__Syms* const vlSymsp;
+    VMaxPeriodFibonacciLFSR_sram__Syms* const vlSymsp;
 
   public:
 
@@ -29,15 +30,11 @@ class alignas(VL_CACHE_LINE_BYTES) Vysyx_25020077_top VL_NOT_FINAL : public Veri
     // PORTS
     // The application code writes and reads these signals to
     // propagate new values into/out from the Verilated model.
-    VL_IN8(&clk,0,0);
+    VL_IN8(&clock,0,0);
     VL_IN8(&reset,0,0);
-    VL_OUT8(&rd,4,0);
-    VL_OUT8(&ALU_ctrl,3,0);
-    VL_OUT8(&ALU_carry,0,0);
-    VL_OUT8(&ALU_overflow,0,0);
-    VL_OUT(&imm,31,0);
-    VL_OUT(&rs1_out,31,0);
-    VL_OUT(&rs2_out,31,0);
+    VL_OUT8(&io_is_unknown_instruction,0,0);
+    VL_OUT8(&io_carry,0,0);
+    VL_OUT8(&io_isoverflow,0,0);
 
     // CELLS
     // Public to allow access to /* verilator public */ items.
@@ -45,19 +42,19 @@ class alignas(VL_CACHE_LINE_BYTES) Vysyx_25020077_top VL_NOT_FINAL : public Veri
 
     // Root instance pointer to allow access to model internals,
     // including inlined /* verilator public_flat_* */ items.
-    Vysyx_25020077_top___024root* const rootp;
+    VMaxPeriodFibonacciLFSR_sram___024root* const rootp;
 
     // CONSTRUCTORS
     /// Construct the model; called by application code
     /// If contextp is null, then the model will use the default global context
     /// If name is "", then makes a wrapper with a
     /// single model invisible with respect to DPI scope names.
-    explicit Vysyx_25020077_top(VerilatedContext* contextp, const char* name = "TOP");
-    explicit Vysyx_25020077_top(const char* name = "TOP");
+    explicit VMaxPeriodFibonacciLFSR_sram(VerilatedContext* contextp, const char* name = "TOP");
+    explicit VMaxPeriodFibonacciLFSR_sram(const char* name = "TOP");
     /// Destroy the model; called (often implicitly) by application code
-    virtual ~Vysyx_25020077_top();
+    virtual ~VMaxPeriodFibonacciLFSR_sram();
   private:
-    VL_UNCOPYABLE(Vysyx_25020077_top);  ///< Copying not allowed
+    VL_UNCOPYABLE(VMaxPeriodFibonacciLFSR_sram);  ///< Copying not allowed
 
   public:
     // API METHODS
@@ -78,6 +75,16 @@ class alignas(VL_CACHE_LINE_BYTES) Vysyx_25020077_top VL_NOT_FINAL : public Veri
     void trace(VerilatedTraceBaseC* tfp, int levels, int options = 0) { contextp()->trace(tfp, levels, options); }
     /// Retrieve name of this model instance (as passed to constructor).
     const char* name() const;
+
+    /// DPI Export functions
+    static int dnpc_read_data();
+    static int pc_read_data();
+    static int reg_read_addr();
+    static int reg_read_data();
+    static int reg_read_rs1();
+    static int reg_read_rs2();
+    static int valid_read();
+    static int wmask_read();
 
     // Abstract methods from VerilatedModel
     const char* hierName() const override final;

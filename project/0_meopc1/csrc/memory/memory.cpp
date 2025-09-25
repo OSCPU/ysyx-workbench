@@ -26,13 +26,14 @@ uint8_t* guest_to_host(uint32_t paddr) {
     return pmem + (uintptr_t)(paddr - 0x80000000); 
 }
 
+int ix = 0;
 void write_addr(uint32_t paddr, uint32_t data, int size) {
 	if(paddr == 0xa00003f8){
 		putchar(data);
 		//printf("write_addr: paddr = %x, data = %x, size = %d\n", paddr, data, size);
 		return;
 	}
-	//printf("write_addr: paddr = %x, data = %x, size = %d\n", paddr, data, size);
+	// printf("write_addr: paddr = %x, data = %x, size = %d\n", paddr, data, size);
 	if(MTRACE){
 		mtrace_Write=fopen("outputs/mtrace.txt","a");
 		fprintf(mtrace_Write, "write   %x\n", paddr);
@@ -104,16 +105,20 @@ uint64_t get_time() {
 	uint64_t now = get_time_internal();
 	return now - boot_time;
 }
-svBitVecVal mem_data_read(const svBitVecVal* instruction_in, const svBitVecVal* rs1_data_in, const svBitVecVal* rs2_data_in, const svBitVecVal*  imm_data_in){
+svBitVecVal mem_data_read(const svBitVecVal* w_mask, const svBitVecVal* rs1, const svBitVecVal* rs2, const svBitVecVal* imm){
 	int mem_addr, mem_data;
-	if(is_L(*instruction_in) == 0){
+	// printf("%d\n", *w_mask);
+	mem_addr = *rs1 + *imm;
+	if(*w_mask == 0){
 		return 0; // 如果不是取字节指令，返回0
 	}
-	mem_addr = *rs1_data_in + *imm_data_in;
 	if(MTRACE){
-		mtrace_Write=fopen("outputs/mtrace.txt","a");
-		fprintf(mtrace_Write, "read    %x\n", mem_addr);
-		fclose(mtrace_Write);
+		if(ix % 6 == 0){
+			mtrace_Write=fopen("outputs/mtrace.txt","a");
+			fprintf(mtrace_Write, "read    %x\n", mem_addr);
+			fclose(mtrace_Write);
+		}
+		ix = ix + 1;
 	} 
 	if(mem_addr == 0xa0000048 || mem_addr == 0xa000004C){
 		uint64_t time_now = get_time();
@@ -126,7 +131,7 @@ svBitVecVal mem_data_read(const svBitVecVal* instruction_in, const svBitVecVal* 
 	if(mem_addr < 0x80000000 || mem_addr >= 0x8fffffff)
 		return 0;
 	// printf("mem_addr = %x\n", mem_addr);
-	switch (is_L(*instruction_in))
+	switch (*w_mask)
 	{
 		case 1:
 			//printf("read addr = %x\n", mem_addr);	

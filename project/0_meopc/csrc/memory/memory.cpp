@@ -105,12 +105,12 @@ uint64_t get_time() {
 	uint64_t now = get_time_internal();
 	return now - boot_time;
 }
-svBitVecVal mem_data_read(const svBitVecVal* w_mask, const svBitVecVal* rs1_data_in, const svBitVecVal* rs2_data_in, const svBitVecVal*  imm_data_in){
+svBitVecVal mem_data_read(const svBitVecVal* w_mask, const svBitVecVal* addr){
 	int mem_addr, mem_data;
+	mem_addr = *addr;
 	if(*w_mask == 0){
 		return 0; // 如果不是取字节指令，返回0
 	}
-	mem_addr = *rs1_data_in + *imm_data_in;
 	if(MTRACE){
 		if(ix % 6 == 0){
 			mtrace_Write=fopen("outputs/mtrace.txt","a");

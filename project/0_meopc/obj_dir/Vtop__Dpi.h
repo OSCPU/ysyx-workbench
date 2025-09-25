@@ -28,22 +28,22 @@ extern "C" {
     extern int reg_read_rs1();
     // DPI export at vsrc/ysyx_25030077_DATA_CONTROL.v:17:16
     extern int reg_read_rs2();
-    // DPI export at vsrc/ysyx_25030077_MEM.v:33:16
+    // DPI export at vsrc/ysyx_25030077_MEM.v:35:16
     extern int valid_read();
-    // DPI export at vsrc/ysyx_25030077_MEM.v:27:16
+    // DPI export at vsrc/ysyx_25030077_MEM.v:29:16
     extern int wmask_read();
 
     // DPI IMPORTS
-    // DPI import at vsrc/ysyx_25030077_sram.v:26:37
-    extern svBitVecVal addr_read(const svBitVecVal* pc);
+    // DPI import at vsrc/ysyx_25030077_MEM.v:26:37
+    extern svBitVecVal addr_read(const svBitVecVal* addr_in);
     // DPI import at vsrc/ysyx_25030077_ALU.v:9:37
     extern svBitVecVal csr_read(const svBitVecVal* rs1, const svBitVecVal* imm, const svBitVecVal* sw);
     // DPI import at vsrc/ysyx_25030077_PC_next.v:15:37
     extern svBitVecVal ecall_read(const svBitVecVal* pc, const svBitVecVal* type_p);
     // DPI import at vsrc/ysyx_25030077_IDU.v:15:31
     extern svBit is_break(const svBitVecVal* instruction_in);
-    // DPI import at vsrc/ysyx_25030077_MEM.v:24:37
-    extern svBitVecVal mem_data_read(const svBitVecVal* instruction_in, const svBitVecVal* rs1_data_in, const svBitVecVal* rs2_data_in, const svBitVecVal* imm_data_in);
+    // DPI import at vsrc/ysyx_25030077_MEM.v:25:37
+    extern svBitVecVal mem_data_read(const svBitVecVal* mask, const svBitVecVal* addr_in);
 
 #ifdef __cplusplus
 }

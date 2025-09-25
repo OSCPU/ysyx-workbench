@@ -1,16 +1,16 @@
 // Verilated -*- C++ -*-
 // DESCRIPTION: Verilator output: Design internal header
-// See Vtop.h for the primary calling header
+// See VMaxPeriodFibonacciLFSR_sram.h for the primary calling header
 
-#ifndef VERILATED_VTOP___024ROOT_H_
-#define VERILATED_VTOP___024ROOT_H_  // guard
+#ifndef VERILATED_VMAXPERIODFIBONACCILFSR_SRAM___024ROOT_H_
+#define VERILATED_VMAXPERIODFIBONACCILFSR_SRAM___024ROOT_H_  // guard
 
 #include "verilated.h"
 
 
-class Vtop__Syms;
+class VMaxPeriodFibonacciLFSR_sram__Syms;
 
-class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final : public VerilatedModule {
+class alignas(VL_CACHE_LINE_BYTES) VMaxPeriodFibonacciLFSR_sram___024root final : public VerilatedModule {
   public:
 
     // DESIGN SPECIFIC STATE
@@ -21,9 +21,6 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final : public VerilatedModule
         VL_OUT8(io_is_unknown_instruction,0,0);
         VL_OUT8(io_carry,0,0);
         VL_OUT8(io_isoverflow,0,0);
-        VL_OUT8(sram_b_valid,0,0);
-        VL_OUT8(sram_aw1_ready,0,0);
-        VL_OUT8(sram_w1_ready,0,0);
         CData/*2:0*/ top__DOT__d_idu_io_imm_type;
         CData/*4:0*/ top__DOT__d_idu_io_rs1;
         CData/*4:0*/ top__DOT__d_idu_io_rs2;
@@ -31,13 +28,15 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final : public VerilatedModule
         CData/*2:0*/ top__DOT__d_idu_io_data_control;
         CData/*3:0*/ top__DOT__d_idu_io_ALU_ctrl;
         CData/*3:0*/ top__DOT__d_idu_io_pc_next_type;
+        CData/*0:0*/ top__DOT__f_gpr_io_mem_Req_ready;
         CData/*0:0*/ top__DOT__f_gpr_io_mem_Req_valid;
         CData/*0:0*/ top__DOT__is_break_out_o;
+        CData/*0:0*/ top__DOT__r_valid;
         CData/*0:0*/ top__DOT__b_ifu__DOT__reqQ__DOT__ram_addr_MPORT_en;
         CData/*0:0*/ top__DOT__b_ifu__DOT__reqQ__DOT__maybe_full;
         CData/*0:0*/ top__DOT__b_ifu__DOT__reqQ__DOT__do_deq;
         CData/*0:0*/ top__DOT__c_sram__DOT__validReg;
-        CData/*0:0*/ top__DOT__c_sram__DOT___validReg_T_3;
+        CData/*0:0*/ top__DOT__c_sram__DOT___validReg_T_1;
         CData/*0:0*/ top__DOT__c_sram__DOT__canAccept_prng__DOT__state_0;
         CData/*0:0*/ top__DOT__c_sram__DOT__canAccept_prng__DOT__state_1;
         CData/*0:0*/ top__DOT__c_sram__DOT__canAccept_prng__DOT__state_2;
@@ -55,33 +54,16 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final : public VerilatedModule
         CData/*0:0*/ top__DOT__c_sram__DOT__canAccept_prng__DOT__state_14;
         CData/*0:0*/ top__DOT__c_sram__DOT__canAccept_prng__DOT__state_15;
         CData/*0:0*/ top__DOT__f_gpr__DOT__validReg;
-        CData/*0:0*/ top__DOT__f_gpr__DOT___validReg_T_2;
-        CData/*0:0*/ top__DOT__f_gpr__DOT__canAccept_prng__DOT__state_0;
-        CData/*0:0*/ top__DOT__f_gpr__DOT__canAccept_prng__DOT__state_1;
-        CData/*0:0*/ top__DOT__f_gpr__DOT__canAccept_prng__DOT__state_2;
-        CData/*0:0*/ top__DOT__f_gpr__DOT__canAccept_prng__DOT__state_3;
-        CData/*0:0*/ top__DOT__f_gpr__DOT__canAccept_prng__DOT__state_4;
-        CData/*0:0*/ top__DOT__f_gpr__DOT__canAccept_prng__DOT__state_5;
-        CData/*0:0*/ top__DOT__f_gpr__DOT__canAccept_prng__DOT__state_6;
-        CData/*0:0*/ top__DOT__f_gpr__DOT__canAccept_prng__DOT__state_7;
-        CData/*0:0*/ top__DOT__f_gpr__DOT__canAccept_prng__DOT__state_8;
-        CData/*0:0*/ top__DOT__f_gpr__DOT__canAccept_prng__DOT__state_9;
-        CData/*0:0*/ top__DOT__f_gpr__DOT__canAccept_prng__DOT__state_10;
-        CData/*0:0*/ top__DOT__f_gpr__DOT__canAccept_prng__DOT__state_11;
-        CData/*0:0*/ top__DOT__f_gpr__DOT__canAccept_prng__DOT__state_12;
-        CData/*0:0*/ top__DOT__f_gpr__DOT__canAccept_prng__DOT__state_13;
-        CData/*0:0*/ top__DOT__f_gpr__DOT__canAccept_prng__DOT__state_14;
-        CData/*0:0*/ top__DOT__f_gpr__DOT__canAccept_prng__DOT__state_15;
+        CData/*0:0*/ top__DOT__f_gpr__DOT___validReg_T;
+        CData/*0:0*/ top__DOT__f_gpr__DOT___validReg_T_1;
         CData/*0:0*/ top__DOT__g_mem__DOT__validReg;
         CData/*2:0*/ top__DOT__g_mem__DOT__delayCnt;
         CData/*0:0*/ top__DOT__g_mem__DOT___startDelay_T;
         CData/*2:0*/ top__DOT__g_mem__DOT___delayCnt_T_3;
-        CData/*0:0*/ top__DOT__g_mem__DOT___validReg_T_4;
+        CData/*0:0*/ top__DOT__g_mem__DOT___validReg_T_3;
         CData/*0:0*/ top__DOT__g_mem__DOT__canAccept_prng__DOT__state_0;
         CData/*0:0*/ top__DOT__g_mem__DOT__canAccept_prng__DOT__state_1;
         CData/*0:0*/ top__DOT__g_mem__DOT__canAccept_prng__DOT__state_2;
-    };
-    struct {
         CData/*0:0*/ top__DOT__g_mem__DOT__canAccept_prng__DOT__state_3;
         CData/*0:0*/ top__DOT__g_mem__DOT__canAccept_prng__DOT__state_4;
         CData/*0:0*/ top__DOT__g_mem__DOT__canAccept_prng__DOT__state_5;
@@ -98,6 +80,8 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final : public VerilatedModule
         CData/*0:0*/ top__DOT__g_mem__DOT__delayCnt_prng__DOT__state_0;
         CData/*0:0*/ top__DOT__g_mem__DOT__delayCnt_prng__DOT__state_1;
         CData/*0:0*/ top__DOT__g_mem__DOT__delayCnt_prng__DOT__state_2;
+    };
+    struct {
         CData/*0:0*/ top__DOT__i_alu__DOT___overflowAddBool_T;
         CData/*0:0*/ top__DOT__i_alu__DOT___overflowAddBool_T_1;
         CData/*0:0*/ top__DOT__j_pc_next__DOT__is_eql;
@@ -146,8 +130,6 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final : public VerilatedModule
         IData/*31:0*/ top__DOT__f_gpr__DOT__regs_26;
         IData/*31:0*/ top__DOT__f_gpr__DOT__regs_27;
         IData/*31:0*/ top__DOT__f_gpr__DOT__regs_28;
-    };
-    struct {
         IData/*31:0*/ top__DOT__f_gpr__DOT__regs_29;
         IData/*31:0*/ top__DOT__f_gpr__DOT__regs_30;
         IData/*31:0*/ top__DOT__f_gpr__DOT__regs_31;
@@ -164,6 +146,8 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final : public VerilatedModule
         IData/*31:0*/ __VactIterCount;
         QData/*63:0*/ top__DOT__i_alu__DOT__out33;
         VlUnpacked<IData/*31:0*/, 1> top__DOT__b_ifu__DOT__reqQ__DOT__ram_addr;
+    };
+    struct {
         VlUnpacked<CData/*0:0*/, 2> __Vm_traceActivity;
     };
     VlTriggerVec<1> __VstlTriggered;
@@ -171,12 +155,12 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final : public VerilatedModule
     VlTriggerVec<1> __VnbaTriggered;
 
     // INTERNAL VARIABLES
-    Vtop__Syms* const vlSymsp;
+    VMaxPeriodFibonacciLFSR_sram__Syms* const vlSymsp;
 
     // CONSTRUCTORS
-    Vtop___024root(Vtop__Syms* symsp, const char* v__name);
-    ~Vtop___024root();
-    VL_UNCOPYABLE(Vtop___024root);
+    VMaxPeriodFibonacciLFSR_sram___024root(VMaxPeriodFibonacciLFSR_sram__Syms* symsp, const char* v__name);
+    ~VMaxPeriodFibonacciLFSR_sram___024root();
+    VL_UNCOPYABLE(VMaxPeriodFibonacciLFSR_sram___024root);
 
     // INTERNAL METHODS
     void __Vconfigure(bool first);

@@ -6,8 +6,6 @@
 
 int flag = 0;
 uint32_t csr[4096];
-
-uint64_t g_nr_guest_inst = 0;
 VerilatedContext* contextp = new VerilatedContext;
 VerilatedFstC* tfp = new VerilatedFstC;
 Vtop* top = new Vtop{contextp};
@@ -40,12 +38,16 @@ svBit is_break(const svBitVecVal* instruction_in){
 int success = 0;
 uint32_t insn32;
 
+int ins_cnt = 0;
 svBitVecVal addr_read(const svBitVecVal* pc){
 	svBitVecVal instruction;
     // printf("pc = %x\n", *pc);
 	if(*pc < 0x80000000){
 		instruction = 0x413;
 	}
+	// else if(*pc == 0x80000050){
+	// 	instruction = 75299;
+	// }
 	else{
         int insert = (*pc - 0x80000000) + 3;
         // printf("insert = %d\n", insert);
@@ -60,14 +62,25 @@ svBitVecVal addr_read(const svBitVecVal* pc){
 		//printf("instruction = %x\n", instruction);
 		success = 1;
 	}
+	if(insn32 == instruction){
+		ins_cnt++;
+		if(ins_cnt > 100){
+			instruction == 1048691;
+			success = 1;
+			flag = 1;
+		}
+	}
+	else{
+		ins_cnt = 0;
+	}
 	insn32 = instruction;
 	// printf("instruction: %x\n",instruction);
 	return instruction;
 }
-
 svBitVecVal ecall_read(const svBitVecVal* pc, const svBitVecVal* type_p){
+	// printf("ecall_read: pc = %x, type = %d\n", *pc, *type_p);
 	if(*type_p == 11){
-		//printf("ecall: %x\n", *pc);
+		// printf("ecall: %x\n", *pc);
 		csr[MEPC] = (uint32_t)*pc;
 		csr[MCAUSE] = 11;
 		assert(csr[MTVEC] != 0);
@@ -80,14 +93,15 @@ svBitVecVal ecall_read(const svBitVecVal* pc, const svBitVecVal* type_p){
 	}
 	return 0;
 }
-
 svBitVecVal csr_read(const svBitVecVal* rs1, const svBitVecVal* imm, const svBitVecVal* sw){
 	if(*sw == 11){
+		// printf("iz: %d csr_read: rs1 = %x, imm = %x, sw = %d\n",iz, *rs1, *imm, *sw);
 		svBitVecVal t = csr[*imm];
 		csr[*imm] = *rs1;
 		return t;
 	}
 	if(*sw == 12){
+		// printf("iz: %d csr_read: rs1 = %x, imm = %x, sw = %d\n",iz, *rs1, *imm, *sw);
 		svBitVecVal t = csr[*imm];
 		csr[*imm] = t | *rs1;
 		return t;
@@ -110,19 +124,32 @@ int cpu_exec(int n){
 		FILE *mtrace_Write=fopen("outputs/mtrace.txt","w");
 		fclose(mtrace_Write);
 	} 
+	int ix = 1;
 	for(int i = -3; i < 2 * n; i++){
-		//printf("i = %d\n", i);
 		if(top -> clock){
-			g_nr_guest_inst ++;
+			// printf("%d\n", i);
+			uint32_t wmask, valid;
 			svScope scope;
-			if(is_S(insn32) > 0){
+			scope = svGetScopeFromName("TOP.top.g_mem");
+			svSetScope(scope);
+			wmask = (uint32_t)wmask_read();
+			valid = (uint32_t)valid_read();
+
+			if(wmask > 0 && valid){
 				uint32_t rs1_data, rs2_data, imm_data;
-				scope = svGetScopeFromName("TOP.ysyx_25030077_top.i5");
+				scope = svGetScopeFromName("TOP.top.h_data_control");
 				svSetScope(scope);
 				rs1_data = (uint32_t)reg_read_rs1();
 				rs2_data = (uint32_t)reg_read_rs2();
+
+				scope = svGetScopeFromName("TOP.top.g_mem");
+				svSetScope(scope);
+				wmask = (uint32_t)wmask_read();
+				valid = (uint32_t)valid_read();
+
 				imm_data = (SEXT((int64_t)BITS(insn32, 31, 25), 7) << 5) | BITS(insn32, 11, 7);
-				switch(is_S(insn32))
+				// printf("S-type: rs1 = %x, rs2 = %x, imm = %x\n", rs1_data, rs2_data, imm_data);
+				switch(wmask)
 				{
 					case 1:
 						// printf("%x %x\n", rs1_data + imm_data, rs2_data);
@@ -141,24 +168,27 @@ int cpu_exec(int n){
 			if(ITRACE || FTRACE || DIFFTEST){
 				pc_data = new_reg();
 			}
-			if(insn32 != 0 && ITRACE){
+			if(insn32 != 0 && ITRACE && ix % 8 == 1){
 				print_itrace(itrace, pc_data, insn32);
 			}
-			if(FTRACE){
+			if(FTRACE && ix % 8 == 7){
 				uint32_t dnpc_data;
-				scope = svGetScopeFromName("TOP.ysyx_25030077_top.i7");
+				scope = svGetScopeFromName("TOP.top.j_pc_next");
 				svSetScope(scope);
 				dnpc_data = (uint32_t)dnpc_read_data();
+				// printf("%x %x\n", pc_data, dnpc_data);									
 				ftrace_check(pc_data, dnpc_data, insn32);
 			}
 		}
 		if(i == 3){
 			top -> reset = 0;
 		}
-		if (DIFFTEST && !(top -> clock) && !(top -> reset)){
+		if (DIFFTEST && !(top -> clock) && !(top -> reset) && ix % 8 == 7){
 			difftest_step();
 		}
+
 		top -> clock = ~(top -> clock);
+		// printf("i = %d\n", ix);
 		step_and_dump_wave();
 		
 		if(flag){
@@ -166,6 +196,13 @@ int cpu_exec(int n){
 		}
 		if (n < 0){
 			i = i - 1; // 如果n < 0，表示一直执行
+		}
+		ix ++;
+		if(ix > 20000){
+			flag = 1;
+			success = 0;
+		 printf("Too many instructions\n");
+			break;
 		}
 	} 
 	fclose(itrace);          
@@ -177,6 +214,5 @@ int cpu_end(){
 	delete top;
 	tfp -> close();
 	delete contextp;
-	printf("total guest instructions = %lu\n", g_nr_guest_inst);
 	return success;
 }

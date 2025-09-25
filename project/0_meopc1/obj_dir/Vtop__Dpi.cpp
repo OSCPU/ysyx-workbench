@@ -25,7 +25,7 @@ int dnpc_read_data() {
 #ifndef VL_DPIDECL_pc_read_data_
 #define VL_DPIDECL_pc_read_data_
 int pc_read_data() {
-    // DPI export at vsrc/ysyx_25030077_PC.v:8:14
+    // DPI export at vsrc/ysyx_25030077_IFU.v:56:16
     return Vtop::pc_read_data();
 }
 #endif
@@ -33,7 +33,7 @@ int pc_read_data() {
 #ifndef VL_DPIDECL_reg_read_addr_
 #define VL_DPIDECL_reg_read_addr_
 int reg_read_addr() {
-    // DPI export at vsrc/ysyx_25030077_reg.v:12:16
+    // DPI export at vsrc/ysyx_25030077_reg.v:20:16
     return Vtop::reg_read_addr();
 }
 #endif
@@ -41,7 +41,7 @@ int reg_read_addr() {
 #ifndef VL_DPIDECL_reg_read_data_
 #define VL_DPIDECL_reg_read_data_
 int reg_read_data() {
-    // DPI export at vsrc/ysyx_25030077_reg.v:17:16
+    // DPI export at vsrc/ysyx_25030077_reg.v:25:16
     return Vtop::reg_read_data();
 }
 #endif
@@ -59,6 +59,22 @@ int reg_read_rs1() {
 int reg_read_rs2() {
     // DPI export at vsrc/ysyx_25030077_DATA_CONTROL.v:17:16
     return Vtop::reg_read_rs2();
+}
+#endif
+
+#ifndef VL_DPIDECL_valid_read_
+#define VL_DPIDECL_valid_read_
+int valid_read() {
+    // DPI export at vsrc/ysyx_25030077_MEM.v:33:16
+    return Vtop::valid_read();
+}
+#endif
+
+#ifndef VL_DPIDECL_wmask_read_
+#define VL_DPIDECL_wmask_read_
+int wmask_read() {
+    // DPI export at vsrc/ysyx_25030077_MEM.v:27:16
+    return Vtop::wmask_read();
 }
 #endif
 
