@@ -105,6 +105,7 @@ uint64_t get_time() {
 	uint64_t now = get_time_internal();
 	return now - boot_time;
 }
+
 svBitVecVal mem_data_read(const svBitVecVal* w_mask, const svBitVecVal* addr){
 	int mem_addr, mem_data;
 	mem_addr = *addr;
@@ -119,13 +120,13 @@ svBitVecVal mem_data_read(const svBitVecVal* w_mask, const svBitVecVal* addr){
 		}
 		ix = ix + 1;
 	} 
-	if(mem_addr == 0xa0000048 || mem_addr == 0xa000004C){
-		uint64_t time_now = get_time();
-		if(mem_addr == 0xa0000048){
-			return (uint32_t)(time_now & 0xFFFFFFFFu);
-		}
-		return (uint32_t)(time_now >> 32);
-	}
+	// if(mem_addr == 0xa0000048 || mem_addr == 0xa000004C){
+	// 	uint64_t time_now = get_time();
+	// 	if(mem_addr == 0xa0000048){
+	// 		return (uint32_t)(time_now & 0xFFFFFFFFu);
+	// 	}
+	// 	return (uint32_t)(time_now >> 32);
+	// }
 	// printf("mem_addr = %x\n", mem_addr);
 	if(mem_addr < 0x80000000 || mem_addr >= 0x8fffffff)
 		return 0;

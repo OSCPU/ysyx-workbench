@@ -58,7 +58,7 @@ void Vtop___024root____Vdpiexp_top__DOT__g_mem__DOT__wmask_read_TOP(Vtop__Syms* 
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vtop___024root____Vdpiexp_top__DOT__g_mem__DOT__wmask_read_TOP\n"); );
     // Init
     // Body
-    wmask_read__Vfuncrtn = ((0xa00003f8U == vlSymsp->TOP.top__DOT__c_arbiter__DOT__axi_aw_addr)
+    wmask_read__Vfuncrtn = ((0xa00003f8U == vlSymsp->TOP.top__DOT__c_arbiter__DOT___axi_ar_addr_T_4)
                              ? 0U : ((1U == (IData)(vlSymsp->TOP.top__DOT__c_arbiter__DOT__state_reg))
                                       ? ((0x123U == (IData)(vlSymsp->TOP.top__DOT__d_idu__DOT___isaddi_T_2))
                                           ? 1U : ((0x23U 
@@ -77,7 +77,7 @@ void Vtop___024root____Vdpiexp_top__DOT__g_mem__DOT__valid_read_TOP(Vtop__Syms* 
     // Init
     // Body
     valid_read__Vfuncrtn = ((IData)(vlSymsp->TOP.top__DOT__g_mem__DOT__canAccept_prng__DOT__state_0) 
-                            & ((0xa00003f8U != vlSymsp->TOP.top__DOT__c_arbiter__DOT__axi_aw_addr) 
+                            & ((0xa00003f8U != vlSymsp->TOP.top__DOT__c_arbiter__DOT___axi_ar_addr_T_4) 
                                & (IData)(vlSymsp->TOP.top__DOT__c_arbiter__DOT__axi_aw_valid)));
 }
 
