@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <cstdint> // 包含 uint32_t 类型定义
-#include "Vtop.h"
-#include "Vtop__Dpi.h"
+#include "Vysyx_25030077.h"
+#include "Vysyx_25030077__Dpi.h"
 #include "svdpi.h"
 #include "verilated_fst_c.h"
 #include "verilated_vcd_c.h"

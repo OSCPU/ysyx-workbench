@@ -117,6 +117,7 @@ svBitVecVal mem_data_read(const svBitVecVal* instruction_in, const svBitVecVal* 
 	} 
 	if(mem_addr == 0xa0000048 || mem_addr == 0xa000004C){
 		uint64_t time_now = get_time();
+		printf("time_now = %ld\n", time_now);
 		if(mem_addr == 0xa0000048){
 			return (uint32_t)(time_now & 0xFFFFFFFFu);
 		}

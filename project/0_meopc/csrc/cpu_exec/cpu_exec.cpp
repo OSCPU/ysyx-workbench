@@ -1,6 +1,7 @@
 #include "../include/cpu_exec.h"
 #include "verilated_dpi.h"
-#include "Vtop__Dpi.h"
+#include "Vysyx_25030077.h"
+#include "Vysyx_25030077__Dpi.h"
 #include "../include/memory.h"
 #include "../include/common.h"
 
@@ -8,7 +9,7 @@ int flag = 0;
 uint32_t csr[4096];
 VerilatedContext* contextp = new VerilatedContext;
 VerilatedFstC* tfp = new VerilatedFstC;
-Vtop* top = new Vtop{contextp};
+Vysyx_25030077* ysyx_25030077 = new Vysyx_25030077{contextp};
 extern int reg_read_addr();
 extern int reg_read_data();
 extern int pc_read_data();
@@ -22,7 +23,7 @@ void write_addr(uint32_t paddr, uint32_t data, int size);
 void ftrace_check(uint32_t pc, uint32_t dnpc, uint32_t inst);
 void difftest_step();
 void step_and_dump_wave(){
-	top->eval();
+	ysyx_25030077->eval();
 	contextp->timeInc(1);
 	tfp->dump(contextp->time());
 }
@@ -57,7 +58,7 @@ svBitVecVal addr_read(const svBitVecVal* pc){
                     (static_cast<uint8_t>(guest_to_host(RESET_VECTOR)[insert - 2]) << 8)  |
                     static_cast<uint8_t>(guest_to_host(RESET_VECTOR)[insert - 3]);
 	}
-    // printf("pc =0x%x  instruction = 0x%x\n",*pc, instruction);
+    printf("pc =0x%x  instruction = 0x%x\n",*pc, instruction);
 	if(instruction == 1048691 && insn32 == 32871){
 		//printf("instruction = %x\n", instruction);
 		success = 1;
@@ -115,9 +116,9 @@ svBitVecVal csr_read(const svBitVecVal* rs1, const svBitVecVal* imm, const svBit
 int cpu_init(int argc, char** argv){
     contextp->commandArgs(argc, argv);
 	Verilated::traceEverOn(true);
-	top->trace(tfp, 0);
+	ysyx_25030077->trace(tfp, 0);
 	tfp->open("obj_dir/wave.fst");//设置输出的文件wave.vcd
-	top -> reset = 1;          
+	ysyx_25030077 -> reset = 1;          
 	return 0;
 }
 int cpu_exec(int n){
@@ -129,23 +130,23 @@ int cpu_exec(int n){
 	} 
 	int ix = 1;
 	for(int i = -3; i < 2 * n; i++){
-		if(top -> clock){
+		if(ysyx_25030077 -> clock){
 			// printf("%d\n", i);
 			uint32_t wmask, valid;
 			svScope scope;
-			scope = svGetScopeFromName("TOP.top.g_mem");
+			scope = svGetScopeFromName("TOP.ysyx_25030077.g_mem");
 			svSetScope(scope);
 			wmask = (uint32_t)wmask_read();
 			valid = (uint32_t)valid_read();
 
 			if(wmask > 0 && valid){
 				uint32_t rs1_data, rs2_data, imm_data;
-				scope = svGetScopeFromName("TOP.top.h_data_control");
+				scope = svGetScopeFromName("TOP.ysyx_25030077.h_data_control");
 				svSetScope(scope);
 				rs1_data = (uint32_t)reg_read_rs1();
 				rs2_data = (uint32_t)reg_read_rs2();
 
-				scope = svGetScopeFromName("TOP.top.g_mem");
+				scope = svGetScopeFromName("TOP.ysyx_25030077.g_mem");
 				svSetScope(scope);
 
 				imm_data = (SEXT((int64_t)BITS(insn32, 31, 25), 7) << 5) | BITS(insn32, 11, 7);
@@ -174,7 +175,7 @@ int cpu_exec(int n){
 			}
 			if(FTRACE && ix % 8 == 7){
 				uint32_t dnpc_data;
-				scope = svGetScopeFromName("TOP.top.j_pc_next");
+				scope = svGetScopeFromName("TOP.ysyx_25030077.j_pc_next");
 				svSetScope(scope);
 				dnpc_data = (uint32_t)dnpc_read_data();
 				// printf("%x %x\n", pc_data, dnpc_data);									
@@ -182,13 +183,13 @@ int cpu_exec(int n){
 			}
 		}
 		if(i == 3){
-			top -> reset = 0;
+			ysyx_25030077 -> reset = 0;
 		}
-		if (DIFFTEST && !(top -> clock) && !(top -> reset) && ix % 8 == 7){
+		if (DIFFTEST && !(ysyx_25030077 -> clock) && !(ysyx_25030077 -> reset) && ix % 8 == 7){
 			difftest_step();
 		}
 
-		top -> clock = ~(top -> clock);
+		ysyx_25030077 -> clock = ~(ysyx_25030077 -> clock);
 		// printf("i = %d\n", ix);
 		step_and_dump_wave();
 		
@@ -199,7 +200,7 @@ int cpu_exec(int n){
 			i = i - 1; // 如果n < 0，表示一直执行
 		}
 		ix ++;
-		// if(ix > 20000){
+		// if(ix > 200000){
 		// 	flag = 1;
 		// 	success = 0;
 		//  printf("Too many instructions\n");
@@ -212,7 +213,7 @@ int cpu_exec(int n){
 
 int cpu_end(){
 	step_and_dump_wave();
-	delete top;
+	delete ysyx_25030077;
 	tfp -> close();
 	delete contextp;
 	return success;

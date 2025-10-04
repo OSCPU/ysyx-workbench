@@ -24,7 +24,6 @@ $(SRC_AUTO_BIND): $(NXDC_FILES)
 VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")
 CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
 CSRCS += $(SRC_AUTO_BIND)
-
 CSRCS_SIM = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
 
 LIBCAPSTONE = /home/meowth/ysyx/ysyx-workbench/project/0_meopc/tools/capstone/repo/libcapstone.so.5
@@ -64,7 +63,7 @@ wave_display:
 	gtkwave obj_dir/wave.fst
 
 IMAGE = /home/meowth/ysyx/ysyx-workbench/am-kernels/tests/am-tests/build/amtest-riscv32e-npc
-# IMAGE = /home/meowth/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests/build/bit-riscv32e-npc
+# IMAGE = /home/meowth/ysyx/ysyx-workbench/am-kernels/tests/cpu-tests/build/add-riscv32e-npc
 
 DIFF_SO = /home/meowth/ysyx/ysyx-workbench/nemu/build/riscv32-nemu-interpreter-so
 sim:
@@ -72,9 +71,9 @@ sim:
 	-CFLAGS "-I/usr/include/readline \
 			 -I  /home/meowth/ysyx/ysyx-workbench/project/0_meopc/tools/capstone/repo/include" \
 	-LDFLAGS "-lreadline -lncurses" \
-	--top-module top \
+	--top-module ysyx_25030077 \
 	$(CSRCS_SIM)  vsrc/*.v 
-	obj_dir/Vtop -e $(IMAGE).elf -d $(DIFF_SO) $(IMAGE).bin mainargs=1
+	obj_dir/Vysyx_25030077 -e $(IMAGE).elf -d $(DIFF_SO) $(IMAGE).bin mainargs=1
 	gtkwave obj_dir/wave.fst
 
 test:

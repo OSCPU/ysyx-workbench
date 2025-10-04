@@ -29,7 +29,7 @@ NPC_HOME = /home/meowth/ysyx/ysyx-workbench/project/0_meopc
 DIFF_SO = /home/meowth/ysyx/ysyx-workbench/nemu/build/riscv32-nemu-interpreter-so
 run: insert-arg
 	@cd $(NPC_HOME) && \
-	$(NPC_HOME)/obj_dir/Vtop -e $(IMAGE).elf -d $(DIFF_SO) $(IMAGE).bin \
+	$(NPC_HOME)/obj_dir/Vysyx_25030077 -e $(IMAGE).elf -d $(DIFF_SO) $(IMAGE).bin \
     gtkwave $(NPC_HOME)/obj_dir/wave.fst
 
 .PHONY: insert-arg

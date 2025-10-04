@@ -55,7 +55,7 @@ svBitVecVal addr_read(const svBitVecVal* pc){
                     (static_cast<uint8_t>(guest_to_host(RESET_VECTOR)[insert - 2]) << 8)  |
                     static_cast<uint8_t>(guest_to_host(RESET_VECTOR)[insert - 3]);
 	}
-    printf("pc =0x%x  instruction = 0x%x\n",*pc, instruction);
+    // printf("pc =0x%x  instruction = 0x%x\n",*pc, instruction);
 	if(instruction == 1048691 && insn32 == 32871){
 		//printf("instruction = %x\n", instruction);
 		success = 1;
@@ -103,6 +103,7 @@ int cpu_init(int argc, char** argv){
 	top -> reset = 1;          
 	return 0;
 }
+int ix = 0;
 int cpu_exec(int n){
 	int pc_data;
 	FILE *itrace=fopen("outputs/itrace.txt","w");
@@ -160,7 +161,15 @@ int cpu_exec(int n){
 		}
 		top -> clock = ~(top -> clock);
 		step_and_dump_wave();
-		
+
+		ix ++;
+		if(ix > 2000000){
+			flag = 1;
+			success = 0;
+		 printf("Too many instructions\n");
+			break;
+		}
+
 		if(flag){
 			break;
 		}

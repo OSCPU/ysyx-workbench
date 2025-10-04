@@ -12,8 +12,8 @@
 #include <getopt.h>
 #include <cstdint>
 
-#include "Vtop.h"
-#include "Vtop__Dpi.h"
+#include "Vysyx_25030077.h"
+#include "Vysyx_25030077__Dpi.h"
 #include "svdpi.h"
 #include "verilated_fst_c.h"
 #include "verilated_vcd_c.h"

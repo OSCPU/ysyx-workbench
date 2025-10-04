@@ -51,14 +51,14 @@ int new_reg(){
     int w_addr;
     int w_data;
     int pc_data;
-    svScope scope = svGetScopeFromName("TOP.top.f_gpr");
+    svScope scope = svGetScopeFromName("TOP.ysyx_25030077.f_gpr");
     svSetScope(scope);
     w_addr = reg_read_addr();
     w_data = reg_read_data();
     reg_new(w_addr, w_data);
     // printf("w_addr = %x\n", w_addr);
     // printf("w_data = %x\n", w_data);
-    scope = svGetScopeFromName("TOP.top.b_ifu");
+    scope = svGetScopeFromName("TOP.ysyx_25030077.b_ifu");
     svSetScope(scope);
     pc_data = pc_read_data();
     pc_new(pc_data);
