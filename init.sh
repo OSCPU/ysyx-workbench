@@ -43,11 +43,11 @@ case $1 in
     init NJU-ProjectN/nemu ics2024 nemu true NEMU_HOME
     ;;
   abstract-machine)
-    init NJU-ProjectN/abstract-machine ics2024 abstract-machine true AM_HOME
+    init NJU-ProjectN/abstract-machine ics2026 abstract-machine true AM_HOME
     init NJU-ProjectN/fceux-am ics2021 fceux-am false
     ;;
   am-kernels)
-    init NJU-ProjectN/am-kernels ics2021 am-kernels false
+    init NJU-ProjectN/am-kernels ics2026 am-kernels false
     ;;
   nanos-lite)
     init NJU-ProjectN/nanos-lite ics2021 nanos-lite true
