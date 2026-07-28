@@ -79,7 +79,7 @@ case $1 in
     init NJU-ProjectN/riscv-arch-test-am main riscv-arch-test false
     ;;
   archbench)
-    init OSCPU/archbench master archbench false BENCH_HOME
+    init OSCPU/archbench main archbench false BENCH_HOME
     ;;
   rt-thread)
     init NJU-ProjectN/rt-thread-am master rt-thread-am false
