@@ -69,7 +69,6 @@ case $1 in
     ;;
   npc)
     addenv NPC_HOME npc
-    ln -sf "$(pwd)/AGENTS.md" "npc/AGENTS.md"
     ;;
   ysyxSoC)
     init OSCPU/ysyxSoC 2607 ysyxSoC false

@@ -9,4 +9,5 @@
 !*.cpp
 !.gitignore
 !README.md
+!AGENTS.md
 build/
