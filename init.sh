@@ -20,7 +20,7 @@ function init() {
   while [ ! -d $3 ]; do
     git clone --depth 1 -b $2 git@github.com:$1.git $3
   done
-  cp AGENTS.md "$3/AGENTS.md"
+  ln -sf "$(pwd)/AGENTS.md" "$3/AGENTS.md"
   log="$1 `cd $3 && git log --oneline --no-abbrev-commit -n1`"$'\n'
 
   if [ $4 == "true" ] ; then
@@ -69,7 +69,7 @@ case $1 in
     ;;
   npc)
     addenv NPC_HOME npc
-    cp AGENTS.md "npc/AGENTS.md"
+    ln -sf "$(pwd)/AGENTS.md" "npc/AGENTS.md"
     ;;
   ysyxSoC)
     init OSCPU/ysyxSoC 2607 ysyxSoC false
