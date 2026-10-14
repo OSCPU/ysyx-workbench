@@ -32,7 +32,14 @@ function init() {
   while [ ! -d $3 ]; do
     git clone --depth 1 -b $2 git@github.com:$1.git $3
   done
-  ln -sf "$(pwd)/AGENTS.md" "$3/AGENTS.md"
+  if [ -f "$3/.gitignore" ]; then
+    ln -sf "../AGENTS.md" "$3/AGENTS.md"
+    #Add '\n' if the last character isn't '\n'
+    if [ -n "$(tail -c 1 "$3/.gitignore")" ]; then
+      printf '\n' >> "$3/.gitignore"
+    fi
+    echo '!AGENTS.md' >> "$3/.gitignore"
+  fi
   log="$1 `cd $3 && git log --oneline --no-abbrev-commit -n1`"$'\n'
 
   if [ $4 == "true" ] ; then
